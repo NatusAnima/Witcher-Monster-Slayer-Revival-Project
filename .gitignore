@@ -1,0 +1,17 @@
+# .NET Server
+server/**/bin/
+server/**/obj/
+
+# Python Tools
+__pycache__/
+*.pyc
+
+# IDEs / OS
+.vs/
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+scratch/
