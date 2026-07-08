@@ -1003,6 +1003,7 @@ function installIl2cpp() {
         Interceptor.replace(at(0x19efbb0), new NativeCallback(function(original, method) {
             if (original.isNull()) {
                 log(">>> replaced Instantiate 0x19efbb0 called with NULL original!");
+                log("Backtrace:\n" + Thread.backtrace(this.context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join("\n"));
                 const go = getFakeGameObject();
                 const comp = getFakeDespawnFX();
                 if (isInPoiInit) {
