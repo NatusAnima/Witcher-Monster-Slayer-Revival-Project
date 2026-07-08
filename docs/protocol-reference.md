@@ -64,6 +64,8 @@ Gameplay messages (`MethodMessage<T>`) are wrapped inside the Api channel.
 The StaticGameData `FETCH` method returns a gzip-compressed JSON containing 82 top-level arrays.
 The client deserializes this using `DataContractJsonSerializer`.
 
+> **Note:** To find valid string IDs (`prefab_path`, `slug`) required for the static data, use `grep_search` on the Addressables catalog at `tools/dump/catalog.json`. Sending invalid slugs will crash the game client on model load.
+
 Key DTOs (snake_case JSON keys):
 - `achievements`: `id`, `slug`, `contract_id`
 - `monsters`: `id`, `family_id`, `name`, `model`, `image`, `trophy`, `slug`

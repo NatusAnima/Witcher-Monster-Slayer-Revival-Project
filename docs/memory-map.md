@@ -2,6 +2,8 @@
 
 This document tracks the Relative Virtual Addresses (RVAs), IL2CPP offsets, and the status of modules being bypassed or hooked via Frida (`tools/patch/hook.js`). All RVAs are for `arm64 v1.0.43`.
 
+> **Note:** For deep structural queries, use `grep_search` on `tools/dump/dump.cs` and `tools/dump/script.json`. Do not attempt to read these heavy files entirely into context.
+
 ## Core Game Loop & State
 | RVA | Symbol | Description |
 |---|---|---|
