@@ -22,20 +22,20 @@ We are working to map out the API requests the client sends when navigating the 
 Run these commands in separate terminals to launch the backend and connect the patched game:
 
 ```bash
-# 1. Start the game server in tutorial mode (TutorialFinished=0)
+# 1. Start the game server in tutorial mode (TutorialFinished=0), logging to scratch
 cd server/WitcherRevival.Server
 dotnet build -v q
-ASPNETCORE_ENVIRONMENT=Production dotnet run --no-build
+ASPNETCORE_ENVIRONMENT=Production dotnet run --no-build > ../../scratch/server.log 2>&1
 
 # 2. Establish ADB tunnels for the TCP socket and HTTP static data
 adb forward tcp:27042 tcp:27042
 adb reverse tcp:4253 tcp:4253
 adb reverse tcp:8080 tcp:8080
 
-# 3. Relaunch the client and attach Frida
+# 3. Relaunch the client and attach Frida, logging output to scratch
 adb shell am force-stop com.spokko.witchermonsterslayer
 adb shell monkey -p com.spokko.witchermonsterslayer -c android.intent.category.LAUNCHER 1
-python tools/patch/frida_run.py 120
+python tools/patch/frida_run.py 120 > scratch/frida.log 2>&1
 ```
 
 ## Recent Milestones
