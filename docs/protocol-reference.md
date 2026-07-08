@@ -1,0 +1,72 @@
+# Wire Protocol & API Reference
+
+This document outlines the reverse-engineered TCP wire protocol and API structures used by the game client (ThreadedClient).
+
+## 1. Socket Framing
+The game uses a raw TCP socket with big-endian binary framing.
+
+### Client to Server
+Every message sent by the client prepends a 4-byte magic sequence:
+```
+[4 bytes : Magic]    0x9043284A (SECRET_BYTES)
+[1 byte  : Type ]    Channel selector (see §2)
+[4 bytes : Size ]    Big-endian int32, length of the payload
+[N bytes : Data ]    Payload (ByteBuffer), N == Size
+```
+
+### Server to Client
+The server responds **without** the magic bytes:
+```
+[1 byte  : Type ]    Channel selector
+[4 bytes : Size ]    Big-endian int32, length of the payload
+[N bytes : Data ]    Payload
+```
+
+### ByteBuffer Codec
+All primitives are big-endian.
+- `bool`: 1 byte
+- `int`: 4 bytes
+- `long`: 8 bytes
+- `string`: `[int32 len][utf8 bytes]`
+- `List<T>`: `[int32 count][elem * count]`
+- `Dictionary<K,V>`: `[int32 count][(K,V) * count]`
+
+## 2. Channels (Outer `Type` Byte)
+| ID | Channel | Description |
+|---|---|---|
+| 1 | `Api` | Gameplay RPCs and player actions. |
+| 2 | `Logging` | Client log uploads (ignored by server). |
+| 3 | `Authentication` | Login handshake. |
+| 4 | `StaticGameData` | Fetch static content (GZip JSON). |
+
+## 3. Authentication (Channel 3)
+- **Request:** `[int MethodId=1][int apiVersion][long clientVersion][string deviceId][string accountId]`
+- **Response:** `[int MethodId=1][byte code]` (Code `0` = Success)
+
+## 4. API Envelope (Channel 1)
+Gameplay messages (`MethodMessage<T>`) are wrapped inside the Api channel.
+`[1B MsgType][1B unused][int rcvCount][long*rcvCount Received][long Id][int MethodId][method payload]`
+
+### Key Boot-time API Methods
+| ID | Name | Payload Structure / Server Response |
+|---|---|---|
+| 3 | `GetPlayerInfo` | `[byte Success][string Name][int Gold][int Exp][int Head][byte TutorialFinished][byte Gender]` |
+| 5 | `GetInventory` | 9 empty `Dictionary<int,int>` then `[int BagSize]` |
+| 9 | `GetEquipment` | `[int SwordsCount][int*swords][int ArmorsCount][int*armors][int EquippedArmor][int EquippedSword]` |
+| 40 | `GetLocationsByCell` | Client sends S2 cell IDs. Used to spawn the tutorial NPC. |
+| 57 | `EndBehaviourGraph`| Heavily nested response. An all-zero (57 bytes) stub works to bypass NREs. |
+| 60 | `GetActiveQuestNodeInstances` | Drives the tutorial NPC spawning. |
+| 88 | `LoadCells` | Subscribe to S2 geo-cells. Returns `[byte 1]` (BooleanResponse(true)). |
+| 115| `GetInitialPlayerData`| Batch response hydrating the player. `[int count][for each: int methodId, inline sub-response fields]` |
+| 141| `Ping` | Heartbeat. |
+
+## 5. Static Data Container (Channel 4)
+The StaticGameData `FETCH` method returns a gzip-compressed JSON containing 82 top-level arrays.
+The client deserializes this using `DataContractJsonSerializer`.
+
+Key DTOs (snake_case JSON keys):
+- `achievements`: `id`, `slug`, `contract_id`
+- `monsters`: `id`, `family_id`, `name`, `model`, `image`, `trophy`, `slug`
+- `skills`: `id`, `slug`, `cost`, `required_level`, `parent_id`
+- `swords`: `id`, `slug`, `priority`, `prefab_path`, `sword_type`
+- `armors`: `id`, `slug`, `priority`, `prefab_path`

@@ -1,0 +1,23 @@
+# Witcher: Monster Slayer — Revival Project
+
+## Overview
+This project aims to resurrect the discontinued augmented reality game **The Witcher: Monster Slayer** (`com.spokko.witchermonsterslayer`, servers shut down June 2023). 
+
+Since the original backend is dead, the project involves reverse-engineering the Unity IL2CPP client (arm64 v1.0.43) to understand its proprietary TCP protocol, bypassing certain client-side modules via runtime memory patching (Frida), and building a custom ASP.NET Core game server to hydrate the game state and drive gameplay.
+
+## Architecture
+- **Client Modding:** The original APK runs on a physical Android device. A Frida gadget is injected into it. We use an ADB tunnel and a Frida script (`hook.js`) to intercept libc `connect()` calls (redirecting the dead prod IP to localhost), bypass unhandled IL2CPP modules, and log diagnostics.
+- **Backend Server:** A custom C# ASP.NET Core application (`server/WitcherRevival.Server`) that listens on raw TCP port `4253` for game traffic and port `8080` for HTTP static data. It implements the custom big-endian framed wire protocol expected by the client.
+
+## Repository Structure
+- `server/WitcherRevival.Server/`: The custom backend server. Key files include `GameSocketService.cs` (TCP session and RPC dispatch) and `PreloaderStaticData.cs` (static game data container).
+- `tools/patch/`: Contains `hook.js` (the active Frida hook) and `frida_run.py` (the Python script to inject the hook into the running game).
+- `tools/platform-tools/`: Contains `adb.exe`, necessary for port forwarding and launching the app on the phone.
+- `docs/`: Technical reference documentation for the protocol, API payloads, and memory maps.
+- `HANDOFF.md`: The active session tracker. **Start here when resuming development.**
+
+## Reference Documentation
+For deep technical details, see the `docs/` folder:
+- `docs/protocol-reference.md`: Detailed breakdown of the wire protocol, API methods, static data schema, and response serialization layouts.
+- `docs/memory-map.md`: IL2CPP reverse-engineering facts, including RVAs (Relative Virtual Addresses), class offsets, and the status of bypassed/un-bypassed client modules.
+- `docs/boot-sequence.md`: A chronological map of the client's network requests during the boot phase.
