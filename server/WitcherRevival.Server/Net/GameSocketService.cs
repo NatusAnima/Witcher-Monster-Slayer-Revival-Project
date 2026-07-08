@@ -173,10 +173,10 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         catch (Exception ex) { log.LogWarning("  Api parse failed: {Msg}", ex.Message); return; }
 
         log.LogInformation("  Api request: Id={Id} Method={Method} dataLen={Len}", req.Id, req.Method, req.Data.Length);
-
-        // TEMP: capture player-location request bytes (S2 cell ids) to decode the player's GPS for NPC placement.
-        if (req.Method is 40 or 67 or 88)
-            log.LogInformation("  [LOC] Method={Method} data={Hex}", req.Method, Convert.ToHexString(req.Data));
+        if (req.Data.Length > 0)
+        {
+            log.LogInformation("  [PAYLOAD] Method={Method} data={Hex}", req.Method, Convert.ToHexString(req.Data));
+        }
 
         byte[] methodPayload = req.Method switch
         {
