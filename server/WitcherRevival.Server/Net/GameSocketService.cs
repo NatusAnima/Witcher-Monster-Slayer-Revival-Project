@@ -415,7 +415,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             b.WriteInt(i);
         }
 
-        // Method 60 — GetActiveQuestNodeInstances — spawns the S00 tutorial quest-giver (Thorstein) near player.
+        // Method 60 — GetActiveQuestNodeInstances — spawns the current S00 prolog quest-node POI.
         // Handler order (StoryModule 0x17A3614): UpdateLocations(Locations) registers PlaceId->coords, THEN
         // SetActiveQuestNodes(QuestNodeInstances) looks up PlaceId and positions the POI via CoordsToWorldSpace.
         //   Location wire (0x31D0B28):  [int placeIdLen][placeId][float lat][float lng][int biomeCount][int*biomes]
@@ -423,25 +423,53 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         //                                  [string SettingsPath][string BehaviourGraphName][int DisplayMode]
         //   (all strings = WriteString = [int len][UTF8]; DisplayMode Normal=1)
         // Coords = player's center S2 cell decoded from the method-40 request (2026-07-05): 32.453864, 35.058088.
+        //
+        // Chain progression (2026-07-10, EXPERIMENTAL): this is only served once, inside the boot batch, so
+        // it reflects fact state at boot time. Once fact 10145 == 1 (set by prolog_01_thorstein's
+        // EndBehaviourGraph — confirmed live), Thorstein's step is done, so the client filters that POI out
+        // (PoiModule.SetActiveQuestNodes nodes=0, live-traced) and nothing further loads. The true next-node
+        // identity (QuestNodeId/PlaceId/graph name) is Unity AssetBundle data, not present in the IL2CPP dump.
+        // prolog_01_dead_horse is an educated guess from the bundled asset list (scratch/bgraphs.txt) matching
+        // the game's known Witcher-Senses tracking tutorial (dead horse -> footprints -> tracks -> griffin) —
+        // UNVERIFIED, first live test pending. SettingsPath from scratch/poi_settings.txt.
+        bool thorsteinDone = _facts.TryGetValue(10145, out var factTracking) && factTracking == 1;
         b.WriteInt(60);
         b.WriteInt(1);                       // Locations count = 1
-        
-        // Thorstein location
-        b.WriteString(TutPlaceId);           // Location.PlaceId
+        b.WriteString(TutPlaceId);           // Location.PlaceId (reused for now; real next-node coords unknown)
         b.WriteFloat(TutLat);                // Location.Latitude
         b.WriteFloat(TutLng);                // Location.Longitude
         b.WriteInt(0);                       // Location.Biomes count = 0
-        
+
+        // InstanceId values below are each graph asset's own baked-in `QuestNodeInstanceId` field,
+        // extracted 2026-07-10 via UnityPy from s00_story_graphs_assets_all.bundle (in the OBB). The
+        // first dead_horse attempt used a fabricated InstanceId=2, which triggered two "key was not
+        // present in the dictionary" exceptions right after StartQuestGraph (live-traced) — dead_horse's
+        // graph is 102 nodes including DataConsumer/DataProvider node types that very likely look up
+        // cross-graph state keyed by this ID. QuestNodeId itself is baked in as 0 in every graph asset
+        // (server-assigned, not meaningful to the client — matches the existing "spawn is independent of
+        // QuestNodeId" note below), so those stay arbitrary.
         b.WriteInt(1);                       // QuestNodeInstances count = 1
-        
-        // --- 1) Thorstein (Always visible)
-        b.WriteLong(1);                      // InstanceId
-        b.WriteInt(1);                       // QuestNodeId (spawn is independent of this; click needs StoryGraph)
-        b.WriteString(TutPlaceId);           // QNI.PlaceId (must match the Location above)
-        b.WriteString("assets/_bundledassets/story/poi_settings/_common/thorstein_lq.asset"); // SettingsPath
-        b.WriteString("s00/prolog/prolog_01_thorstein"); // BehaviourGraphName; AssetsPaths.GetBehaviourGraphPath adds prefix/suffix
-        b.WriteInt(2);                       // DisplayMode = CloseFollow (keeps the quest giver interactable)
-        
+        if (!thorsteinDone)
+        {
+            // --- 1) Thorstein (Always visible)
+            b.WriteLong(5124757777905877225);    // InstanceId = real QuestNodeInstanceId (prolog_01_thorstein)
+            b.WriteInt(1);                       // QuestNodeId (spawn is independent of this; click needs StoryGraph)
+            b.WriteString(TutPlaceId);           // QNI.PlaceId (must match the Location above)
+            b.WriteString("assets/_bundledassets/story/poi_settings/_common/thorstein_lq.asset"); // SettingsPath
+            b.WriteString("s00/prolog/prolog_01_thorstein"); // BehaviourGraphName
+            b.WriteInt(2);                       // DisplayMode = CloseFollow (keeps the quest giver interactable)
+        }
+        else
+        {
+            // --- 2) Dead horse (EXPERIMENTAL next step — see comment above)
+            b.WriteLong(5124756197357912298);    // InstanceId = real QuestNodeInstanceId (prolog_01_dead_horse)
+            b.WriteInt(2);                       // QuestNodeId
+            b.WriteString(TutPlaceId);           // QNI.PlaceId
+            b.WriteString("assets/_bundledassets/story/poi_settings/s00/prolog/dead_horse_head.asset"); // SettingsPath
+            b.WriteString("s00/prolog/prolog_01_dead_horse"); // BehaviourGraphName
+            b.WriteInt(2);                       // DisplayMode = CloseFollow
+        }
+
         b.WriteInt(0);                       // ExpiringQuestNodeInstances count = 0
 
         // Method 20 — GetDailyContracts

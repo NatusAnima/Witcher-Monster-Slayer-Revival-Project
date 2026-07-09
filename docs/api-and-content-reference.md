@@ -272,3 +272,40 @@ line up):
 | `0x1F9A10C`                 | Tutorial.CheckTutorial                                  |
 | `0x1F9A530` / `0x1F9A69C` | Tutorial.ForceTutorialFinished / EndTutorial            |
 | `0x1C5C6DC`                 | SignalBus.Fire(object) — null-Data guard site          |
+
+---
+
+## 10. S00 prolog quest chain (decoded via Unity AssetBundle extraction, 2026-07-10)
+
+`dump.cs` only has IL2CPP class/method **shapes** — it never contains serialized asset **data** (quest
+chains, node graphs, fact IDs). Getting past the tutorial's first cutscene required reading the actual
+`BehaviourGraph` assets out of the OBB. Tooling: `pip install UnityPy`, then
+`tools/unity_extract/bundle_explorer.py` (list/search/graph subcommands). Bundles are inside the OBB
+(itself a plain zip) at `assets/aa/Android/*.bundle`; extract with `unzip`. Relevant bundles:
+`s00_story_graphs_assets_all.bundle` (BehaviourGraph node data for all S00 prolog quest nodes),
+`s00_story_investigations_assets_all.bundle` (Investigation-mechanic scene data),
+`s00_story_poi_settings_assets_all.bundle` (POI marker settings assets).
+
+**`GetActiveQuestNodeInstances (60)` `QuestNodeInstance.InstanceId` must be the graph's real, baked-in
+`QuestNodeInstanceId` field** — not an arbitrary value. Sending a fabricated one (tried `InstanceId=2` for
+dead_horse) throws `"key was not present in the dictionary"` the moment the client's `StartQuestGraph`
+runs, because `DataConsumer`/`DataProvider` node types inside the graph look up cross-graph state keyed by
+this ID. `QuestNodeId` itself is baked as `0` in every graph asset — it's purely server-assigned bookkeeping,
+not read by the client (matches the pre-existing code comment "spawn is independent of QuestNodeId; click
+needs StoryGraph").
+
+| Graph (`BehaviourGraphName` under `s00/prolog/`) | Real `QuestNodeInstanceId` | Node type / notes |
+| --- | --- | --- |
+| `prolog_01_thorstein` | `5124757777905877225` | Dialoggraph-driven, 30 nodes. First tutorial step. |
+| `prolog_01_dead_horse` | `5124756197357912298` | **Investigation** node (`_investigationSlug: 's00/prolog_dead_horse/prolog_dead_horse'`), 102 nodes, includes `Fightgraph` sub-branches (an ambush — see investigations bundle GameObjects `prolog_dead_horse_bush`/`prolog_dead_horse_alghouls`). |
+| `prolog_01_griffin` | `5124757777905877227` | 49 nodes. Not yet server-wired. |
+| `prolog_01_footprints_01`, `prolog_01_tracks_01/02/03`, `prolog_01_tracking` | `0` (unset in asset) | Small stub graphs (4-13 nodes). Real instance id unconfirmed — check via `bundle_explorer.py graph` before wiring. |
+
+**dead_horse's node flow** (via `bundle_explorer.py graph ... prolog_01_dead_horse`): `Start Graph` →
+`Branching` → `Load Enviro` (`_forceAR: 0`) → **`Investigation`** (`_investigationSlug` set) →
+`Set Fact`/`Fadeoutblacktransition`. This is the WitcherSenses AR clue-tracking mechanic, not a dialogue —
+after the POI is clicked and `StartQuestGraph` fires cleanly (live-verified, no exception), nothing further
+renders on screen yet. The Investigation mechanic itself (what client-side trigger or server API — `UseSenses
+(42)`, `GetSensedMonsters (43)` — makes it visibly progress) is **not yet reverse-engineered**; its own
+43-node local scene graph lives in `s00_story_investigations_assets_all.bundle` under the same name
+(`prolog_dead_horse`).
