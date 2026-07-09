@@ -15,3 +15,6 @@ __pycache__/
 # Logs
 *.log
 scratch/
+
+CLAUDE.md
+HANDOFF.md

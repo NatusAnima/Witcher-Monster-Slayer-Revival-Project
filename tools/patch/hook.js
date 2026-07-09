@@ -445,7 +445,47 @@ function installIl2cpp() {
                 log(">>> BehaviourGraphModule.StartQuestGraph path=" + readStr(args[1]) +
                     " questNodeId=" + args[3].toInt32() + " instanceId=" + args[4].toString());
             },
-            onLeave: function() { log("<<< BehaviourGraphModule.StartQuestGraph LEAVE"); }
+            onLeave: function() { log('<<< BehaviourGraphModule.StartQuestGraph LEAVE'); }
+          });
+          
+          Interceptor.attach(at(0x1959658), {   // TraversableGraphsHistory.OnGraphStart(NodeGraph graph)
+              onEnter: function(args) {
+                  try {
+                      const graph = args[0];
+                      if (graph.isNull()) return;
+                      log('=========================================');
+                      log('>>> TraversableGraphsHistory.OnGraphStart! graph=' + graph);
+                      
+                      const nodesList = graph.add(0x18).readPointer();
+                      if (nodesList.isNull()) {
+                          log('  nodes list is NULL');
+                          return;
+                      }
+                      
+                      const itemsArray = nodesList.add(0x10).readPointer();
+                      const size = nodesList.add(0x18).readS32();
+                      log('  Graph has ' + size + ' nodes.');
+                      
+                      for (let i = 0; i < size; i++) {
+                          const nodePtr = itemsArray.add(0x20 + (i * 8)).readPointer();
+                          if (nodePtr.isNull()) continue;
+                          
+                          const klassPtr = nodePtr.readPointer();
+                          const klassNamePtr = klassPtr.add(0x10).readPointer();
+                          const klassName = klassNamePtr.readCString();
+                          
+                          log('  Node[' + i + ']: ptr=' + nodePtr + ' class=' + klassName);
+                          
+                          let hex = '    Data: ';
+                          for (let j = 0; j < 16; j++) {
+                              const val = nodePtr.add(0x10 + j * 4).readS32();
+                              hex += val + ' ';
+                          }
+                          log(hex);
+                      }
+                      log('=========================================');
+                  } catch(e) { log('Error dumping graph: ' + e); }
+              }
         });
         log("Quest-POI spawn/click trace installed (UpdateLocations / SetActiveQuestNodes / QuestPoiInstance / OnClicked / StartQuestGraph)");
     } catch(e) { log("Failed to install quest-POI spawn trace: " + e); }
