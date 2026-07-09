@@ -1,6 +1,15 @@
 # .NET Server
 server/**/bin/
 server/**/obj/
+server/**/data/facts.json
+
+# Proprietary game assets / RE dumps (large, not for distribution)
+Original APK and OBB/
+apk_extracted/
+tools/apk_extracted/
+tools/dump/
+tools/platform-tools/
+game.zip
 
 # Python Tools
 __pycache__/
