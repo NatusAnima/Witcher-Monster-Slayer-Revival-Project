@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using WitcherRevival.Server.Protocol;
 
 namespace WitcherRevival.Server.Net;
@@ -153,7 +154,8 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     private const int M_EquipArmor = 11, M_EquipSteelSword = 12, M_EquipSilverSword = 13;
     private const int M_DistanceTraveled = 27, M_SetCustomizationHead = 28;
     private const int M_SetTutorialFinished = 30, M_EquipSword = 55, M_EndBehaviourGraph = 57;
-    private const int M_GetFacts = 58, M_AcquireSkill = 64, M_TrackQuest = 72, M_AddSkillPoints = 93, M_ResolveRewards = 119;
+    private const int M_GetFacts = 58, M_GetAllFacts = 59, M_AcquireSkill = 64, M_TrackQuest = 72;
+    private const int M_SetFacts = 78, M_AddSkillPoints = 93, M_ResolveRewards = 119;
 
     // Shared player-state values (server is stateless this round; keeps the boot batch and the
     // post-boot action replies coherent with each other and with the ID contract).
@@ -165,6 +167,53 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     private const string TutPlaceId = "tut_thorstein";
     private const float TutLat = 32.453864f;
     private const float TutLng = 35.058088f;
+
+    // ── Server-side fact store ──────────────────────────────────────────────────
+    // The BehaviourGraph tutorial advances ONLY through server facts: the client writes them via
+    // SetFacts(78) and EndBehaviourGraph(57) and reads them back via GetFacts(58)/GetAllFacts(59).
+    // The stateless server ACKed the writes and echoed empty dicts, so the story never progressed
+    // past the first cutscene. Facts now live in memory and flush to FactsPath (JSON) on every write,
+    // so progress survives client reboots AND server restarts. Fresh state seeds {2:1} — the fact the
+    // boot batch has always hardcoded — keeping the known-good first-boot byte stream unchanged.
+    private const string FactsPath = "data/facts.json";  // relative to the run dir (HANDOFF.md runs from server/WitcherRevival.Server)
+    private readonly object _factsLock = new();
+    private readonly Dictionary<int, int> _facts = LoadFacts();
+
+    private static Dictionary<int, int> LoadFacts()
+    {
+        try
+        {
+            if (File.Exists(FactsPath))
+                return JsonSerializer.Deserialize<Dictionary<int, int>>(File.ReadAllText(FactsPath)) ?? new();
+        }
+        catch { /* unreadable/corrupt file — fall through to fresh state */ }
+        return new Dictionary<int, int> { [2] = 1 };
+    }
+
+    private void StoreFacts(Dictionary<int, int> facts)
+    {
+        int total;
+        lock (_factsLock)
+        {
+            foreach (var (k, v) in facts) _facts[k] = v;
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(FactsPath))!);
+            File.WriteAllText(FactsPath, JsonSerializer.Serialize(_facts));
+            total = _facts.Count;
+        }
+        log.LogInformation("  Facts stored: {New} written, {Total} total -> {Path}", facts.Count, total, Path.GetFullPath(FactsPath));
+    }
+
+    /// Shared Dictionary<int,int> Facts wire shape: [int pairCount][(int key, int value)×count], NO
+    /// leading Success byte — verified via GetAllFactsResponse.Factory.Deserialize (0x1F74664);
+    /// GetFactsResponse (dump.cs 598697) has the identical single-Dictionary field.
+    private void WriteFactsDict(ByteBuffer b)
+    {
+        lock (_factsLock)
+        {
+            b.WriteInt(_facts.Count);
+            foreach (var (k, v) in _facts) { b.WriteInt(k); b.WriteInt(v); }
+        }
+    }
 
     private async Task HandleApiAsync(Stream stream, Frame f, CancellationToken ct)
     {
@@ -208,8 +257,9 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             M_TrackQuest => BuildIntResponse(true, ReadIntParam(req, fallback: 0)),
             M_AddSkillPoints => BuildIntResponse(true, InitialSkillPoints + ReadIntParam(req, fallback: 0)),
             M_ResolveRewards => BuildResolveRewardsResponse(),  // post-sync reward gate — see builder
-            M_EndBehaviourGraph => BuildEndBehaviourGraphResponse(),
-            M_GetFacts => BuildGetFactsResponse(),
+            M_EndBehaviourGraph => BuildEndBehaviourGraphResponse(req),
+            M_SetFacts => HandleSetFacts(req),
+            M_GetFacts or M_GetAllFacts => BuildGetFactsResponse(),
             M_Ping => ApiProtocol.Boolean(true),            // PingResponse — keep alive
             _ => BuildCatchAllResponse(req.Method),
         };
@@ -323,16 +373,16 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         b.WriteByte(1); // Success
         b.WriteInt(0);  // Brewers list count
 
-        // Method 59 — GetAllFacts  (empty Dictionary<int, int> Facts — NO leading Success byte)
+        // Method 59 — GetAllFacts  (Dictionary<int, int> Facts — NO leading Success byte)
         // ServerFactDatabaseModule.InitializeModule (0x178A3D0, now un-bypassed in hook.js) synchronizes this
         // key; HandleGetAllFactsResponse (0x178A4E8) builds _factDatabase from it AND sets Initialized=true.
         // Without it: _factDatabase stays null -> PlayerModule.GetFact(4) NREs (froze boot at 76%), and SFDB
         // never flips Initialized -> boot hangs. Wire format verified via GetAllFactsResponse.Factory.Deserialize
-        // (0x1F74664): just [int count] then [int key][int value] pairs. Empty = [int 0]. GetFact returns 0 for
-        // a missing key (ContainsKey guard, no throw), so an empty fact DB is safe.
-        b.WriteInt(59);
-        b.WriteInt(1);  // Facts count
-        b.WriteInt(2); b.WriteInt(1); // Fact 2 = 1
+        // (0x1F74664): just [int count] then [int key][int value] pairs. GetFact returns 0 for a missing key
+        // (ContainsKey guard, no throw). Serves the persisted fact store (seeded {2:1} on fresh state — see
+        // LoadFacts) so tutorial progress survives a client reboot.
+        b.WriteInt(M_GetAllFacts);
+        WriteFactsDict(b);
 
         // Method 83 — GetDailyShopBundles
         // Deserializer (0x1F75C80): [byte Success] [int count] [items...]
@@ -375,17 +425,23 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         // Coords = player's center S2 cell decoded from the method-40 request (2026-07-05): 32.453864, 35.058088.
         b.WriteInt(60);
         b.WriteInt(1);                       // Locations count = 1
+        
+        // Thorstein location
         b.WriteString(TutPlaceId);           // Location.PlaceId
         b.WriteFloat(TutLat);                // Location.Latitude
         b.WriteFloat(TutLng);                // Location.Longitude
         b.WriteInt(0);                       // Location.Biomes count = 0
+        
         b.WriteInt(1);                       // QuestNodeInstances count = 1
+        
+        // --- 1) Thorstein (Always visible)
         b.WriteLong(1);                      // InstanceId
         b.WriteInt(1);                       // QuestNodeId (spawn is independent of this; click needs StoryGraph)
         b.WriteString(TutPlaceId);           // QNI.PlaceId (must match the Location above)
         b.WriteString("assets/_bundledassets/story/poi_settings/_common/thorstein_lq.asset"); // SettingsPath
         b.WriteString("s00/prolog/prolog_01_thorstein"); // BehaviourGraphName; AssetsPaths.GetBehaviourGraphPath adds prefix/suffix
         b.WriteInt(2);                       // DisplayMode = CloseFollow (keeps the quest giver interactable)
+        
         b.WriteInt(0);                       // ExpiringQuestNodeInstances count = 0
 
         // Method 20 — GetDailyContracts
@@ -646,19 +702,72 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     /// candidate orders serialize to the identical byte stream [byte 1][int 0 ×14], so this all-empty
     /// reply is valid under either layout. Real loot/exp grants need the read order byte-verified first
     /// (combat completion is a follow-up milestone).
-    private static byte[] BuildEndBehaviourGraphResponse()
+    /// Request = EndBGRequest (dump.cs 601870, TypeDefIndex 11752), ctor (long questNodeInstanceId,
+    /// string outputName, Dictionary<int,int> facts). The captured 73-byte tutorial payload decodes
+    /// byte-exactly as [long QuestNodeInstanceId=1][string "thorstein"][int 6][(key,value)×6] — the
+    /// dict count here IS the pair count. The graph delivers its resulting facts through this call, so
+    /// they are merged into the fact store before replying — the next GetFacts/GetAllFacts echoes them
+    /// and the quest chain can advance.
+    private byte[] BuildEndBehaviourGraphResponse(ApiProtocol.ApiRequest req)
     {
+        try
+        {
+            var r = new ByteBuffer(req.Data);
+            long instanceId = r.ReadLong();
+            string outputName = r.ReadString();
+            int count = r.ReadInt();
+            var facts = new Dictionary<int, int>();
+            for (int i = 0; i < count; i++)
+            {
+                int key = r.ReadInt();
+                facts[key] = r.ReadInt();
+            }
+            log.LogInformation("  EndBehaviourGraph: instanceId={Id} output='{Output}' facts={N}", instanceId, outputName, facts.Count);
+            StoreFacts(facts);
+        }
+        catch (Exception ex)
+        {
+            log.LogWarning("  EndBehaviourGraph request parse failed ({Msg}) — facts NOT stored; replying stub anyway", ex.Message);
+        }
+
         var b = new ByteBuffer();
         b.WriteByte(1);                              // Success
         for (int i = 0; i < 14; i++) b.WriteInt(0);  // 7 dicts + 2 int-lists + Exp + Gold + 2 DTO-lists + 1 dict, all empty/zero
         return b.ToArray();
     }
 
-    /// GetFactsResponse (Method 58): [int count][...items]. Empty = [int 0].
-    private static byte[] BuildGetFactsResponse()
+    /// SetFactsRequest (Method 78, dump.cs 602571, TypeDefIndex 11795): single field Dictionary<int,int>
+    /// Facts. All captured payloads are 12 bytes = [int 2][int key][int value] carrying ONE pair, so the
+    /// leading int must be the number of INTS (2 × pairs), not the pair count — the same convention the
+    /// GetAchievements batch reader uses (see BuildInitialPlayerData). Serialize's body isn't in the
+    /// dump, so to stay correct under either count convention the loop consumes (key,value) pairs until
+    /// the payload runs out instead of trusting the count. Response: SetFactsResponse : BooleanResponse
+    /// (dump.cs 600187) = 1 byte, same as the old catch-all — except the facts now actually persist.
+    private byte[] HandleSetFacts(ApiProtocol.ApiRequest req)
+    {
+        var facts = new Dictionary<int, int>();
+        if (req.Data.Length >= 4)
+        {
+            var r = new ByteBuffer(req.Data);
+            r.ReadInt();  // count (of ints, per captures) — pairs are consumed by remaining size instead
+            while (r.RemainingToRead >= 8)
+            {
+                int key = r.ReadInt();
+                facts[key] = r.ReadInt();
+            }
+        }
+        StoreFacts(facts);
+        return ApiProtocol.Boolean(true);
+    }
+
+    /// GetFactsResponse (Method 58, dump.cs 598697) and GetAllFactsResponse (Method 59, dump.cs 598307)
+    /// have the identical wire shape (single Dictionary<int,int> Facts field) — see WriteFactsDict.
+    /// Serves the full persisted store; GetFactsRequest's RequestedFacts filter (dump.cs 602150) is
+    /// ignored — a superset is safe, the handler merges it into the client-side fact database.
+    private byte[] BuildGetFactsResponse()
     {
         var b = new ByteBuffer();
-        b.WriteInt(0);  // Facts dictionary count
+        WriteFactsDict(b);
         return b.ToArray();
     }
     /// Catch-all for any unimplemented Method — replies with BooleanResponse(true) so the client's

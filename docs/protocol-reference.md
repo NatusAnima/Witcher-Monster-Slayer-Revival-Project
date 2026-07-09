@@ -54,8 +54,10 @@ Gameplay messages (`MethodMessage<T>`) are wrapped inside the Api channel.
 | 5 | `GetInventory` | 9 empty `Dictionary<int,int>` then `[int BagSize]` |
 | 9 | `GetEquipment` | `[int SwordsCount][int*swords][int ArmorsCount][int*armors][int EquippedArmor][int EquippedSword]` |
 | 40 | `GetLocationsByCell` | Client sends S2 cell IDs. Used to spawn the tutorial NPC. |
-| 57 | `EndBehaviourGraph`| Heavily nested response. An all-zero (57 bytes) stub works to bypass NREs. |
+| 57 | `EndBehaviourGraph`| Request = `[long QuestNodeInstanceId][string OutputName][int FactCount][(int Key, int Value)×FactCount]` (decoded byte-exact from a captured 73-byte tutorial payload against `EndBGRequest`, dump.cs 601870). Response: heavily nested; an all-zero (57 bytes) stub works to bypass NREs — real loot/exp needs the response's read order byte-verified (follow-up milestone). Request facts are persisted server-side (see 58/59/78). |
+| 58 / 59 | `GetFacts` / `GetAllFacts` | Response (both, identical shape): `[int count][(int key, int value)×count]`, **no** leading Success byte (dump.cs 598697 / 598307). Serves a persisted server-side fact store. |
 | 60 | `GetActiveQuestNodeInstances` | Drives the tutorial NPC spawning. |
+| 78 | `SetFacts` | Request = `SetFactsRequest` (dump.cs 602571): single `Dictionary<int,int> Facts` field. Captured payloads are 12 bytes = `[int 2][int key][int value]` (one pair); the leading int's exact meaning (count-of-ints vs. other) isn't disassembled from `Serialize()`, so the server parses pairs until the payload is exhausted rather than trusting it. Response: `SetFactsResponse : BooleanResponse` (dump.cs 600187), 1 byte. |
 | 88 | `LoadCells` | Subscribe to S2 geo-cells. Returns `[byte 1]` (BooleanResponse(true)). |
 | 115| `GetInitialPlayerData`| Batch response hydrating the player. `[int count][for each: int methodId, inline sub-response fields]` |
 | 141| `Ping` | Heartbeat. |
