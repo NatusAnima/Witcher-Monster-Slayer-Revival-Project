@@ -1126,8 +1126,76 @@ function installIl2cpp() {
                 }
             } 
         }); 
-        log('StoryModule.GetAvailableQuestNodeIds trace installed'); 
+        log('StoryModule.GetAvailableQuestNodeIds trace installed');
     } catch(e) { log('Failed to trace GetAvailableQuestNodeIds: ' + e); }
+
+    // ── INVESTIGATION/WITCHERSENSES TRACE (2026-07-10) ──────────────────────────
+    // Tracing prolog_01_dead_horse: LoadEnviroNode -> (camera permission check) -> InvestigationNode
+    // -> Investigation EnviroMechanic -> InvestigationDirector (AR or GameWorld) point-tap loop.
+    // Goal: see exactly which of these fires/stalls once StartQuestGraph reaches the dead_horse graph.
+    const INV = {
+        LoadEnviro_EnterNode:        0x1855EDC,
+        LoadEnviro_ReadyToLoadEnviro:0x18563A4,   // <EnterNode>g__ReadyToLoadEnviro|15_0(CharacterSettings)
+        LoadEnviro_OnPermChecked:    0x18568F0,   // <EnterNode>g__OnPermissionChecked|15_1(bool)
+        WebcamPerm_GetState:         0x17DBDF0,   // WebcamPermissionHandler.GetPermissionState
+        WebcamPerm_RequestSystem:    0x17DBEA8,   // WebcamPermissionHandler.RequestPermissionViaSystem
+        WebcamPerm_RequestManual:    0x17DBF6C,   // WebcamPermissionHandler.RequestPermissionManually
+        InvestigationNode_EnterNode: 0x1855A5C,
+        InvestigationNode_MechEnded: 0x1855AFC,   // private EnviroMechanicEnded()
+        Investigation_Prepare:       0x175C6D8,
+        Investigation_Start:         0x175CC3C,
+        Investigation_Load:          0x175D268,
+        Investigation_Finish:        0x175D7C8,
+        InvDirector_StartInvestigation: 0x175F94C,
+        InvDirector_ShowPoints:       0x175F80C,   // ShowInvestigationPoints(InvestigationMode)
+        InvDirector_Raycast:         0x175FE70,   // RaycastToFindInvestPoint(Vector3)
+        InvDirector_TogglePoint:     0x175FC78,   // TogglePointActive(InvestPointNode, bool)
+        InvDirector_PointEnded:      0x175FFE0,   // PointInvestigationEnded()
+        InvDirector_EndInvestigation:0x1760020,
+    };
+    function hookVoid(name, rva) {
+        try {
+            Interceptor.attach(at(rva), {
+                onEnter: function() { log(">>> " + name + " ENTER"); },
+                onLeave: function() { log("<<< " + name + " LEAVE"); }
+            });
+        } catch (e) { log("Failed to hook " + name + ": " + e); }
+    }
+    hookVoid("LoadEnviroNode.EnterNode", INV.LoadEnviro_EnterNode);
+    hookVoid("LoadEnviroNode.<EnterNode>g__ReadyToLoadEnviro", INV.LoadEnviro_ReadyToLoadEnviro);
+    try {
+        Interceptor.attach(at(INV.LoadEnviro_OnPermChecked), { onEnter: function(a) {
+            log(">>> LoadEnviroNode.<EnterNode>g__OnPermissionChecked hasPermission=" + a[1].toInt32());
+        }});
+    } catch (e) { log("Failed to hook OnPermissionChecked: " + e); }
+    try {
+        Interceptor.attach(at(INV.WebcamPerm_GetState), { onLeave: function(r) {
+            log("<<< WebcamPermissionHandler.GetPermissionState -> " + r.toInt32());
+        }});
+    } catch (e) { log("Failed to hook GetPermissionState: " + e); }
+    hookVoid("WebcamPermissionHandler.RequestPermissionViaSystem", INV.WebcamPerm_RequestSystem);
+    hookVoid("WebcamPermissionHandler.RequestPermissionManually", INV.WebcamPerm_RequestManual);
+    hookVoid("InvestigationNode.EnterNode", INV.InvestigationNode_EnterNode);
+    hookVoid("InvestigationNode.EnviroMechanicEnded", INV.InvestigationNode_MechEnded);
+    hookVoid("Investigation.Prepare", INV.Investigation_Prepare);
+    hookVoid("Investigation.Start", INV.Investigation_Start);
+    hookVoid("Investigation.Load", INV.Investigation_Load);
+    hookVoid("Investigation.Finish", INV.Investigation_Finish);
+    hookVoid("InvestigationDirector.StartInvestigation", INV.InvDirector_StartInvestigation);
+    try {
+        Interceptor.attach(at(INV.InvDirector_ShowPoints), { onEnter: function(a) {
+            log(">>> InvestigationDirector.ShowInvestigationPoints mode=" + a[1].toInt32());
+        }});
+    } catch (e) { log("Failed to hook ShowInvestigationPoints: " + e); }
+    hookVoid("InvestigationDirector.RaycastToFindInvestPoint", INV.InvDirector_Raycast);
+    try {
+        Interceptor.attach(at(INV.InvDirector_TogglePoint), { onEnter: function(a) {
+            log(">>> InvestigationDirector.TogglePointActive active=" + a[2].toInt32());
+        }});
+    } catch (e) { log("Failed to hook TogglePointActive: " + e); }
+    hookVoid("InvestigationDirector.PointInvestigationEnded", INV.InvDirector_PointEnded);
+    hookVoid("InvestigationDirector.EndInvestigation", INV.InvDirector_EndInvestigation);
+    log("Investigation/WitcherSenses trace installed (" + Object.keys(INV).length + " hooks)");
 
     log("Boot + preloader hooks installed.");
 }
@@ -1167,7 +1235,20 @@ function hookConnect() {
                 }
             } else if (family === 10) { // AF_INET6
                 const port = (sa.add(2).readU8() << 8) | sa.add(3).readU8();
-                if (port === 8080) {
+                if (port === 80 && REDIRECT) {
+                    // The game-server DNS lookup can resolve to an IPv6 address on dual-stack networks, and
+                    // this path was never redirected — it kept retrying the real (unreachable) prod server
+                    // over IPv6 every ~7s ("Cannot access a disposed object" + "Server connection timed out"
+                    // at 52%). Mapping it to ::ffff:127.0.0.1 (like the 8080 case below) still hung: adbd's
+                    // reverse listener binds plain IPv4 127.0.0.1, which does NOT accept v4-mapped-v6 connects
+                    // at the kernel level (separate socket families). Instead force-fail fast (::1 port 1,
+                    // same trick as the 443 case) so the client falls through to its IPv4 retry immediately
+                    // instead of waiting on a slow real-network timeout.
+                    sa.add(2).writeU8(0); sa.add(3).writeU8(1); // port 1
+                    for (let i = 0; i < 15; i++) sa.add(8 + i).writeU8(0);
+                    sa.add(8 + 15).writeU8(1); // ::1
+                    log("connect() -> IPv6 port 80 FORCED TO FAIL (fall through to IPv4 redirect)");
+                } else if (port === 8080) {
                     for (let i = 0; i < 10; i++) sa.add(8 + i).writeU8(0);
                     sa.add(18).writeU8(0xff); sa.add(19).writeU8(0xff);
                     sa.add(20).writeU8(127); sa.add(21).writeU8(0); sa.add(22).writeU8(0); sa.add(23).writeU8(1);
