@@ -168,6 +168,98 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     private const float TutLat = 32.453864f;
     private const float TutLng = 35.058088f;
 
+    // ── S00 prolog quest chain ──────────────────────────────────────────────────
+    // The real server advanced quests by node OUTPUT (static-data QuestNodeOutput/QuestNodeEdge, never shipped
+    // to us), so the order is reconstructed from the graph assets: each graph's end-of-graph SetFact on 10145
+    // (quest 145's journal step) climbs 1,1,2,3,4,5,6 along this list (7/8 are mid-graph values), and it matches
+    // the story (follow the horse's tracks, find it dead, follow the griffin's tracks). InstanceIds are each
+    // graph asset's baked QuestNodeInstanceId; footprints/tracks bake 0 (server-assigned), so ours are stable
+    // made-up constants. QuestNodeIds are arbitrary (the client spawns/clicks by graph name).
+    private sealed record QuestStep(long InstanceId, int QuestNodeId, string GraphName, string SettingsPath);
+    private const string PoiSettings = "assets/_bundledassets/story/poi_settings/";
+    private const string Footprint = PoiSettings + "s00/prolog/footprint_placeholder.asset";
+    private static readonly QuestStep[] PrologChain =
+    {
+        new(5124757777905877225, 1, "s00/prolog/prolog_01_thorstein", PoiSettings + "_common/thorstein_lq.asset"),
+        new(5124759000000000003, 3, "s00/prolog/prolog_01_footprints_01", Footprint),
+        new(5124759000000000004, 4, "s00/prolog/prolog_01_tracks_01", Footprint),
+        new(5124759000000000005, 5, "s00/prolog/prolog_01_tracks_02", Footprint),
+        new(5124756197357912298, 2, "s00/prolog/prolog_01_dead_horse", PoiSettings + "s00/prolog/dead_horse_head.asset"),
+        new(5124759000000000006, 6, "s00/prolog/prolog_01_tracks_03", Footprint),
+        new(5124757777905877227, 7, "s00/prolog/prolog_01_griffin", PoiSettings + "s00/prolog/gryphon_lq.asset"),
+    };
+
+    // Finished quest-node instances (instanceId -> EndBehaviourGraph output), persisted like the facts.
+    private const string QuestsPath = "data/quests.json";
+    private readonly Dictionary<long, string> _finished = LoadFinished();
+
+    private static Dictionary<long, string> LoadFinished()
+    {
+        try
+        {
+            if (File.Exists(QuestsPath))
+                return JsonSerializer.Deserialize<Dictionary<long, string>>(File.ReadAllText(QuestsPath)) ?? new();
+        }
+        catch { /* unreadable/corrupt file — start the chain over */ }
+        return new();
+    }
+
+    /// The step after the furthest finished one (not the first unfinished: skipped steps stay skipped), or
+    /// null once the known chain is done.
+    private QuestStep? CurrentPrologStep()
+    {
+        lock (_factsLock)
+        {
+            int last = -1;
+            for (int i = 0; i < PrologChain.Length; i++)
+                if (_finished.ContainsKey(PrologChain[i].InstanceId)) last = i;
+            return last + 1 < PrologChain.Length ? PrologChain[last + 1] : null;
+        }
+    }
+
+    private void StoreFinished(long instanceId, string output)
+    {
+        lock (_factsLock)
+        {
+            _finished[instanceId] = output;
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(QuestsPath))!);
+            File.WriteAllText(QuestsPath, JsonSerializer.Serialize(_finished));
+        }
+    }
+
+    /// [int locationCount][Location…][int questNodeCount][QuestNodeInstance…] — the block shared by
+    /// GetActiveQuestNodeInstances (60) and EndBehaviourGraphResponse (57); both readers use the same
+    /// Location (0x31D0B28) and QuestNodeInstance (0x31D1334) deserializers. The client REPLACES its active
+    /// quest POIs with this list, so it must hold every node that should stay on the map.
+    ///   Location:          [string PlaceId][float Lat][float Lng][int biomeCount][int×biomes]
+    ///   QuestNodeInstance: [long InstanceId][int QuestNodeId][string PlaceId][string SettingsPath]
+    ///                      [string BehaviourGraphName][int DisplayMode]
+    private static void WriteActiveQuestNodes(ByteBuffer b, QuestStep? step)
+    {
+        int n = step is null ? 0 : 1;
+        b.WriteInt(n);
+        if (step is not null)
+        {
+            // Every step spawns at the fixed dev location. CloseFollow steps (Thorstein, dead horse) still
+            // appear next to the player; footprint/track targets don't follow, so they must be walked to
+            // (or the GPS faked) — anyone testing elsewhere needs to change TutLat/TutLng.
+            b.WriteString(TutPlaceId);
+            b.WriteFloat(TutLat);
+            b.WriteFloat(TutLng);
+            b.WriteInt(0);              // biomes
+        }
+        b.WriteInt(n);
+        if (step is not null)
+        {
+            b.WriteLong(step.InstanceId);
+            b.WriteInt(step.QuestNodeId);
+            b.WriteString(TutPlaceId);
+            b.WriteString(step.SettingsPath);
+            b.WriteString(step.GraphName);
+            b.WriteInt(2);              // DisplayMode = CloseFollow (keeps the POI interactable next to the player)
+        }
+    }
+
     // ── Server-side fact store ──────────────────────────────────────────────────
     // The BehaviourGraph tutorial advances ONLY through server facts: the client writes them via
     // SetFacts(78) and EndBehaviourGraph(57) and reads them back via GetFacts(58)/GetAllFacts(59).
@@ -415,61 +507,14 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             b.WriteInt(i);
         }
 
-        // Method 60 — GetActiveQuestNodeInstances — spawns the current S00 prolog quest-node POI.
-        // Handler order (StoryModule 0x17A3614): UpdateLocations(Locations) registers PlaceId->coords, THEN
-        // SetActiveQuestNodes(QuestNodeInstances) looks up PlaceId and positions the POI via CoordsToWorldSpace.
-        //   Location wire (0x31D0B28):  [int placeIdLen][placeId][float lat][float lng][int biomeCount][int*biomes]
-        //   QuestNodeInstance (0x31D1334): [long InstanceId][int QuestNodeId][string PlaceId]
-        //                                  [string SettingsPath][string BehaviourGraphName][int DisplayMode]
-        //   (all strings = WriteString = [int len][UTF8]; DisplayMode Normal=1)
-        // Coords = player's center S2 cell decoded from the method-40 request (2026-07-05): 32.453864, 35.058088.
-        //
-        // Chain progression (2026-07-10, EXPERIMENTAL): this is only served once, inside the boot batch, so
-        // it reflects fact state at boot time. Once fact 10145 == 1 (set by prolog_01_thorstein's
-        // EndBehaviourGraph — confirmed live), Thorstein's step is done, so the client filters that POI out
-        // (PoiModule.SetActiveQuestNodes nodes=0, live-traced) and nothing further loads. The true next-node
-        // identity (QuestNodeId/PlaceId/graph name) is Unity AssetBundle data, not present in the IL2CPP dump.
-        // prolog_01_dead_horse is an educated guess from the bundled asset list (scratch/bgraphs.txt) matching
-        // the game's known Witcher-Senses tracking tutorial (dead horse -> footprints -> tracks -> griffin) —
-        // UNVERIFIED, first live test pending. SettingsPath from scratch/poi_settings.txt.
-        bool thorsteinDone = _facts.TryGetValue(10145, out var factTracking) && factTracking == 1;
+        // Method 60 — GetActiveQuestNodeInstances — spawns the current S00 prolog quest-node POI (boot only;
+        // mid-session the chain advances through the EndBehaviourGraph reply). Handler order (StoryModule
+        // 0x17A3614): UpdateLocations(Locations) registers PlaceId->coords, THEN SetActiveQuestNodes positions
+        // the POI. Coords = player's center S2 cell decoded from the method-40 request (2026-07-05).
+        var step = CurrentPrologStep();
+        log.LogInformation("  Method 60: active prolog step = {Graph}", step?.GraphName ?? "(chain finished)");
         b.WriteInt(60);
-        b.WriteInt(1);                       // Locations count = 1
-        b.WriteString(TutPlaceId);           // Location.PlaceId (reused for now; real next-node coords unknown)
-        b.WriteFloat(TutLat);                // Location.Latitude
-        b.WriteFloat(TutLng);                // Location.Longitude
-        b.WriteInt(0);                       // Location.Biomes count = 0
-
-        // InstanceId values below are each graph asset's own baked-in `QuestNodeInstanceId` field,
-        // extracted 2026-07-10 via UnityPy from s00_story_graphs_assets_all.bundle (in the OBB). The
-        // first dead_horse attempt used a fabricated InstanceId=2, which triggered two "key was not
-        // present in the dictionary" exceptions right after StartQuestGraph (live-traced) — dead_horse's
-        // graph is 102 nodes including DataConsumer/DataProvider node types that very likely look up
-        // cross-graph state keyed by this ID. QuestNodeId itself is baked in as 0 in every graph asset
-        // (server-assigned, not meaningful to the client — matches the existing "spawn is independent of
-        // QuestNodeId" note below), so those stay arbitrary.
-        b.WriteInt(1);                       // QuestNodeInstances count = 1
-        if (!thorsteinDone)
-        {
-            // --- 1) Thorstein (Always visible)
-            b.WriteLong(5124757777905877225);    // InstanceId = real QuestNodeInstanceId (prolog_01_thorstein)
-            b.WriteInt(1);                       // QuestNodeId (spawn is independent of this; click needs StoryGraph)
-            b.WriteString(TutPlaceId);           // QNI.PlaceId (must match the Location above)
-            b.WriteString("assets/_bundledassets/story/poi_settings/_common/thorstein_lq.asset"); // SettingsPath
-            b.WriteString("s00/prolog/prolog_01_thorstein"); // BehaviourGraphName
-            b.WriteInt(2);                       // DisplayMode = CloseFollow (keeps the quest giver interactable)
-        }
-        else
-        {
-            // --- 2) Dead horse (EXPERIMENTAL next step — see comment above)
-            b.WriteLong(5124756197357912298);    // InstanceId = real QuestNodeInstanceId (prolog_01_dead_horse)
-            b.WriteInt(2);                       // QuestNodeId
-            b.WriteString(TutPlaceId);           // QNI.PlaceId
-            b.WriteString("assets/_bundledassets/story/poi_settings/s00/prolog/dead_horse_head.asset"); // SettingsPath
-            b.WriteString("s00/prolog/prolog_01_dead_horse"); // BehaviourGraphName
-            b.WriteInt(2);                       // DisplayMode = CloseFollow
-        }
-
+        WriteActiveQuestNodes(b, step);
         b.WriteInt(0);                       // ExpiringQuestNodeInstances count = 0
 
         // Method 20 — GetDailyContracts
@@ -720,16 +765,18 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         return b.ToArray();
     }
 
-    /// EndBehaviourGraphResponse (Method 57, dump.cs 597848, TypeDefIndex 11557) — minimal valid reply.
-    /// Members: bool Success, 7×Dict<int,int> (Potions, Bombs, Oils, Lures, SensesPotions,
-    /// BestiaryEntries, Ingredients), List<int> Armors, List<int> Swords, int Exp, int Gold,
-    /// List<Location> Locations, List<QuestNodeInstance> QuestNodeInstances,
-    /// Dict<long,int> ExpiringQuestNodeInstances.
-    /// CAVEAT: the dump's field order and its 15-arg ctor order DISAGREE, and Factory.Deserialize
-    /// (0x31DE4BC) hasn't been disassembled — but with every dict/list empty and Exp=Gold=0, BOTH
-    /// candidate orders serialize to the identical byte stream [byte 1][int 0 ×14], so this all-empty
-    /// reply is valid under either layout. Real loot/exp grants need the read order byte-verified first
-    /// (combat completion is a follow-up milestone).
+    /// EndBehaviourGraphResponse (Method 57, dump.cs 597848, TypeDefIndex 11557). Read order verified by
+    /// decompiling Factory.Deserialize (0x31DE4BC, 2026-10-03) — it is neither the field nor the ctor order:
+    ///   [byte Success] (anything but 1 = failure, nothing else read)
+    ///   [int n][Location×n] [int n][QuestNodeInstance×n]   (see WriteActiveQuestNodes)
+    ///   [int Exp][int Gold]
+    ///   7 × Dict<int,int> [int pairCount][(int,int)×n]: Potions, Bombs, Oils, Lures, SensesPotions,
+    ///                                                   BestiaryEntries, Ingredients
+    ///   2 × List<int> [int n][int×n]: Armors, Swords
+    ///   Dict<long,int> ExpiringQuestNodeInstances [int n][(long,int)×n]
+    /// The client replaces its active quest POIs with the QuestNodeInstances list, so this reply carries the
+    /// next prolog step. Rewards stay zero: granting e.g. Thorstein's oil needs oil static data first, and
+    /// whether Exp/Gold are deltas or new totals is unverified.
     /// Request = EndBGRequest (dump.cs 601870, TypeDefIndex 11752), ctor (long questNodeInstanceId,
     /// string outputName, Dictionary<int,int> facts). The captured 73-byte tutorial payload decodes
     /// byte-exactly as [long QuestNodeInstanceId=1][string "thorstein"][int 6][(key,value)×6] — the
@@ -752,15 +799,20 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             }
             log.LogInformation("  EndBehaviourGraph: instanceId={Id} output='{Output}' facts={N}", instanceId, outputName, facts.Count);
             StoreFacts(facts);
+            // "fail" (e.g. losing the griffin fight) keeps the step active so it can be retried.
+            if (outputName != "fail") StoreFinished(instanceId, outputName);
         }
         catch (Exception ex)
         {
-            log.LogWarning("  EndBehaviourGraph request parse failed ({Msg}) — facts NOT stored; replying stub anyway", ex.Message);
+            log.LogWarning("  EndBehaviourGraph request parse failed ({Msg}) — facts NOT stored; replying anyway", ex.Message);
         }
 
+        var next = CurrentPrologStep();
+        log.LogInformation("  EndBehaviourGraph reply: next prolog step = {Graph}", next?.GraphName ?? "(chain finished)");
         var b = new ByteBuffer();
         b.WriteByte(1);                              // Success
-        for (int i = 0; i < 14; i++) b.WriteInt(0);  // 7 dicts + 2 int-lists + Exp + Gold + 2 DTO-lists + 1 dict, all empty/zero
+        WriteActiveQuestNodes(b, next);
+        for (int i = 0; i < 12; i++) b.WriteInt(0);  // Exp, Gold, 7 dicts, 2 lists, expiring dict — all zero/empty
         return b.ToArray();
     }
 
