@@ -1038,6 +1038,10 @@ function installIl2cpp() {
     }
 
     // ── GENERIC INSTANTIATE NULL BYPASS (REPLACE ROUTINES) ──
+    // Pool<object>.Create's Instantiate call. PoiModule's DespawnFX pools (null prefabs) also grow AFTER init:
+    // CloseFollowQuestPoi.OnUpdate pulls a DespawnFX whenever the player moves away and calls Show()/Hide() on
+    // it, so handing back a bare GameObject there (type confusion) froze the game on every GPS jump.
+    const POOL_CREATE_INSTANTIATE_RET = at(0x1994324);
     try {
         const inst_1_orig = new NativeFunction(at(0x19efbb0), 'pointer', ['pointer', 'pointer']);
         Interceptor.replace(at(0x19efbb0), new NativeCallback(function(original, method) {
@@ -1046,7 +1050,7 @@ function installIl2cpp() {
                 log("Backtrace:\n" + Thread.backtrace(this.context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join("\n"));
                 const go = getFakeGameObject();
                 const comp = getFakeDespawnFX();
-                if (isInPoiInit) {
+                if (isInPoiInit || this.returnAddress.equals(POOL_CREATE_INSTANTIATE_RET)) {
                     log(">>> Bypassing NULL Instantiate with fake DespawnFX component!");
                     return (!comp || comp.isNull()) ? go : comp;
                 } else {
