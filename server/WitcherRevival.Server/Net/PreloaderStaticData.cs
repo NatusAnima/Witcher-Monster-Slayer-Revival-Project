@@ -187,6 +187,14 @@ public static class PreloaderStaticData
         {
             """{"id":401,"slug":"bomb_basic","priority":0,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_basic/prefab_bomb_basic.prefab"}""",
         },
+        // Zooming the map out opens the Witcher Senses view; WitcherSensesGUI.Show takes GetFirst() of
+        // IIntStorage<SensesPotion>, which threw "Sequence contains no elements" on an empty array and left
+        // the view stuck (couldn't zoom back in). Keys: PrioritizedItem + effect_id (read from libil2cpp.so).
+        // senses_potion_falcon is the only senses potion in the client's assets; id and effect_id are guesses.
+        ["senses_potions"] = new[]
+        {
+            """{"id":1,"slug":"senses_potion_falcon","priority":0,"effect_id":0}""",
+        },
         ["customization_heads"] = new[]
         {
             """{"id":1,"slug":"head_caucasian_1","prefab_path":"Assets/_bundledassets/appearance/head/head_caucasian_1/prefab_head_caucasian_1.prefab"}""",
