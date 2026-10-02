@@ -28,9 +28,9 @@ We are working to map out the API requests the client sends when navigating the 
 
 ## Immediate Next Steps (Blockers)
 1. **dead_horse COMPLETED live (2026-10-03, played by the user).** Timeline from `scratch/frida.log`, in the graph's designed order: quest graph (102 nodes) → investigation scene (43 nodes, clue taps → `SetFacts`) → fade-out → fight graph (41 nodes, `PrepareFightNode`/`FightNode`, about 15 s) → fight-end effects → Thorstein dialog runner + dialog (`prolog_02.asset`, where he hands over an oil) → fade-out/in → `EndBehaviourGraph instanceId=5124756197357912298 output='2ghouls_left'`. The graph has 3 endings (`dead_horse` / `1ghoul_left` / `2ghouls_left`, tracked in fact 94 = ghouls left). All 3 set fact 10145=4 and `QUEST/prolog_01_dead_horse` progression 3. Facts after: `{"2":1,"123":0,"113":1,"10145":4,"77":2,"95":0,"107":1,"108":1,"94":2,"71":0,"103":3,"203":0,"96":1}`. **It stops there** because our method-57 reply is an all-zero stub: no next `QuestNodeInstance`, no oil (the client re-fetched inventory via method 5 right after). The client then ran `SetActiveQuestNodes nodes=0` and showed an empty map.
-2. **Serve the next node + rewards in the `EndBehaviourGraph (57)` response.** That's how the chain advances mid-session; method 60 is only served in the boot batch. Prove the response read order first with `python tools/ghidra_decomp.py 0x31DE4BC` (`EndBehaviourGraphResponse.Factory.Deserialize`, previously "read order unproven"), then fill `List<QuestNodeInstance>` and the Oils dict. Find the next node by reading `prolog_01_tracking` / `prolog_01_footprints_01` with `bundle_explorer.py graph` (their start `Fact Requirement`s probably gate on 10145 == 4; footprints/tracks have `QuestNodeInstanceId=0` baked in, so the ID may need to be server-assigned).
-3. **Trap on next launch:** method 60 serves dead_horse only while `fact 10145 == 1` (`GameSocketService.cs` ~L435). It is now 4, so the next boot re-serves **Thorstein**. Replaying him may reset 10145 to 1. Fix the gating (0 → thorstein, 1/7 → dead_horse, 4 → next node) before relaunching, or restore `facts.json`.
-4. **Extend the quest-chain fact-gating pattern** to the rest of the S00 prolog chain (footprints_01 → tracks_01/02/03 → griffin) once dead_horse's Investigation flow is unblocked — same `GetActiveQuestNodeInstances (60)` pattern, real `QuestNodeInstanceId` per node (see table above / `docs/api-and-content-reference.md` §10).
+2. **DONE 2026-10-03, quest chain rewritten (`GameSocketService.cs`).** fact 10145 is quest 145's journal step and moves non-monotonically, so it can't gate steps. The server now persists each finished step (`EndBehaviourGraph` instanceId → output, in `data/quests.json`; the output `fail` doesn't count) and serves **the step after the furthest finished one** from `PrologChain`: `thorstein → footprints_01 → tracks_01 → tracks_02 → dead_horse → tracks_03 → griffin`. The order is reconstructed from each graph's end-of-graph value of 10145 (1,1,2,3,4,5,6). It's served at boot (method 60) and **mid-session in the method-57 reply**: read order verified via `EndBehaviourGraphResponse.Factory.Deserialize` (0x31DE4BC), and the client *replaces* its active POIs with that list. Live-verified: the boot serves `tracks_03` (the July run skipped footprints/tracks_01/02, so your progress file was seeded by hand). Footprint/track steps use `footprint_placeholder` (no prefab, `PointByTargetTrackingArrow`). They don't close-follow, so walk to `TutLat/TutLng` (or fake GPS) and tap. **Next:** finish tracks_03 and confirm griffin appears without relaunching; then griffin (fight, `LookAtInput` is fed by `StartQuestGraph`), then prolog_02 (order unknown).
+3. **Fixed 2026-10-03: zooming the map out stuck.** That opens Witcher Senses, whose `WitcherSensesGUI.Show` calls `GetFirst()` on `IIntStorage<SensesPotion>`, and `senses_potions` was empty. Now serves `senses_potion_falcon` (user-verified). Pattern: **any empty static-data table can crash a feature lazily.** See `docs/server-feature-inventory.md` (all 118 methods and 82 tables with status) before guessing.
+4. **Unexplained freeze (2026-10-03):** the game froze after the player moved (fake GPS); the last server traffic was a normal `GetLocationsByCell` (3 cells). The logs were overwritten before analysis. `tools/restart.py` now keeps the previous run's logs as `scratch/*.prev.log`; check them if it recurs.
 5. **Known-uncertain area to watch:** the `SetFacts (78)` leading-int convention (count-of-ints vs. something else) was inferred from captured payloads, not a disassembled `Serialize()` body — parser is convention-agnostic (consumes pairs until the payload runs out) but keep cross-checking `Facts stored:` log lines against fresh captures.
 6. **"Cannot access a disposed object" / `mono-io-layer-error (111)` reconnect-loop noise:** recurring every ~6-7s throughout every session (correlated with `ThreadedClient` socket teardown/reopen). Confirmed **cosmetic/non-blocking** on 2026-07-10 — boot reaches 200/200 and quest clicks work fine despite it firing continuously in the background. Leave deprioritized.
 7. **Before starting any live session, verify the ACTUAL `WitcherRevival.Server` process is running** — `Get-NetTCPConnection -LocalPort 4253` should show it LISTENing, and `scratch/server.log` should be growing. On 2026-07-10 two unrelated `dotnet run --project WebApi/Client` processes from a different project were mistaken for it, and 20+ minutes were lost debugging a client-side "Server connection timed out" that was actually just "nothing is listening on 4253."
@@ -61,27 +61,21 @@ camera permission is needed, ask the user to grant it via Settings → Apps → 
 adb shortcut works on this device).
 
 ## Workflow / Run Commands
-Run these commands in separate terminals to launch the backend and connect the patched game:
+`python tools/restart.py` does everything below (stops/rebuilds/starts the server with `Http__Port=8081`, sets the adb tunnels, relaunches the game, attaches Frida until Ctrl+C). Keep it running while playing: if Frida detaches, the connect() redirect goes too and the game hangs on its next reconnect. Logs go to `scratch/server.log` and `scratch/frida.log` (the previous run's are kept as `*.prev.log`). Fresh-clone setup (patched APK via `tools/patch/patch_apk.py`, `tools/requirements.txt`) is in `README.md`.
 
+Manual equivalent:
 ```bash
-# 1. Start the game server in tutorial mode (TutorialFinished=0), logging to scratch
-cd server/WitcherRevival.Server
-dotnet build -v q
+cd server/WitcherRevival.Server && dotnet build -v q
 # Steam (steamwebhelper) holds host port 8080 on this PC -> bind HTTP elsewhere; the phone still uses 8080
 ASPNETCORE_ENVIRONMENT=Production Http__Port=8081 dotnet run --no-build > ../../scratch/server.log 2>&1
-
-# 2. Establish ADB tunnels for the TCP socket and HTTP static data
-adb forward tcp:27042 tcp:27042
-adb reverse tcp:4253 tcp:4253
-adb reverse tcp:8080 tcp:8081   # phone 8080 -> host Http__Port
-
-# 3. Relaunch the client and attach Frida, logging output to scratch
+adb forward tcp:27042 tcp:27042 && adb reverse tcp:4253 tcp:4253 && adb reverse tcp:8080 tcp:8081
 adb shell am force-stop com.spokko.witchermonsterslayer
 adb shell monkey -p com.spokko.witchermonsterslayer -c android.intent.category.LAUNCHER 1
-python tools/patch/frida_run.py 120 > scratch/frida.log 2>&1
+python tools/patch/frida_run.py 999999 > scratch/frida.log 2>&1
 ```
 
 ## Recent Milestones
+- **2026-10-03 (later):** The quest chain now advances by finished steps (persisted) at boot and mid-session, and relaunching no longer re-serves Thorstein. Fixed the zoom-out lock (senses potion static data). Added `tools/restart.py`, `tools/patch/patch_apk.py` (verified to reproduce the dev phone's APK byte-for-byte: same gadget, config, libmain), `tools/requirements.txt`, a README setup section, and `docs/server-feature-inventory.md`. Scrubbed Claude co-author trailers from history (force-pushed `main` and `master`; the GitHub-signed initial commit kept its hash).
 - **2026-10-03:** Unblocked `prolog_01_dead_horse`, live-verified. The July "dictionary exception" was the static data,
   not quest wiring: dead_horse's `FightEquipmentNode` reads `BombInput=401` from `IIntStorage<Bomb>`, and the server
   sent no bombs. Found by symbolizing the July Frida backtrace and decompiling the path with the new Ghidra tooling
