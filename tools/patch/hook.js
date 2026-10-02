@@ -1046,8 +1046,10 @@ function installIl2cpp() {
         const inst_1_orig = new NativeFunction(at(0x19efbb0), 'pointer', ['pointer', 'pointer']);
         Interceptor.replace(at(0x19efbb0), new NativeCallback(function(original, method) {
             if (original.isNull()) {
-                log(">>> replaced Instantiate 0x19efbb0 called with NULL original!");
-                log("Backtrace:\n" + Thread.backtrace(this.context, Backtracer.ACCURATE).map(DebugSymbol.fromAddress).join("\n"));
+                // Caller offset only: a full ACCURATE backtrace + symbolication here intermittently hung
+                // PoiModule init at 90% ("Loading Points of Interest").
+                log(">>> replaced Instantiate 0x19efbb0 called with NULL original! from libil2cpp+0x" +
+                    this.returnAddress.sub(m.base).toString(16));
                 const go = getFakeGameObject();
                 const comp = getFakeDespawnFX();
                 if (isInPoiInit || this.returnAddress.equals(POOL_CREATE_INSTANTIATE_RET)) {
