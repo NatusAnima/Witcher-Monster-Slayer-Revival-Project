@@ -179,6 +179,14 @@ public static class PreloaderStaticData
             """{"id":5,"slug":"armor_manticore","priority":4,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_manticore/prefab_armor_manticore.prefab"}""",
             """{"id":6,"slug":"armor_kaer_morhen","priority":5,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_kaer_morhen/prefab_armor_kaer_morhen.prefab"}""",
         },
+        // prolog_01_dead_horse's FightEquipmentNode has BombInput=401 (StorageDataSource<IIntStorage<Bomb>>);
+        // an empty bombs array makes that lookup throw KeyNotFoundException in BaseGraph.InitializeNodes.
+        // Keys: PrioritizedItem (id, slug, priority) + Bomb DataMember names read from libil2cpp.so.
+        // 401 -> bomb_basic and the stats are guesses (no real static data); explode_style 0 = OnImpact.
+        ["bombs"] = new[]
+        {
+            """{"id":401,"slug":"bomb_basic","priority":0,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_basic/prefab_bomb_basic.prefab"}""",
+        },
         ["customization_heads"] = new[]
         {
             """{"id":1,"slug":"head_caucasian_1","prefab_path":"Assets/_bundledassets/appearance/head/head_caucasian_1/prefab_head_caucasian_1.prefab"}""",
