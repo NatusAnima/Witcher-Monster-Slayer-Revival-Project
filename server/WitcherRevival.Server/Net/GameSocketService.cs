@@ -175,18 +175,20 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     // the story (follow the horse's tracks, find it dead, follow the griffin's tracks). InstanceIds are each
     // graph asset's baked QuestNodeInstanceId; footprints/tracks bake 0 (server-assigned), so ours are stable
     // made-up constants. QuestNodeIds are arbitrary (the client spawns/clicks by graph name).
-    private sealed record QuestStep(long InstanceId, int QuestNodeId, string GraphName, string SettingsPath);
+    // DisplayMode = PoiDisplayMode: 1 Normal, 2 CloseFollow (teleports next to the player), 4 Hunt (search circle
+    // that shrinks as you approach + a default view, for prefab-less tracking targets like footprint_placeholder).
+    private sealed record QuestStep(long InstanceId, int QuestNodeId, string GraphName, string SettingsPath, int DisplayMode);
     private const string PoiSettings = "assets/_bundledassets/story/poi_settings/";
     private const string Footprint = PoiSettings + "s00/prolog/footprint_placeholder.asset";
     private static readonly QuestStep[] PrologChain =
     {
-        new(5124757777905877225, 1, "s00/prolog/prolog_01_thorstein", PoiSettings + "_common/thorstein_lq.asset"),
-        new(5124759000000000003, 3, "s00/prolog/prolog_01_footprints_01", Footprint),
-        new(5124759000000000004, 4, "s00/prolog/prolog_01_tracks_01", Footprint),
-        new(5124759000000000005, 5, "s00/prolog/prolog_01_tracks_02", Footprint),
-        new(5124756197357912298, 2, "s00/prolog/prolog_01_dead_horse", PoiSettings + "s00/prolog/dead_horse_head.asset"),
-        new(5124759000000000006, 6, "s00/prolog/prolog_01_tracks_03", Footprint),
-        new(5124757777905877227, 7, "s00/prolog/prolog_01_griffin", PoiSettings + "s00/prolog/gryphon_lq.asset"),
+        new(5124757777905877225, 1, "s00/prolog/prolog_01_thorstein", PoiSettings + "_common/thorstein_lq.asset", 2),
+        new(5124759000000000003, 3, "s00/prolog/prolog_01_footprints_01", Footprint, 4),
+        new(5124759000000000004, 4, "s00/prolog/prolog_01_tracks_01", Footprint, 4),
+        new(5124759000000000005, 5, "s00/prolog/prolog_01_tracks_02", Footprint, 4),
+        new(5124756197357912298, 2, "s00/prolog/prolog_01_dead_horse", PoiSettings + "s00/prolog/dead_horse_head.asset", 2),
+        new(5124759000000000006, 6, "s00/prolog/prolog_01_tracks_03", Footprint, 4),
+        new(5124757777905877227, 7, "s00/prolog/prolog_01_griffin", PoiSettings + "s00/prolog/gryphon_lq.asset", 1),
     };
 
     // Finished quest-node instances (instanceId -> EndBehaviourGraph output), persisted like the facts.
@@ -241,8 +243,8 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         if (step is not null)
         {
             // Every step spawns at the fixed dev location. CloseFollow steps (Thorstein, dead horse) still
-            // appear next to the player; footprint/track targets don't follow, so they must be walked to
-            // (or the GPS faked) — anyone testing elsewhere needs to change TutLat/TutLng.
+            // appear next to the player; the others don't follow, so they must be walked to (or the GPS
+            // faked) — anyone testing elsewhere needs to change TutLat/TutLng.
             b.WriteString(TutPlaceId);
             b.WriteFloat(TutLat);
             b.WriteFloat(TutLng);
@@ -256,7 +258,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             b.WriteString(TutPlaceId);
             b.WriteString(step.SettingsPath);
             b.WriteString(step.GraphName);
-            b.WriteInt(2);              // DisplayMode = CloseFollow (keeps the POI interactable next to the player)
+            b.WriteInt(step.DisplayMode);
         }
     }
 
