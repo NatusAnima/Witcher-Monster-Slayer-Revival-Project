@@ -4,7 +4,8 @@ using System.Text.Json;
 using WitcherRevival.Server.Net;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://0.0.0.0:8080");   // gatekeeper HTTP; TLS handled by mitmproxy/phone-side for now
+int httpPort = builder.Configuration.GetValue("Http:Port", 8080); // host-side only: phone keeps 8080 via `adb reverse tcp:8080 tcp:<port>`
+builder.WebHost.UseUrls($"http://0.0.0.0:{httpPort}");   // gatekeeper HTTP; TLS handled by mitmproxy/phone-side for now
 builder.Services.AddHostedService<GameSocketService>();
 var app = builder.Build();
 
@@ -55,7 +56,7 @@ app.MapFallback(() => Results.Json(new
     WitcherId = witcherId,
 }, json));
 
-log.LogInformation("Gatekeeper HTTP on http://0.0.0.0:8080  ->  Address={Address}  (game TCP port {Port})", address, gamePort);
+log.LogInformation("Gatekeeper HTTP on http://0.0.0.0:{HttpPort}  ->  Address={Address}  (game TCP port {Port})", httpPort, address, gamePort);
 app.Run();
 
 static string DetectLanIp()
