@@ -9,6 +9,7 @@ apk_extracted/
 tools/apk_extracted/
 tools/dump/
 tools/platform-tools/
+tools/ghidra-dist/
 game.zip
 
 # Python Tools
