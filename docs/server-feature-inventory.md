@@ -232,20 +232,37 @@ JSON keys are the hidden DataMember `Name=` snake_case strings, not the C# names
 
 151 quest graphs, 97 investigation assets, 446 dialog assets, 209 cutscene assets, 66 POI settings.
 
+**Story order: `s00/tutorial` → `s00/prolog` prolog_01 → prolog_02 → `s01`.** Three independent signals in the
+graph data agree:
+
+| Signal | tutorial | prolog_01 | prolog_02 | S01 |
+|---|---|---|---|---|
+| Tracked quest id (`Set Tracked Quest`; journal step = fact `10000 + id`) | 144 | 145 | 146 | 147-161 (+104) |
+| Chapter counter **fact 102**, set at the chapter's end | 1 (`tut_gravehag` / `tut_exit`) | 2 (`griffin`) | 3 (`gargoyle`) | 4 (`s01mq01_scholar_02`) |
+| Story flag **fact 107** | — | 1 (`thorstein`), 2 (`griffin`) | 3 (`qi_map_button`), 4 (`obelisk`) | — |
+
+**Fact 3 is the client's "tutorial finished" flag.** `Tutorial.CheckTutorial` (0x1F9A10C) reads it at boot: if it
+is non-zero it unlocks the gated features (`ToggleTutorialFeatures`); otherwise it waits for fact updates. Only
+the tutorial's end sets it (`tut_gravehag` "exam_end" and `tut_exit` set facts 2=1, 3=1, 102=1). Our server
+starts players at Thorstein and seeds fact 2=1 but never sets 3, which is very likely why the bottom menu and
+info screens never appear.
+
 | Chapter | Graphs | Status |
 |---|---|---|
-| `s00/prolog` prolog_01: `thorstein → footprints_01 → tracks_01 → tracks_02 → dead_horse → tracks_03 → griffin` (+ `tracking`, a re-route helper with outputs `tracking`/`CT_horse`/`CT_gryphon`) | 8 | ✅ served in this order. thorstein and dead_horse are live-verified (dead_horse has 3 endings: `dead_horse`/`1ghoul_left`/`2ghouls_left`); later steps untested. The order comes from fact 10145 (quest 145's journal step), which each graph sets to 1,1,2,3,4,5,6 along it. |
-| `s00/prolog` prolog_02: `map`, `obelisk`, `crown`, `heart`, `sword`, `gargoyle` (POI settings `elven_obelisk`, `stone_*`, `gargoyle_king_lq` exist), plus `quest_item_buttons/qi_map_button` | 7 | 🔴 order unknown |
-| `s00/tutorial`: `tut_witcher`, `tut_ui`, `tut_dummy_1..3`, `tut_ghoul`, `tut_gravehag`, `tut_exit`, `tut_empty` | 9 | 🔴 how they're triggered is unknown |
-| `s01`: hq01 sword_in_stone, hq02 nests, hq03 blacksmith, hq04 firefly, hq05 bandit_and_devourer, hq06 trolling, mq01 scholar, mq02 cure, mq03 striga, mq04 cursed_one, mq05 mushroom_hunt, mq06 frightener, plus `quest_item_buttons` and a `s01_chickentest` test graph | 127 | 🔴 |
+| `s00/tutorial` (quest 144, "the witcher exam"): `tut_witcher` (instance 1271842437439635223, POI `s00/tutorial/tutorial_witcher_lq`), `tut_ghoul` (1152921521786716388, POI `ghoul_lq`), `tut_gravehag` (1152921521786716389, cutscene `cs_tutorial_witcher`, ends `exam_end`/`exam_fail`), `tut_empty` (2547305230505251704, outputs `devourer`/`empty_end`, POI `devourer_lq`?), `tut_exit` (skip path), plus fight sub-graphs `tut_ui`, `tut_dummy_1..3` | 9 | 🔴 not served (a fresh player starts at Thorstein); exact step order inside the chapter unknown |
+| `s00/prolog` prolog_01 (quest 145): `thorstein → footprints_01 → tracks_01 → tracks_02 → dead_horse → tracks_03 → griffin` (+ `tracking`, a re-route helper with outputs `tracking`/`CT_horse`/`CT_gryphon`) | 8 | ✅ served in this order. thorstein and dead_horse are live-verified (dead_horse has 3 endings: `dead_horse`/`1ghoul_left`/`2ghouls_left`); later steps untested. The order comes from journal fact 10145, which each graph sets to 1,1,2,3,4,5,6 along it. |
+| `s00/prolog` prolog_02 (quest 146): `qi_map_button` (journal 2, fact 107=3) → `obelisk` (journal 3, 107=4) → `crown` / `heart` / `sword` in any order (facts 97 / 99 / 98) → `gargoyle` (requires all three; sets 102=3, 70=2, clears 10145); `map` is a re-route helper (`CT_obelisk`/`CT_gargoyle`) | 7 | 🔴 not served |
+| `s01` (quests 147-161): hq01 sword_in_stone, hq02 nests, hq03 blacksmith, hq04 firefly, hq05 bandit_and_devourer, hq06 trolling, mq01 scholar, mq02 cure, mq03 striga, mq04 cursed_one, mq05 mushroom_hunt, mq06 frightener, plus `quest_item_buttons` and a `s01_chickentest` test graph. Main (hq) and side (mq) quests likely run in parallel; fact 70 is reused across them as a shared state value. | 127 | 🔴 |
 
-Only `s00_story_*` bundles have been extracted so far (`tools/apk_extracted/bundles/`); S01's graphs are in other
-OBB bundles. Read any graph with `python tools/unity_extract/bundle_explorer.py graph <bundle> <name>`.
+Extracted so far: the `s00_story_*` bundles and `s01_story_graphs_assets_all.bundle` (`tools/apk_extracted/bundles/`;
+each comes out of the OBB's `assets/aa/Android/`). Read any graph with
+`python tools/unity_extract/bundle_explorer.py graph <bundle> <name>`.
 
 ## 5. Suggested order of work
 
-1. **Rewards and inventory persistence**: EndBehaviourGraph rewards (Thorstein's oil needs `oils` static data), `CombatEnd` (8), and persisted `GetInventory`/`GetEquipment`/profile. The griffin fight needs these.
-2. **Finish S00**: test `tracks_03 → griffin`, then work out the prolog_02 order and the tutorial chapter.
-3. **World population**: `GetLocationsByCell` (40) monsters, herbs and nests, plus `EncounterMonster`/`CombatEnd` for free roam.
-4. **Static data**: fill tables from the client's slugs; ids and stats are reconstructions.
-5. Alchemy, contracts, shop (gold-only), achievements, then friends and summoning.
+1. **Start fresh players in the tutorial** (quest 144) instead of at Thorstein, and stop pre-seeding fact 2. Its end sets fact 3, which unlocks the bottom menu.
+2. **Rewards and inventory persistence**: EndBehaviourGraph rewards (Thorstein's oil needs `oils` static data), `CombatEnd` (8), and persisted `GetInventory`/`GetEquipment`/profile. The griffin fight needs these.
+3. **Finish S00**: test `tracks_03 → griffin`, then serve prolog_02 in the order in §4 (the crown/heart/sword steps run in parallel, so the server must offer all three at once).
+4. **World population**: `GetLocationsByCell` (40) monsters, herbs and nests, plus `EncounterMonster`/`CombatEnd` for free roam.
+5. **Static data**: fill tables from the client's slugs; ids and stats are reconstructions.
+6. Alchemy, contracts, shop (gold-only), achievements, then friends and summoning.
