@@ -168,7 +168,7 @@ JSON keys are the hidden DataMember `Name=` snake_case strings, not the C# names
 |---|---|---|---|---|
 | 57 | EndBehaviourGraph | (instanceId, output, facts) → Success, Locations, QuestNodeInstances, Exp, Gold, 7 item dicts, Armors, Swords, Expiring | ✅ *live* | Done: facts, step progress and the next node. **Rewards are still zero** (e.g. Thorstein's oil). |
 | 58 / 59 / 78 | GetFacts / GetAllFacts / SetFacts | | ✅ *live* | Persisted in `data/facts.json` |
-| 60 | GetActiveQuestNodeInstances | `{}` → Locations, QuestNodeInstances, Expiring | ✅ batch | Serves the S00 prolog_01 chain (§4). Every step spawns at the fixed dev coordinates `TutLat/TutLng`, so walk there or fake GPS. |
+| 60 | GetActiveQuestNodeInstances | `{}` → Locations, QuestNodeInstances, Expiring | ✅ batch | Serves the S00 prolog_01 chain (§4) with a per-step `PoiDisplayMode` (1 Normal, 2 CloseFollow, 3 FarFollow, 4 Hunt, 5 Auto, 6 Hidden, 7 Collecting): CloseFollow for Thorstein and dead_horse, Hunt (search circle) for footprints and tracks, Normal for the griffin; the originals' values are unknown. Steps spawn at the fixed dev coordinates `TutLat/TutLng`, so walk there or fake GPS. |
 | 70 | GetFinishedSeasonQuests | `{}` → CurrentSeason, FinishedQuests, TrackedQuestId, ActiveQuestIdList | 🟡 batch: season 0, ids 0..299 active | Real season/quest state |
 | 61 / 62 | Get/SetCurrentObjective | string | 🟡 empty / 🔴 | Persist the objective text |
 | 72 | TrackQuest | quest id → id | 🟡 echo | Persist the tracked quest |
