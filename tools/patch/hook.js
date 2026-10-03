@@ -1203,6 +1203,29 @@ function installIl2cpp() {
     hookVoid("InvestigationDirector.EndInvestigation", INV.InvDirector_EndInvestigation);
     log("Investigation/WitcherSenses trace installed (" + Object.keys(INV).length + " hooks)");
 
+    // ── GRAPHICS QUALITY TIER ──
+    // AndroidSettingsDetector.DetectSettings(List<QualityTier>) picks a tier by matching the GPU name against
+    // each tier's built-in Adreno/Mali lists; GPUs newer than this 2021 build fall to a low tier whose reduced
+    // RenderScale blurs the image (e.g. the combat grass). Pick the tier with the highest RenderScale instead.
+    // QualityTier: Name @0x10, RenderScale (float) @0x1C. List<T>: _items @0x10, _size @0x18; array data @0x20.
+    try {
+        Interceptor.attach(at(0x179A6F0), {
+            onEnter: function (a) { this.tiers = a[1]; },
+            onLeave: function (ret) {
+                const items = this.tiers.add(0x10).readPointer(), n = this.tiers.add(0x18).readS32();
+                let best = ret.toInt32(), bestScale = -1, desc = [];
+                for (let i = 0; i < n; i++) {
+                    const t = items.add(0x20 + i * 8).readPointer(), scale = t.add(0x1C).readFloat();
+                    desc.push(i + ":" + readStr(t.add(0x10).readPointer()) + "@" + scale);
+                    if (scale > bestScale) { bestScale = scale; best = i; }
+                }
+                log("QualityTier detected=" + ret.toInt32() + " tiers=[" + desc.join(", ") + "] -> forcing " + best);
+                ret.replace(ptr(best));
+            }
+        });
+        log("QualityTier override installed");
+    } catch (e) { log("Failed to hook DetectSettings: " + e); }
+
     log("Boot + preloader hooks installed.");
 }
 
