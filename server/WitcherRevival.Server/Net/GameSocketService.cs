@@ -156,6 +156,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     private const int M_SetTutorialFinished = 30, M_EquipSword = 55, M_EndBehaviourGraph = 57;
     private const int M_GetFacts = 58, M_GetAllFacts = 59, M_AcquireSkill = 64, M_TrackQuest = 72;
     private const int M_SetFacts = 78, M_AddSkillPoints = 93, M_ResolveRewards = 119;
+    private const int M_SetName = 29, M_SetGender = 46;
 
     // Shared player-state values (server is stateless this round; keeps the boot batch and the
     // post-boot action replies coherent with each other and with the ID contract).
@@ -168,64 +169,100 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     private const float TutLat = 32.453864f;
     private const float TutLng = 35.058088f;
 
-    // ── S00 prolog quest chain ──────────────────────────────────────────────────
-    // The real server advanced quests by node OUTPUT (static-data QuestNodeOutput/QuestNodeEdge, never shipped
-    // to us), so the order is reconstructed from the graph assets: each graph's end-of-graph SetFact on 10145
-    // (quest 145's journal step) climbs 1,1,2,3,4,5,6 along this list (7/8 are mid-graph values), and it matches
-    // the story (follow the horse's tracks, find it dead, follow the griffin's tracks). InstanceIds are each
-    // graph asset's baked QuestNodeInstanceId; footprints/tracks bake 0 (server-assigned), so ours are stable
-    // made-up constants. QuestNodeIds are arbitrary (the client spawns/clicks by graph name).
+    // ── S00 quest flow ──────────────────────────────────────────────────────────
+    // The real server advanced quests by node OUTPUT (static-data QuestNodeOutput -> QuestNodeEdge, never shipped
+    // to us). Steps + Edges rebuild that from the graph assets (docs/server-feature-inventory.md §4): the tutorial
+    // (quest 144, tut_*) branches on the player's choices; prolog_01 (quest 145) is linear, its order taken from
+    // each graph's end-of-graph journal step (fact 10145 climbs 1,1,2,3,4,5,6). InstanceIds are each graph asset's
+    // baked QuestNodeInstanceId; footprints/tracks bake 0 (server-assigned), so ours are stable made-up constants.
+    // QuestNodeIds are arbitrary except 231: Tutorial.ForceTutorialFinished (the tutorial skip) runs tut_exit on
+    // the active node with QuestNodeId 231.
     // DisplayMode = PoiDisplayMode: 1 Normal, 2 CloseFollow (teleports next to the player), 4 Hunt (search circle
-    // that shrinks as you approach + a default view, for prefab-less tracking targets like footprint_placeholder).
-    private sealed record QuestStep(long InstanceId, int QuestNodeId, string GraphName, string SettingsPath, int DisplayMode);
+    // + default view, for prefab-less tracking targets), 5 Auto (fires its graph by itself once spawned; with no
+    // ExpiringQuestNodeInstances entry its TTL is 0, so AutoQuestPoi.Start fires it immediately).
+    private sealed record QuestStep(long InstanceId, int QuestNodeId, string SettingsPath, int DisplayMode);
     private const string PoiSettings = "assets/_bundledassets/story/poi_settings/";
     private const string Footprint = PoiSettings + "s00/prolog/footprint_placeholder.asset";
-    private static readonly QuestStep[] PrologChain =
+    private const string TutEmpty = "s00/tutorial/tut_empty", TutGhoul = "s00/tutorial/tut_ghoul",
+        TutWitcher = "s00/tutorial/tut_witcher", TutExam = "s00/tutorial/tut_gravehag",
+        Thorstein = "s00/prolog/prolog_01_thorstein", Footprints1 = "s00/prolog/prolog_01_footprints_01",
+        Tracks1 = "s00/prolog/prolog_01_tracks_01", Tracks2 = "s00/prolog/prolog_01_tracks_02",
+        DeadHorse = "s00/prolog/prolog_01_dead_horse", Tracks3 = "s00/prolog/prolog_01_tracks_03",
+        Griffin = "s00/prolog/prolog_01_griffin";
+    private static readonly Dictionary<string, QuestStep> Steps = new()
     {
-        new(5124757777905877225, 1, "s00/prolog/prolog_01_thorstein", PoiSettings + "_common/thorstein_lq.asset", 2),
-        new(5124759000000000003, 3, "s00/prolog/prolog_01_footprints_01", Footprint, 4),
-        new(5124759000000000004, 4, "s00/prolog/prolog_01_tracks_01", Footprint, 4),
-        new(5124759000000000005, 5, "s00/prolog/prolog_01_tracks_02", Footprint, 4),
-        new(5124756197357912298, 2, "s00/prolog/prolog_01_dead_horse", PoiSettings + "s00/prolog/dead_horse_head.asset", 2),
-        new(5124759000000000006, 6, "s00/prolog/prolog_01_tracks_03", Footprint, 4),
-        new(5124757777905877227, 7, "s00/prolog/prolog_01_griffin", PoiSettings + "s00/prolog/gryphon_lq.asset", 1),
+        [TutEmpty] = new(2547305230505251704, 230, PoiSettings + "_common/empty.asset", 5),  // starts quest 144, routes
+        [TutGhoul] = new(1152921521786716388, 231, PoiSettings + "s00/tutorial/ghoul_lq.asset", 2),  // ghoul fight + examiner
+        [TutWitcher] = new(1271842437439635223, 232, PoiSettings + "s00/tutorial/tutorial_witcher_lq.asset", 2),
+        [TutExam] = new(1152921521786716389, 233, PoiSettings + "s00/tutorial/devourer_lq.asset", 2),  // exam vs devourer
+        [Thorstein] = new(5124757777905877225, 1, PoiSettings + "_common/thorstein_lq.asset", 2),
+        [Footprints1] = new(5124759000000000003, 3, Footprint, 4),
+        [Tracks1] = new(5124759000000000004, 4, Footprint, 4),
+        [Tracks2] = new(5124759000000000005, 5, Footprint, 4),
+        [DeadHorse] = new(5124756197357912298, 2, PoiSettings + "s00/prolog/dead_horse_head.asset", 2),
+        [Tracks3] = new(5124759000000000006, 6, Footprint, 4),
+        [Griffin] = new(5124757777905877227, 7, PoiSettings + "s00/prolog/gryphon_lq.asset", 1),
     };
 
-    // Finished quest-node instances (instanceId -> EndBehaviourGraph output), persisted like the facts.
-    private const string QuestsPath = "data/quests.json";
-    private readonly Dictionary<long, string> _finished = LoadFinished();
+    // (step, EndBehaviourGraph output) -> next step; null = end of what we serve. Any other output (the empty one
+    // after losing a fight, griffin's "fail", ...) keeps the step so it can be retried; "tutorial_exit" (the
+    // tutorial skip) jumps to the prolog from anywhere. A step may lead to itself: QuestPoiOnMapController.GraphEnded
+    // clears the POI's graph-started flag, so a re-served POI can be tapped again.
+    private static readonly Dictionary<(string, string), string?> Edges = new()
+    {
+        [(TutEmpty, "empty_end")] = TutGhoul,
+        [(TutEmpty, "devourer")] = TutExam,              // fact 89 = exam pending
+        [(TutGhoul, "exam")] = TutExam,
+        [(TutGhoul, "tutorial_end")] = TutWitcher,       // lost a training fight: the examiner waits
+        [(TutWitcher, "exam")] = TutExam,
+        [(TutWitcher, "tutorial_end")] = TutWitcher,
+        [(TutExam, "exam_end")] = Thorstein,             // tutorial done: facts 2, 3 (features unlock), 102 = 1
+        [(TutExam, "exam_fail")] = TutWitcher,
+        [(Thorstein, "thorstein")] = Footprints1,
+        [(Footprints1, "footprints_01")] = Tracks1,
+        [(Tracks1, "tracks_01")] = Tracks2,
+        [(Tracks2, "tracks_02")] = DeadHorse,
+        [(DeadHorse, "dead_horse")] = Tracks3,
+        [(DeadHorse, "1ghoul_left")] = Tracks3,
+        [(DeadHorse, "2ghouls_left")] = Tracks3,
+        [(Tracks3, "tracks_03")] = Griffin,
+        [(Griffin, "griffin_1")] = null,                 // prolog_02 isn't served yet
+        [(Griffin, "griffin_2")] = null,
+    };
 
-    private static Dictionary<long, string> LoadFinished()
+    // The active step's graph name as a JSON string ("" once the served content is done), persisted like the facts.
+    private const string StepPath = "data/quest_step.json";
+    private string? _currentStep = LoadCurrentStep();
+
+    private static string? LoadCurrentStep()
     {
         try
         {
-            if (File.Exists(QuestsPath))
-                return JsonSerializer.Deserialize<Dictionary<long, string>>(File.ReadAllText(QuestsPath)) ?? new();
+            if (File.Exists(StepPath))
+            {
+                var step = JsonSerializer.Deserialize<string>(File.ReadAllText(StepPath));
+                if (step == "") return null;
+                if (step is not null && Steps.ContainsKey(step)) return step;
+            }
         }
-        catch { /* unreadable/corrupt file — start the chain over */ }
-        return new();
+        catch { /* unreadable/corrupt file — start over */ }
+        return TutEmpty;
     }
 
-    /// The step after the furthest finished one (not the first unfinished: skipped steps stay skipped), or
-    /// null once the known chain is done.
-    private QuestStep? CurrentPrologStep()
+    /// Moves the quest flow on after EndBehaviourGraph and returns the step now active.
+    private string? AdvanceQuest(long instanceId, string output)
     {
         lock (_factsLock)
         {
-            int last = -1;
-            for (int i = 0; i < PrologChain.Length; i++)
-                if (_finished.ContainsKey(PrologChain[i].InstanceId)) last = i;
-            return last + 1 < PrologChain.Length ? PrologChain[last + 1] : null;
-        }
-    }
-
-    private void StoreFinished(long instanceId, string output)
-    {
-        lock (_factsLock)
-        {
-            _finished[instanceId] = output;
-            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(QuestsPath))!);
-            File.WriteAllText(QuestsPath, JsonSerializer.Serialize(_finished));
+            string from = Steps.FirstOrDefault(kv => kv.Value.InstanceId == instanceId).Key ?? _currentStep ?? "";
+            string? next;
+            if (output == "tutorial_exit") next = Thorstein;
+            else if (!Edges.TryGetValue((from, output), out next)) return _currentStep;  // retry the same step
+            _currentStep = next;
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(StepPath))!);
+            File.WriteAllText(StepPath, JsonSerializer.Serialize(next ?? ""));
+            log.LogInformation("  Quest flow: {From} --{Output}--> {Next}", from, output, next ?? "(served content done)");
+            return next;
         }
     }
 
@@ -236,8 +273,9 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     ///   Location:          [string PlaceId][float Lat][float Lng][int biomeCount][int×biomes]
     ///   QuestNodeInstance: [long InstanceId][int QuestNodeId][string PlaceId][string SettingsPath]
     ///                      [string BehaviourGraphName][int DisplayMode]
-    private static void WriteActiveQuestNodes(ByteBuffer b, QuestStep? step)
+    private static void WriteActiveQuestNodes(ByteBuffer b, string? graph)
     {
+        QuestStep? step = graph is null ? null : Steps[graph];
         int n = step is null ? 0 : 1;
         b.WriteInt(n);
         if (step is not null)
@@ -257,9 +295,45 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             b.WriteInt(step.QuestNodeId);
             b.WriteString(TutPlaceId);
             b.WriteString(step.SettingsPath);
-            b.WriteString(step.GraphName);
+            b.WriteString(graph!);
             b.WriteInt(step.DisplayMode);
         }
+    }
+
+    // ── Player profile ──────────────────────────────────────────────────────────
+    // Name/Gender/Head are picked on the customization screen that follows the tutorial exam (SetName 29,
+    // SetGender 46, SetCustomizationHead 28); SetTutorialFinished (30) arrives when the tutorial ends. Persisted so
+    // GetPlayerInfo (3) — in the boot batch and standalone — reports them on the next boot.
+    private sealed class Profile
+    {
+        public string Name { get; set; } = "Geralt";
+        public byte Gender { get; set; }
+        public int Head { get; set; } = 1;   // id 1 = head_caucasian_1 in static data
+        public bool? TutorialFinished { get; set; }  // null = config Player:TutorialFinished (default false)
+    }
+    private const string ProfilePath = "data/player.json";
+    private readonly Profile _profile = LoadProfile();
+
+    private static Profile LoadProfile()
+    {
+        try
+        {
+            if (File.Exists(ProfilePath))
+                return JsonSerializer.Deserialize<Profile>(File.ReadAllText(ProfilePath)) ?? new();
+        }
+        catch { /* unreadable/corrupt file — default profile */ }
+        return new();
+    }
+
+    private byte[] UpdateProfile(Action<Profile> change, int echo)
+    {
+        lock (_factsLock)
+        {
+            change(_profile);
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(ProfilePath))!);
+            File.WriteAllText(ProfilePath, JsonSerializer.Serialize(_profile));
+        }
+        return BuildIntResponse(true, echo);
     }
 
     // ── Server-side fact store ──────────────────────────────────────────────────
@@ -345,8 +419,11 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             M_DistanceTraveled => BuildIntResponse(true, TotalDistanceTraveled),
             M_EquipArmor or M_EquipSword or M_EquipSteelSword or M_EquipSilverSword
                 => BuildIntResponse(true, ReadIntParam(req, fallback: 1)),   // echo the equipped item id
-            M_SetCustomizationHead => BuildIntResponse(true, ReadIntParam(req, fallback: 1)), // echo head id
-            M_SetTutorialFinished => BuildIntResponse(true, 1),  // request has NO payload (dump.cs 602627)
+            M_SetCustomizationHead => SetHead(ReadIntParam(req, fallback: 1)),
+            M_SetTutorialFinished => UpdateProfile(p => p.TutorialFinished = true, 1),  // no payload (dump.cs 602627)
+            // SetNameRequest = [string Name]; SetGender uses ByteRequest = [byte]. Both reply IntResponse.
+            M_SetName => SetName(req.Data.Length >= 4 ? new ByteBuffer(req.Data).ReadString() : ""),
+            M_SetGender => SetGender(req.Data.Length >= 1 ? req.Data[0] : (byte)0),
             M_AcquireSkill => BuildIntResponse(true, ReadIntParam(req, fallback: 1)),
             M_TrackQuest => BuildIntResponse(true, ReadIntParam(req, fallback: 0)),
             M_AddSkillPoints => BuildIntResponse(true, InitialSkillPoints + ReadIntParam(req, fallback: 0)),
@@ -513,8 +590,9 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         // mid-session the chain advances through the EndBehaviourGraph reply). Handler order (StoryModule
         // 0x17A3614): UpdateLocations(Locations) registers PlaceId->coords, THEN SetActiveQuestNodes positions
         // the POI. Coords = player's center S2 cell decoded from the method-40 request (2026-07-05).
-        var step = CurrentPrologStep();
-        log.LogInformation("  Method 60: active prolog step = {Graph}", step?.GraphName ?? "(chain finished)");
+        string? step;
+        lock (_factsLock) step = _currentStep;
+        log.LogInformation("  Method 60: active quest step = {Graph}", step ?? "(served content done)");
         b.WriteInt(60);
         WriteActiveQuestNodes(b, step);
         b.WriteInt(0);                       // ExpiringQuestNodeInstances count = 0
@@ -715,6 +793,10 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         return new ByteBuffer(req.Data).ReadInt();
     }
 
+    private byte[] SetHead(int head) => UpdateProfile(p => p.Head = head, head);
+    private byte[] SetGender(byte gender) => UpdateProfile(p => p.Gender = gender, gender);
+    private byte[] SetName(string name) => UpdateProfile(p => p.Name = name, 0);  // Param 0 = assumed "OK" code
+
     /// AcquireSkillResponse (Method 64): [byte Success][int Skill] — echoes the acquired skill id
     /// from AcquireSkillRequest ([int Skill], dump.cs 601302).
     private byte[] BuildAcquireSkillResponse(ApiProtocol.ApiRequest req)
@@ -734,12 +816,14 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     {
         var b = new ByteBuffer();
         b.WriteByte(1);                    // Success
-        b.WriteString("Geralt");           // Name
+        Profile p;
+        lock (_factsLock) p = _profile;
+        b.WriteString(p.Name);             // Name
         b.WriteInt(5000);                  // Gold (ID contract)
         b.WriteInt(4500);                  // Exp ≈ level-5 threshold on Track A's level_ups curve
-        b.WriteInt(1);                     // Head (id 1 = head_caucasian_1 in static data)
-        b.WriteByte((byte)(cfg.GetValue("Player:TutorialFinished", false) ? 1 : 0));
-        b.WriteByte(0);                    // Gender
+        b.WriteInt(p.Head);                // Head (id 1 = head_caucasian_1 in static data)
+        b.WriteByte((byte)((p.TutorialFinished ?? cfg.GetValue("Player:TutorialFinished", false)) ? 1 : 0));
+        b.WriteByte(p.Gender);             // Gender
         return b.ToArray();
     }
 
@@ -787,6 +871,8 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     /// and the quest chain can advance.
     private byte[] BuildEndBehaviourGraphResponse(ApiProtocol.ApiRequest req)
     {
+        string? next;
+        lock (_factsLock) next = _currentStep;
         try
         {
             var r = new ByteBuffer(req.Data);
@@ -801,16 +887,14 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             }
             log.LogInformation("  EndBehaviourGraph: instanceId={Id} output='{Output}' facts={N}", instanceId, outputName, facts.Count);
             StoreFacts(facts);
-            // "fail" (e.g. losing the griffin fight) keeps the step active so it can be retried.
-            if (outputName != "fail") StoreFinished(instanceId, outputName);
+            next = AdvanceQuest(instanceId, outputName);
         }
         catch (Exception ex)
         {
             log.LogWarning("  EndBehaviourGraph request parse failed ({Msg}) — facts NOT stored; replying anyway", ex.Message);
         }
 
-        var next = CurrentPrologStep();
-        log.LogInformation("  EndBehaviourGraph reply: next prolog step = {Graph}", next?.GraphName ?? "(chain finished)");
+        log.LogInformation("  EndBehaviourGraph reply: active quest step = {Graph}", next ?? "(served content done)");
         var b = new ByteBuffer();
         b.WriteByte(1);                              // Success
         WriteActiveQuestNodes(b, next);

@@ -179,13 +179,46 @@ public static class PreloaderStaticData
             """{"id":5,"slug":"armor_manticore","priority":4,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_manticore/prefab_armor_manticore.prefab"}""",
             """{"id":6,"slug":"armor_kaer_morhen","priority":5,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_kaer_morhen/prefab_armor_kaer_morhen.prefab"}""",
         },
-        // prolog_01_dead_horse's FightEquipmentNode has BombInput=401 (StorageDataSource<IIntStorage<Bomb>>);
-        // an empty bombs array makes that lookup throw KeyNotFoundException in BaseGraph.InitializeNodes.
-        // Keys: PrioritizedItem (id, slug, priority) + Bomb DataMember names read from libil2cpp.so.
-        // 401 -> bomb_basic and the stats are guesses (no real static data); explode_style 0 = OnImpact.
+        // Consumables: every potion/oil/bomb the client has localisation for. No original data survives, so the ids
+        // are a reconstruction: alphabetical within each category, potions 2xx, oils 3xx, bombs 4xx. That fits all
+        // three ids the story graphs use: tutorial exam Potions=205 (Swallow, the healing potion), Oils=301 (basic),
+        // Bombs=401 (basic, also prolog_01_dead_horse's FightEquipment — an empty bombs array made that lookup throw
+        // KeyNotFoundException in BaseGraph.InitializeNodes). Slugs follow the ITEMS/NAMES/<CATEGORY>/<SLUG_UPPER>
+        // terms. Keys: PrioritizedItem (id, slug, priority) + each DTO's DataMember names read from libil2cpp.so;
+        // stats are guesses (explode_style 0 = OnImpact).
         ["bombs"] = new[]
         {
             """{"id":401,"slug":"bomb_basic","priority":0,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_basic/prefab_bomb_basic.prefab"}""",
+            """{"id":402,"slug":"bomb_dancingstar","priority":1,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_dancingstar/prefab_bomb_dancingstar.prefab"}""",
+            """{"id":403,"slug":"bomb_dimeritium","priority":2,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_dimeritium/prefab_bomb_dimeritium.prefab"}""",
+            """{"id":404,"slug":"bomb_grapeshot","priority":3,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_grapeshot/prefab_bomb_grapeshot.prefab"}""",
+            """{"id":405,"slug":"bomb_moondust","priority":4,"delay":0,"duration":0,"value":10,"radius":1,"explode_style":0,"prefab_path":"Assets/_bundledassets/appearance/bomb/bomb_moondust/prefab_bomb_moondust.prefab"}""",
+        },
+        ["potions"] = new[]
+        {
+            """{"id":201,"slug":"potion_blizzard","priority":0,"auto_equip_priority":0}""",
+            """{"id":202,"slug":"potion_cat","priority":1,"auto_equip_priority":0}""",
+            """{"id":203,"slug":"potion_mariborforest","priority":2,"auto_equip_priority":0}""",
+            """{"id":204,"slug":"potion_squall","priority":3,"auto_equip_priority":0}""",
+            """{"id":205,"slug":"potion_swallow","priority":4,"auto_equip_priority":0}""",
+            """{"id":206,"slug":"potion_swift","priority":5,"auto_equip_priority":0}""",
+            """{"id":207,"slug":"potion_tawnyowl","priority":6,"auto_equip_priority":0}""",
+            """{"id":208,"slug":"potion_thunderbolt","priority":7,"auto_equip_priority":0}""",
+            """{"id":209,"slug":"potion_wolverine","priority":8,"auto_equip_priority":0}""",
+        },
+        ["oils"] = new[]
+        {
+            """{"id":301,"slug":"oil_basic","priority":0,"exp_matching":0}""",
+            """{"id":302,"slug":"oil_cursed","priority":1,"exp_matching":0}""",
+            """{"id":303,"slug":"oil_draconid","priority":2,"exp_matching":0}""",
+            """{"id":304,"slug":"oil_elemental","priority":3,"exp_matching":0}""",
+            """{"id":305,"slug":"oil_hybrid","priority":4,"exp_matching":0}""",
+            """{"id":306,"slug":"oil_insectoid","priority":5,"exp_matching":0}""",
+            """{"id":307,"slug":"oil_necrophage","priority":6,"exp_matching":0}""",
+            """{"id":308,"slug":"oil_ogroid","priority":7,"exp_matching":0}""",
+            """{"id":309,"slug":"oil_relict","priority":8,"exp_matching":0}""",
+            """{"id":310,"slug":"oil_specter","priority":9,"exp_matching":0}""",
+            """{"id":311,"slug":"oil_vampire","priority":10,"exp_matching":0}""",
         },
         // Zooming the map out opens the Witcher Senses view; WitcherSensesGUI.Show takes GetFirst() of
         // IIntStorage<SensesPotion>, which threw "Sequence contains no elements" on an empty array and left
@@ -236,6 +269,14 @@ public static class PreloaderStaticData
             """{"id":6,"family_id":11,"encounter_distance":50,"attack_animation_time":2000,"rarity":2,"difficulty":3,"name":"MONSTERS/BESTIARY/WEREWOLF","model":"Assets/_bundledassets/characters/monsters/s00/werewolf/werewolf_lq/werewolf_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/werewolf/werewolf_hq/werewolf_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_werewolf.png","slug":"werewolf"}""",
             """{"id":7,"family_id":2,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":2,"name":"MONSTERS/BESTIARY/SMALLDRACONID","model":"Assets/_bundledassets/characters/monsters/s00/smalldraconid/smalldraconid_lq/smalldraconid_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/smalldraconid/smalldraconid_hq/smalldraconid_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_smalldraconid.png","slug":"smalldraconid"}""",
             """{"id":8,"family_id":7,"encounter_distance":50,"attack_animation_time":2000,"rarity":2,"difficulty":3,"name":"MONSTERS/BESTIARY/BANSHEE","model":"Assets/_bundledassets/characters/monsters/s00/banshee/banshee_lq/banshee_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/banshee/banshee_hq/banshee_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_banshee.png","slug":"banshee"}""",
+            // Tutorial (s00/tutorial): exam monster devourer (+ gravehag, same chapter), and the training dummies
+            // the tut_* graphs look up by MonsterSlug. Dummies have no presentation prefab or trophy; their
+            // family (9 ANIMAL) is a placeholder.
+            """{"id":9,"family_id":1,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":2,"name":"MONSTERS/BESTIARY/DEVOURER","model":"Assets/_bundledassets/characters/monsters/s00/devourer/devourer_lq/devourer_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/devourer/devourer_hq/devourer_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_devourer.png","slug":"devourer"}""",
+            """{"id":10,"family_id":1,"encounter_distance":50,"attack_animation_time":2000,"rarity":2,"difficulty":3,"name":"MONSTERS/BESTIARY/GRAVEHAG","model":"Assets/_bundledassets/characters/monsters/s00/gravehag/gravehag_lq/gravehag_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/gravehag/gravehag_hq/gravehag_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_gravehag.png","slug":"gravehag"}""",
+            """{"id":11,"family_id":9,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/DUMMY_LVL1","model":"Assets/_bundledassets/characters/monsters/s00/dummy_lvl1/dummy_lvl1_lq/dummy_lvl1_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/dummy_lvl1/dummy_lvl1_hq/dummy_lvl1_hq.prefab","trophy":"","slug":"dummy_lvl1"}""",
+            """{"id":12,"family_id":9,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/DUMMY_LVL2","model":"Assets/_bundledassets/characters/monsters/s00/dummy_lvl2/dummy_lvl2_lq/dummy_lvl2_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/dummy_lvl2/dummy_lvl2_hq/dummy_lvl2_hq.prefab","trophy":"","slug":"dummy_lvl2"}""",
+            """{"id":13,"family_id":9,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/DUMMY_LVL3","model":"Assets/_bundledassets/characters/monsters/s00/dummy_lvl3/dummy_lvl3_lq/dummy_lvl3_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/dummy_lvl3/dummy_lvl3_hq/dummy_lvl3_hq.prefab","trophy":"","slug":"dummy_lvl3"}""",
         },
         // 3 knowledge tiers per monster (level 1/2/3 at 1/5/10 kills). All INFO_1..3 terms verified present
         // in stringliteral.json. Player kills {1:5,2:2,3:1} => ghoul reaches tier 2 out of the box.
