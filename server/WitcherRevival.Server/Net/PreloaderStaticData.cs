@@ -306,6 +306,24 @@ public static class PreloaderStaticData
             """{"id":22,"monster_id":8,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/BANSHEE/INFO_1"}""",
             """{"id":23,"monster_id":8,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/BANSHEE/INFO_2"}""",
             """{"id":24,"monster_id":8,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/BANSHEE/INFO_3"}""",
+            // Every monster needs its 3 tiers: DataManager.LoadMonsters indexes the per-monster description and
+            // threshold dictionaries by monster id, so a monster without entries throws KeyNotFoundException and
+            // stops boot at "Синхронизация данных" (58%). Dummy terms don't exist; they fail soft to raw text.
+            """{"id":25,"monster_id":9,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/DEVOURER/INFO_1"}""",
+            """{"id":26,"monster_id":9,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/DEVOURER/INFO_2"}""",
+            """{"id":27,"monster_id":9,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/DEVOURER/INFO_3"}""",
+            """{"id":28,"monster_id":10,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/GRAVEHAG/INFO_1"}""",
+            """{"id":29,"monster_id":10,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/GRAVEHAG/INFO_2"}""",
+            """{"id":30,"monster_id":10,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/GRAVEHAG/INFO_3"}""",
+            """{"id":31,"monster_id":11,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL1/INFO_1"}""",
+            """{"id":32,"monster_id":11,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL1/INFO_2"}""",
+            """{"id":33,"monster_id":11,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL1/INFO_3"}""",
+            """{"id":34,"monster_id":12,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL2/INFO_1"}""",
+            """{"id":35,"monster_id":12,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL2/INFO_2"}""",
+            """{"id":36,"monster_id":12,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL2/INFO_3"}""",
+            """{"id":37,"monster_id":13,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL3/INFO_1"}""",
+            """{"id":38,"monster_id":13,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL3/INFO_2"}""",
+            """{"id":39,"monster_id":13,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/DUMMY_LVL3/INFO_3"}""",
         },
         // Full canonical family set (ids are engine constants, see header comment). Image fields are
         // dropped by the client (Family.Factory<int,string>), hence empty. ANIMAL(9) has no I2 term in
