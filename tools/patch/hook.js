@@ -1226,6 +1226,19 @@ function installIl2cpp() {
         log("QualityTier override installed");
     } catch (e) { log("Failed to hook DetectSettings: " + e); }
 
+    // ── POI DESPAWN TRACE (trace only) ──
+    // Defeated / removed monsters stay on the map. PoiModule runs on the fake PoiSettings (null DespawnFX prefabs,
+    // see the Instantiate bypass), so trace where despawning a POI view stops.
+    const DESPAWN = {
+        "PoiModule.RemoveInstance": 0x17B60BC, "PoiModule.GetDespawnFxInstance": 0x17B6FB0,
+        "PoiOnMapController.Despawn": 0x17BCCEC, "PoiOnMapController.DestroyView": 0x17BCA80,
+        "PoiOnMapController.Hide": 0x17BDDBC, "QuestPoiOnMapController.OnDespawning": 0x17BF7AC,
+        "DespawnFX.Show(pos)": 0x183292C, "DespawnFX.Show()": 0x183228C, "DespawnFX.Hide": 0x1832904,
+        "DespawnFX.ReturnToPool": 0x1832AD4,
+    };
+    for (const name in DESPAWN) hookVoid(name, DESPAWN[name]);
+    log("POI despawn trace installed (" + Object.keys(DESPAWN).length + " hooks)");
+
     log("Boot + preloader hooks installed.");
 }
 

@@ -258,6 +258,8 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             string? next;
             if (output == "tutorial_exit") next = Thorstein;
             else if (!Edges.TryGetValue((from, output), out next)) return _currentStep;  // retry the same step
+            // The client never calls SetTutorialFinished (30); the tutorial's end is these outputs (facts 2/3 = 1).
+            if (output is "exam_end" or "tutorial_exit") UpdateProfile(p => p.TutorialFinished = true, 1);
             _currentStep = next;
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(StepPath))!);
             File.WriteAllText(StepPath, JsonSerializer.Serialize(next ?? ""));
