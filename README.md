@@ -107,7 +107,7 @@ Commands are PowerShell, run from the repository root, with `$adb = "tools\platf
 
 ## Credits and Licensing
 - This project is licensed under GPLv3 (`LICENSE`).
-- The 1.1.116 server, map services, story and contract tools, and the ported client fixes come from an anonymous contributor's 1.1.116 reconstruction. It was forked from this project's commit `3cb353b`, is GPL-3.0-only, and is used with permission; see `server/LICENSE` and `server/upstream-provenance.json`. Some copied documents link to that project's own docs, which are not included here.
+- **Villainser** did a large part of the work in this project. The 1.1.116 server, map services, story and contract tools, and the ported client fixes all come from Villainser's 1.1.116 reconstruction. It was forked from this project's commit `3cb353b`, is GPL-3.0-only, and is used with permission; see `server/LICENSE` and `server/upstream-provenance.json`. Some copied documents link to that project's own docs, which are not included here.
 - The Earcut triangulation port is under the ISC licence; its notice is kept in `server/connection/map-road-fixture-01/osm_area_geometry.py`.
 - Map data is © OpenStreetMap contributors (ODbL 1.0). Indexes and tiles generated from it are derived from OpenStreetMap.
 - Frida Gadget and uber-apk-signer are downloaded at build time and are not included.
