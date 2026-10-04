@@ -10,7 +10,8 @@ first). Per graph it records what the server's quest flow needs and what the gra
   - data-input seeds (MonsterSlug, PresentationData, item ids, ...) for the static-data coverage check
 
   python tools/unity_extract/quest_catalog.py [--check]
---check also compares every monster seed with server/.../StaticData/static_data.json and lists what's missing.
+--check also compares every MonsterSlug seed with server/.../StaticData/static_data.json and lists what's missing
+(PresentationData seeds that aren't monsters resolve to NPC presentations, so they don't need rows).
 """
 import collections, glob, json, os, re, sys
 
@@ -115,10 +116,9 @@ def main(check):
         have = {m["slug"] for m in static["monsters"]}
         need = collections.defaultdict(set)
         for name, e in catalog.items():
-            for key in ("seeds:MonsterSlug", "seeds:PresentationData"):
-                for slug in e.get(key, []):
-                    if slug not in have: need[slug].add(name)
-        print(f"missing monster/presentation slugs ({len(need)}):")
+            for slug in e.get("seeds:MonsterSlug", []):  # PresentationData seeds fall back to NPC presentations
+                if slug not in have: need[slug].add(name)
+        print(f"monster slugs missing from static data ({len(need)}):")
         for slug, graphs in sorted(need.items()):
             print(f"  {slug}: {', '.join(sorted(graphs)[:4])}{' ...' if len(graphs) > 4 else ''}")
 

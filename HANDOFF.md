@@ -38,8 +38,9 @@ We are working to map out the API requests the client sends when navigating the 
    `GameSocketService.cs` into `StaticData/quests.json` (105 steps: tutorial, prolog_01, prolog_02 and all 12 S01
    lines), run by `Net/QuestFlow.cs` with several active steps at once (`data/quest_state.json`; the old
    `quest_step.json` migrates on first start). Auto-node timers are real (e.g. Varik's 12 h wait). Debug triggering:
-   `POST /debug/quest/<step>?replace=true`, then relaunch. The edges after prolog_01 are inferred, and S01 fights need
-   the monsters `quest_catalog.py --check` lists. Checklist and details: `docs/server-feature-inventory.md` §4.
+   `POST /debug/quest/<step>?replace=true`, then relaunch. The edges after prolog_01 are inferred. All 31 monsters the
+   graphs fight were added to static data (family/rarity/difficulty from the wiki bestiary, including the griffin, which
+   was missing). Checklist and details: `docs/server-feature-inventory.md` §4.
 6. **"Cannot access a disposed object" / `mono-io-layer-error (111)` reconnect-loop noise:** recurring every ~6-7s throughout every session (correlated with `ThreadedClient` socket teardown/reopen). Confirmed **cosmetic/non-blocking** on 2026-07-10 — boot reaches 200/200 and quest clicks work fine despite it firing continuously in the background. Leave deprioritized.
 7. **Before starting any live session, verify the ACTUAL `WitcherRevival.Server` process is running** — `Get-NetTCPConnection -LocalPort 4253` should show it LISTENing, and `scratch/server.log` should be growing. On 2026-07-10 two unrelated `dotnet run --project WebApi/Client` processes from a different project were mistaken for it, and 20+ minutes were lost debugging a client-side "Server connection timed out" that was actually just "nothing is listening on 4253."
 

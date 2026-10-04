@@ -1,4 +1,576 @@
 {
+ "monsters": [
+  {
+   "row": {
+    "slug": "ghoul",
+    "family_id": 1,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Ghoul",
+    "text": "Necrophages; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "alghoul",
+    "family_id": 1,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Alghoul",
+    "text": "Necrophages; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "drowner",
+    "family_id": 1,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Drowner",
+    "text": "Necrophages; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "nekker",
+    "family_id": 3,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Nekker",
+    "text": "Ogroids; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "nekkerwarrior",
+    "family_id": 3,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Nekker Warrior",
+    "text": "Ogroids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "werewolf",
+    "family_id": 11,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Werewolf",
+    "text": "Cursed ones; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "banshee",
+    "family_id": 7,
+    "rarity": 2,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Beann'shie",
+    "text": "Specters; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "devourer",
+    "family_id": 1,
+    "rarity": 2,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Devourer",
+    "text": "Necrophages; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "gravehag",
+    "family_id": 1,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Grave hag",
+    "text": "Necrophages; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "arachas",
+    "family_id": 8,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Common Arachas",
+    "text": "Insectoids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "arachnomorph",
+    "family_id": 8,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Arachnomorph",
+    "text": "Insectoids; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "archespore",
+    "family_id": 11,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Archespore",
+    "text": "Cursed ones; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "bies_lvl1",
+    "family_id": 6,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Fiend",
+    "text": "Relicts; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "cavetroll",
+    "family_id": 3,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Rock Troll",
+    "text": "Ogroids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "chort_lvl1",
+    "family_id": 6,
+    "rarity": 1,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Chort",
+    "text": "Relicts; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "elementaldaored",
+    "family_id": 5,
+    "rarity": 3,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Legendary Creatures",
+    "name": "D'ao",
+    "text": "Elementa; skulls (pre-1.2) 3"
+   }
+  },
+  {
+   "row": {
+    "slug": "endriagaspikey",
+    "family_id": 8,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Endrega Drone",
+    "text": "Insectoids; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "endriagatailed",
+    "family_id": 8,
+    "rarity": 2,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Endrega Warrior",
+    "text": "Insectoids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "endriagaworker",
+    "family_id": 8,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Endrega Worker",
+    "text": "Insectoids; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "fogling_lvl1",
+    "family_id": 1,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Foglet",
+    "text": "Necrophages; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "foglingignisfatuus",
+    "family_id": 1,
+    "rarity": 2,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Ignis Fatuus",
+    "text": "Necrophages; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "forktail",
+    "family_id": 2,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Forktail",
+    "text": "Draconids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "frightener",
+    "family_id": 8,
+    "rarity": 3,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Legendary Creatures",
+    "name": "Frightener",
+    "text": "Insectoids; skulls (pre-1.2) 3"
+   }
+  },
+  {
+   "row": {
+    "slug": "gargoyle",
+    "family_id": 5,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Gargoyle",
+    "text": "Elementa; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "golem_lvl1",
+    "family_id": 5,
+    "rarity": 1,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Golem",
+    "text": "Elementa; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "golem_lvl2",
+    "family_id": 5,
+    "rarity": 2,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Stone Golem",
+    "text": "Elementa; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "cockatrice",
+    "family_id": 2,
+    "rarity": 2,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Cockatrice",
+    "text": "Draconids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "golem_lvl2_hq01",
+    "family_id": 5,
+    "rarity": 2,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Stone Golem",
+    "text": "Elementa; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "gryphon",
+    "family_id": 4,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Griffin",
+    "text": "Hybrids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "leshensdog_lvl2",
+    "family_id": 6,
+    "rarity": 2,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Leshen Hound",
+    "text": "Relicts; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "lessun",
+    "family_id": 6,
+    "rarity": 2,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Leshen",
+    "text": "Relicts; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "likho",
+    "family_id": 6,
+    "rarity": 2,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Liho",
+    "text": "Relicts; skulls (pre-1.2) 2"
+   }
+  },
+  {
+   "row": {
+    "slug": "nekkerwarrior_lvl3",
+    "family_id": 3,
+    "rarity": 2,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Rare Creatures",
+    "name": "Nekker Shaman",
+    "text": "Ogroids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "scolopendromorph_lvl1",
+    "family_id": 8,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Scolopendromorph",
+    "text": "Insectoids; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "striga_albino",
+    "family_id": 11,
+    "rarity": 3,
+    "difficulty": 3
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Legendary Creatures",
+    "name": "White Striga",
+    "text": "Cursed ones; skulls (pre-1.2) 3"
+   }
+  },
+  {
+   "row": {
+    "slug": "vodyanoi",
+    "family_id": 3,
+    "rarity": 1,
+    "difficulty": 2
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Vodnik",
+    "text": "Ogroids; skulls (pre-1.2) 1"
+   }
+  },
+  {
+   "row": {
+    "slug": "wraith",
+    "family_id": 7,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Wraith",
+    "text": "Specters; skulls (pre-1.2) 0"
+   }
+  },
+  {
+   "row": {
+    "slug": "wraith_lvl2",
+    "family_id": 7,
+    "rarity": 1,
+    "difficulty": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bestiary",
+    "revid": 580603,
+    "section": "Common Creatures",
+    "name": "Wraith",
+    "text": "Specters; skulls (pre-1.2) 0"
+   }
+  }
+ ],
  "potion_to_effect": [
   {
    "row": {
