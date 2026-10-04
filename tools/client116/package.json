@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "hook.js bundle dependencies (restart.py installs and bundles them)",
+  "dependencies": {
+    "frida-java-bridge": "7.0.13"
+  }
+}

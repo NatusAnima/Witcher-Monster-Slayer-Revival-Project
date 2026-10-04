@@ -135,10 +135,11 @@ public sealed partial class PlayerService
 
     private static LocalProfileStore.StoryPlace? PickRelocationPlace(string key, double min, double max,
         LocalProfileStore.StoryPlace? near, IEnumerable<LocalProfileStore.StoryPlace> taken,
-        IReadOnlyList<PlayableLocations.Cell> cells)
+        IReadOnlyList<PlayableLocations.Cell> cells, (double Lat, double Lng)? player = null)
     {
         if (cells.Count == 0) return null;
-        double lat = near?.Lat ?? cells.Average(c => c.Lat), lng = near?.Lng ?? cells.Average(c => c.Lng);
+        double lat = near?.Lat ?? player?.Lat ?? cells.Average(c => c.Lat),
+            lng = near?.Lng ?? player?.Lng ?? cells.Average(c => c.Lng);
         var band = cells.SelectMany(c => c.Places.Select(p => (Cell: c.Id, Place: p))).Where(p =>
             PlayableLocations.Distance(lat, lng, p.Place.Lat, p.Place.Lng) is var d && d >= min && d <= max).ToList();
         var spaced = band.Where(p => taken.All(t =>
@@ -178,13 +179,17 @@ public sealed partial class PlayerService
 
         LocalProfileStore.StoryPlace? Existing(StoryEngine.Node node, int copy) => node.PlaceOf is { } owner
             ? saved.GetValueOrDefault(owner) : saved.GetValueOrDefault(StoryPlaceKey(node, copy));
-        // The client checks the actual 1000 m distance. The server only knows loaded cells, so it also
-        // requires an active goal outside those cells. A retry with a new request id cannot move it again.
+        // The client owns the distance rule (goal > AllowRelocateQuestMinDistance, 1000 m). The server sees cells, not
+        // GPS: requiring the goal outside its 2 km area estimate refused every goal 1-2 km away, so only a placed goal is required.
         if (!quest.Active.Any(n => !n.Queued && Enumerable.Range(0, Math.Max(1, n.Copies))
-                .Any(copy => Existing(n, copy)?.CellId is ulong old && !area.Contains(old))))
-            return Refuse("goals-in-area-or-unplaced");
+                .Any(copy => Existing(n, copy) is not null)))
+            return Refuse("goals-unplaced");
+        // A retry with a new request id for the giver the quest already moved to cannot move it again.
+        if (saved.GetValueOrDefault(quest.Root.Key)?.Id == target.Id) return Refuse("already-moved-here");
         var cells = playable.Cells(area, 0)?.Where(c => area.Contains(c.Id)).ToList();
         if (cells is null || cells.Count == 0) return Refuse("no-map");
+        // Goals go around the player's GPS position when the collector reports one, else the area's centre.
+        var player = PlayerPosition();
         var planned = new Dictionary<string, LocalProfileStore.StoryPlace>(saved);
         var keys = quest.Nodes.SelectMany(n => Enumerable.Range(0, Math.Max(1, n.Copies))
             .Select(copy => StoryPlaceKey(n, copy))).ToHashSet();
@@ -203,7 +208,7 @@ public sealed partial class PlayerService
             var near = node.Near is { } anchor && quest.Nodes.FirstOrDefault(n => n.Key == anchor) is { } parentNode
                 ? Plan(parentNode) : null;
             if (node.Near is not null && near is null) return null;
-            var chosen = PickRelocationPlace(key, node.Min, node.Max, near, planned.Values, cells);
+            var chosen = PickRelocationPlace(key, node.Min, node.Max, near, planned.Values, cells, player);
             visiting.Remove(key);
             if (chosen is not null) planned[key] = chosen;
             return chosen;

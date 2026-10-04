@@ -12,6 +12,8 @@ public sealed partial class PlayerService
     private readonly HashSet<long> oldMovementHellos = [];
     private DistanceIntegrity.Track movementTrack = new();
     private DistanceIntegrity.Fix? movementLastFix;
+    // Where the game last placed the player, mock or inaccurate fixes included: story places go around it.
+    private DistanceIntegrity.Fix? movementPosition;
     private long movementLastReceived;
     private string? movementReason;
     private string movementDecision = "ignored";
@@ -178,6 +180,8 @@ public sealed partial class PlayerService
                     movementReason = d.Result.Reason; movementDecision = d.Result.Decision;
                     if (d.Result.Reason is not ("invalid-fix" or "missing-accuracy" or "inaccurate" or "mock-location" or "stale-fix" or "future-fix" or "capture-overlap" or "clock-discontinuity"))
                     { movementLastFix = d.Fix; movementLastReceived = nowMs; }
+                    if (d.Result.Reason is not ("invalid-fix" or "stale-fix" or "future-fix" or "capture-overlap" or "clock-discontinuity"))
+                        movementPosition = d.Fix;
                     movementEvents.Add(new(DateTimeOffset.FromUnixTimeMilliseconds(nowMs), d.Result.Decision, d.Result.Reason,
                         eventCredit, current.Protected ? 0 : d.Result.Metres));
                 }
@@ -200,6 +204,7 @@ public sealed partial class PlayerService
         long? next = null;
         foreach (long? deadline in new long?[] {
             movementLastFix is null ? null : movementLastFix.CapturedUtcMs + DistanceIntegrity.RetentionSeconds * 1000L,
+            movementPosition is null ? null : movementPosition.CapturedUtcMs + DistanceIntegrity.RetentionSeconds * 1000L,
             OldestMovementCapture() is not { } oldest ? null : oldest + DistanceIntegrity.RetentionSeconds * 1000L,
             movementEvents.Count == 0 ? null : movementEvents[0].At.ToUnixTimeMilliseconds() + DistanceIntegrity.EventRetentionSeconds * 1000L })
             if (deadline is not null) next = next is null ? deadline : Math.Min(next.Value, deadline.Value);
@@ -225,7 +230,15 @@ public sealed partial class PlayerService
         if (movementEvents.Count > DistanceIntegrity.MaxEvents) movementEvents.RemoveRange(0, movementEvents.Count - DistanceIntegrity.MaxEvents);
         if (OldestMovementCapture() < nowMs - DistanceIntegrity.RetentionSeconds * 1000L) movementTrack = new();
         if (movementLastFix?.CapturedUtcMs < nowMs - DistanceIntegrity.RetentionSeconds * 1000L) movementLastFix = null;
+        if (movementPosition?.CapturedUtcMs < nowMs - DistanceIntegrity.RetentionSeconds * 1000L) movementPosition = null;
     }
+
+    /// <summary>The player's GPS position from the collector (RPC 2001) while it is fresh, else null.
+    /// Lock-free: placement runs inside other locks, and the reference is replaced whole.</summary>
+    private (double Lat, double Lng)? PlayerPosition() =>
+        Volatile.Read(ref movementPosition) is { } fix &&
+        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - fix.CapturedUtcMs <= DistanceIntegrity.RetentionSeconds * 1000L
+            ? (fix.Lat, fix.Lng) : null;
 
     public object DistanceStatus()
     {

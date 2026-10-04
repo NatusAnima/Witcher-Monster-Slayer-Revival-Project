@@ -35,3 +35,5 @@ scratch/
 
 CLAUDE.md
 HANDOFF.md
+# hook.js bundle dependencies (restart.py installs them)
+tools/client116/node_modules/

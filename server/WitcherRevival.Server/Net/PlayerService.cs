@@ -2650,9 +2650,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     }
 
     /// <summary>Chooses and saves a pedestrian-safe place for a story stage or node: a playable place of the
-    /// loaded area in the distance band around the area's centre (or around <paramref name="near"/>), away
-    /// from the places already taken. A node that belongs beside another one falls back to that one's point.
-    /// Null when no area is loaded or no place fits.</summary>
+    /// loaded area in the distance band around the player's GPS position, else the area's centre (or around
+    /// <paramref name="near"/>), away from the places already taken. A node that belongs beside another one
+    /// falls back to that one's point. Null when no area is loaded or no place fits.</summary>
     private LocalProfileStore.StoryPlace? ChooseStoryPlace(string key, double min, double max,
         LocalProfileStore.StoryPlace? near, IReadOnlyCollection<LocalProfileStore.StoryPlace> taken)
     {
@@ -2661,7 +2661,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var options = new List<PlayableLocations.Place>();
         if (cells is { Count: > 0 })
         {
-            double lat = near?.Lat ?? cells.Average(c => c.Lat), lng = near?.Lng ?? cells.Average(c => c.Lng);
+            var player = PlayerPosition();
+            double lat = near?.Lat ?? player?.Lat ?? cells.Average(c => c.Lat),
+                lng = near?.Lng ?? player?.Lng ?? cells.Average(c => c.Lng);
             // Authored spacing: separate spots for separate goals; a companion node may stand closer.
             double spacing = near is null ? 100 : 40;
             var band = cells.SelectMany(c => c.Places).Where(p =>

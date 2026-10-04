@@ -1765,7 +1765,7 @@ class PrototypeTests(unittest.TestCase):
         server, c, path, _, old, a, b, control = self.relocation_fixture(facts={100: 4, 53: 1}, started=[149])
         giver, = self.locations_by_cell(c.rpc(40, I(1) + Q(a)))['quests']
         before = path.read_bytes()
-        for data in (Q(-1), Q(Reader(old).quest()['nodes'][0]['instance']), Q(giver['instance']), Q(1) + b'\0'):
+        for data in (Q(-1), Q(Reader(old).quest()['nodes'][0]['instance']), Q(1) + b'\0'):
             self.assertEqual(c.rpc(77, data), b'\0' * 13)
             self.assertEqual(path.read_bytes(), before)
         c.rpc(88, I(1) + Q(b))
@@ -1788,6 +1788,30 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(other.rpc(77, Q(giver['instance'])), b'\0' * 13)
         self.assertEqual(other_path.read_bytes(), other_before)
         self.assertEqual(path.read_bytes(), before)
+
+    def test_relocation_moves_goal_inside_the_estimated_area(self):
+        # Only the client checks the 1000 m distance; a goal in a loaded cell must still move.
+        _, c, _, _, old, a, _, _ = self.relocation_fixture('griffin', {94: -3})
+        giver, = self.locations_by_cell(c.rpc(40, I(1) + Q(a)))['quests']
+        response = c.rpc(77, Q(giver['instance']))
+        self.assertEqual(response[:1], b'\1')
+        self.assertNotEqual(Reader(response[1:]).quest()['nodes'][0]['place'], Reader(old).quest()['nodes'][0]['place'])
+
+    def test_relocation_places_goals_around_the_gps_fix(self):
+        # With the GPS collector (RPC 2001) reporting, the band is measured from the player, not the area.
+        _, c, path, _, _, _, b, control = self.relocation_fixture('griffin', {94: -3})
+        control['radii'] = tuple(range(300, 2600, 100))
+        c.rpc(88, I(1) + Q(b))
+        giver, = self.locations_by_cell(c.rpc(40, I(1) + Q(b)))['quests']
+        now = int(time.time() * 1000)
+        epoch = c.rpc(2001, struct.pack('>BBHIqq', 1, 1, 0, 7, 100000, now))[4:20]
+        lat = 11 + 1500 / 110540  # 1.5 km north of the cell's centre: the two bands cannot overlap
+        fix = struct.pack('>qqddfI', now, 100000, lat, 20.0, 5, 5)
+        c.rpc(2001, struct.pack('>BBH16sqI', 1, 2, 0, epoch, 1, 1) + fix)
+        self.assertEqual(c.rpc(77, Q(giver['instance']))[:1], b'\1')
+        goal = json.loads(path.read_text())['Player']['StoryPlaces']['griffin']
+        metres = math.hypot((goal['Lat'] - lat) * 110540, (goal['Lng'] - 20) * 111320 * math.cos(math.radians(11)))
+        self.assertTrue(250 <= metres <= 700, metres)
 
     def test_relocation_moves_joint_venture_anchors_and_only_unfinished_goals(self):
         _, c, path, _, old, a, b, _ = self.relocation_fixture('jv_gifts', {107: 4}, done=['heart'])

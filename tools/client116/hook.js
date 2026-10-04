@@ -1,7 +1,9 @@
 // Points The Witcher: Monster Slayer 1.1.116 at a self-hosted server. Frida Gadget loads it into the game.
 // RVA holds il2cpp exports of the original 1.1.116 libil2cpp.so (sha256 c8a5556b…, checked by
 // build_client.py). They are used instead of a by-name lookup, which crashed the Android 17 linker.
+// It imports the GPS collector and Frida's Java bridge, so restart.py bundles it before pushing it.
 'use strict';
+import { startGps } from './gps.js';
 
 const CONFIG = {
   gameHost: '127.0.0.1',  // IPv4 literal of the server, as the phone reaches it
@@ -169,6 +171,7 @@ function install(m) {
     },
   });
   log('hooks installed');
+  try { startGps(m, log); } catch (e) { log('gps disabled:', e.message); }
 }
 
 const loaded = Process.findModuleByName('libil2cpp.so');

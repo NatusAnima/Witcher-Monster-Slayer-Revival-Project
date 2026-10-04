@@ -35,7 +35,13 @@ Two tracks:
 
 **Known gaps:**
 - **News is empty.** The game fetches it over System.Net HTTPS, and the hook refuses port 443. Porting the sharer's async-news fix (`client/news_async/` in the shared repo) would fix it.
-- **The sharer's other client fixes are not ported yet:** the request watchdog, the GPS distance collector (the server's distance integrity runs in observation mode without it), and network-loss auto-recovery.
+- **The sharer's other client fixes are not ported yet:** the request watchdog and network-loss auto-recovery.
+- **GPS collector (ported 2026-10-05, device check pending):** `tools/client116/gps.js` sends location fixes as RPC 2001.
+  - Android 11 delivers them through Unity's `ReflectionHelper` proxy; Android 12+ uses the fused callback.
+  - `restart.py` bundles it with `frida-java-bridge` into `local/client/hook.bundle.js`.
+  - The server keeps the newest position for 120 s. Story goals and relocation are placed around it; without a position they fall back to the area estimate.
+  - Distance policy stays observation (`shadow`) unless changed in the panel.
+  - Look for `gps …` lines in `scratch/game.log` (`capture-ready`, `native-ready`, `shadow-ready`, `counts …`).
 - **The phone must stay plugged in.** All traffic goes through `adb reverse`, and the server binds only to loopback.
 
 ## Device and Tooling Notes

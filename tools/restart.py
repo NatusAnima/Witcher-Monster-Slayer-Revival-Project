@@ -19,7 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ADB = os.path.join(ROOT, "tools", "platform-tools", "adb.exe" if os.name == "nt" else "adb")
 SCRATCH = os.path.join(ROOT, "scratch")
 PKG = "com.spokko.witchermonsterslayer"
-HOOK = os.path.join(ROOT, "tools", "client116", "hook.js")
+CLIENT = os.path.join(ROOT, "tools", "client116")
 HOOK_DIR = f"/sdcard/Android/data/{PKG}/files"  # the client's Gadget loads hook.js from here (build_client.py)
 SERVER = os.path.join(ROOT, "server")
 MAPS = os.path.join(SERVER, "connection", "map-road-fixture-01")
@@ -56,6 +56,18 @@ def start(name, cmd, **kw):
     except OSError:
         pass  # missing, or still held open by an earlier run's process
     return subprocess.Popen(cmd, stdout=open(path, "w"), stderr=subprocess.STDOUT, **kw)
+
+
+def bundle_hook():
+    """hook.js imports gps.js and Frida's Java bridge; Gadget loads a single file, so bundle them into one."""
+    if not os.path.isdir(os.path.join(CLIENT, "node_modules")):
+        subprocess.run([shutil.which("npm"), "install", "--no-package-lock", "--no-audit", "--no-fund"], cwd=CLIENT, check=True)
+    import frida
+    path = os.path.join(LOCAL, "client", "hook.bundle.js")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(frida.Compiler().build("hook.js", project_root=CLIENT, source_maps="omitted", compression="terser"))
+    return path
 
 
 def serve_panel(key):
@@ -123,6 +135,8 @@ def main():
                     "-p:UseSharedCompilation=false", "-v", "q", "--nologo"], cwd=ROOT, check=True,
                    stdout=subprocess.DEVNULL)
     dll = os.path.join(BUILD, "bin", "WitcherRevival.Server", "release", "WitcherRevival.Server.dll")
+    print("bundling hook.js ...")
+    hook = bundle_hook()
 
     procs = [
         start("tiles", [PY, "-B", os.path.join(MAPS, "osm_live_sidecar.py"), "--bind", "127.0.0.1", "--port", str(TILES),
@@ -148,7 +162,7 @@ def main():
         for port in (GAME, HTTP, TILES):
             adb("reverse", f"tcp:{port}", f"tcp:{port}")
         adb("shell", "mkdir", "-p", HOOK_DIR)
-        adb("push", HOOK, HOOK_DIR + "/hook.js")
+        adb("push", hook, HOOK_DIR + "/hook.js")
         adb("logcat", "-c", check=False)
         procs.append(start("game", [ADB, "logcat", "-v", "time", "-s", "Frida:V", "Unity:E"]))
         adb("shell", "am", "force-stop", PKG)
