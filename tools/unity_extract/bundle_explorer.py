@@ -6,6 +6,7 @@ Usage:
     python bundle_explorer.py list <bundle.bundle>
     python bundle_explorer.py search <bundle.bundle> <name-substring> [more-substrings...]
     python bundle_explorer.py graph <bundle.bundle> <NodeGraph-m_Name>
+    python bundle_explorer.py extract <name-substring> [more-substrings...]
 
 `graph` walks an XNode-based BehaviourGraph asset's `nodes` list and prints each node's name,
 scalar fields (FactId, QuestEndName, _investigationSlug, etc.), and outgoing port connections —
@@ -88,7 +89,26 @@ def cmd_graph(path, target_name):
             print(f"      -> {conns}")
 
 
+def cmd_extract(needles):
+    """Copy every OBB bundle whose name contains one of the substrings into tools/apk_extracted/bundles/."""
+    import glob, os, zipfile
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    obb = glob.glob(os.path.join(root, "Original APK and OBB", "**", "main.*.obb"), recursive=True)[0]
+    out = os.path.join(root, "tools", "apk_extracted", "bundles")
+    os.makedirs(out, exist_ok=True)
+    with zipfile.ZipFile(obb) as z:
+        for name in z.namelist():
+            base = name.rsplit("/", 1)[-1]
+            if name.endswith(".bundle") and any(n in base for n in needles):
+                with open(os.path.join(out, base), "wb") as f:
+                    f.write(z.read(name))
+                print("extracted", base)
+
+
 if __name__ == "__main__":
+    if len(sys.argv) >= 3 and sys.argv[1] == "extract":
+        cmd_extract(sys.argv[2:])
+        sys.exit(0)
     if len(sys.argv) < 3:
         print(__doc__)
         sys.exit(1)
