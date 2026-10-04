@@ -713,7 +713,157 @@
   {
    "row": {
     "item_id": 301,
-    "effect_id": 41,
+    "effect_id": 29,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 30,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 31,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 32,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 33,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 34,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 35,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 36,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 37,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 38,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 39,
     "power": 33,
     "effect_apply_type_id": 1
    },
