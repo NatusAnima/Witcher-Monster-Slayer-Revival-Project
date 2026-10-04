@@ -144,6 +144,7 @@ def main():
         serve_panel(admin_key)
 
         print("relaunching game ...")
+        adb("wait-for-device")  # rides out a USB reconnect instead of failing the whole restart
         for port in (GAME, HTTP, TILES):
             adb("reverse", f"tcp:{port}", f"tcp:{port}")
         adb("shell", "mkdir", "-p", HOOK_DIR)
