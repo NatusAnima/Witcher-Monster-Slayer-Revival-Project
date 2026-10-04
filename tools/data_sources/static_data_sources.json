@@ -1,0 +1,421 @@
+{
+ "potion_to_effect": [
+  {
+   "row": {
+    "item_id": 201,
+    "effect_id": 4,
+    "power": 10,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Blizzard",
+    "text": "Instantly gain some CRITICAL HIT METER charge when entering combat.",
+    "placeholder": true
+   }
+  },
+  {
+   "row": {
+    "item_id": 202,
+    "effect_id": 18,
+    "power": 75,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Cat",
+    "text": "Increases damage dealt at night by +75%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 203,
+    "effect_id": 26,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Petri's Philter",
+    "text": "Increases SIGN intensity by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 204,
+    "effect_id": 19,
+    "power": 75,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Squall",
+    "text": "Increases all damage dealt by SWORDS and SIGNS during precipitation by +75%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 205,
+    "effect_id": 76,
+    "power": 1,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Swallow",
+    "text": "Regenerates 1% of VITALITY per second from the moment of drinking the potion until returning to the map."
+   }
+  },
+  {
+   "row": {
+    "item_id": 206,
+    "effect_id": 40,
+    "power": 50,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Swift",
+    "text": "Increases maximum VITALITY by 50%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 207,
+    "effect_id": 17,
+    "power": 30,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Tawny Owl",
+    "text": "Reduces COOLDOWN for casting SIGNS by 30%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 208,
+    "effect_id": 41,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Thunderbolt",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 209,
+    "effect_id": 20,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer potions",
+    "revid": 580880,
+    "section": "PRE-1.2.0",
+    "name": "Wolverine",
+    "text": "Increases all damage dealt by SWORDS and SIGNS by 100% when the player's VITALITY reaches 30%."
+   }
+  }
+ ],
+ "oil_to_effect": [
+  {
+   "row": {
+    "item_id": 301,
+    "effect_id": 41,
+    "power": 33,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Basic oil",
+    "text": "Increases MELEE DAMAGE by 33%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 302,
+    "effect_id": 39,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Cursed oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 303,
+    "effect_id": 30,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Draconid oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 304,
+    "effect_id": 33,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Elemental oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 305,
+    "effect_id": 32,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Hybrid oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 306,
+    "effect_id": 36,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Insectoid oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 307,
+    "effect_id": 29,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Necrophage oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 308,
+    "effect_id": 31,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Ogroid oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 309,
+    "effect_id": 34,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Relict oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 310,
+    "effect_id": 35,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Specter oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  },
+  {
+   "row": {
+    "item_id": 311,
+    "effect_id": 38,
+    "power": 100,
+    "effect_apply_type_id": 1
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer oils",
+    "revid": 578309,
+    "section": "PRE-1.2.0",
+    "name": "Vampire oil",
+    "text": "Increases MELEE DAMAGE dealt against this class by 100%."
+   }
+  }
+ ],
+ "bomb_damage_types": [
+  {
+   "row": {
+    "bomb_id": 401,
+    "damage_type_id": 4,
+    "amount": 525
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Basic bomb",
+    "text": "A BOMB that inflicts 525 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 402,
+    "damage_type_id": 1,
+    "amount": 525
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Dancing Star",
+    "text": "A BOMB that inflicts 525 damage points from FIRE and 800 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 402,
+    "damage_type_id": 4,
+    "amount": 800
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Dancing Star",
+    "text": "A BOMB that inflicts 525 damage points from FIRE and 800 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 403,
+    "damage_type_id": 4,
+    "amount": 525
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Dimeritium Bomb",
+    "text": "A BOMB that releases a cloud of DIMERITIUM slivers; making susceptible monsters vulnerable to all kinds of attacks. Additionally; it inflicts 525 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 404,
+    "damage_type_id": 3,
+    "amount": 525
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Grapeshot",
+    "text": "A BOMB that inflicts 525 damage points from STEEL and 800 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 404,
+    "damage_type_id": 4,
+    "amount": 800
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Grapeshot",
+    "text": "A BOMB that inflicts 525 damage points from STEEL and 800 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 405,
+    "damage_type_id": 2,
+    "amount": 525
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Moon Dust",
+    "text": "A BOMB that inflicts 525 damage points from SILVER and 800 damage points from KINETIC ENERGY."
+   }
+  },
+  {
+   "row": {
+    "bomb_id": 405,
+    "damage_type_id": 4,
+    "amount": 800
+   },
+   "source": {
+    "page": "The Witcher Monster Slayer bombs",
+    "revid": 579466,
+    "section": "Bombs before update 1.2",
+    "name": "Moon Dust",
+    "text": "A BOMB that inflicts 525 damage points from SILVER and 800 damage points from KINETIC ENERGY."
+   }
+  }
+ ]
+}
