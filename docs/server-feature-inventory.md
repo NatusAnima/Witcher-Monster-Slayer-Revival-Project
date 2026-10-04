@@ -166,9 +166,9 @@ JSON keys are the hidden DataMember `Name=` snake_case strings, not the C# names
 
 | ID | Method | Req → Resp | Status | Server needs to |
 |---|---|---|---|---|
-| 57 | EndBehaviourGraph | (instanceId, output, facts) → Success, Locations, QuestNodeInstances, Exp, Gold, 7 item dicts, Armors, Swords, Expiring | ✅ *live* | Done: facts, step progress and the next node. **Rewards are still zero** (e.g. Thorstein's oil). |
+| 57 | EndBehaviourGraph | (instanceId, output, facts) → Success, Locations, QuestNodeInstances, Exp, Gold, 7 item dicts, Armors, Swords, Expiring | ✅ *live* | Done: facts, quest progress (`QuestFlow`, §4) and every active node, with Auto-node timers in Expiring. **Rewards are still zero** (e.g. Thorstein's oil). |
 | 58 / 59 / 78 | GetFacts / GetAllFacts / SetFacts | | ✅ *live* | Persisted in `data/facts.json` |
-| 60 | GetActiveQuestNodeInstances | `{}` → Locations, QuestNodeInstances, Expiring | ✅ batch | Serves the S00 prolog_01 chain (§4) with a per-step `PoiDisplayMode` (1 Normal, 2 CloseFollow, 3 FarFollow, 4 Hunt, 5 Auto, 6 Hidden, 7 Collecting): CloseFollow for Thorstein and dead_horse, Hunt (search circle) for footprints and tracks, Normal for the griffin; the originals' values are unknown. Steps spawn at the fixed dev coordinates `TutLat/TutLng`, so walk there or fake GPS. |
+| 60 | GetActiveQuestNodeInstances | `{}` → Locations, QuestNodeInstances, Expiring | ✅ batch | Serves every active quest step (§4) with a per-step `PoiDisplayMode` (1 Normal, 2 CloseFollow, 3 FarFollow, 4 Hunt, 5 Auto, 6 Hidden, 7 Collecting): CloseFollow for NPCs/monsters/objects, Hunt (search circle) for footprints and tracks, Auto for timers and invisible routers, Normal for the griffin; the originals' values are unknown. Steps sit on a 35 m ring around the fixed dev coordinates `QuestLat/QuestLng`, so walk there or fake GPS. Expiring = Auto-node fire times (Unix seconds). |
 | 70 | GetFinishedSeasonQuests | `{}` → CurrentSeason, FinishedQuests, TrackedQuestId, ActiveQuestIdList | 🟡 batch: season 0, ids 0..299 active | Real season/quest state |
 | 61 / 62 | Get/SetCurrentObjective | string | 🟡 empty / 🔴 | Persist the objective text |
 | 72 | TrackQuest | quest id → id | 🟡 echo | Persist the tracked quest |
@@ -243,20 +243,59 @@ graph data agree:
 
 **Fact 3 is the client's "tutorial finished" flag.** `Tutorial.CheckTutorial` (0x1F9A10C) reads it at boot: if it
 is non-zero it unlocks the gated features (`ToggleTutorialFeatures`); otherwise it waits for fact updates. Only
-the tutorial's end sets it (`tut_gravehag` "exam_end" and `tut_exit` set facts 2=1, 3=1, 102=1). Our server
-starts players at Thorstein and seeds fact 2=1 but never sets 3, which is very likely why the bottom menu and
-info screens never appear.
+the tutorial's end sets it (`tut_gravehag` "exam_end" and `tut_exit` set facts 2=1, 3=1, 102=1). Fresh saves
+now start in the tutorial, so it gets set (live-verified 2026-10-03).
 
 | Chapter | Graphs | Status |
 |---|---|---|
 | `s00/tutorial` (quest 144, "the witcher exam"): `tut_witcher` (instance 1271842437439635223, POI `s00/tutorial/tutorial_witcher_lq`), `tut_ghoul` (1152921521786716388, POI `ghoul_lq`), `tut_gravehag` (1152921521786716389, cutscene `cs_tutorial_witcher`, ends `exam_end`/`exam_fail`), `tut_empty` (2547305230505251704, outputs `devourer`/`empty_end`, POI `devourer_lq`?), `tut_exit` (skip path), plus fight sub-graphs `tut_ui`, `tut_dummy_1..3` | 9 | 🔴 not served (a fresh player starts at Thorstein); exact step order inside the chapter unknown |
 | `s00/prolog` prolog_01 (quest 145): `thorstein → footprints_01 → tracks_01 → tracks_02 → dead_horse → tracks_03 → griffin` (+ `tracking`, a re-route helper with outputs `tracking`/`CT_horse`/`CT_gryphon`) | 8 | ✅ served in this order. thorstein and dead_horse are live-verified (dead_horse has 3 endings: `dead_horse`/`1ghoul_left`/`2ghouls_left`); later steps untested. The order comes from journal fact 10145, which each graph sets to 1,1,2,3,4,5,6 along it. |
-| `s00/prolog` prolog_02 (quest 146): `qi_map_button` (journal 2, fact 107=3) → `obelisk` (journal 3, 107=4) → `crown` / `heart` / `sword` in any order (facts 97 / 99 / 98) → `gargoyle` (requires all three; sets 102=3, 70=2, clears 10145); `map` is a re-route helper (`CT_obelisk`/`CT_gargoyle`) | 7 | 🔴 not served |
-| `s01` (quests 147-161): hq01 sword_in_stone, hq02 nests, hq03 blacksmith, hq04 firefly, hq05 bandit_and_devourer, hq06 trolling, mq01 scholar, mq02 cure, mq03 striga, mq04 cursed_one, mq05 mushroom_hunt, mq06 frightener, plus `quest_item_buttons` and a `s01_chickentest` test graph. Main (hq) and side (mq) quests likely run in parallel; fact 70 is reused across them as a shared state value. | 127 | 🔴 |
+| `s00/prolog` prolog_02 (quest 146): `map` (Auto, QuestNodeId 287 = the griffin's Queue Story Graph; gives Thorstein's map) → `obelisk` → `crown` / `heart` / `sword` all at once (facts 97 / 99 / 98) → `gargoyle` (offered after the first item; the heart is the right gift; sets 102=3, 70=2, clears 10145). `qi_map_button` is Sword in the Stone's map, not this one. | 7 | 🟡 served, untested |
+| `s01` (quests 147-161, see the checklist below) plus `quest_item_buttons` and a `s01_chickentest` test graph. Lines run in parallel; fact 31 counts finished main quests (5 unlock Intruder), fact 70 is Thorstein's state. | 127 | 🟡 served, untested |
 
-Extracted so far: the `s00_story_*` bundles and `s01_story_graphs_assets_all.bundle` (`tools/apk_extracted/bundles/`;
-each comes out of the OBB's `assets/aa/Android/`). Read any graph with
-`python tools/unity_extract/bundle_explorer.py graph <bundle> <name>`.
+Extract the story bundles with `python tools/unity_extract/bundle_explorer.py extract story_ dialogs_ journal_glossary`
+(into `tools/apk_extracted/bundles/`), read one graph with `bundle_explorer.py graph <bundle> <name>`, and rebuild
+`tools/data_sources/quest_catalog.json` (every graph's outputs, per-output facts, Queue Story Graph targets, seeds)
+with `python tools/unity_extract/quest_catalog.py --check` (`--check` lists monster/NPC slugs missing from static data).
+
+### Quest engine
+
+The original server advanced quests by node output: the client's static data has `quest_node_outputs` and
+`quest_node_edges` (output → node), never shipped to us. **`StaticData/quests.json`** rebuilds them (format in its
+`_notes`): 105 steps (graph, QuestNodeInstanceId, QuestNodeId, POI settings, display mode, optional timer) and 186
+output edges. `Net/QuestFlow.cs` keeps the active steps (several at once) in `data/quest_state.json`; an output
+retires its step and activates the edge targets (`-x` retires another step, `{step, if: [fact, op, value]}` gates on a
+fact). An output with no edge keeps the step for a retry. **Queue Story Graph** `n` makes the client run the active node
+with QuestNodeId `n` right after the current graph (`BehaviourGraphModule.FireQueuedGraph`), so the steps it names
+keep those ids: 231, 287, 387, 395, 403. Still unknown: 297, 383, 399, 451, 474, 324-327, 464-471, 486-491, 495.
+
+**Dev triggering:** `curl localhost:8081/debug/quests`, `curl -X POST "localhost:8081/debug/quest/<step>?replace=true"`
+(drop the other steps), `curl -X DELETE localhost:8081/debug/quest/<step>`. The client picks it up on its next quest
+reply or boot (`tools/restart.py`).
+
+Edges after prolog_01 are inferred from the journal step each output sets (`output_facts` in the catalog) and the wiki
+walkthroughs (`tools/data_sources/wiki/quests_pages.json`), so each line needs a play-through. Not served yet:
+free-roam/injectable graphs (`*_ig`, `*_short`), quest-item buttons (`qi_*`: no quest items in the inventory yet),
+some timers (`s01hq03_timer*`, `s01hq05_timer`, `s01mq02_potion`, `s01mq06_timer`, `s01hq04_too_late`) and
+checkpoint outputs (`CT_*`, fact 190). Most S01 fights also need monsters that aren't in static data yet (`--check`).
+
+| Quest (wiki name) | Graphs | Starts | Status |
+|---|---|---|---|
+| Final Exam (tutorial, 144) | `tut_*` | fresh save | ✅ played 2026-10-03 |
+| Winged Bandit (prolog_01, 145) | `prolog_01_*` | exam end | 🟡 thorstein → tracks_03 played; griffin untested |
+| A Joint Venture (prolog_02, 146) | `prolog_02_*` | griffin | 🔴 untested |
+| Good Money (mq01, 149) | `s01mq01_*` | gargoyle | 🔴 untested |
+| Sword in the Stone (hq01, 158) | `s01hq01_*` | Good Money | 🔴 untested |
+| What Lurks in the Nemeta (hq02, 159) | `s01hq02_*` | Good Money (originally: first nemeton, level 10) | 🔴 untested |
+| The Dark Side of the Full Moon (hq03, 147) | `s01hq03_*` | Good Money (full moon only) | 🔴 untested |
+| Will O'The Wisp (hq04, 160) | `s01hq04_*` | Good Money (originally level 10) | 🔴 untested |
+| To the Rescue (hq05, 148) | `s01hq05_*` | Good Money | 🔴 untested |
+| Monster Slayer (hq06, 161) | `s01hq06_*` | debug only (originally: losing to free-roam trolls) | 🔴 untested |
+| Pride Ain't Cheap (mq02, 150) | `s01mq02_*` | Good Money | 🔴 untested |
+| Sins of our Fathers (mq03, 152) | `s01mq03_*` | Pride Ain't Cheap | 🔴 untested |
+| Evil Never Sleeps (mq04, 104) | `s01mq04_*` | Good Money | 🔴 untested |
+| The Great Mushrooming (mq05, 153) | `s01mq05_*` | Sins of our Fathers | 🔴 untested |
+| Intruder (mq06, 154) | `s01mq06_*` | 5 main quests done (fact 31) | 🔴 untested |
 
 ## 5. Suggested order of work
 

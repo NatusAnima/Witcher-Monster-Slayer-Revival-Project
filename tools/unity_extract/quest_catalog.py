@@ -3,6 +3,7 @@
 One pass over the extracted story-graph bundles (run `bundle_explorer.py extract story_ dialogs_ journal_glossary`
 first). Per graph it records what the server's quest flow needs and what the graph will look up:
   - asset path / chapter, baked QuestNodeInstanceId, tracked quest ids (Set Tracked Quest), Quest End Request outputs
+    and, per output, the facts set alongside it (output_facts: journal step = the order inside a quest line)
   - facts set (incl. journal steps = fact 10000 + quest id) and fact requirements
   - Queue Story Graph targets (these are the ORIGINAL server QuestNodeIds, e.g. 231 = tutorial node)
   - sub-graphs run (GraphRunnerNode), journal logs / notifications, expiring effects, quest item interactions
@@ -32,6 +33,36 @@ def asset_paths():
     return paths
 
 
+def control_ports(n):
+    """Output ports that carry control flow (direction 1, not a data port) -> target node path ids."""
+    p = n.get("ports", {})
+    return {k: [c["node"]["m_PathID"] for c in v.get("connections", [])]
+            for k, v in zip(p.get("keys", []), p.get("values", []))
+            if v.get("_direction") == 1 and k not in ("DataConsumer", "OutputValue") and "Output" not in k}
+
+
+def output_facts(g, objs):
+    """Quest End Request output -> facts set alongside it: Set Fact siblings on the same predecessor port, plus
+    everything downstream of the request until the graph ends. Journal steps (fact 10000 + quest id) show up here."""
+    ids = {r["m_PathID"] for r in g["nodes"]}
+    ports = {pid: control_ports(objs.get(pid, {})) for pid in ids}
+    out = collections.defaultdict(set)
+    for pid in ids:
+        n = objs.get(pid, {})
+        if not n.get("m_Name", "").startswith("Quest End Request"): continue
+        group = {t for p in ports.values() for targets in p.values() if pid in targets for t in targets}
+        stack, seen = [t for ts in ports[pid].values() for t in ts], set()
+        while stack:
+            x = stack.pop()
+            if x in seen or x not in ids: continue
+            seen.add(x); stack += [t for ts in ports[x].values() for t in ts]
+        for x in group | seen:
+            m = objs.get(x, {})
+            if "Set Fact" in m.get("m_Name", "") and "FactId" in m: out[n["QuestEndName"]].add((m["FactId"], m.get("Value")))
+        out[n["QuestEndName"]] |= set()
+    return {k: sorted(v) for k, v in out.items()}
+
+
 def catalog_graph(g, objs):
     info = collections.defaultdict(list)
     names = collections.Counter()
@@ -56,6 +87,7 @@ def catalog_graph(g, objs):
         seed = (n.get("_dataCache") or {}).get("_seedData") or []
         if len(seed) >= 3 and seed[1]: info["seeds:" + seed[2]].append(seed[1])
     out = {k: sorted(set(map(str, v))) if k.startswith("seeds:") else v for k, v in info.items()}
+    out["output_facts"] = output_facts(g, objs)
     out["node_counts"] = dict(names.most_common(12))
     return out
 

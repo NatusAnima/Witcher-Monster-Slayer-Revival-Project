@@ -4,6 +4,7 @@
   "path": "_common/transitions/customization_fadeoutblacktransition",
   "instance_id": 0,
   "nodes": 4,
+  "output_facts": {},
   "node_counts": {
    "Transition": 1,
    "Fade In Effect": 1,
@@ -19,6 +20,7 @@
   "runs": [
    "fadeoutblacktransition"
   ],
+  "output_facts": {},
   "node_counts": {
    "Cutscene": 1,
    "Start Graph": 1,
@@ -36,6 +38,7 @@
   "runs": [
    "fadeoutblacktransition"
   ],
+  "output_facts": {},
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -51,6 +54,7 @@
   "path": "_common/transitions/fadeintransition",
   "instance_id": 0,
   "nodes": 5,
+  "output_facts": {},
   "node_counts": {
    "Bg Transition": 1,
    "Fade In Effect": 1,
@@ -64,6 +68,7 @@
   "path": "_common/transitions/fadeoutblacktransition",
   "instance_id": 0,
   "nodes": 4,
+  "output_facts": {},
   "node_counts": {
    "Transition": 1,
    "Fade In Effect": 1,
@@ -93,6 +98,7 @@
   "seeds:FloatValue": [
    "0"
   ],
+  "output_facts": {},
   "node_counts": {
    "Wait Until": 2,
    "Prepare Fight": 1,
@@ -113,6 +119,7 @@
   "path": "_common/transitions/fightlosestandardtransition",
   "instance_id": 0,
   "nodes": 10,
+  "output_facts": {},
   "node_counts": {
    "Concurrent Effects Runner": 1,
    "Monster Animation Effect": 1,
@@ -131,6 +138,7 @@
   "path": "_common/transitions/fightwinfasttransition",
   "instance_id": 0,
   "nodes": 10,
+  "output_facts": {},
   "node_counts": {
    "Transition": 1,
    "Concurrent Effects Runner": 1,
@@ -149,6 +157,7 @@
   "path": "_common/transitions/fightwinstandardtransition",
   "instance_id": 0,
   "nodes": 10,
+  "output_facts": {},
   "node_counts": {
    "Transition": 1,
    "Concurrent Effects Runner": 1,
@@ -173,6 +182,7 @@
   "seeds:BackgroundScene": [
    "scene_bg_water"
   ],
+  "output_facts": {},
   "node_counts": {
    "Transition": 2,
    "Start Graph": 1,
@@ -195,6 +205,7 @@
    "",
    ""
   ],
+  "output_facts": {},
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -210,6 +221,7 @@
   "quest_item_graphs": [
    ""
   ],
+  "output_facts": {},
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -229,6 +241,7 @@
   "seeds:MonsterSlug": [
    "gargoyle"
   ],
+  "output_facts": {},
   "node_counts": {
    "Fightgraph": 3,
    "Monster_": 3,
@@ -252,6 +265,7 @@
    "False",
    "True"
   ],
+  "output_facts": {},
   "node_counts": {
    "MonsterInstanceInput": 1,
    "BackgroundScene": 1,
@@ -304,6 +318,7 @@
     true
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "Immediately Set Fact": 4,
    "Fightgraph": 3,
@@ -327,6 +342,7 @@
   "seeds:PresentationData": [
    "qwdqwd"
   ],
+  "output_facts": {},
   "node_counts": {
    "Load Enviro": 1,
    "Start Graph": 1,
@@ -353,6 +369,7 @@
    "False",
    "True"
   ],
+  "output_facts": {},
   "node_counts": {
    "MonsterInstanceInput": 1,
    "BackgroundScene": 1,
@@ -390,6 +407,7 @@
   "seeds:FloatValue": [
    "0"
   ],
+  "output_facts": {},
   "node_counts": {
    "Wait Until": 2,
    "Prepare Fight": 1,
@@ -410,6 +428,7 @@
   "path": "_common/evento",
   "instance_id": null,
   "nodes": 6,
+  "output_facts": {},
   "node_counts": {
    "On Player Level Up": 1,
    "Start Graph": 1,
@@ -427,6 +446,7 @@
   "runs": [
    8291135502818041927
   ],
+  "output_facts": {},
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -439,6 +459,7 @@
   "path": "_common/test_injectable_graph",
   "instance_id": 0,
   "nodes": 2,
+  "output_facts": {},
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1
@@ -452,6 +473,7 @@
   "runs": [
    8291135502818041927
   ],
+  "output_facts": {},
   "node_counts": {
    "Fadeintransition": 1,
    "Unload Enviro": 1,
@@ -636,6 +658,66 @@
   "seeds:BooleanValue": [
    "False"
   ],
+  "output_facts": {
+   "1ghoul_left": [
+    [
+     95,
+     0
+    ],
+    [
+     96,
+     1
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     10145,
+     4
+    ]
+   ],
+   "2ghouls_left": [
+    [
+     95,
+     0
+    ],
+    [
+     96,
+     1
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     10145,
+     4
+    ]
+   ],
+   "dead_horse": [
+    [
+     94,
+     -3
+    ],
+    [
+     95,
+     0
+    ],
+    [
+     96,
+     1
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     10145,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 14,
    "Set Fact": 11,
@@ -666,6 +748,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "footprints_01": [
+    [
+     10145,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "Quest End Request": 1,
@@ -774,6 +864,37 @@
     1
    ]
   ],
+  "output_facts": {
+   "fail": [],
+   "griffin_2": [
+    [
+     107,
+     2
+    ],
+    [
+     1005,
+     1
+    ]
+   ],
+   "griffin_1": [
+    [
+     102,
+     2
+    ],
+    [
+     107,
+     2
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     1005,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 4,
    "Immediately Set Fact": 4,
@@ -875,6 +996,30 @@
     1
    ]
   ],
+  "output_facts": {
+   "thorstein": [
+    [
+     77,
+     2
+    ],
+    [
+     95,
+     1
+    ],
+    [
+     107,
+     1
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     10145,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "Immediately Set Fact": 3,
@@ -927,6 +1072,21 @@
     false
    ]
   ],
+  "output_facts": {
+   "CT_gryphon": [],
+   "tracking": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_horse": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Quest End Request": 3,
    "Branching": 3,
@@ -952,6 +1112,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_01": [
+    [
+     10145,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -974,6 +1142,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_02": [
+    [
+     10145,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -996,6 +1172,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_03": [
+    [
+     10145,
+     5
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -1142,6 +1326,25 @@
     "log_prolog_02"
    ]
   ],
+  "output_facts": {
+   "crown_fail": [
+    [
+     97,
+     2
+    ],
+    [
+     208,
+     1
+    ]
+   ],
+   "crown_again": [
+    [
+     208,
+     0
+    ]
+   ],
+   "crown": []
+  },
   "node_counts": {
    "Set Fact": 9,
    "Fact Requirement": 9,
@@ -1630,6 +1833,144 @@
    "gargoyle",
    "wraith_lvl2"
   ],
+  "output_facts": {
+   "wraith_fail": [
+    [
+     100,
+     2
+    ],
+    [
+     112,
+     0
+    ],
+    [
+     10146,
+     8
+    ]
+   ],
+   "gargoyle": [
+    [
+     70,
+     2
+    ],
+    [
+     100,
+     3
+    ],
+    [
+     100,
+     4
+    ],
+    [
+     100,
+     5
+    ],
+    [
+     102,
+     3
+    ],
+    [
+     112,
+     3
+    ],
+    [
+     112,
+     4
+    ],
+    [
+     112,
+     5
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     10145,
+     0
+    ],
+    [
+     10146,
+     0
+    ],
+    [
+     10146,
+     9
+    ]
+   ],
+   "success": [],
+   "wraith_won": [
+    [
+     10146,
+     5
+    ]
+   ],
+   "success_heart": [],
+   "gargoyle_again": [
+    [
+     70,
+     2
+    ],
+    [
+     100,
+     3
+    ],
+    [
+     100,
+     4
+    ],
+    [
+     100,
+     5
+    ],
+    [
+     102,
+     3
+    ],
+    [
+     112,
+     3
+    ],
+    [
+     112,
+     4
+    ],
+    [
+     112,
+     5
+    ],
+    [
+     123,
+     0
+    ],
+    [
+     10145,
+     0
+    ],
+    [
+     10146,
+     0
+    ],
+    [
+     10146,
+     9
+    ]
+   ],
+   "gargoyle_fail": [
+    [
+     100,
+     2
+    ],
+    [
+     210,
+     1
+    ],
+    [
+     10146,
+     6
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 47,
    "Branching": 26,
@@ -1789,6 +2130,25 @@
     "log_prolog_02"
    ]
   ],
+  "output_facts": {
+   "heart": [],
+   "heart_fail": [
+    [
+     99,
+     2
+    ],
+    [
+     208,
+     1
+    ]
+   ],
+   "heart_again": [
+    [
+     208,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 10,
    "Set Fact": 9,
@@ -1859,6 +2219,16 @@
     2
    ]
   ],
+  "output_facts": {
+   "empty": [
+    [
+     10146,
+     1
+    ]
+   ],
+   "CT_obelisk": [],
+   "CT_gargoyle": []
+  },
   "node_counts": {
    "Quest End Request": 3,
    "Branching": 3,
@@ -1938,6 +2308,14 @@
     1
    ]
   ],
+  "output_facts": {
+   "obelisk": [
+    [
+     123,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "QUEST/prolog_02_obelisk": 2,
@@ -2035,6 +2413,22 @@
     1
    ]
   ],
+  "output_facts": {
+   "sword": [
+    [
+     123,
+     0
+    ],
+    [
+     10146,
+     4
+    ],
+    [
+     10146,
+     7
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "Fact Requirement": 5,
@@ -2076,6 +2470,18 @@
     ""
    ]
   ],
+  "output_facts": {
+   "map_button": [
+    [
+     46,
+     2
+    ],
+    [
+     10158,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -2105,6 +2511,7 @@
   "seeds:Skills": [
    "OnReceiveDamage;DelayedHeal;650;,"
   ],
+  "output_facts": {},
   "node_counts": {
    "DataProvider": 2,
    "Hit": 2,
@@ -2141,6 +2548,7 @@
   "seeds:Skills": [
    "OnReceiveDamage;DelayedHeal;800;,"
   ],
+  "output_facts": {},
   "node_counts": {
    "Hit": 2,
    "DataProvider": 2,
@@ -2181,6 +2589,7 @@
   "seeds:Skills": [
    "OnReceiveDamage;DelayedHeal;900;,"
   ],
+  "output_facts": {},
   "node_counts": {
    "DataProvider": 2,
    "Fightlosestandardtransition": 1,
@@ -2222,6 +2631,15 @@
     0
    ]
   ],
+  "output_facts": {
+   "empty_end": [
+    [
+     10144,
+     1
+    ]
+   ],
+   "devourer": []
+  },
   "node_counts": {
    "Quest End Request": 2,
    "Start Graph": 1,
@@ -2262,6 +2680,26 @@
     false
    ]
   ],
+  "output_facts": {
+   "tutorial_exit": [
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     102,
+     1
+    ],
+    [
+     10144,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 4,
    "Start Graph": 1,
@@ -2410,6 +2848,60 @@
   "seeds:Skills": [
    "OnStart;ImproveSignsCooldownReduction;80;,OnStart;IncreaseSignDrawTime;350;,"
   ],
+  "output_facts": {
+   "tutorial_end": [
+    [
+     87,
+     0
+    ],
+    [
+     89,
+     0
+    ],
+    [
+     89,
+     1
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     90,
+     1
+    ],
+    [
+     91,
+     1
+    ],
+    [
+     10144,
+     2
+    ],
+    [
+     10144,
+     3
+    ]
+   ],
+   "exam": [
+    [
+     87,
+     0
+    ],
+    [
+     89,
+     1
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     10144,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 12,
    "DataConsumer": 9,
@@ -2551,6 +3043,44 @@
   "seeds:Bombs": [
    "401,"
   ],
+  "output_facts": {
+   "exam_fail": [
+    [
+     89,
+     0
+    ],
+    [
+     90,
+     1
+    ],
+    [
+     93,
+     1
+    ],
+    [
+     10144,
+     3
+    ]
+   ],
+   "exam_end": [
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     102,
+     1
+    ],
+    [
+     10144,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 9,
    "DataConsumer": 5,
@@ -2612,6 +3142,9 @@
   "seeds:Skills": [
    "OnStart;ImproveSignsCooldownReduction;80;,OnStart;IncreaseSignDrawTime;350;,"
   ],
+  "output_facts": {
+   "tutorial_end": []
+  },
   "node_counts": {
    "DataConsumer": 20,
    "Tut_dummy_": 3,
@@ -2741,6 +3274,60 @@
   "seeds:Skills": [
    "OnStart;ImproveSignsCooldownReduction;80;,OnStart;IncreaseSignDrawTime;350;,"
   ],
+  "output_facts": {
+   "tutorial_end": [
+    [
+     87,
+     0
+    ],
+    [
+     89,
+     0
+    ],
+    [
+     89,
+     1
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     90,
+     1
+    ],
+    [
+     93,
+     0
+    ],
+    [
+     10144,
+     2
+    ],
+    [
+     10144,
+     3
+    ]
+   ],
+   "exam": [
+    [
+     87,
+     0
+    ],
+    [
+     89,
+     1
+    ],
+    [
+     90,
+     0
+    ],
+    [
+     10144,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 9,
    "DataConsumer": 8,
@@ -2803,6 +3390,18 @@
     0
    ]
   ],
+  "output_facts": {
+   "amulet": [
+    [
+     82,
+     3
+    ],
+    [
+     213,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Show Custom Notification": 2,
@@ -2830,6 +3429,7 @@
     "log_s01mq04"
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "Show Custom Notification": 2,
    "Start Graph": 1,
@@ -2883,6 +3483,28 @@
     "log_s01mq04"
    ]
   ],
+  "output_facts": {
+   "amulet_fail": [
+    [
+     75,
+     2
+    ],
+    [
+     213,
+     0
+    ]
+   ],
+   "amulet": [
+    [
+     75,
+     1
+    ],
+    [
+     213,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "Quest End Request": 2,
@@ -2952,6 +3574,26 @@
     false
    ]
   ],
+  "output_facts": {
+   "candle_01": [
+    [
+     10152,
+     8
+    ]
+   ],
+   "candle_03": [
+    [
+     10152,
+     10
+    ]
+   ],
+   "candle_02": [
+    [
+     10152,
+     9
+    ]
+   ]
+  },
   "node_counts": {
    "Quest End Request": 3,
    "Immediately Set Fact": 3,
@@ -3007,6 +3649,18 @@
     0
    ]
   ],
+  "output_facts": {
+   "read": [
+    [
+     72,
+     4
+    ],
+    [
+     10104,
+     7
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Branching": 2,
@@ -3112,6 +3766,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "journal": [
+    [
+     213,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "Show Custom Notification": 3,
@@ -3154,6 +3816,18 @@
     1
    ]
   ],
+  "output_facts": {
+   "notebook": [
+    [
+     47,
+     2
+    ],
+    [
+     10159,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -3180,6 +3854,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "notebook": [
+    [
+     10159,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "Quest End Request": 1,
@@ -3207,6 +3889,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "poison_hidden": [
+    [
+     27,
+     0
+    ],
+    [
+     195,
+     -1
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -3258,6 +3952,20 @@
     1
    ]
   ],
+  "output_facts": {
+   "poison": [
+    [
+     174,
+     1
+    ]
+   ],
+   "poison_01": [
+    [
+     174,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "Quest End Request": 2,
@@ -3300,6 +4008,18 @@
     "log_s01mq02"
    ]
   ],
+  "output_facts": {
+   "potion": [
+    [
+     28,
+     -1
+    ],
+    [
+     10150,
+     5
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -3413,6 +4133,36 @@
     "poison"
    ]
   ],
+  "output_facts": {
+   "solvent": [
+    [
+     27,
+     -3
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     15
+    ]
+   ],
+   "sorcerer": [
+    [
+     27,
+     -4
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     9
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 8,
    "DataConsumer": 4,
@@ -3484,6 +4234,12 @@
    "5bombs",
    "chickentest"
   ],
+  "output_facts": {
+   "1bomb": [],
+   "lvl10": [],
+   "chickentest": [],
+   "5bombs": []
+  },
   "node_counts": {
    "Fact Requirement": 4,
    "Branching": 4,
@@ -3619,6 +4375,30 @@
     "treasure_map"
    ]
   ],
+  "output_facts": {
+   "CT_stone": [
+    [
+     190,
+     0
+    ]
+   ],
+   "map_bought": [
+    [
+     222,
+     0
+    ]
+   ],
+   "map": [
+    [
+     190,
+     0
+    ],
+    [
+     222,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Branching": 10,
    "Fact Requirement": 10,
@@ -3772,6 +4552,60 @@
   "seeds:Vulnerabilities": [
    "Dimeritium;0;,"
   ],
+  "output_facts": {
+   "golem": [
+    [
+     42,
+     -1
+    ],
+    [
+     183,
+     1
+    ],
+    [
+     222,
+     0
+    ]
+   ],
+   "dawn": [],
+   "golem_again": [
+    [
+     42,
+     -1
+    ],
+    [
+     183,
+     1
+    ],
+    [
+     222,
+     0
+    ]
+   ],
+   "sword": [
+    [
+     222,
+     0
+    ]
+   ],
+   "inscription": [],
+   "dusk": [
+    [
+     10158,
+     6
+    ]
+   ],
+   "golem_fail": [
+    [
+     42,
+     2
+    ],
+    [
+     10158,
+     7
+    ]
+   ]
+  },
   "node_counts": {
    "Branching": 8,
    "Load Enviro": 7,
@@ -3859,6 +4693,36 @@
     0
    ]
   ],
+  "output_facts": {
+   "nest": [
+    [
+     43,
+     1
+    ],
+    [
+     47,
+     1
+    ],
+    [
+     190,
+     0
+    ],
+    [
+     224,
+     0
+    ],
+    [
+     10159,
+     1
+    ]
+   ],
+   "CT_well": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "Branching": 3,
@@ -3933,6 +4797,22 @@
     0
    ]
   ],
+  "output_facts": {
+   "scholar": [
+    [
+     47,
+     3
+    ],
+    [
+     184,
+     1
+    ],
+    [
+     224,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "Load Enviro": 2,
@@ -4220,6 +5100,106 @@
    399,
    383
   ],
+  "output_facts": {
+   "CT_lothar_escape": [
+    [
+     190,
+     0
+    ]
+   ],
+   "full_moon_03": [
+    [
+     131,
+     2
+    ],
+    [
+     202,
+     0
+    ],
+    [
+     215,
+     0
+    ]
+   ],
+   "CT_alarmed": [
+    [
+     190,
+     0
+    ]
+   ],
+   "full_moon_04": [
+    [
+     131,
+     2
+    ],
+    [
+     202,
+     0
+    ],
+    [
+     215,
+     0
+    ]
+   ],
+   "blacksmith_alarmed": [],
+   "full_moon_02": [
+    [
+     131,
+     2
+    ],
+    [
+     202,
+     0
+    ],
+    [
+     215,
+     0
+    ]
+   ],
+   "full_moon_01": [
+    [
+     131,
+     2
+    ],
+    [
+     132,
+     1
+    ],
+    [
+     202,
+     0
+    ],
+    [
+     215,
+     0
+    ]
+   ],
+   "CT_lothar": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_lost": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_conway": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_hunt": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_second_inv": []
+  },
   "node_counts": {
    "Branching": 27,
    "Fact Requirement": 25,
@@ -4263,6 +5243,7 @@
     2
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "Queue Story Graph": 4,
    "Note": 4,
@@ -4323,6 +5304,7 @@
     0
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "DataConsumer": 4,
    "Branching": 3,
@@ -4434,6 +5416,10 @@
   "queue_quest_nodes": [
    399
   ],
+  "output_facts": {
+   "blacksmith_gone": [],
+   "blacksmith_wait": []
+  },
   "node_counts": {
    "Set Fact": 8,
    "Branching": 3,
@@ -4518,6 +5504,36 @@
     0
    ]
   ],
+  "output_facts": {
+   "blacksmith": [
+    [
+     119,
+     3
+    ],
+    [
+     185,
+     1
+    ],
+    [
+     215,
+     0
+    ]
+   ],
+   "blacksmith_map": [
+    [
+     119,
+     3
+    ],
+    [
+     185,
+     1
+    ],
+    [
+     215,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "DataConsumer": 4,
@@ -4548,6 +5564,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "empty": [
+    [
+     119,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -4570,6 +5594,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "fake_fullmoon_end": [
+    [
+     501,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -4589,6 +5621,9 @@
   "queue_quest_nodes": [
    399
   ],
+  "output_facts": {
+   "payment": []
+  },
   "node_counts": {
    "Start Graph": 1,
    "Quest End Request": 1,
@@ -4704,6 +5739,34 @@
   "queue_quest_nodes": [
    399
   ],
+  "output_facts": {
+   "new_blacksmith": [
+    [
+     64,
+     1
+    ],
+    [
+     116,
+     10
+    ],
+    [
+     142,
+     1
+    ],
+    [
+     142,
+     2
+    ],
+    [
+     185,
+     1
+    ],
+    [
+     215,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 8,
    "DataConsumer": 4,
@@ -4740,6 +5803,7 @@
   "seeds:DialogCharacter": [
    "new_blacksmith"
   ],
+  "output_facts": {},
   "node_counts": {
    "DataConsumer": 4,
    "Fadeintransition": 1,
@@ -4782,6 +5846,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "timer": [
+    [
+     202,
+     1
+    ],
+    [
+     10147,
+     6
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 2,
    "Set Fact": 2,
@@ -4807,6 +5883,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "timer_02": [
+    [
+     154,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -4829,6 +5913,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "timer_03": [
+    [
+     154,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -4856,6 +5948,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks": [
+    [
+     119,
+     2
+    ],
+    [
+     10147,
+     7
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -5058,6 +6162,56 @@
   "seeds:PresentationData": [
    "werewolf_blacksmith"
   ],
+  "output_facts": {
+   "too_late": [
+    [
+     92,
+     -1
+    ],
+    [
+     116,
+     1
+    ],
+    [
+     119,
+     0
+    ],
+    [
+     155,
+     1
+    ],
+    [
+     202,
+     1
+    ],
+    [
+     10147,
+     11
+    ]
+   ],
+   "werewolf_friend": [
+    [
+     215,
+     0
+    ]
+   ],
+   "werewolf_fail": [
+    [
+     215,
+     0
+    ]
+   ],
+   "werewolf_dead": [
+    [
+     119,
+     0
+    ],
+    [
+     215,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 20,
    "Branching": 9,
@@ -5126,6 +6280,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "catch": [
+    [
+     224,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Immediately Set Fact": 2,
@@ -5229,6 +6391,40 @@
   "seeds:BooleanValue": [
    "False"
   ],
+  "output_facts": {
+   "firefly": [
+    [
+     120,
+     1
+    ],
+    [
+     224,
+     0
+    ],
+    [
+     10160,
+     1
+    ]
+   ],
+   "CT_flower": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_chest": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_stump": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 18,
    "Quest End Request": 4,
@@ -5291,6 +6487,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "stump": [
+    [
+     224,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Immediately Set Fact": 2,
    "DataConsumer": 2,
@@ -5353,6 +6557,22 @@
     0
    ]
   ],
+  "output_facts": {
+   "three_days": [
+    [
+     43,
+     0
+    ],
+    [
+     47,
+     4
+    ],
+    [
+     184,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 4,
    "Branching": 2,
@@ -5397,6 +6617,19 @@
     false
    ]
   ],
+  "output_facts": {
+   "found": [],
+   "too_late": [
+    [
+     120,
+     3
+    ],
+    [
+     186,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "Quest End Request": 2,
@@ -5422,6 +6655,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks": [
+    [
+     10160,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "Quest End Request": 1,
@@ -5444,6 +6685,14 @@
   "outputs": [
    "tracks_02"
   ],
+  "output_facts": {
+   "tracks_02": [
+    [
+     10160,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -5509,6 +6758,18 @@
     0
    ]
   ],
+  "output_facts": {
+   "treasure": [
+    [
+     186,
+     1
+    ],
+    [
+     224,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "DataConsumer": 2,
@@ -5635,6 +6896,56 @@
     false
    ]
   ],
+  "output_facts": {
+   "help": [
+    [
+     65,
+     1
+    ],
+    [
+     143,
+     1
+    ],
+    [
+     217,
+     0
+    ],
+    [
+     10148,
+     1
+    ]
+   ],
+   "no_help": [
+    [
+     217,
+     0
+    ]
+   ],
+   "CT_first_refusal": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_help_again": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_trap": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_chest": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 7,
    "Branching": 7,
@@ -5709,6 +7020,28 @@
     false
    ]
   ],
+  "output_facts": {
+   "end": [
+    [
+     143,
+     2
+    ],
+    [
+     217,
+     0
+    ]
+   ],
+   "help": [
+    [
+     217,
+     0
+    ],
+    [
+     10148,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 3,
    "Set Fact": 3,
@@ -5739,6 +7072,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "timer_end": [
+    [
+     10148,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -5772,6 +7113,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "treasure": [
+    [
+     187,
+     1
+    ],
+    [
+     200,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -6007,6 +7360,250 @@
   "seeds:Vulnerabilities": [
    "Fast;25;,"
   ],
+  "output_facts": {
+   "actor_bribe": [
+    [
+     23,
+     2
+    ],
+    [
+     121,
+     4
+    ],
+    [
+     143,
+     6
+    ],
+    [
+     200,
+     1
+    ],
+    [
+     217,
+     0
+    ],
+    [
+     10148,
+     2
+    ]
+   ],
+   "devourer": [
+    [
+     23,
+     2
+    ],
+    [
+     25,
+     4
+    ],
+    [
+     121,
+     2
+    ],
+    [
+     121,
+     3
+    ],
+    [
+     121,
+     4
+    ],
+    [
+     121,
+     5
+    ],
+    [
+     143,
+     3
+    ],
+    [
+     143,
+     4
+    ],
+    [
+     143,
+     5
+    ],
+    [
+     143,
+     6
+    ],
+    [
+     158,
+     3
+    ],
+    [
+     158,
+     4
+    ],
+    [
+     187,
+     1
+    ],
+    [
+     200,
+     1
+    ],
+    [
+     217,
+     0
+    ],
+    [
+     10148,
+     2
+    ],
+    [
+     10148,
+     5
+    ]
+   ],
+   "devourer_fail": [
+    [
+     24,
+     1
+    ],
+    [
+     10148,
+     4
+    ]
+   ],
+   "actor_escape": [
+    [
+     23,
+     2
+    ],
+    [
+     187,
+     1
+    ],
+    [
+     217,
+     0
+    ]
+   ],
+   "actor_dead": [
+    [
+     23,
+     2
+    ],
+    [
+     25,
+     4
+    ],
+    [
+     143,
+     4
+    ],
+    [
+     158,
+     3
+    ],
+    [
+     187,
+     1
+    ],
+    [
+     217,
+     0
+    ]
+   ],
+   "actor_free": [
+    [
+     23,
+     2
+    ],
+    [
+     121,
+     3
+    ],
+    [
+     143,
+     6
+    ],
+    [
+     187,
+     1
+    ],
+    [
+     217,
+     0
+    ]
+   ],
+   "devourer_again": [
+    [
+     23,
+     2
+    ],
+    [
+     24,
+     1
+    ],
+    [
+     25,
+     4
+    ],
+    [
+     121,
+     2
+    ],
+    [
+     121,
+     3
+    ],
+    [
+     121,
+     4
+    ],
+    [
+     121,
+     5
+    ],
+    [
+     143,
+     3
+    ],
+    [
+     143,
+     4
+    ],
+    [
+     143,
+     5
+    ],
+    [
+     143,
+     6
+    ],
+    [
+     158,
+     3
+    ],
+    [
+     158,
+     4
+    ],
+    [
+     187,
+     1
+    ],
+    [
+     200,
+     1
+    ],
+    [
+     217,
+     0
+    ],
+    [
+     10148,
+     2
+    ],
+    [
+     10148,
+     5
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 19,
    "Branching": 10,
@@ -6185,6 +7782,118 @@
   "queue_quest_nodes": [
    474
   ],
+  "output_facts": {
+   "help": [
+    [
+     144,
+     1
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     2
+    ],
+    [
+     10161,
+     1
+    ]
+   ],
+   "CT_corpse": [
+    [
+     190,
+     0
+    ],
+    [
+     1000,
+     2
+    ]
+   ],
+   "refuse": [
+    [
+     144,
+     2
+    ],
+    [
+     188,
+     1
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     0
+    ]
+   ],
+   "CT_shaman": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_attack": [
+    [
+     190,
+     0
+    ]
+   ],
+   "lost": [
+    [
+     41,
+     0
+    ],
+    [
+     41,
+     2
+    ],
+    [
+     144,
+     3
+    ],
+    [
+     159,
+     3
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     0
+    ],
+    [
+     10161,
+     1
+    ]
+   ],
+   "won": [
+    [
+     41,
+     0
+    ],
+    [
+     144,
+     3
+    ],
+    [
+     159,
+     2
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 14,
    "Branching": 9,
@@ -6301,6 +8010,51 @@
     "log_s01hq06"
    ]
   ],
+  "output_facts": {
+   "won": [
+    [
+     219,
+     0
+    ]
+   ],
+   "lost": [],
+   "nekker_shaman": [
+    [
+     144,
+     5
+    ],
+    [
+     188,
+     1
+    ],
+    [
+     196,
+     1
+    ],
+    [
+     196,
+     2
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     0
+    ],
+    [
+     10161,
+     4
+    ]
+   ],
+   "grey_rocks": [
+    [
+     219,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 8,
    "Set Fact": 6,
@@ -6409,6 +8163,46 @@
     true
    ]
   ],
+  "output_facts": {
+   "fleder": [
+    [
+     219,
+     0
+    ],
+    [
+     10161,
+     2
+    ]
+   ],
+   "lost": [
+    [
+     41,
+     4
+    ],
+    [
+     144,
+     4
+    ],
+    [
+     219,
+     0
+    ]
+   ],
+   "won": [
+    [
+     41,
+     3
+    ],
+    [
+     144,
+     4
+    ],
+    [
+     219,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 6,
    "Set Fact": 6,
@@ -6439,6 +8233,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks": [
+    [
+     10161,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -6528,6 +8330,44 @@
     0
    ]
   ],
+  "output_facts": {
+   "won": [
+    [
+     41,
+     6
+    ],
+    [
+     144,
+     4
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     0
+    ]
+   ],
+   "lost": [
+    [
+     41,
+     7
+    ],
+    [
+     144,
+     4
+    ],
+    [
+     219,
+     0
+    ],
+    [
+     1000,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "MonsterInstanceInput": 3,
@@ -6673,6 +8513,104 @@
   "seeds:BooleanValue": [
    "False"
   ],
+  "output_facts": {
+   "one_left": [],
+   "endriagaworker_02": [
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     53,
+     2
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     136,
+     1
+    ],
+    [
+     209,
+     0
+    ],
+    [
+     10149,
+     2
+    ],
+    [
+     10149,
+     6
+    ]
+   ],
+   "dehael": [
+    [
+     1,
+     4
+    ],
+    [
+     53,
+     2
+    ],
+    [
+     136,
+     1
+    ],
+    [
+     209,
+     0
+    ],
+    [
+     10149,
+     2
+    ]
+   ],
+   "endriagaworker_01": [
+    [
+     1,
+     2
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     1,
+     4
+    ],
+    [
+     53,
+     2
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     136,
+     1
+    ],
+    [
+     209,
+     0
+    ],
+    [
+     10149,
+     2
+    ],
+    [
+     10149,
+     6
+    ]
+   ],
+   "two_left": []
+  },
   "node_counts": {
    "MonsterInstanceInput": 6,
    "Immediately Set Fact": 6,
@@ -6795,6 +8733,88 @@
   "seeds:BooleanValue": [
    "False"
   ],
+  "output_facts": {
+   "endriagaworker": [
+    [
+     1,
+     6
+    ],
+    [
+     1,
+     7
+    ],
+    [
+     50,
+     1
+    ],
+    [
+     53,
+     3
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     209,
+     3
+    ],
+    [
+     10149,
+     4
+    ]
+   ],
+   "embrions": [
+    [
+     1,
+     7
+    ],
+    [
+     50,
+     1
+    ],
+    [
+     53,
+     3
+    ],
+    [
+     209,
+     3
+    ],
+    [
+     10149,
+     4
+    ]
+   ],
+   "two_left": [],
+   "one_left": [],
+   "endriagatailed": [
+    [
+     1,
+     7
+    ],
+    [
+     50,
+     1
+    ],
+    [
+     53,
+     3
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     209,
+     3
+    ],
+    [
+     10149,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 6,
    "MonsterInstanceInput": 6,
@@ -6922,6 +8942,48 @@
   "queue_quest_nodes": [
    297
   ],
+  "output_facts": {
+   "CT_first_cocoon": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_second_cocoon": [
+    [
+     190,
+     0
+    ]
+   ],
+   "scholar_01": [
+    [
+     53,
+     1
+    ],
+    [
+     70,
+     4
+    ],
+    [
+     135,
+     1
+    ],
+    [
+     209,
+     0
+    ],
+    [
+     10149,
+     1
+    ]
+   ],
+   "CT_final_scholar": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "Branching": 5,
@@ -7023,6 +9085,38 @@
     0
    ]
   ],
+  "output_facts": {
+   "scholar_02": [
+    [
+     53,
+     4
+    ],
+    [
+     102,
+     4
+    ],
+    [
+     177,
+     1
+    ],
+    [
+     209,
+     0
+    ],
+    [
+     1000,
+     1
+    ],
+    [
+     1001,
+     1
+    ],
+    [
+     1003,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "DataConsumer": 4,
@@ -7053,6 +9147,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks": [
+    [
+     10149,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -7138,6 +9240,27 @@
     0
    ]
   ],
+  "output_facts": {
+   "drowner_lost": [],
+   "drowner": [
+    [
+     28,
+     2
+    ],
+    [
+     29,
+     1
+    ],
+    [
+     211,
+     0
+    ],
+    [
+     10150,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 4,
    "Set Fact": 4,
@@ -7191,6 +9314,22 @@
     "log_s01mq02"
    ]
   ],
+  "output_facts": {
+   "drowner_short": [
+    [
+     28,
+     2
+    ],
+    [
+     29,
+     1
+    ],
+    [
+     10150,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "Quest End Request": 1,
@@ -7274,6 +9413,34 @@
     0
    ]
   ],
+  "output_facts": {
+   "medic_01": [
+    [
+     28,
+     1
+    ],
+    [
+     54,
+     2
+    ],
+    [
+     70,
+     5
+    ],
+    [
+     137,
+     1
+    ],
+    [
+     211,
+     0
+    ],
+    [
+     10150,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "DataConsumer": 4,
@@ -7386,6 +9553,40 @@
     "protective_potion"
    ]
   ],
+  "output_facts": {
+   "resuply": [
+    [
+     28,
+     2
+    ],
+    [
+     211,
+     0
+    ],
+    [
+     10150,
+     4
+    ]
+   ],
+   "medic_02": [
+    [
+     29,
+     -1
+    ],
+    [
+     54,
+     3
+    ],
+    [
+     211,
+     0
+    ],
+    [
+     10150,
+     8
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "DataConsumer": 4,
@@ -7504,6 +9705,18 @@
   "queue_quest_nodes": [
    403
   ],
+  "output_facts": {
+   "vesemir": [
+    [
+     178,
+     1
+    ],
+    [
+     211,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "DataConsumer": 4,
@@ -7534,6 +9747,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "ready": [
+    [
+     10150,
+     9
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "Quest End Request": 1,
@@ -7639,6 +9860,30 @@
     "log_s01mq02"
    ]
   ],
+  "output_facts": {
+   "scolo_dead": [
+    [
+     211,
+     0
+    ]
+   ],
+   "scolo_again": [
+    [
+     211,
+     0
+    ]
+   ],
+   "scolo_fail": [
+    [
+     5,
+     1
+    ],
+    [
+     10150,
+     10
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "DataConsumer": 4,
@@ -7692,6 +9937,28 @@
     false
    ]
   ],
+  "output_facts": {
+   "fail": [
+    [
+     28,
+     0
+    ],
+    [
+     10150,
+     6
+    ]
+   ],
+   "success": [
+    [
+     28,
+     -2
+    ],
+    [
+     28,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "Quest End Request": 2,
@@ -7717,6 +9984,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks": [
+    [
+     10150,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -7858,6 +10133,82 @@
     "log_s01mq02"
    ]
   ],
+  "output_facts": {
+   "CT_all_ingredients": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_medic_talk_01": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_scolo_fight": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_drowner_fight": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_vesemir_talk": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_waiting": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_drinking": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_drinking_fail": [
+    [
+     190,
+     0
+    ]
+   ],
+   "witcher": [
+    [
+     52,
+     1
+    ],
+    [
+     54,
+     1
+    ],
+    [
+     62,
+     1
+    ],
+    [
+     138,
+     1
+    ],
+    [
+     211,
+     0
+    ],
+    [
+     10150,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 10,
    "Branching": 10,
@@ -7904,6 +10255,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "armor": [
+    [
+     179,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "S01MQ03/s01mq03_armor": 2,
    "Start Graph": 1,
@@ -7985,6 +10344,50 @@
     0
    ]
   ],
+  "output_facts": {
+   "candle_01": [
+    [
+     15,
+     0
+    ],
+    [
+     194,
+     0
+    ],
+    [
+     10152,
+     9
+    ]
+   ],
+   "candle_03": [
+    [
+     15,
+     0
+    ],
+    [
+     194,
+     0
+    ],
+    [
+     10152,
+     11
+    ]
+   ],
+   "candle_02": [
+    [
+     15,
+     0
+    ],
+    [
+     194,
+     0
+    ],
+    [
+     10152,
+     10
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "S01MQ03/s01mq03_candle": 4,
@@ -8118,6 +10521,65 @@
     false
    ]
   ],
+  "output_facts": {
+   "arachas_fail": [],
+   "arachas": [
+    [
+     6,
+     2
+    ],
+    [
+     129,
+     1
+    ],
+    [
+     147,
+     1
+    ],
+    [
+     197,
+     0
+    ],
+    [
+     197,
+     2
+    ],
+    [
+     216,
+     0
+    ],
+    [
+     10152,
+     3
+    ]
+   ],
+   "hermit": [
+    [
+     6,
+     2
+    ],
+    [
+     129,
+     1
+    ],
+    [
+     147,
+     1
+    ],
+    [
+     197,
+     0
+    ],
+    [
+     216,
+     0
+    ],
+    [
+     10152,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "Fact Requirement": 5,
@@ -8155,6 +10617,14 @@
     1
    ]
   ],
+  "output_facts": {
+   "instruction": [
+    [
+     10152,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "S01MQ03/so1mq03_instruction": 2,
    "Start Graph": 1,
@@ -8259,6 +10729,34 @@
     0
    ]
   ],
+  "output_facts": {
+   "lure": [
+    [
+     7,
+     1
+    ],
+    [
+     32,
+     0
+    ],
+    [
+     127,
+     1
+    ],
+    [
+     129,
+     0
+    ],
+    [
+     206,
+     1
+    ],
+    [
+     10152,
+     7
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 9,
    "Investigation": 3,
@@ -8509,6 +11007,49 @@
   "seeds:BackgroundScene": [
    "scene_bg_elvenruins"
   ],
+  "output_facts": {
+   "candle_burns": [],
+   "striga_killed": [],
+   "curse_lifted_knew": [
+    [
+     55,
+     5
+    ],
+    [
+     216,
+     0
+    ]
+   ],
+   "hermit_fail": [],
+   "striga_killed_knew": [],
+   "candle_02": [
+    [
+     194,
+     1
+    ],
+    [
+     10152,
+     13
+    ]
+   ],
+   "candle_03": [
+    [
+     194,
+     1
+    ],
+    [
+     10152,
+     14
+    ]
+   ],
+   "candle_01": [
+    [
+     194,
+     1
+    ]
+   ],
+   "curse_lifted": []
+  },
   "node_counts": {
    "DataConsumer": 27,
    "Set Fact": 17,
@@ -8802,6 +11343,104 @@
    "Strong;0;,",
    "Strong;25;,"
   ],
+  "output_facts": {
+   "candle_03": [
+    [
+     10152,
+     14
+    ]
+   ],
+   "striga_killed_knew": [],
+   "striga_killed": [],
+   "striga_albino": [
+    [
+     15,
+     1
+    ],
+    [
+     55,
+     3
+    ],
+    [
+     55,
+     4
+    ],
+    [
+     129,
+     0
+    ],
+    [
+     147,
+     3
+    ],
+    [
+     179,
+     1
+    ],
+    [
+     197,
+     0
+    ],
+    [
+     197,
+     1
+    ],
+    [
+     197,
+     2
+    ],
+    [
+     197,
+     3
+    ],
+    [
+     197,
+     4
+    ],
+    [
+     216,
+     0
+    ],
+    [
+     10152,
+     17
+    ],
+    [
+     10152,
+     18
+    ]
+   ],
+   "hermit_fail": [],
+   "candle_burns": [],
+   "curse_lifted_knew": [
+    [
+     55,
+     5
+    ]
+   ],
+   "candle_02": [
+    [
+     10152,
+     13
+    ]
+   ],
+   "curse_lifted": [
+    [
+     127,
+     -1
+    ],
+    [
+     147,
+     2
+    ],
+    [
+     10152,
+     12
+    ]
+   ],
+   "striga_fail": [],
+   "candle_01": []
+  },
   "node_counts": {
    "DataConsumer": 19,
    "Set Fact": 19,
@@ -8881,6 +11520,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "thorstein": [
+    [
+     216,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "DataConsumer": 2,
@@ -8958,6 +11605,42 @@
     1
    ]
   ],
+  "output_facts": {
+   "timer": [
+    [
+     7,
+     0
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     26,
+     0
+    ],
+    [
+     127,
+     0
+    ],
+    [
+     129,
+     2
+    ],
+    [
+     133,
+     1
+    ],
+    [
+     194,
+     0
+    ],
+    [
+     10152,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 9,
    "Note": 2,
@@ -8990,6 +11673,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks": [
+    [
+     129,
+     2
+    ],
+    [
+     10152,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -9115,6 +11810,54 @@
     0
    ]
   ],
+  "output_facts": {
+   "CT_ritual": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_thorstein": [
+    [
+     190,
+     0
+    ]
+   ],
+   "vesemir": [
+    [
+     190,
+     0
+    ],
+    [
+     216,
+     0
+    ]
+   ],
+   "CT_tracking": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_vodnik": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_lure": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_hermit": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 9,
    "Branching": 9,
@@ -9227,6 +11970,61 @@
     0
    ]
   ],
+  "output_facts": {
+   "vodnik": [
+    [
+     32,
+     1
+    ],
+    [
+     70,
+     3
+    ],
+    [
+     127,
+     -1
+    ],
+    [
+     129,
+     3
+    ],
+    [
+     216,
+     0
+    ],
+    [
+     10152,
+     5
+    ]
+   ],
+   "vodnik_fail": [],
+   "skip_shop": [
+    [
+     26,
+     1
+    ],
+    [
+     32,
+     1
+    ],
+    [
+     127,
+     -1
+    ],
+    [
+     129,
+     3
+    ],
+    [
+     216,
+     0
+    ],
+    [
+     10152,
+     6
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 8,
    "DataConsumer": 4,
@@ -9316,6 +12114,52 @@
    "skip_shop_short",
    "vodnik_short"
   ],
+  "output_facts": {
+   "skip_shop_short": [
+    [
+     26,
+     1
+    ],
+    [
+     32,
+     1
+    ],
+    [
+     127,
+     -1
+    ],
+    [
+     129,
+     3
+    ],
+    [
+     10152,
+     6
+    ]
+   ],
+   "vodnik_short": [
+    [
+     32,
+     1
+    ],
+    [
+     70,
+     3
+    ],
+    [
+     127,
+     -1
+    ],
+    [
+     129,
+     3
+    ],
+    [
+     10152,
+     5
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 8,
    "Fact Requirement": 2,
@@ -9379,6 +12223,19 @@
     0
    ]
   ],
+  "output_facts": {
+   "arachnomorph_killed": [
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     3
+    ]
+   ],
+   "arachnomorph_fail": []
+  },
   "node_counts": {
    "DataConsumer": 6,
    "Fadeintransition": 2,
@@ -9524,6 +12381,80 @@
     0
    ]
   ],
+  "output_facts": {
+   "CT_licho_fight": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_reading_notes": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_arachno": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_cursed": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_bedwyr_final": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_captain": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_ingredients": [
+    [
+     190,
+     0
+    ]
+   ],
+   "start": [
+    [
+     72,
+     1
+    ],
+    [
+     139,
+     1
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     1
+    ]
+   ],
+   "CT_amulet_throw": [
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_dehael": [
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 11,
    "Branching": 11,
@@ -9635,6 +12566,20 @@
     0
    ]
   ],
+  "output_facts": {
+   "curse_start": [
+    [
+     213,
+     0
+    ]
+   ],
+   "punch": [
+    [
+     213,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 8,
    "Quest End Request": 2,
@@ -9744,6 +12689,28 @@
   "queue_quest_nodes": [
    403
   ],
+  "output_facts": {
+   "final": [
+    [
+     180,
+     1
+    ],
+    [
+     213,
+     0
+    ]
+   ],
+   "no_reward": [
+    [
+     180,
+     1
+    ],
+    [
+     213,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 6,
    "Fact Requirement": 5,
@@ -9841,6 +12808,30 @@
     "cursed_journal"
    ]
   ],
+  "output_facts": {
+   "herb": [
+    [
+     80,
+     4
+    ],
+    [
+     83,
+     2
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     9
+    ],
+    [
+     10104,
+     10
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "Branching": 2,
@@ -9964,6 +12955,31 @@
   "seeds:MonsterSlug": [
    "leshensdog_lvl2"
   ],
+  "output_facts": {
+   "hound_killed": [
+    [
+     80,
+     4
+    ],
+    [
+     83,
+     1
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     8
+    ],
+    [
+     10104,
+     10
+    ]
+   ],
+   "hound_fail": []
+  },
   "node_counts": {
    "Set Fact": 7,
    "Fact Requirement": 3,
@@ -10046,6 +13062,26 @@
     2
    ]
   ],
+  "output_facts": {
+   "hound_killed_short": [
+    [
+     80,
+     4
+    ],
+    [
+     83,
+     1
+    ],
+    [
+     10104,
+     8
+    ],
+    [
+     10104,
+     10
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "Quest End Request": 1,
@@ -10155,6 +13191,44 @@
     0
    ]
   ],
+  "output_facts": {
+   "licho_killed": [
+    [
+     4,
+     0
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     72,
+     6
+    ],
+    [
+     82,
+     4
+    ],
+    [
+     84,
+     2340
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     13
+    ]
+   ],
+   "licho_fail": [
+    [
+     10104,
+     12
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 8,
    "MonsterInstanceInput": 4,
@@ -10245,6 +13319,39 @@
     0
    ]
   ],
+  "output_facts": {
+   "licho_fail": [],
+   "licho_killed": [
+    [
+     4,
+     0
+    ],
+    [
+     70,
+     0
+    ],
+    [
+     72,
+     6
+    ],
+    [
+     82,
+     4
+    ],
+    [
+     84,
+     4
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     13
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "MonsterInstanceInput": 3,
@@ -10379,6 +13486,96 @@
   "seeds:BooleanValue": [
    "False"
   ],
+  "output_facts": {
+   "arachnomorph_02": [
+    [
+     35,
+     3
+    ],
+    [
+     35,
+     4
+    ],
+    [
+     72,
+     2
+    ],
+    [
+     140,
+     1
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     5
+    ],
+    [
+     10104,
+     16
+    ]
+   ],
+   "nest": [
+    [
+     35,
+     4
+    ],
+    [
+     72,
+     2
+    ],
+    [
+     140,
+     1
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     5
+    ]
+   ],
+   "one_left": [],
+   "two_left": [],
+   "arachnomorph_01": [
+    [
+     35,
+     2
+    ],
+    [
+     35,
+     3
+    ],
+    [
+     35,
+     4
+    ],
+    [
+     72,
+     2
+    ],
+    [
+     140,
+     1
+    ],
+    [
+     213,
+     0
+    ],
+    [
+     10104,
+     5
+    ],
+    [
+     10104,
+     16
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "Quest End Request": 5,
@@ -10409,6 +13606,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_01": [
+    [
+     10104,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -10431,6 +13636,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_02": [
+    [
+     10104,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -10453,6 +13666,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_03": [
+    [
+     10104,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -10666,6 +13887,266 @@
   "seeds:BooleanValue": [
    "False"
   ],
+  "output_facts": {
+   "nekker_01_again": [
+    [
+     9,
+     2
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     153,
+     1
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     198,
+     2
+    ],
+    [
+     198,
+     3
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     6
+    ],
+    [
+     10153,
+     7
+    ],
+    [
+     10153,
+     15
+    ]
+   ],
+   "two_left": [
+    [
+     9,
+     1
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     10153,
+     5
+    ]
+   ],
+   "nekker_02": [
+    [
+     9,
+     3
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     153,
+     1
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     7
+    ]
+   ],
+   "nekker_01": [
+    [
+     9,
+     2
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     153,
+     1
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     198,
+     2
+    ],
+    [
+     198,
+     3
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     6
+    ],
+    [
+     10153,
+     7
+    ],
+    [
+     10153,
+     15
+    ]
+   ],
+   "champion": [
+    [
+     9,
+     3
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     153,
+     1
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     7
+    ]
+   ],
+   "one_left": [
+    [
+     9,
+     2
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     10153,
+     6
+    ]
+   ],
+   "basket": [
+    [
+     218,
+     0
+    ]
+   ],
+   "nekkers": [
+    [
+     9,
+     1
+    ],
+    [
+     9,
+     2
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     153,
+     1
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     198,
+     2
+    ],
+    [
+     198,
+     3
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     5
+    ],
+    [
+     10153,
+     6
+    ],
+    [
+     10153,
+     7
+    ],
+    [
+     10153,
+     15
+    ]
+   ],
+   "nekker_02_again": [
+    [
+     9,
+     3
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     153,
+     1
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     7
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 14,
    "Quest End Request": 9,
@@ -10762,6 +14243,23 @@
     0
    ]
   ],
+  "output_facts": {
+   "no_nest": [],
+   "corpse": [
+    [
+     34,
+     1
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     17
+    ]
+   ]
+  },
   "node_counts": {
    "Immediately Set Fact": 3,
    "Set Fact": 3,
@@ -10858,6 +14356,19 @@
     false
    ]
   ],
+  "output_facts": {
+   "no_reward": [],
+   "dehael": [
+    [
+     34,
+     1
+    ],
+    [
+     10153,
+     8
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "Immediately Set Fact": 3,
@@ -10906,6 +14417,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "dehael_mushrooms": [
+    [
+     34,
+     0
+    ],
+    [
+     10153,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "S01MQ05/s01mq05_dehael_mushrooms": 2,
@@ -10958,6 +14481,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "enough": [
+    [
+     218,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 2,
    "Immediately Set Fact": 2,
@@ -11192,6 +14723,103 @@
   "queue_quest_nodes": [
    403
   ],
+  "output_facts": {
+   "fiend_fail": [
+    [
+     12,
+     1
+    ],
+    [
+     34,
+     1
+    ],
+    [
+     10153,
+     13
+    ]
+   ],
+   "third_place": [],
+   "second_place": [],
+   "last_place": [],
+   "first_place": [],
+   "fiend_again": [
+    [
+     12,
+     2
+    ],
+    [
+     56,
+     4
+    ],
+    [
+     160,
+     1
+    ],
+    [
+     160,
+     2
+    ],
+    [
+     160,
+     3
+    ],
+    [
+     160,
+     4
+    ],
+    [
+     160,
+     5
+    ],
+    [
+     181,
+     1
+    ],
+    [
+     218,
+     0
+    ]
+   ],
+   "fiend": [
+    [
+     12,
+     2
+    ],
+    [
+     56,
+     4
+    ],
+    [
+     160,
+     1
+    ],
+    [
+     160,
+     2
+    ],
+    [
+     160,
+     3
+    ],
+    [
+     160,
+     4
+    ],
+    [
+     160,
+     5
+    ],
+    [
+     181,
+     1
+    ],
+    [
+     218,
+     0
+    ]
+   ],
+   "peleton": []
+  },
   "node_counts": {
    "Set Fact": 14,
    "Fact Requirement": 14,
@@ -11295,6 +14923,36 @@
     0
    ]
   ],
+  "output_facts": {
+   "leshen_fail": [
+    [
+     10153,
+     10
+    ]
+   ],
+   "leshen": [
+    [
+     9,
+     4
+    ],
+    [
+     10,
+     3
+    ],
+    [
+     34,
+     0
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 6,
    "MonsterInstanceInput": 3,
@@ -11427,6 +15085,90 @@
     0
    ]
   ],
+  "output_facts": {
+   "CT_hand": [
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ]
+   ],
+   "madlad": [
+    [
+     56,
+     1
+    ],
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     1
+    ]
+   ],
+   "CT_champ": [
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_dehael": [
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_vogt": [
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_finale": [
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ]
+   ],
+   "CT_cyclop": [
+    [
+     148,
+     1
+    ],
+    [
+     190,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Fact Requirement": 9,
    "Branching": 9,
@@ -11506,6 +15248,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "monster_corpse": [
+    [
+     218,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Immediately Set Fact": 3,
    "DataConsumer": 2,
@@ -11744,6 +15494,7 @@
     true
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "Branching": 18,
    "Fact Requirement": 18,
@@ -11878,6 +15629,86 @@
   "seeds:MonsterSettings": [
    "assets/_bundledassets/characters/monsters/s00/forktailblue/forktailblue_settings.asset"
   ],
+  "output_facts": {
+   "cockatrice": [
+    [
+     8,
+     -3
+    ],
+    [
+     8,
+     -2
+    ],
+    [
+     8,
+     -1
+    ],
+    [
+     8,
+     1
+    ],
+    [
+     8,
+     2
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     34,
+     0
+    ],
+    [
+     175,
+     50
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     3
+    ]
+   ],
+   "forktail": [
+    [
+     8,
+     -3
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     34,
+     0
+    ],
+    [
+     175,
+     50
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     3
+    ]
+   ],
+   "nest": [
+    [
+     8,
+     3
+    ],
+    [
+     34,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 10,
    "MonsterInstanceInput": 5,
@@ -11923,6 +15754,26 @@
     false
    ]
   ],
+  "output_facts": {
+   "timer": [
+    [
+     16,
+     2
+    ],
+    [
+     34,
+     77
+    ],
+    [
+     198,
+     0
+    ],
+    [
+     10153,
+     9
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 4,
    "S01MQ05/s01mq05_timer": 2,
@@ -11947,6 +15798,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_01": [
+    [
+     10153,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -11962,6 +15821,9 @@
   "outputs": [
    "tracks_02"
   ],
+  "output_facts": {
+   "tracks_02": []
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -12031,6 +15893,22 @@
     0
    ]
   ],
+  "output_facts": {
+   "treasure": [
+    [
+     56,
+     2
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     2
+    ]
+   ]
+  },
   "node_counts": {
    "Immediately Set Fact": 3,
    "Set Fact": 3,
@@ -12136,6 +16014,30 @@
     "log_s01mq05"
    ]
   ],
+  "output_facts": {
+   "vogt": [
+    [
+     56,
+     3
+    ],
+    [
+     150,
+     1
+    ],
+    [
+     176,
+     1
+    ],
+    [
+     218,
+     0
+    ],
+    [
+     10153,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "Immediately Set Fact": 3,
@@ -12224,6 +16126,23 @@
     0
    ]
   ],
+  "output_facts": {
+   "archespore_fail": [],
+   "archespore": [
+    [
+     27,
+     2
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     8
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 3,
    "MonsterInstanceInput": 3,
@@ -12277,6 +16196,22 @@
     "log_s01mq06"
    ]
   ],
+  "output_facts": {
+   "archespore_short": [
+    [
+     27,
+     2
+    ],
+    [
+     1001,
+     0
+    ],
+    [
+     10154,
+     8
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "S01MQ06/s01mq06_archespore_short": 2,
@@ -12362,6 +16297,18 @@
     "log_s01mq06"
    ]
   ],
+  "output_facts": {
+   "dehael": [
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     12
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 4,
    "S01MQ06/s01mq06_dehael": 3,
@@ -12512,6 +16459,108 @@
     0
    ]
   ],
+  "output_facts": {
+   "no_trophy": [
+    [
+     59,
+     1
+    ],
+    [
+     199,
+     0
+    ],
+    [
+     199,
+     3
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     6
+    ]
+   ],
+   "frightener": [
+    [
+     59,
+     2
+    ],
+    [
+     70,
+     6
+    ],
+    [
+     199,
+     0
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     10
+    ]
+   ],
+   "frightener_fail": [
+    [
+     59,
+     1
+    ],
+    [
+     199,
+     0
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     6
+    ]
+   ],
+   "trophy": [
+    [
+     59,
+     2
+    ],
+    [
+     70,
+     6
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     156,
+     1
+    ],
+    [
+     199,
+     0
+    ],
+    [
+     199,
+     1
+    ],
+    [
+     199,
+     2
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     10
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 10,
    "Quest End Request": 4,
@@ -12690,6 +16739,94 @@
     "log_s01mq06"
    ]
   ],
+  "output_facts": {
+   "frightener": [
+    [
+     195,
+     0
+    ],
+    [
+     199,
+     0
+    ],
+    [
+     220,
+     0
+    ]
+   ],
+   "frightener_fail": [
+    [
+     189,
+     -1
+    ]
+   ],
+   "trophy": [
+    [
+     61,
+     2
+    ],
+    [
+     61,
+     3
+    ],
+    [
+     70,
+     6
+    ],
+    [
+     70,
+     7
+    ],
+    [
+     71,
+     0
+    ],
+    [
+     125,
+     1
+    ],
+    [
+     156,
+     1
+    ],
+    [
+     163,
+     1
+    ],
+    [
+     163,
+     2
+    ],
+    [
+     195,
+     0
+    ],
+    [
+     199,
+     0
+    ],
+    [
+     199,
+     1
+    ],
+    [
+     199,
+     2
+    ],
+    [
+     199,
+     3
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     10
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 14,
    "Branching": 6,
@@ -12757,6 +16894,18 @@
     0
    ]
   ],
+  "output_facts": {
+   "lair": [
+    [
+     18,
+     1
+    ],
+    [
+     10154,
+     12
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 3,
    "Immediately Set Fact": 2,
@@ -12828,6 +16977,22 @@
     0
    ]
   ],
+  "output_facts": {
+   "massacre_01": [
+    [
+     57,
+     2
+    ],
+    [
+     162,
+     2
+    ],
+    [
+     10154,
+     3
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 4,
    "Cutscenegraph": 2,
@@ -12928,6 +17093,10 @@
     ""
    ]
   ],
+  "output_facts": {
+   "reward": [],
+   "massacre_02": []
+  },
   "node_counts": {
    "DataConsumer": 5,
    "Set Fact": 3,
@@ -12999,6 +17168,22 @@
   "tracked_quests": [
    154
   ],
+  "output_facts": {
+   "start": [
+    [
+     57,
+     1
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 4,
    "Set Fact": 3,
@@ -13177,6 +17362,40 @@
   "tracked_quests": [
    154
   ],
+  "output_facts": {
+   "CT_archespore": [],
+   "CT_frightener_03": [],
+   "CT_massacre_01": [],
+   "CT_dhl_talk": [],
+   "CT_poison_hidden": [],
+   "CT_vogt_02": [],
+   "CT_dhl_dead": [],
+   "CT_frightener_hidden": [],
+   "CT_poison_no_timer": [],
+   "start": [
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     1
+    ]
+   ],
+   "CT_massacre_02": [],
+   "CT_vesemir": [],
+   "CT_lair": [],
+   "CT_solvent": [],
+   "CT_poison": [],
+   "mushroom_start": [
+    [
+     10154,
+     0
+    ]
+   ],
+   "CT_first_fight": [],
+   "CT_frightener_02": []
+  },
   "node_counts": {
    "Branching": 20,
    "Fact Requirement": 19,
@@ -13261,6 +17480,22 @@
     0
    ]
   ],
+  "output_facts": {
+   "thorstein_shop": [
+    [
+     70,
+     0
+    ],
+    [
+     220,
+     0
+    ],
+    [
+     10154,
+     5
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "Dialoggraph": 2,
@@ -13352,6 +17587,29 @@
     "poison"
    ]
   ],
+  "output_facts": {
+   "to_poison": [
+    [
+     27,
+     -3
+    ],
+    [
+     10154,
+     15
+    ]
+   ],
+   "fail": [],
+   "to_frightener": [
+    [
+     195,
+     0
+    ],
+    [
+     10154,
+     14
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 7,
    "Branching": 3,
@@ -13381,6 +17639,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_01": [
+    [
+     10154,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -13403,6 +17669,14 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_02": [
+    [
+     10154,
+     13
+    ]
+   ]
+  },
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -13433,6 +17707,10 @@
     20
    ]
   ],
+  "output_facts": {
+   "dead": [],
+   "alive": []
+  },
   "node_counts": {
    "Quest End Request": 2,
    "Start Graph": 1,
@@ -13462,6 +17740,18 @@
     false
    ]
   ],
+  "output_facts": {
+   "tracks_04": [
+    [
+     195,
+     2
+    ],
+    [
+     10154,
+     14
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 2,
    "Start Graph": 1,
@@ -13543,6 +17833,18 @@
     "log_s01mq06"
    ]
   ],
+  "output_facts": {
+   "vesemir": [
+    [
+     57,
+     4
+    ],
+    [
+     162,
+     4
+    ]
+   ]
+  },
   "node_counts": {
    "Set Fact": 5,
    "DataConsumer": 4,
@@ -13631,6 +17933,14 @@
     0
    ]
   ],
+  "output_facts": {
+   "vogt": [
+    [
+     220,
+     0
+    ]
+   ]
+  },
   "node_counts": {
    "DataConsumer": 6,
    "Set Fact": 4,
@@ -13815,6 +18125,26 @@
     false
    ]
   ],
+  "output_facts": {
+   "full_reward_dhl": [],
+   "bonus_reward_dhl": [],
+   "full_reward": [],
+   "bad_reward": [
+    [
+     182,
+     1
+    ]
+   ],
+   "reward_dhl": [],
+   "reward": [],
+   "bonus_reward": [],
+   "bad_reward_dhl": [
+    [
+     182,
+     1
+    ]
+   ]
+  },
   "node_counts": {
    "Branching": 14,
    "Fact Requirement": 13,
@@ -13915,6 +18245,7 @@
     true
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "Branching": 10,
    "Fact Requirement": 9,
@@ -13964,6 +18295,7 @@
     true
    ]
   ],
+  "output_facts": {},
   "node_counts": {
    "Branching": 2,
    "Fact Requirement": 2,
@@ -13987,6 +18319,7 @@
   "queue_quest_nodes": [
    474
   ],
+  "output_facts": {},
   "node_counts": {
    "Start Graph": 1,
    "End Graph": 1,
@@ -14011,6 +18344,7 @@
   "queue_quest_nodes": [
    395
   ],
+  "output_facts": {},
   "node_counts": {
    "Branching": 2,
    "Start Graph": 1,

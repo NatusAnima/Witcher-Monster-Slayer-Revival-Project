@@ -44,6 +44,16 @@ app.MapGet("/staticdata", (IConfiguration c) =>
 // tile-local coords (zoom 17, tile x,y from the @x,y,17z path); client renders it via MapSettings.RoadMaterial.
 app.MapGet("/v1/featuretiles/{**rest}", () => Results.Bytes(Array.Empty<byte>(), "application/x-protobuf"));
 
+// Dev quest triggering (step names = StaticData/quests.json keys). The client sees a change on its next quest reply
+// or boot (tools/restart.py). POST ?replace=true drops every other active step first.
+//   curl localhost:8081/debug/quests
+//   curl -X POST "localhost:8081/debug/quest/s01mq02_witcher?replace=true"
+app.MapGet("/debug/quests", () => Results.Json(QuestFlow.Describe()));
+app.MapPost("/debug/quest/{step}", (string step, bool? replace) =>
+    QuestFlow.Activate(step, replace == true) ? Results.Json(QuestFlow.Describe()) : Results.NotFound($"no step '{step}'"));
+app.MapDelete("/debug/quest/{step}", (string step) =>
+    QuestFlow.Retire(step) ? Results.Json(QuestFlow.Describe()) : Results.NotFound($"'{step}' is not active"));
+
 // Gatekeeper: hand any request back our game-server Address + an OK status.
 // GatekeeperResponse fields (PascalCase): Type, Message, EndTime, Address, WitcherId.
 // Refine to the exact route once captured; a catch-all is deliberate for the first session.
