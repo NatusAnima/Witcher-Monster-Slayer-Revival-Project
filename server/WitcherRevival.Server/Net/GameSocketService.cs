@@ -160,7 +160,6 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
 
     // Shared player-state values (server is stateless this round; keeps the boot batch and the
     // post-boot action replies coherent with each other and with the ID contract).
-    private const int TotalDistanceTraveled = 15000;  // DistanceTraveled(27) Param — batch AND post-boot
     private const int InitialSkillPoints = 10;        // GetSkills(63) SkillPoints; AddSkillPoints(93) base
 
     // Quest POI placement. Center = the player's center S2 cell, decoded from the method-40 GetLocationsByCell
@@ -227,6 +226,8 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         public int Head { get; set; } = 1;   // id 1 = head_caucasian_1 in static data
         public bool? TutorialFinished { get; set; }  // null = config Player:TutorialFinished (default false)
         public List<PlayerModifier> Modifiers { get; set; } = new();
+        public int DistanceTraveled { get; set; } = 15000;  // meters; the old constant, kept as the starting total
+        public int TrackedQuest { get; set; } = -1;
     }
     private sealed class PlayerModifier
     {
@@ -341,7 +342,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             M_AddPlayerModifier => AddPlayerModifier(req),
             M_RemovePlayerModifier => RemovePlayerModifier(ReadIntParam(req, fallback: 0)),
             // Post-boot player actions (request layouts decoded from dump.cs — see each builder/helper):
-            M_DistanceTraveled => BuildIntResponse(true, TotalDistanceTraveled),
+            M_DistanceTraveled => AddDistance(ReadIntParam(req, fallback: 0)),
             M_EquipArmor or M_EquipSword or M_EquipSteelSword or M_EquipSilverSword
                 => BuildIntResponse(true, ReadIntParam(req, fallback: 1)),   // echo the equipped item id
             M_SetCustomizationHead => SetHead(ReadIntParam(req, fallback: 1)),
@@ -350,7 +351,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             M_SetName => SetName(req.Data.Length >= 4 ? new ByteBuffer(req.Data).ReadString() : ""),
             M_SetGender => SetGender(req.Data.Length >= 1 ? req.Data[0] : (byte)0),
             M_AcquireSkill => BuildIntResponse(true, ReadIntParam(req, fallback: 1)),
-            M_TrackQuest => BuildIntResponse(true, ReadIntParam(req, fallback: 0)),
+            M_TrackQuest => TrackQuest(ReadIntParam(req, fallback: -1)),
             M_AddSkillPoints => BuildIntResponse(true, InitialSkillPoints + ReadIntParam(req, fallback: 0)),
             M_ResolveRewards => BuildResolveRewardsResponse(),  // post-sync reward gate — see builder
             M_EndBehaviourGraph => BuildEndBehaviourGraphResponse(req),
@@ -461,7 +462,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         // Method 27 — DistanceTraveled (IntResponse: bool Result, int Param = total distance)
         b.WriteInt(M_DistanceTraveled);
         b.WriteByte(1);                    // Result
-        b.WriteInt(TotalDistanceTraveled); // Param
+        lock (_factsLock) b.WriteInt(_profile.DistanceTraveled);  // Param
 
         // Method 69 — GetBrewers
         // Constructor order: Success (bool), Brewers (List)
@@ -501,7 +502,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         b.WriteInt(70);
         b.WriteInt(0);  // CurrentSeason
         b.WriteInt(0);  // setN
-        b.WriteInt(-1);  // TrackedQuestId
+        lock (_factsLock) b.WriteInt(_profile.TrackedQuest);  // TrackedQuestId (-1 = none), set by TrackQuest (72)
         
         int numQuests = 300;
         b.WriteInt(numQuests);  // listN
@@ -763,6 +764,18 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         b.WriteInt(id);
         return b.ToArray();
     }
+
+    /// DistanceTraveledRequest (27) = [int meters walked since the last report] (PlayerController sends it at most
+    /// every 5 s); the reply's Param is the running total, which the story's "Get Player Traveled Distance" node reads
+    /// (Evil Never Sleeps: throw the amulet 1000 m from the ritual).
+    private byte[] AddDistance(int meters)
+    {
+        int total = 0;
+        UpdateProfile(p => total = p.DistanceTraveled += Math.Max(0, meters), 0);
+        return BuildIntResponse(true, total);
+    }
+
+    private byte[] TrackQuest(int questId) => UpdateProfile(p => p.TrackedQuest = questId, questId);
 
     private byte[] SetHead(int head) => UpdateProfile(p => p.Head = head, head);
     private byte[] SetGender(byte gender) => UpdateProfile(p => p.Gender = gender, gender);

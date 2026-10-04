@@ -96,7 +96,7 @@ with every row's source in `tools/data_sources/static_data_sources.json`.
 | 46 | SetGender | byte → IntResponse | 🔴 | Persist the gender |
 | 28 | SetCustomizationHead | head id → IntResponse | 🟡 echo | Persist the head |
 | 30 | SetTutorialFinished | `{}` → IntResponse | 🟡 echo | Persist the flag (currently config `Player:TutorialFinished`) |
-| 27 | DistanceTraveled | metres → total | 🟡 constant 15000 | Accumulate (stats, achievements) |
+| 27 | DistanceTraveled | metres since last report → total | ✅ accumulated in `data/player.json` (starts at 15000) | Feeds the story's "Get Player Traveled Distance" node (Evil Never Sleeps' amulet) |
 | 38 / 82 | AddGold / AddExp | amount → new total | 🔴 | Probably dev or reward paths; apply and persist |
 | 31 | LevelUp | pushed | 🔴 | Push when exp crosses a `level_ups` threshold |
 
@@ -177,7 +177,7 @@ with every row's source in `tools/data_sources/static_data_sources.json`.
 | 60 | GetActiveQuestNodeInstances | `{}` → Locations, QuestNodeInstances, Expiring | ✅ batch | Serves every active quest step (§4) with a per-step `PoiDisplayMode` (1 Normal, 2 CloseFollow, 3 FarFollow, 4 Hunt, 5 Auto, 6 Hidden, 7 Collecting): CloseFollow for NPCs/monsters/objects, Hunt (search circle) for footprints and tracks, Auto for timers and invisible routers, Normal for the griffin; the originals' values are unknown. Steps sit on a 35 m ring around the fixed dev coordinates `QuestLat/QuestLng`, so walk there or fake GPS. Expiring = Auto-node fire times (Unix seconds). |
 | 70 | GetFinishedSeasonQuests | `{}` → CurrentSeason, FinishedQuests, TrackedQuestId, ActiveQuestIdList | 🟡 batch: season 0, ids 0..299 active | Real season/quest state |
 | 61 / 62 | Get/SetCurrentObjective | string | 🟡 empty / 🔴 | Persist the objective text |
-| 72 | TrackQuest | quest id → id | 🟡 echo | Persist the tracked quest |
+| 72 | TrackQuest | quest id → id | ✅ persisted (`data/player.json`), reported as method 70's TrackedQuestId | |
 | 77 | RelocateQuest | instance id → Success, Locations, QuestNodeInstances, Expiring | 🔴 | Move a quest POI near the player; would remove the need to fake GPS |
 | 81 / 95 | ClaimDailyQuest / ClaimWeeklyQuest | no classes in this build | — | |
 
