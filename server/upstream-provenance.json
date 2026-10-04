@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project",
+  "commit": "3cb353b3dd6a9013e900e61502f04af6a7627f7a",
+  "source_sha256": {
+    "WitcherRevival.Server/Program.cs": "984effbc0ba15db14a02f45d92b9c3e18f6ba6436c9e7a1b62099be964767756",
+    "WitcherRevival.Server/WitcherRevival.Server.csproj": "4505f267f1fd26b093cf55ed9bb5acf14830317ab912c03bfe74f0ee4e14ead0",
+    "WitcherRevival.Server/Net/ApiProtocol.cs": "015a33c994bac95155859613d1b6418361c61ad16bb648dd8320bd329c09222a",
+    "WitcherRevival.Server/Net/GameSocketService.cs": "37a63f633692b29b69df96e415064ce12d97f51b1c191732572a52a33fde67da",
+    "WitcherRevival.Server/Net/PreloaderStaticData.cs": "1177df18845ff1297aa7149f7cac8e1bfaf0a38dd89f6467a69be40aa4937498",
+    "WitcherRevival.Server/Protocol/ByteBuffer.cs": "dfa415acb0ff5cc675e11c8b30645199bd3570728026dcca0c62f36b177fa24f",
+    "WitcherRevival.Server/Protocol/Frame.cs": "f721506ef6ee5eff1766003f5198675d7d3d569188a13abc5e806213c2b8237c"
+  }
+}

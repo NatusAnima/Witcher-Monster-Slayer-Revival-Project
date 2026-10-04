@@ -1,0 +1,6868 @@
+{
+ "client": "1.1.116",
+ "elf_sha256": "c8a5556b1d37e86bb9427ce5b3d70389ac9b39fd9abcb81f31651d904c5b4aa3",
+ "metadata_sha256": "6e7c83e2e7933c30f5aaa214266b8a7a94dacfeabad493056792c92fc1d28207",
+ "note": "Field order follows the class layout, not a verified wire order.",
+ "methods": [
+  {
+   "id": 2,
+   "name": "GetLocations",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 3,
+   "name": "GetPlayerInfo",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetPlayerInfoRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetPlayerInfoResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "TutorialFinished",
+      "bool"
+     ],
+     [
+      "Gender",
+      "byte"
+     ],
+     [
+      "Gold",
+      "int"
+     ],
+     [
+      "Exp",
+      "int"
+     ],
+     [
+      "Head",
+      "int"
+     ],
+     [
+      "Name",
+      "string"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 4,
+   "name": "CraftItem",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "CraftItemRequest"
+    ],
+    "fields": [
+     [
+      "BrewerInstanceId",
+      "long"
+     ],
+     [
+      "RecipeId",
+      "int"
+     ],
+     [
+      "ItemType",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "CraftItemResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "BrewerInstanceId",
+      "long"
+     ],
+     [
+      "UsesLeft",
+      "int"
+     ],
+     [
+      "WorkingRecipe",
+      "int"
+     ],
+     [
+      "FinishTime",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 5,
+   "name": "GetInventory",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetInventoryRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetInventoryResponse"
+    ],
+    "fields": [
+     [
+      "IngredientMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "BombMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "PotionMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "OilMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "LureMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "SensesPotionMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "ConsumablesMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "FriendsPacksMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "SummoningScrollsMap",
+      "Dictionary<int, int>"
+     ],
+     [
+      "BagSize",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 6,
+   "name": "GetKnownRecipes",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetKnownRecipesRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetKnownRecipesResponse"
+    ],
+    "fields": [
+     [
+      "KnownRecipes",
+      "Dictionary<int, HashSet<int>>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 7,
+   "name": "GetKilledMonsters",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetKilledMonstersRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetKilledMonstersResponse"
+    ],
+    "fields": [
+     [
+      "KilledMonsters",
+      "Dictionary<int, int>"
+     ],
+     [
+      "ClaimedMonsterKnowledgeTiers",
+      "Dictionary<int, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 8,
+   "name": "CombatEnd",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "CombatEndRequest"
+    ],
+    "fields": [
+     [
+      "Win",
+      "bool"
+     ],
+     [
+      "Details",
+      "int[]"
+     ],
+     [
+      "PlayerSurrendered",
+      "bool"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "CombatEndResponse"
+    ],
+    "fields": [
+     [
+      "BaseExp",
+      "int"
+     ],
+     [
+      "ComboExp",
+      "int"
+     ],
+     [
+      "OilExp",
+      "int"
+     ],
+     [
+      "TimeExp",
+      "int"
+     ],
+     [
+      "PerfectParryExp",
+      "int"
+     ],
+     [
+      "FirstTimeExp",
+      "int"
+     ],
+     [
+      "BoostedExp",
+      "int"
+     ],
+     [
+      "PackType",
+      "int"
+     ],
+     [
+      "Loot",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 9,
+   "name": "GetEquipment",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetEquipmentRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetEquipmentResponse"
+    ],
+    "fields": [
+     [
+      "EquippedArmor",
+      "int"
+     ],
+     [
+      "EquippedSword",
+      "int"
+     ],
+     [
+      "Swords",
+      "List<int>"
+     ],
+     [
+      "Armors",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 10,
+   "name": "PrepareToCombat",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "PrepareToCombatRequest",
+     "PrepareToCombatAbstractRequest"
+    ],
+    "fields": [
+     [
+      "Oil",
+      "int"
+     ],
+     [
+      "Bombs",
+      "List<int>"
+     ],
+     [
+      "Potions",
+      "List<int>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "PrepareToCombatResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 11,
+   "name": "EquipArmor",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "EquipArmorRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "EquipArmorResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 12,
+   "name": "EquipSteelSword",
+   "answered_by_local_backend": true
+  },
+  {
+   "id": 13,
+   "name": "EquipSilverSword",
+   "answered_by_local_backend": true
+  },
+  {
+   "id": 14,
+   "name": "GetMonsterInstance",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetMonsterInstanceRequest"
+    ],
+    "fields": [
+     [
+      "PlaceId",
+      "byte[]"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GetMonsterInstanceResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "MonsterPlacement",
+      "Placement<Monster>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 15,
+   "name": "GetNestInstance",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetNestInstanceRequest"
+    ],
+    "fields": [
+     [
+      "InstanceId",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 16,
+   "name": "EndNestMonsterCombat",
+   "answered_by_local_backend": false,
+   "response": {
+    "class": [
+     "EndNestMonsterCombatResponse"
+    ],
+    "fields": [
+     [
+      "Loot",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 17,
+   "name": "EndNestBossCombat",
+   "answered_by_local_backend": false,
+   "response": {
+    "class": [
+     "EndNestBossCombatResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Loot",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 18,
+   "name": "UseLure",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "UseLureRequest"
+    ],
+    "fields": [
+     [
+      "LureId",
+      "int"
+     ],
+     [
+      "InstanceId",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "UseLureResponse",
+     "NestStateResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "NestInstanceId",
+      "long"
+     ],
+     [
+      "WonNestCombats",
+      "int"
+     ],
+     [
+      "DailyNestLimit",
+      "int"
+     ],
+     [
+      "Iteration",
+      "int"
+     ],
+     [
+      "Gold",
+      "int"
+     ],
+     [
+      "Exp",
+      "int"
+     ],
+     [
+      "Monsters",
+      "List<int>"
+     ],
+     [
+      "State",
+      "NestState"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 19,
+   "name": "GatherHerb",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GatherHerbRequest"
+    ],
+    "fields": [
+     [
+      "InstanceId",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GatherHerbResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "RespawnTime",
+      "int"
+     ],
+     [
+      "HerbInstanceId",
+      "long"
+     ],
+     [
+      "Loot",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 20,
+   "name": "GetDailyContracts",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetDailyContractsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetDailyContractsResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Contracts",
+      "List<DailyContract>"
+     ],
+     [
+      "CanAdd",
+      "bool"
+     ],
+     [
+      "CanReshuffle",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 21,
+   "name": "AddDailyContract",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddDailyContractRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "AddDailyContractResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Contract",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 22,
+   "name": "ReshuffleDailyContract",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ReshuffleDailyContractRequest"
+    ],
+    "fields": [
+     [
+      "Contract",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "ReshuffleDailyContractResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 23,
+   "name": "RemoveDailyContract",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "RemoveDailyContractRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "RemoveDailyContractResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 24,
+   "name": "GetAchievements",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetAchievementsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetAchievementsResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Achievements",
+      "Dictionary<int, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 25,
+   "name": "AchievementReceived",
+   "answered_by_local_backend": false,
+   "response": {
+    "class": [
+     "AchievementReceivedResponse"
+    ],
+    "fields": [
+     [
+      "Achievement",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 26,
+   "name": "DailyContractCompleted",
+   "answered_by_local_backend": false,
+   "response": {
+    "class": [
+     "DailyContractCompletedResponse"
+    ],
+    "fields": [
+     [
+      "Contract",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 27,
+   "name": "DistanceTraveled",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "DistanceTraveledRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DistanceTraveledResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 28,
+   "name": "SetCustomizationHead",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "SetCustomizationHeadRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SetCustomizationHeadResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 29,
+   "name": "SetName",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SetNameRequest"
+    ],
+    "fields": [
+     [
+      "Name",
+      "string"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SetNameResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 30,
+   "name": "SetTutorialFinished",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "SetTutorialFinishedRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "SetTutorialFinishedResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 31,
+   "name": "LevelUp",
+   "answered_by_local_backend": false,
+   "response": {
+    "class": [
+     "LevelUpResponse"
+    ],
+    "fields": [
+     [
+      "Level",
+      "int"
+     ],
+     [
+      "PotionList",
+      "List<int>"
+     ],
+     [
+      "BombList",
+      "List<int>"
+     ],
+     [
+      "OilList",
+      "List<int>"
+     ],
+     [
+      "LureList",
+      "List<int>"
+     ],
+     [
+      "PotionRecipeList",
+      "List<int>"
+     ],
+     [
+      "BombRecipeList",
+      "List<int>"
+     ],
+     [
+      "OilRecipeList",
+      "List<int>"
+     ],
+     [
+      "LureRecipeList",
+      "List<int>"
+     ],
+     [
+      "SensesPotionList",
+      "List<int>"
+     ],
+     [
+      "ConsumablesList",
+      "List<int>"
+     ],
+     [
+      "IngredientsList",
+      "List<int>"
+     ],
+     [
+      "BrewersList",
+      "List<int>"
+     ],
+     [
+      "SummoningScrollsList",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 32,
+   "name": "BuyPotion",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 33,
+   "name": "BuyBomb",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 34,
+   "name": "BuyOil",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 35,
+   "name": "BuyLure",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 36,
+   "name": "BuyArmor",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 37,
+   "name": "BuySword",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 38,
+   "name": "AddGold",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddGoldRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddGoldResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 39,
+   "name": "ThrowBomb",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ThrowBombRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "ThrowBombResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 40,
+   "name": "GetLocationsByCell",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetLocationsByCellRequest"
+    ],
+    "fields": [
+     [
+      "_cellIds",
+      "List<ulong>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GetLocationsByCellResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "LocationMap",
+      "Dictionary<ulong, List<Location>>"
+     ],
+     [
+      "HerbPlacements",
+      "List<Placement<Herb>>"
+     ],
+     [
+      "MonsterPlacements",
+      "List<Placement<Monster>>"
+     ],
+     [
+      "NestPlacements",
+      "List<Placement<Nest>>"
+     ],
+     [
+      "QuestNodeInstancePlacements",
+      "List<Placement<QuestNodeInstance>>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 41,
+   "name": "EncounterMonster",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "EncounterMonsterRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "EncounterMonsterResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 42,
+   "name": "UseSenses",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "UseSensesRequest"
+    ],
+    "fields": [
+     [
+      "_potionId",
+      "int"
+     ],
+     [
+      "_sensedMonsters",
+      "List<long>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "UseSensesResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 43,
+   "name": "GetSensedMonsters",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetSensedMonstersRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetSensedMonstersResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "SensedMonsters",
+      "List<long>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 44,
+   "name": "GetCraftingQueue",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetCraftingQueueRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetCraftingQueueResponse"
+    ],
+    "fields": [
+     [
+      "Queue",
+      "List<CraftSlot>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 45,
+   "name": "CancelCrafting",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "CancelCraftingRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "CancelCraftingResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 46,
+   "name": "SetGender",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SetGenderRequest",
+     "ByteRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "byte"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SetGenderResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 47,
+   "name": "DropPotion",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropPotionRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropPotionResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 48,
+   "name": "DropBomb",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropBombRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropBombResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 49,
+   "name": "DropOil",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropOilRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropOilResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 50,
+   "name": "DropLure",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropLureRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropLureResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 51,
+   "name": "DropSensesPotion",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropSensesPotionRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropSensesPotionResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 52,
+   "name": "EncounterNest",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "EncounterNestRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "EncounterNestResponse",
+     "NestStateResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "NestInstanceId",
+      "long"
+     ],
+     [
+      "WonNestCombats",
+      "int"
+     ],
+     [
+      "DailyNestLimit",
+      "int"
+     ],
+     [
+      "Iteration",
+      "int"
+     ],
+     [
+      "Gold",
+      "int"
+     ],
+     [
+      "Exp",
+      "int"
+     ],
+     [
+      "Monsters",
+      "List<int>"
+     ],
+     [
+      "State",
+      "NestState"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 53,
+   "name": "EndNestCombat",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "EndNestCombatRequest"
+    ],
+    "fields": [
+     [
+      "Win",
+      "bool"
+     ],
+     [
+      "InstanceId",
+      "long"
+     ],
+     [
+      "BombId",
+      "int"
+     ],
+     [
+      "DetailsFirst",
+      "int[]"
+     ],
+     [
+      "DetailsSecond",
+      "int[]"
+     ],
+     [
+      "DetailsBoss",
+      "int[]"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "EndNestCombatResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Loot",
+      "List<int>"
+     ],
+     [
+      "Reward",
+      "int"
+     ],
+     [
+      "EntireRarityMonsterExp",
+      "int"
+     ],
+     [
+      "EntireFirstTimeSlayedMonstersExp",
+      "int"
+     ],
+     [
+      "PerfectAttacksExp",
+      "int"
+     ],
+     [
+      "ProperOilUsageExp",
+      "int"
+     ],
+     [
+      "DurationExp",
+      "int"
+     ],
+     [
+      "PerfectParriesExp",
+      "int"
+     ],
+     [
+      "NestClearingExp",
+      "int"
+     ],
+     [
+      "BoostedExp",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 54,
+   "name": "SpawnMonster",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SpawnMonsterRequest"
+    ],
+    "fields": [
+     [
+      "Latitude",
+      "float"
+     ],
+     [
+      "Longitude",
+      "float"
+     ],
+     [
+      "Type",
+      "int"
+     ],
+     [
+      "Level",
+      "int"
+     ],
+     [
+      "Ttl",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SpawnMonsterResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "InstanceId",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 55,
+   "name": "EquipSword",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "EquipSwordRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "EquipSwordResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 56,
+   "name": "GetKilledMonsterInstances",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetKilledMonsterInstancesRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetKilledMonsterInstancesResponse"
+    ],
+    "fields": [
+     [
+      "KilledMonsterInstances",
+      "List<long>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 57,
+   "name": "EndBehaviourGraph",
+   "answered_by_local_backend": true,
+   "response": {
+    "class": [
+     "EndBehaviourGraphResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Potions",
+      "Dictionary<int, int>"
+     ],
+     [
+      "Bombs",
+      "Dictionary<int, int>"
+     ],
+     [
+      "Oils",
+      "Dictionary<int, int>"
+     ],
+     [
+      "Lures",
+      "Dictionary<int, int>"
+     ],
+     [
+      "SensesPotions",
+      "Dictionary<int, int>"
+     ],
+     [
+      "BestiaryEntries",
+      "Dictionary<int, int>"
+     ],
+     [
+      "Ingredients",
+      "Dictionary<int, int>"
+     ],
+     [
+      "Armors",
+      "List<int>"
+     ],
+     [
+      "Swords",
+      "List<int>"
+     ],
+     [
+      "Exp",
+      "int"
+     ],
+     [
+      "Gold",
+      "int"
+     ],
+     [
+      "Locations",
+      "List<Location>"
+     ],
+     [
+      "QuestNodeInstances",
+      "List<QuestNodeInstance>"
+     ],
+     [
+      "ExpiringQuestNodeInstances",
+      "Dictionary<long, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 58,
+   "name": "GetFacts",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetFactsRequest"
+    ],
+    "fields": [
+     [
+      "RequestedFacts",
+      "List<int>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GetFactsResponse"
+    ],
+    "fields": [
+     [
+      "Facts",
+      "Dictionary<int, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 59,
+   "name": "GetAllFacts",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetAllFactsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetAllFactsResponse"
+    ],
+    "fields": [
+     [
+      "Facts",
+      "Dictionary<int, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 60,
+   "name": "GetActiveQuestNodeInstances",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetActiveQuestNodeInstancesRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetActiveQuestNodeInstancesResponse"
+    ],
+    "fields": [
+     [
+      "Locations",
+      "List<Location>"
+     ],
+     [
+      "QuestNodeInstances",
+      "List<QuestNodeInstance>"
+     ],
+     [
+      "ExpiringQuestNodeInstances",
+      "Dictionary<long, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 61,
+   "name": "GetCurrentObjective",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetCurrentObjectiveRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetCurrentObjectiveResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "CurrentObjective",
+      "string"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 62,
+   "name": "SetCurrentObjective",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SetCurrentObjectiveRequest"
+    ],
+    "fields": [
+     [
+      "CurrentObjective",
+      "string"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SetCurrentObjectiveResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "CurrentObjective",
+      "string"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 63,
+   "name": "GetSkills",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetSkillsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetSkillsResponse"
+    ],
+    "fields": [
+     [
+      "SkillPoints",
+      "int"
+     ],
+     [
+      "Skills",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 64,
+   "name": "AcquireSkill",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "AcquireSkillRequest"
+    ],
+    "fields": [
+     [
+      "Skill",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AcquireSkillResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Skill",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 65,
+   "name": "ClaimMonsterKnowledgeReward",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ClaimMonsterKnowledgeRewardRequest"
+    ],
+    "fields": [
+     [
+      "MonsterId",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "ClaimMonsterKnowledgeRewardResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "MonsterId",
+      "int"
+     ],
+     [
+      "SkillPoints",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 66,
+   "name": "Log",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "LogRequest"
+    ],
+    "fields": [
+     [
+      "_unknownFields",
+      "UnknownFieldSet"
+     ],
+     [
+      "requestTimeMs_",
+      "long"
+     ],
+     [
+      "requestUptimeMs_",
+      "long"
+     ],
+     [
+      "clientInfo_",
+      "ClientInfo"
+     ],
+     [
+      "logEvent_",
+      "RepeatedField<LogEvent>"
+     ],
+     [
+      "logEventDroppedCount_",
+      "long"
+     ],
+     [
+      "logSource_",
+      "object"
+     ],
+     [
+      "logSourceCase_",
+      "LogRequest.LogSourceOneofCase"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "LogResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 67,
+   "name": "GetWeather",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetWeatherRequest"
+    ],
+    "fields": [
+     [
+      "Latitude",
+      "float"
+     ],
+     [
+      "Longitude",
+      "float"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GetWeatherResponse"
+    ],
+    "fields": [
+     [
+      "Code",
+      "GetWeatherResponse.WeatherCode"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 68,
+   "name": "ClaimRecipe",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ClaimRecipeRequest"
+    ],
+    "fields": [
+     [
+      "BrewerInstanceId",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "ClaimRecipeResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "BrewerInstanceId",
+      "long"
+     ],
+     [
+      "Items",
+      "List<Item>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 69,
+   "name": "GetBrewers",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetBrewersRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetBrewersResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Brewers",
+      "List<Brewer>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 70,
+   "name": "GetFinishedSeasonQuests",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetFinishedSeasonQuestsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetFinishedSeasonQuestsResponse"
+    ],
+    "fields": [
+     [
+      "CurrentSeason",
+      "int"
+     ],
+     [
+      "FinishedQuests",
+      "HashSet<int>"
+     ],
+     [
+      "TrackedQuestId",
+      "int"
+     ],
+     [
+      "ActiveQuestIdList",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 71,
+   "name": "DropIngredients",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropIngredientsRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropIngredientsResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 72,
+   "name": "TrackQuest",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "TrackQuestRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "TrackQuestResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 73,
+   "name": "BuyItem",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 74,
+   "name": "DropItem",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropItemRequest",
+     "IntIntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ],
+     [
+      "Third",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropItemResponse",
+     "IntIntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ],
+     [
+      "Third",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 75,
+   "name": "BuyShopBundle",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "BuyShopBundleRequest",
+     "IntLongRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "BuyShopBundleResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 76,
+   "name": "BuyInAppBundle",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 77,
+   "name": "RelocateQuest",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "RelocateQuestRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "RelocateQuestResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Locations",
+      "List<Location>"
+     ],
+     [
+      "QuestNodeInstances",
+      "List<QuestNodeInstance>"
+     ],
+     [
+      "ExpiringQuestNodeInstances",
+      "Dictionary<long, int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 78,
+   "name": "SetFacts",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "SetFactsRequest"
+    ],
+    "fields": [
+     [
+      "Facts",
+      "Dictionary<int, int>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SetFactsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 79,
+   "name": "GetDailyShopBundles",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetDailyShopBundlesRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetDailyShopBundlesResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "DailyShopBundles",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 80,
+   "name": "GetTransactionStatus",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetTransactionStatusRequest",
+     "IntLongRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GetTransactionStatusResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 81,
+   "name": "ClaimDailyQuest",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 82,
+   "name": "AddExp",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddExpRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddExpResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 83,
+   "name": "GetOneTimeShopBundles",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetOneTimeShopBundlesRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetOneTimeShopBundlesResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "OneTimeShopBundles",
+      "List<int>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 84,
+   "name": "AddExpiringEffect",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddExpiringEffectRequest",
+     "IntIntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ],
+     [
+      "Third",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddExpiringEffectResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 85,
+   "name": "GetExpiringEffects",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetExpiringEffectsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetExpiringEffectsResponse"
+    ],
+    "fields": [
+     [
+      "ExpiringEffects",
+      "List<ExpiringEffect>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 86,
+   "name": "AddSpecifiedContract",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddSpecifiedContractRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 87,
+   "name": "GetMonsterInstances",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetMonsterInstancesRequest"
+    ],
+    "fields": [
+     [
+      "PlaceIdList",
+      "List<string>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "GetMonsterInstancesResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "ErrorCode",
+      "byte"
+     ],
+     [
+      "MonsterInstanceList",
+      "List<Placement<Monster>>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 88,
+   "name": "LoadCells",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "LoadCellsRequest"
+    ],
+    "fields": [
+     [
+      "_cellIds",
+      "List<ulong>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "LoadCellsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 89,
+   "name": "UseOilPotions",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "UseOilPotionsRequest"
+    ],
+    "fields": [
+     [
+      "Oil",
+      "int"
+     ],
+     [
+      "Potions",
+      "List<int>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "UseOilPotionsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 90,
+   "name": "AddPlayerModifier",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddPlayerModifierRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddPlayerModifierResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "int"
+     ],
+     [
+      "Modifier",
+      "ExpiringPlayerModifier"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 91,
+   "name": "GetPlayerModifiers",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetPlayerModifiersRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetPlayerModifiersResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "int"
+     ],
+     [
+      "Modifiers",
+      "List<ExpiringPlayerModifier>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 92,
+   "name": "RemovePlayerModifier",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "RemovePlayerModifierRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "RemovePlayerModifierResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "int"
+     ],
+     [
+      "ModifierId",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 93,
+   "name": "AddSkillPoints",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "AddSkillPointsRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddSkillPointsResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 94,
+   "name": "GetWeeklyContractProgress",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetWeeklyContractProgressRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetWeeklyContractProgressResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Stamps",
+      "List<int>"
+     ],
+     [
+      "LastStampAcquiredDate",
+      "int"
+     ],
+     [
+      "RewardId",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 95,
+   "name": "ClaimWeeklyQuest",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 96,
+   "name": "AddWeeklyStamps",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddWeeklyStampsRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddWeeklyStampsResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 97,
+   "name": "FinishCrafting",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "FinishCraftingRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "FinishCraftingResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 98,
+   "name": "BuyAutoEquipItems",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "BuyAutoEquipItemsRequest",
+     "PrepareToCombatAbstractRequest"
+    ],
+    "fields": [
+     [
+      "Oil",
+      "int"
+     ],
+     [
+      "Bombs",
+      "List<int>"
+     ],
+     [
+      "Potions",
+      "List<int>"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "BuyAutoEquipItemsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 99,
+   "name": "UseConsumable",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "UseConsumableRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "UseConsumableResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 100,
+   "name": "DropConsumable",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropConsumableRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropConsumableResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 101,
+   "name": "CheckInApp",
+   "answered_by_local_backend": false
+  },
+  {
+   "id": 102,
+   "name": "GetFriends",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetFriendsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetFriendsResponse"
+    ],
+    "fields": [
+     [
+      "CurrentPlayerId",
+      "long"
+     ],
+     [
+      "Friends",
+      "List<FriendData>"
+     ],
+     [
+      "PlayerStateChanges",
+      "List<PlayerStateChange>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 103,
+   "name": "AddFriend",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AddFriendRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AddFriendResponse",
+     "BooleanLongResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 104,
+   "name": "AcceptFriendInvitation",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "AcceptFriendInvitationRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "AcceptFriendInvitationResponse",
+     "BooleanLongResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 105,
+   "name": "RejectFriendInvitation",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "RejectFriendInvitationRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "RejectFriendInvitationResponse",
+     "BooleanLongResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 106,
+   "name": "SendPack",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SendPackRequest",
+     "IntLongRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SendPackResponse",
+     "IntLongResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 107,
+   "name": "OpenPack",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "OpenPackRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "OpenPackResponse",
+     "LongIntIntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "long"
+     ],
+     [
+      "Second",
+      "int"
+     ],
+     [
+      "Third",
+      "int"
+     ],
+     [
+      "Fourth",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 108,
+   "name": "DeleteFriend",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DeleteFriendRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DeleteFriendResponse",
+     "BooleanLongResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "long"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 109,
+   "name": "DropFriendPack",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropFriendPackRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropFriendPackResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 110,
+   "name": "GetFriendsNotifications",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetFriendsNotificationsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetFriendsNotificationsResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "ReceivedInvites",
+      "List<long>"
+     ],
+     [
+      "SentInvitesAccepted",
+      "List<long>"
+     ],
+     [
+      "ReceivedPacks",
+      "List<long>"
+     ],
+     [
+      "PlayerStateChanges",
+      "List<PlayerStateChange>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 111,
+   "name": "SummonLocalMonsters",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SummonLocalMonstersRequest"
+    ],
+    "fields": [
+     [
+      "ItemTypeId",
+      "int"
+     ],
+     [
+      "ItemId",
+      "int"
+     ],
+     [
+      "Longitude",
+      "int"
+     ],
+     [
+      "Latitude",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "SummonLocalMonstersResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "LocalMonstersEntities",
+      "List<LocalMonstersEntity>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 112,
+   "name": "GetSummonedMonsters",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetSummonedMonstersRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetSummonedMonstersResponse"
+    ],
+    "fields": [
+     [
+      "LocalMonstersEntities",
+      "List<LocalMonstersEntity>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 113,
+   "name": "EncounterSummonedMonster",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "EncounterSummonedMonsterRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "EncounterSummonedMonsterResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 114,
+   "name": "CombatEndSummonedMonster",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "CombatEndSummonedMonsterRequest"
+    ],
+    "fields": [
+     [
+      "Win",
+      "bool"
+     ],
+     [
+      "Details",
+      "int[]"
+     ],
+     [
+      "PlayerSurrendered",
+      "bool"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "CombatEndSummonedMonsterResponse"
+    ],
+    "fields": [
+     [
+      "Loot",
+      "List<int>"
+     ],
+     [
+      "BaseExp",
+      "int"
+     ],
+     [
+      "ComboExp",
+      "int"
+     ],
+     [
+      "OilExp",
+      "int"
+     ],
+     [
+      "TimeExp",
+      "int"
+     ],
+     [
+      "PerfectParryExp",
+      "int"
+     ],
+     [
+      "FirstTimeExp",
+      "int"
+     ],
+     [
+      "BoostedExp",
+      "int"
+     ],
+     [
+      "PackType",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 115,
+   "name": "GetInitialPlayerData",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetInitialPlayerDataRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetInitialPlayerDataResponse"
+    ],
+    "fields": [
+     [
+      "responses",
+      "Dictionary<int, IMethodArgument>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 116,
+   "name": "RespawnNest",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "RespawnNestRequest",
+     "LongRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "long"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "RespawnNestResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 117,
+   "name": "GetLastSummoningSkillUsageTime",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "GetLastSummoningSkillUsageTimeRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetLastSummoningSkillUsageTimeResponse",
+     "IntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 118,
+   "name": "DropSummoningScroll",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "DropSummoningScrollRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "DropSummoningScrollResponse",
+     "IntIntResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ],
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 119,
+   "name": "ResolveRewards",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "ResolveRewardsRequest",
+     "IntRequest"
+    ],
+    "fields": [
+     [
+      "Param",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "ResolveRewardsResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "Items",
+      "List<Item>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 120,
+   "name": "MoveBackStamps",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "MoveBackStampsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "MoveBackStampsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 121,
+   "name": "ResetDailyQuestsSettings",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ResetDailyQuestsSettingsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "ResetDailyQuestsSettingsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 122,
+   "name": "GetMonsterEventProgress",
+   "answered_by_local_backend": true,
+   "request": {
+    "class": [
+     "GetMonsterEventProgressRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "GetMonsterEventProgressResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "EventId",
+      "int"
+     ],
+     [
+      "QuestsInProgress",
+      "List<DailyContract>"
+     ],
+     [
+      "CompletedQuests",
+      "List<int>"
+     ],
+     [
+      "IsEventClaimed",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 123,
+   "name": "ClaimMonsterEvent",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ClaimMonsterEventRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "ClaimMonsterEventResponse"
+    ],
+    "fields": [
+     [
+      "Success",
+      "bool"
+     ],
+     [
+      "EventId",
+      "int"
+     ],
+     [
+      "Gold",
+      "int"
+     ],
+     [
+      "Rewards",
+      "List<ClaimMonsterEventResponse.Reward>"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 124,
+   "name": "ManageSeasonalQuest",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "ManageSeasonalQuestRequest",
+     "IntIntRequest"
+    ],
+    "fields": [
+     [
+      "First",
+      "int"
+     ],
+     [
+      "Second",
+      "int"
+     ]
+    ]
+   },
+   "response": {
+    "class": [
+     "ManageSeasonalQuestResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  },
+  {
+   "id": 125,
+   "name": "SynchronizeEvents",
+   "answered_by_local_backend": false,
+   "request": {
+    "class": [
+     "SynchronizeEventsRequest"
+    ],
+    "fields": []
+   },
+   "response": {
+    "class": [
+     "SynchronizeEventsResponse",
+     "BooleanResponse"
+    ],
+    "fields": [
+     [
+      "Result",
+      "bool"
+     ]
+    ]
+   }
+  }
+ ],
+ "static_data_tables": [
+  {
+   "field": "Achievements",
+   "json": "achievements",
+   "type": "Container.Achievement[]",
+   "element": {
+    "class": [
+     "Container.Achievement",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "AutoEquips",
+   "json": "auto_equip",
+   "type": "Container.AutoEquip[]",
+   "element": {
+    "class": [
+     "Container.AutoEquip"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "ItemTypeId",
+      "int",
+      "item_type_id"
+     ],
+     [
+      "AttackStrong",
+      "int",
+      "attack_strong"
+     ],
+     [
+      "AttackSteel",
+      "int",
+      "attack_steel"
+     ],
+     [
+      "AttackSilver",
+      "int",
+      "attack_silver"
+     ],
+     [
+      "AttackFire",
+      "int",
+      "attack_fire"
+     ],
+     [
+      "AttackKinetic",
+      "int",
+      "attack_kinetic"
+     ],
+     [
+      "AttackFast",
+      "int",
+      "attack_fast"
+     ],
+     [
+      "AttackDimeritium",
+      "int",
+      "attack_dimeritium"
+     ],
+     [
+      "Day",
+      "int",
+      "day"
+     ],
+     [
+      "Night",
+      "int",
+      "night"
+     ],
+     [
+      "WeatherNormal",
+      "int",
+      "weather_normal"
+     ],
+     [
+      "WeatherRain",
+      "int",
+      "weather_rain"
+     ],
+     [
+      "WeatherFog",
+      "int",
+      "weather_fog"
+     ],
+     [
+      "FamilyDraconide",
+      "int",
+      "family_draconide"
+     ],
+     [
+      "FamilyOgroid",
+      "int",
+      "family_ogroid"
+     ],
+     [
+      "FamilyHybrid",
+      "int",
+      "family_hybrid"
+     ],
+     [
+      "FamilyElemental",
+      "int",
+      "family_elemental"
+     ],
+     [
+      "FamilyRelict",
+      "int",
+      "family_relict"
+     ],
+     [
+      "FamilySpecter",
+      "int",
+      "family_specter"
+     ],
+     [
+      "FamilyInsectoid",
+      "int",
+      "family_insectoid"
+     ],
+     [
+      "FamilyVampire",
+      "int",
+      "family_vampire"
+     ],
+     [
+      "FamilyCursed",
+      "int",
+      "family_cursed"
+     ],
+     [
+      "FamilyNecrophage",
+      "int",
+      "family_necrophage"
+     ],
+     [
+      "Difficulty1",
+      "int",
+      "difficulty1"
+     ],
+     [
+      "Difficulty2",
+      "int",
+      "difficulty2"
+     ],
+     [
+      "Difficulty3",
+      "int",
+      "difficulty3"
+     ],
+     [
+      "Difficulty4",
+      "int",
+      "difficulty4"
+     ],
+     [
+      "Difficulty5",
+      "int",
+      "difficulty5"
+     ],
+     [
+      "Difficulty6",
+      "int",
+      "difficulty6"
+     ],
+     [
+      "Difficulty7",
+      "int",
+      "difficulty7"
+     ],
+     [
+      "Difficulty8",
+      "int",
+      "difficulty8"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Bombs",
+   "json": "bombs",
+   "type": "Container.Bomb[]",
+   "element": {
+    "class": [
+     "Container.Bomb",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "Delay",
+      "int",
+      "delay"
+     ],
+     [
+      "Duration",
+      "int",
+      "duration"
+     ],
+     [
+      "Value",
+      "int",
+      "value"
+     ],
+     [
+      "Radius",
+      "int",
+      "radius"
+     ],
+     [
+      "ExplodeStyle",
+      "int",
+      "explode_style"
+     ],
+     [
+      "PrefabPath",
+      "string",
+      "prefab_path"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "BombDamageTypes",
+   "json": "bomb_damage_types",
+   "type": "Container.BombDamageType[]",
+   "element": {
+    "class": [
+     "Container.BombDamageType"
+    ],
+    "fields": [
+     [
+      "BombId",
+      "int",
+      "bomb_id"
+     ],
+     [
+      "DamageTypeId",
+      "int",
+      "damage_type_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Brewers",
+   "json": "brewers",
+   "type": "Container.Brewer[]",
+   "element": {
+    "class": [
+     "Container.Brewer",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Uses",
+      "int",
+      "uses"
+     ],
+     [
+      "TimeCoefficient",
+      "int",
+      "time_coefficient"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Contracts",
+   "json": "contracts",
+   "type": "Container.Contract[]",
+   "element": {
+    "class": [
+     "Container.Contract"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "ContractTypeId",
+      "int",
+      "contract_type_id"
+     ],
+     [
+      "Value1",
+      "int",
+      "value1"
+     ],
+     [
+      "Value2",
+      "int",
+      "value2"
+     ],
+     [
+      "Value3",
+      "int",
+      "value3"
+     ],
+     [
+      "Value4",
+      "int",
+      "value4"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractActions",
+   "json": "contract_actions",
+   "type": "Container.ContractAction[]",
+   "element": {
+    "class": [
+     "Container.ContractAction"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "ActionType",
+      "int",
+      "action_type"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractCrafts",
+   "json": "contract_crafts",
+   "type": "Container.ContractItem[]",
+   "element": {
+    "class": [
+     "Container.ContractItem"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractCombatPreparationItems",
+   "json": "contract_combat_usages",
+   "type": "Container.ContractItem[]",
+   "element": {
+    "class": [
+     "Container.ContractItem"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractSwordUsages",
+   "json": "contract_allowed_swords",
+   "type": "Container.ContractSwordUsage[]",
+   "element": {
+    "class": [
+     "Container.ContractSwordUsage"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "SwordID",
+      "int",
+      "sword_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractMonsters",
+   "json": "contract_monsters",
+   "type": "Container.ContractMonster[]",
+   "element": {
+    "class": [
+     "Container.ContractMonster"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "MonsterId",
+      "int",
+      "monster_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractQuests",
+   "json": "contract_quests",
+   "type": "Container.ContractQuest[]",
+   "element": {
+    "class": [
+     "Container.ContractQuest"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "QuestId",
+      "int",
+      "quest_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractSkills",
+   "json": "contract_skills",
+   "type": "Container.ContractSkill[]",
+   "element": {
+    "class": [
+     "Container.ContractSkill"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "SkillId",
+      "int",
+      "skill_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractIngredients",
+   "json": "contract_ingredients",
+   "type": "Container.ContractIngredient[]",
+   "element": {
+    "class": [
+     "Container.ContractIngredient"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "ItemID",
+      "int",
+      "item_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ContractBombs",
+   "json": "contract_bombs",
+   "type": "Container.ContractBomb[]",
+   "element": {
+    "class": [
+     "Container.ContractBomb"
+    ],
+    "fields": [
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "BombID",
+      "int",
+      "bomb_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "DailyQuests",
+   "json": "daily_quests",
+   "type": "Container.DailyQuest[]",
+   "element": {
+    "class": [
+     "Container.DailyQuest",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "GoldAmount",
+      "int",
+      "reward"
+     ],
+     [
+      "ContractId",
+      "int",
+      "contract_id"
+     ],
+     [
+      "DailyQuestTypeId",
+      "int",
+      "daily_quest_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Difficulties",
+   "json": "difficulties",
+   "type": "Container.Difficulty[]",
+   "element": {
+    "class": [
+     "Container.Difficulty",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "PlayerAttackCount",
+      "int",
+      "player_attack_count"
+     ],
+     [
+      "EnemyAttackCount",
+      "int",
+      "enemy_attack_count"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Effects",
+   "json": "effects",
+   "type": "Container.Effect[]",
+   "element": {
+    "class": [
+     "Container.Effect",
+     "Container.NamedEntity"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "EffectTypeId",
+      "int",
+      "effect_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PotionEffectRecipes",
+   "json": "effect_unlock_potion_recipes",
+   "type": "Container.EffectRecipe[]",
+   "element": {
+    "class": [
+     "Container.EffectRecipe"
+    ],
+    "fields": [
+     [
+      "EffectID",
+      "int",
+      "effect_id"
+     ],
+     [
+      "RecipeID",
+      "int",
+      "recipe_id "
+     ]
+    ]
+   }
+  },
+  {
+   "field": "LureEffectRecipes",
+   "json": "effect_unlock_lure_recipes",
+   "type": "Container.EffectRecipe[]",
+   "element": {
+    "class": [
+     "Container.EffectRecipe"
+    ],
+    "fields": [
+     [
+      "EffectID",
+      "int",
+      "effect_id"
+     ],
+     [
+      "RecipeID",
+      "int",
+      "recipe_id "
+     ]
+    ]
+   }
+  },
+  {
+   "field": "StartingSkills",
+   "json": "player_starting_skills",
+   "type": "Container.Entity[]",
+   "element": {
+    "class": [
+     "Container.Entity"
+    ],
+    "fields": [
+     [
+      "ID",
+      "int",
+      "id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "GameConfigurations",
+   "json": "game_configuration",
+   "type": "Container.GameConfiguration[]",
+   "element": {
+    "class": [
+     "Container.GameConfiguration"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "ParamName",
+      "string",
+      "param_name"
+     ],
+     [
+      "ParamValue",
+      "string",
+      "param_value"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Herbs",
+   "json": "herbs",
+   "type": "Container.Herb[]",
+   "element": {
+    "class": [
+     "Container.Herb",
+     "Container.StandardPrefabItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "PrefabPath",
+      "string",
+      "prefab_path"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "InAppPrices",
+   "json": "inapp_prices",
+   "type": "Container.InAppPrice[]",
+   "element": {
+    "class": [
+     "Container.InAppPrice"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "ProductType",
+      "string",
+      "product_type"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "InAppPricePerShops",
+   "json": "inapp_price_shops",
+   "type": "Container.InAppPricePerShop[]",
+   "element": {
+    "class": [
+     "Container.InAppPricePerShop"
+    ],
+    "fields": [
+     [
+      "InAppPriceId",
+      "int",
+      "inapp_price_id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "ShopName",
+      "string",
+      "shop_name"
+     ],
+     [
+      "ShopPriceId",
+      "string",
+      "shop_price_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PotionEffects",
+   "json": "potion_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "BombEffects",
+   "json": "bomb_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "OilEffects",
+   "json": "oil_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SkillEffects",
+   "json": "skill_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SwordEffects",
+   "json": "sword_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ArmorEffects",
+   "json": "armor_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "LevelUps",
+   "json": "level_ups",
+   "type": "Container.LevelUp[]",
+   "element": {
+    "class": [
+     "Container.LevelUp"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "ExpThreshold",
+      "int",
+      "exp_threshold"
+     ],
+     [
+      "SkillPoints",
+      "int",
+      "skill_points"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Monsters",
+   "json": "monsters",
+   "type": "Container.Monster[]",
+   "element": {
+    "class": [
+     "Container.Monster"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "FamilyId",
+      "int",
+      "family_id"
+     ],
+     [
+      "EncounterDistance",
+      "int",
+      "encounter_distance"
+     ],
+     [
+      "AttackAnimationTime",
+      "int",
+      "attack_animation_time"
+     ],
+     [
+      "Rarity",
+      "int",
+      "rarity"
+     ],
+     [
+      "Difficulty",
+      "int",
+      "difficulty"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "Model",
+      "string",
+      "model"
+     ],
+     [
+      "Image",
+      "string",
+      "image"
+     ],
+     [
+      "Trophy",
+      "string",
+      "trophy"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "MonsterDescriptions",
+   "json": "monster_descriptions",
+   "type": "Container.MonsterDescription[]",
+   "element": {
+    "class": [
+     "Container.MonsterDescription"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "MonsterId",
+      "int",
+      "monster_id"
+     ],
+     [
+      "Level",
+      "int",
+      "level"
+     ],
+     [
+      "Threshold",
+      "int",
+      "threshold"
+     ],
+     [
+      "Content",
+      "string",
+      "content"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "MonsterFamilies",
+   "json": "monster_families",
+   "type": "Container.MonsterFamily[]",
+   "element": {
+    "class": [
+     "Container.MonsterFamily"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "BigImage",
+      "string",
+      "big_image"
+     ],
+     [
+      "SmallImage",
+      "string",
+      "small_image"
+     ],
+     [
+      "SmallLightImage",
+      "string",
+      "small_light_image"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "MonsterVulnerabilities",
+   "json": "monster_vulnerabilities",
+   "type": "Container.MonsterVulnerability[]",
+   "element": {
+    "class": [
+     "Container.MonsterVulnerability"
+    ],
+    "fields": [
+     [
+      "MonsterId",
+      "int",
+      "monster_id"
+     ],
+     [
+      "DamageTypeId",
+      "int",
+      "damage_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "EffectTypes",
+   "json": "effect_types",
+   "type": "Container.NamedEntity[]",
+   "element": {
+    "class": [
+     "Container.NamedEntity"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "EffectApplyTypes",
+   "json": "effect_apply_types",
+   "type": "Container.NamedEntity[]",
+   "element": {
+    "class": [
+     "Container.NamedEntity"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Oils",
+   "json": "oils",
+   "type": "Container.Oil[]",
+   "element": {
+    "class": [
+     "Container.Oil",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "XPMatching",
+      "int",
+      "exp_matching"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Potions",
+   "json": "potions",
+   "type": "Container.Potion[]",
+   "element": {
+    "class": [
+     "Container.Potion",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "AutoEquipPrio",
+      "int",
+      "auto_equip_priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Lures",
+   "json": "lures",
+   "type": "Container.PrioritizedItem[]",
+   "element": {
+    "class": [
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Ingredients",
+   "json": "ingredients",
+   "type": "Container.PrioritizedItem[]",
+   "element": {
+    "class": [
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Quests",
+   "json": "quests",
+   "type": "Container.Quest[]",
+   "element": {
+    "class": [
+     "Container.Quest"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "SeasonId",
+      "int",
+      "season_id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "JournalLog",
+      "string",
+      "journal_log"
+     ],
+     [
+      "ActivationCriteria",
+      "string",
+      "activation_criteria"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "QuestEdges",
+   "json": "quest_edges",
+   "type": "Container.QuestEdge[]",
+   "element": {
+    "class": [
+     "Container.QuestEdge"
+    ],
+    "fields": [
+     [
+      "From",
+      "int",
+      "from_quest_id"
+     ],
+     [
+      "To",
+      "int",
+      "to_quest_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "QuestNodes",
+   "json": "quest_nodes",
+   "type": "Container.QuestNode[]",
+   "element": {
+    "class": [
+     "Container.QuestNode"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "QuestId",
+      "int",
+      "quest_id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "ActivationCriteria",
+      "string",
+      "activation_criteria"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "QuestNodeEdges",
+   "json": "quest_node_edges",
+   "type": "Container.QuestNodeEdge[]",
+   "element": {
+    "class": [
+     "Container.QuestNodeEdge"
+    ],
+    "fields": [
+     [
+      "From",
+      "int",
+      "from_quest_node_output_id"
+     ],
+     [
+      "To",
+      "int",
+      "to_quest_node_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "QuestNodeOutputs",
+   "json": "quest_node_outputs",
+   "type": "Container.QuestNodeOutput[]",
+   "element": {
+    "class": [
+     "Container.QuestNodeOutput"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "QuestNodeId",
+      "int",
+      "quest_node_id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "EndPoint",
+      "int",
+      "endpoint"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "OilRecipes",
+   "json": "oil_recipes",
+   "type": "Container.Recipe[]",
+   "element": {
+    "class": [
+     "Container.Recipe",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Output",
+      "int",
+      "output"
+     ],
+     [
+      "TierId",
+      "int",
+      "tier_id"
+     ],
+     [
+      "CraftingTime",
+      "int",
+      "crafting_time"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "LureRecipes",
+   "json": "lure_recipes",
+   "type": "Container.Recipe[]",
+   "element": {
+    "class": [
+     "Container.Recipe",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Output",
+      "int",
+      "output"
+     ],
+     [
+      "TierId",
+      "int",
+      "tier_id"
+     ],
+     [
+      "CraftingTime",
+      "int",
+      "crafting_time"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PotionRecipes",
+   "json": "potion_recipes",
+   "type": "Container.Recipe[]",
+   "element": {
+    "class": [
+     "Container.Recipe",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Output",
+      "int",
+      "output"
+     ],
+     [
+      "TierId",
+      "int",
+      "tier_id"
+     ],
+     [
+      "CraftingTime",
+      "int",
+      "crafting_time"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "BombRecipes",
+   "json": "bomb_recipes",
+   "type": "Container.Recipe[]",
+   "element": {
+    "class": [
+     "Container.Recipe",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Output",
+      "int",
+      "output"
+     ],
+     [
+      "TierId",
+      "int",
+      "tier_id"
+     ],
+     [
+      "CraftingTime",
+      "int",
+      "crafting_time"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SensesPotionRecipes",
+   "json": "senses_potion_recipes",
+   "type": "Container.Recipe[]",
+   "element": {
+    "class": [
+     "Container.Recipe",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Output",
+      "int",
+      "output"
+     ],
+     [
+      "TierId",
+      "int",
+      "tier_id"
+     ],
+     [
+      "CraftingTime",
+      "int",
+      "crafting_time"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "OilRecipeIngredients",
+   "json": "oil_recipe_ingredients",
+   "type": "Container.RecipeIngredient[]",
+   "element": {
+    "class": [
+     "Container.RecipeIngredient"
+    ],
+    "fields": [
+     [
+      "RecipeId",
+      "int",
+      "recipe_id"
+     ],
+     [
+      "IngredientId",
+      "int",
+      "ingredient_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "LureRecipeIngredients",
+   "json": "lure_recipe_ingredients",
+   "type": "Container.RecipeIngredient[]",
+   "element": {
+    "class": [
+     "Container.RecipeIngredient"
+    ],
+    "fields": [
+     [
+      "RecipeId",
+      "int",
+      "recipe_id"
+     ],
+     [
+      "IngredientId",
+      "int",
+      "ingredient_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PotionRecipeIngredients",
+   "json": "potion_recipe_ingredients",
+   "type": "Container.RecipeIngredient[]",
+   "element": {
+    "class": [
+     "Container.RecipeIngredient"
+    ],
+    "fields": [
+     [
+      "RecipeId",
+      "int",
+      "recipe_id"
+     ],
+     [
+      "IngredientId",
+      "int",
+      "ingredient_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "BombRecipeIngredients",
+   "json": "bomb_recipe_ingredients",
+   "type": "Container.RecipeIngredient[]",
+   "element": {
+    "class": [
+     "Container.RecipeIngredient"
+    ],
+    "fields": [
+     [
+      "RecipeId",
+      "int",
+      "recipe_id"
+     ],
+     [
+      "IngredientId",
+      "int",
+      "ingredient_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SensesPotionRecipeIngredients",
+   "json": "senses_potion_recipe_ingredients",
+   "type": "Container.RecipeIngredient[]",
+   "element": {
+    "class": [
+     "Container.RecipeIngredient"
+    ],
+    "fields": [
+     [
+      "RecipeId",
+      "int",
+      "recipe_id"
+     ],
+     [
+      "IngredientId",
+      "int",
+      "ingredient_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "RecipeTiers",
+   "json": "recipe_tiers",
+   "type": "Container.RecipeTier[]",
+   "element": {
+    "class": [
+     "Container.RecipeTier"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "Sprite",
+      "string",
+      "sprite"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Seasons",
+   "json": "seasons",
+   "type": "Container.Season[]",
+   "element": {
+    "class": [
+     "Container.Season"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SensesPotions",
+   "json": "senses_potions",
+   "type": "Container.SensesPotion[]",
+   "element": {
+    "class": [
+     "Container.SensesPotion",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopBundles",
+   "json": "shop_bundles",
+   "type": "Container.ShopBundle[]",
+   "element": {
+    "class": [
+     "Container.ShopBundle"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "GoldPrice",
+      "int",
+      "gold_price"
+     ],
+     [
+      "RegularDiscount",
+      "int",
+      "discount"
+     ],
+     [
+      "DailyDiscount",
+      "int",
+      "daily_discount"
+     ],
+     [
+      "Permanent",
+      "int",
+      "permanent"
+     ],
+     [
+      "LayoutPriority",
+      "int",
+      "layout_priority"
+     ],
+     [
+      "OneTime",
+      "int",
+      "one_time"
+     ],
+     [
+      "Dev",
+      "int",
+      "dev"
+     ],
+     [
+      "InAppPriceId",
+      "Nullable<int>",
+      "inapp_price_id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "Icon",
+      "string",
+      "icon"
+     ],
+     [
+      "Description",
+      "string",
+      "description"
+     ],
+     [
+      "LayoutType",
+      "string",
+      "layout_type"
+     ],
+     [
+      "LayoutUnderlay",
+      "string",
+      "layout_underlay"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopBundlesAvailability",
+   "json": "shop_bundles_availability",
+   "type": "Container.ShopBundleAvailability[]",
+   "element": {
+    "class": [
+     "Container.ShopBundleAvailability"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "ShopBundleID",
+      "int",
+      "shop_bundle_id"
+     ],
+     [
+      "AvailableSinceTimestamp",
+      "int",
+      "available_since_timestamp"
+     ],
+     [
+      "AvailableToTimestamp",
+      "int",
+      "available_to_timestamp"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopBundlesAvailabilityData",
+   "json": "shop_bundles_availability_data",
+   "type": "Container.ShopBundleAvailabilityData[]",
+   "element": {
+    "class": [
+     "Container.ShopBundleAvailabilityData"
+    ],
+    "fields": [
+     [
+      "ShopBundlesAvailabilityID",
+      "int",
+      "shop_bundle_availability_id"
+     ],
+     [
+      "ConditionType",
+      "int",
+      "condition_type"
+     ],
+     [
+      "ItemTypeId",
+      "int",
+      "item_type_id"
+     ],
+     [
+      "Value",
+      "int",
+      "value"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopBundleLayoutGroupNameCategories",
+   "json": "shop_bundles_layout_group_name_categories",
+   "type": "Container.ShopBundleLayoutGroupNameCategory[]",
+   "element": {
+    "class": [
+     "Container.ShopBundleLayoutGroupNameCategory"
+    ],
+    "fields": [
+     [
+      "ShopBundleId",
+      "int",
+      "shop_bundle_id"
+     ],
+     [
+      "LayoutGroupNameMainCategory",
+      "string",
+      "layout_group_name_main_category"
+     ],
+     [
+      "LayoutGroupNameSubCategory",
+      "string",
+      "layout_group_name_sub_category"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopBundleItems",
+   "json": "shop_bundle_items",
+   "type": "Container.ShopBundleItemStack[]",
+   "element": {
+    "class": [
+     "Container.ShopBundleItemStack"
+    ],
+    "fields": [
+     [
+      "ShopBundleId",
+      "int",
+      "shop_bundle_id"
+     ],
+     [
+      "ItemTypeId",
+      "int",
+      "item_type_id"
+     ],
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopPotions",
+   "json": "shop_potions",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopBombs",
+   "json": "shop_bombs",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopOils",
+   "json": "shop_oils",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopLures",
+   "json": "shop_lures",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopSensesPotions",
+   "json": "shop_senses_potions",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopArmors",
+   "json": "shop_armors",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ShopSwords",
+   "json": "shop_swords",
+   "type": "Container.ShopItem[]",
+   "element": {
+    "class": [
+     "Container.ShopItem"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Price",
+      "int",
+      "price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Skills",
+   "json": "skills",
+   "type": "Container.Skill[]",
+   "element": {
+    "class": [
+     "Container.Skill",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Cost",
+      "int",
+      "cost"
+     ],
+     [
+      "RequiredLevel",
+      "int",
+      "required_level"
+     ],
+     [
+      "ParentID",
+      "Nullable<int>",
+      "parent_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SkillRequirements",
+   "json": "skill_requirements",
+   "type": "Container.SkillRequirement[]",
+   "element": {
+    "class": [
+     "Container.SkillRequirement"
+    ],
+    "fields": [
+     [
+      "SkillId",
+      "int",
+      "skill_id"
+     ],
+     [
+      "RequiredSkillId",
+      "int",
+      "required_skill_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "DamageTypes",
+   "json": "damage_types",
+   "type": "Container.DamageType[]",
+   "element": {
+    "class": [
+     "Container.DamageType",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Armors",
+   "json": "armors",
+   "type": "Container.PrioritizedPrefabItem[]",
+   "element": {
+    "class": [
+     "Container.PrioritizedPrefabItem",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "PrefabPath",
+      "string",
+      "prefab_path"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "CustomizationHeads",
+   "json": "customization_heads",
+   "type": "Container.StandardPrefabItem[]",
+   "element": {
+    "class": [
+     "Container.StandardPrefabItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "PrefabPath",
+      "string",
+      "prefab_path"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "DailyQuestRewards",
+   "json": "daily_quest_rewards",
+   "type": "Container.DailyQuestReward[]",
+   "element": {
+    "class": [
+     "Container.DailyQuestReward"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "DailyQuestID",
+      "int",
+      "daily_quest_id"
+     ],
+     [
+      "RewardTypeID",
+      "int",
+      "reward_type_id"
+     ],
+     [
+      "RewardID",
+      "int",
+      "reward_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Swords",
+   "json": "swords",
+   "type": "Container.Sword[]",
+   "element": {
+    "class": [
+     "Container.Sword",
+     "Container.PrioritizedPrefabItem",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "PrefabPath",
+      "string",
+      "prefab_path"
+     ],
+     [
+      "SwordType",
+      "int",
+      "sword_type"
+     ],
+     [
+      "AutoEquipPrio",
+      "int",
+      "auto_equip_priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PlayerModifiers",
+   "json": "player_modifiers",
+   "type": "Container.StandardItem[]",
+   "element": {
+    "class": [
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PlayerModifierEffects",
+   "json": "player_modifier_to_effect",
+   "type": "Container.ItemEffect[]",
+   "element": {
+    "class": [
+     "Container.ItemEffect"
+    ],
+    "fields": [
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "EffectId",
+      "int",
+      "effect_id"
+     ],
+     [
+      "Power",
+      "int",
+      "power"
+     ],
+     [
+      "ApplyTime",
+      "int",
+      "effect_apply_type_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "WeeklyQuestRewards",
+   "json": "weekly_quests_rewards",
+   "type": "Container.WeeklyQuestReward[]",
+   "element": {
+    "class": [
+     "Container.WeeklyQuestReward"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "WeeklyQuestTierId",
+      "int",
+      "weekly_quest_tier_id"
+     ],
+     [
+      "ItemTypeId",
+      "int",
+      "item_type_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ],
+     [
+      "Gold",
+      "int",
+      "gold"
+     ],
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ItemHints",
+   "json": "item_hints",
+   "type": "Container.ItemHint[]",
+   "element": {
+    "class": [
+     "Container.ItemHint"
+    ],
+    "fields": [
+     [
+      "ItemTypeId",
+      "int",
+      "item_type_id"
+     ],
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "Hint",
+      "string",
+      "hint"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "AutoEquipItemsPrices",
+   "json": "auto_equip_items_prices",
+   "type": "Container.AutoEquipItemPrice[]",
+   "element": {
+    "class": [
+     "Container.AutoEquipItemPrice"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "ItemTypeId",
+      "int",
+      "item_type_id"
+     ],
+     [
+      "ItemId",
+      "int",
+      "item_id"
+     ],
+     [
+      "GoldPrice",
+      "int",
+      "gold_price"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Consumables",
+   "json": "consumables",
+   "type": "Container.Consumable[]",
+   "element": {
+    "class": [
+     "Container.Consumable",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "Duration",
+      "int",
+      "duration"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SummoningScrolls",
+   "json": "summoning_scrolls",
+   "type": "Container.Consumable[]",
+   "element": {
+    "class": [
+     "Container.Consumable",
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ],
+     [
+      "Duration",
+      "int",
+      "duration"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "ConsumablesPlayerModifiers",
+   "json": "consumables_player_modifiers",
+   "type": "Container.ConsumablePlayerModifier[]",
+   "element": {
+    "class": [
+     "Container.ConsumablePlayerModifier"
+    ],
+    "fields": [
+     [
+      "ConsumableId",
+      "int",
+      "consumable_id"
+     ],
+     [
+      "PlayerModifierId",
+      "int",
+      "player_modifier_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "SummoningScrollsPlayerModifiers",
+   "json": "summoning_scrolls_player_modifiers",
+   "type": "Container.SummoningScrollPlayerModifier[]",
+   "element": {
+    "class": [
+     "Container.SummoningScrollPlayerModifier"
+    ],
+    "fields": [
+     [
+      "SummoningScrollId",
+      "int",
+      "summoning_scroll_id"
+     ],
+     [
+      "PlayerModifierId",
+      "int",
+      "player_modifier_id"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "PackTypes",
+   "json": "packs_types",
+   "type": "Container.PrioritizedItem[]",
+   "element": {
+    "class": [
+     "Container.PrioritizedItem",
+     "Container.StandardItem"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Slug",
+      "string",
+      "slug"
+     ],
+     [
+      "Priority",
+      "int",
+      "priority"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "Events",
+   "json": "events",
+   "type": "Container.Event[]",
+   "element": {
+    "class": [
+     "Container.Event"
+    ],
+    "fields": [
+     [
+      "Id",
+      "int",
+      "id"
+     ],
+     [
+      "Name",
+      "string",
+      "name"
+     ],
+     [
+      "OrderValue",
+      "int",
+      "order_value"
+     ],
+     [
+      "Tutorial",
+      "int",
+      "tutorial"
+     ],
+     [
+      "AvailableSinceTimestamp",
+      "long",
+      "available_since_timestamp"
+     ],
+     [
+      "AvailableToTimestamp",
+      "long",
+      "available_to_timestamp"
+     ],
+     [
+      "EventTypeID",
+      "int",
+      "event_type_id"
+     ],
+     [
+      "Gold",
+      "int",
+      "gold"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "EventRewards",
+   "json": "event_rewards",
+   "type": "Container.EventReward[]",
+   "element": {
+    "class": [
+     "Container.EventReward"
+    ],
+    "fields": [
+     [
+      "ID",
+      "int",
+      "id"
+     ],
+     [
+      "EventID",
+      "int",
+      "event_id"
+     ],
+     [
+      "RewardTypeID",
+      "int",
+      "reward_type_id"
+     ],
+     [
+      "RewardID",
+      "int",
+      "reward_id"
+     ],
+     [
+      "Amount",
+      "int",
+      "amount"
+     ]
+    ]
+   }
+  },
+  {
+   "field": "DailyQuestContracts",
+   "json": "daily_quest_contracts",
+   "type": "Container.DailyQuestContract[]",
+   "element": {
+    "class": [
+     "Container.DailyQuestContract"
+    ],
+    "fields": [
+     [
+      "ContractID",
+      "int",
+      "contract_id"
+     ],
+     [
+      "DailyQuestID",
+      "int",
+      "daily_quest_id"
+     ]
+    ]
+   }
+  }
+ ]
+}

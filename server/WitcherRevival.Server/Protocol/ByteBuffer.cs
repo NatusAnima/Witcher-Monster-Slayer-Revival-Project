@@ -33,9 +33,9 @@ public sealed class ByteBuffer
     public ulong ReadULong() { var v = BinaryPrimitives.ReadUInt64BigEndian(_in.AsSpan(_pos)); _pos += 8; return v; }
     public float ReadFloat() { var v = BinaryPrimitives.ReadSingleBigEndian(_in.AsSpan(_pos)); _pos += 4; return v; }
     public double ReadDouble() { var v = BinaryPrimitives.ReadDoubleBigEndian(_in.AsSpan(_pos)); _pos += 8; return v; }
-    public byte[] ReadBytes(int n) { var b = _in.AsSpan(_pos, n).ToArray(); _pos += n; return b; }
+    public byte[] ReadBytes(int n) { if (n < 0 || n > RemainingToRead) throw new InvalidDataException("Invalid byte field length."); var b = _in.AsSpan(_pos, n).ToArray(); _pos += n; return b; }
     public byte[] ReadRemaining() { var b = _in.AsSpan(_pos).ToArray(); _pos = _in.Length; return b; }
-    public string ReadString() { int len = ReadInt(); var s = Encoding.UTF8.GetString(_in, _pos, len); _pos += len; return s; } // ASSUMPTION
+    public string ReadString() { int len = ReadInt(); if (len < 0 || len > 65536 || len > RemainingToRead) throw new InvalidDataException("Invalid string length."); var s = new UTF8Encoding(false, true).GetString(_in, _pos, len); _pos += len; return s; } // inherited framing; client compatibility unverified
 
     // ---- writes ----
     public void WriteByte(byte v) => _out.WriteByte(v);

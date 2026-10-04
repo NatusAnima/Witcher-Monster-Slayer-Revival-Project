@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "events": [
+    {
+      "id": 30001,
+      "name": "lab_field_trial_20261001",
+      "start": 1790877600,
+      "end": 1791482399,
+      "gold": 250,
+      "tasks": [
+        {
+          "id": 12001,
+          "slug": "kill_4_monsters",
+          "type": 1,
+          "target": 4,
+          "gold": 50,
+          "evidence": "Authored"
+        },
+        {
+          "id": 12002,
+          "slug": "as_fast_as_wind",
+          "type": 11,
+          "target": 30,
+          "actions": [
+            8
+          ],
+          "gold": 0,
+          "rewards": [
+            {
+              "type": 3,
+              "item": 205,
+              "amount": 1
+            }
+          ],
+          "evidence": "Authored"
+        },
+        {
+          "id": 12003,
+          "slug": "witcher_the_professional",
+          "type": 10,
+          "target": 1,
+          "item_type": 4,
+          "gold": 50,
+          "evidence": "Authored"
+        }
+      ],
+      "rewards": [
+        {
+          "type": 16,
+          "item": 2,
+          "amount": 1
+        }
+      ]
+    }
+  ]
+}

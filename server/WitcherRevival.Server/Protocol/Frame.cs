@@ -8,18 +8,20 @@ namespace WitcherRevival.Server.Protocol;
 /// </summary>
 public readonly record struct Frame(byte Type, byte[] Data);
 
+/// <summary>Fixed labels only; observations never contain bytes from the stream.</summary>
+public enum FrameReadStage { Magic, Header, Body }
+
 /// <summary>
 /// Outer channel selector (the <c>Type</c> byte). <c>ApiBuilder</c> wires four channels, but the
 /// IL2CPP dump doesn't expose the concrete byte values.
-/// UNCONFIRMED — the enum values below are placeholders; recover the real bytes from the first
-/// captured frames (the client's very first frame is the auth handshake).
+/// Values match the pinned upstream dispatcher; not independently verified for client 1.1.116.
 /// </summary>
 public enum Channel : byte
 {
-    Authentication = 0,
+    Authentication = 3,
     Api = 1,
-    StaticGameData = 2,
-    Logging = 3,
+    StaticGameData = 4,
+    Logging = 2,
 }
 
 /// <summary>
@@ -33,7 +35,6 @@ public enum Method
     GetLocationsByCell = 40,
     LoadCells = 88,
     GetInitialPlayerData = 115,
-    Ping = 141,
 }
 
 /// <summary>Reads/writes length-prefixed frames off a stream.</summary>
@@ -41,14 +42,16 @@ public static class FrameCodec
 {
     private const int MaxFrame = 8 * 1024 * 1024;
 
-    public static async Task<Frame?> ReadAsync(Stream s, CancellationToken ct)
+    public static async Task<Frame?> ReadAsync(Stream s, CancellationToken ct,
+        Action<FrameReadStage, int, int, bool>? observe = null)
     {
-        var header = await ReadExactAsync(s, 5, ct);
+        var header = await ReadExactAsync(s, 5, ct, FrameReadStage.Header, observe);
         if (header is null) return null;
         byte type = header[0];
         int len = BinaryPrimitives.ReadInt32BigEndian(header.AsSpan(1, 4));
         if (len is < 0 or > MaxFrame) throw new InvalidDataException($"implausible frame length {len} (type {type}) — framing assumption wrong?");
-        var data = len == 0 ? Array.Empty<byte>() : await ReadExactAsync(s, len, ct);
+        var data = len == 0 ? Array.Empty<byte>() : await ReadExactAsync(s, len, ct, FrameReadStage.Body, observe);
+        if (len == 0) observe?.Invoke(FrameReadStage.Body, 0, 0, true);
         if (data is null) return null;
         return new Frame(type, data);
     }
@@ -63,16 +66,22 @@ public static class FrameCodec
         await s.FlushAsync(ct);
     }
 
-    private static async Task<byte[]?> ReadExactAsync(Stream s, int n, CancellationToken ct)
+    private static async Task<byte[]?> ReadExactAsync(Stream s, int n, CancellationToken ct,
+        FrameReadStage stage, Action<FrameReadStage, int, int, bool>? observe)
     {
         var buf = new byte[n];
         int off = 0;
         while (off < n)
         {
             int r = await s.ReadAsync(buf.AsMemory(off, n - off), ct);
-            if (r == 0) return null; // peer closed
+            if (r == 0)
+            {
+                observe?.Invoke(stage, n, off, false);
+                return null; // peer closed; preserve existing wire behavior
+            }
             off += r;
         }
+        observe?.Invoke(stage, n, off, true);
         return buf;
     }
 }

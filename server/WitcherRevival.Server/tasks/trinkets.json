@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "trinkets": [
+    {
+      "id": 20001,
+      "slug": "trophy_lizard_slayer",
+      "type": 1,
+      "target": 20,
+      "monsters": [
+        109,
+        110,
+        121,
+        122,
+        127,
+        128,
+        138,
+        139,
+        140,
+        7,
+        203,
+        204,
+        205
+      ],
+      "evidence": "Client"
+    },
+    {
+      "id": 20002,
+      "slug": "trophy_in_forest_dark",
+      "type": 1,
+      "target": 1,
+      "monsters": [
+        31
+      ],
+      "evidence": "Client"
+    },
+    {
+      "id": 20003,
+      "slug": "trophy_legendary_monster_slayer",
+      "type": 2,
+      "target": 50,
+      "min_level": 10,
+      "evidence": "Client"
+    },
+    {
+      "id": 20004,
+      "slug": "trophy_mushroom_trophy_1",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1179
+      ],
+      "evidence": "Authored"
+    },
+    {
+      "id": 20005,
+      "slug": "trophy_mushroom_trophy_2",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1180
+      ],
+      "evidence": "Authored"
+    },
+    {
+      "id": 20006,
+      "slug": "trophy_mushroom_trophy_3",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1181
+      ],
+      "evidence": "Authored"
+    },
+    {
+      "id": 20007,
+      "slug": "trophy_mushroom_trophy_4",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1182
+      ],
+      "evidence": "Authored"
+    },
+    {
+      "id": 20008,
+      "slug": "trophy_mushroom_trophy_5",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1183
+      ],
+      "evidence": "Authored"
+    },
+    {
+      "id": 20009,
+      "slug": "trophy_broken_sword",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1203,
+        1205
+      ],
+      "evidence": "Authored"
+    },
+    {
+      "id": 20010,
+      "slug": "trophy_frightener_claw",
+      "type": 13,
+      "target": 1,
+      "outputs": [
+        1255,
+        1266
+      ],
+      "evidence": "Authored"
+    },
+    {"id": 20011, "slug": "trophy_from_vizima_to_beauclair", "type": 3, "target": 2000000, "evidence": "Client"},
+    {"id": 20012, "slug": "trophy_disturbed_the_water", "type": 1, "target": 10, "window_seconds": 3600, "monsters": [3], "evidence": "Client"},
+    {"id": 20013, "slug": "trophy_fear_no_more", "type": 1, "target": 5, "window_seconds": 3600, "monsters": [8, 11, 12, 108, 157, 159, 164, 165, 171, 172, 173, 174, 175, 202], "evidence": "Client"}
+  ]
+}

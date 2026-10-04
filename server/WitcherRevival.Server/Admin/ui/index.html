@@ -1,0 +1,1212 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Monster Slayer · Atlas operatora</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="i18n.js"></script>
+    <script defer src="transport.js"></script>
+    <script defer src="engine.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Przejdź do treści</a>
+    <svg class="icon-defs" aria-hidden="true">
+      <defs>
+        <symbol id="i-overview" viewBox="0 0 24 24">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />
+        </symbol>
+        <symbol id="i-map" viewBox="0 0 24 24">
+          <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2Zm6-2v16m6-14v16" />
+        </symbol>
+        <symbol id="i-weather" viewBox="0 0 24 24">
+          <path
+            d="M8 3v2m-6 4h2m9-5-1 2M3 4l2 2m0 7a4 4 0 1 1 7-5m-6 6a4 4 0 0 1 3-2 5 5 0 0 1 10 1 3 3 0 0 1 0 6H8a3 3 0 0 1-2-5Z"
+          />
+        </symbol>
+        <symbol id="i-news" viewBox="0 0 24 24">
+          <path d="M4 4h13v16H4zM17 9h4v11h-4M7 8h7M7 12h7M7 16h4" />
+        </symbol>
+        <symbol id="i-tasks" viewBox="0 0 24 24">
+          <path d="M8 4H4v17h16V4h-4M8 2h8v5H8zM8 12l2 2 5-4M8 18h8" />
+        </symbol>
+        <symbol id="i-profiles" viewBox="0 0 24 24">
+          <circle cx="10" cy="7" r="4" />
+          <path
+            d="M2 21v-2a8 8 0 0 1 16 0v2m0-17a4 4 0 0 1 0 7m3 10v-3a7 7 0 0 0-2-5"
+          />
+        </symbol>
+        <symbol id="i-catalogue" viewBox="0 0 24 24">
+          <path d="M3 4h8v16H3zM15 4l6-1 2 16-6 1ZM6 8h2m-2 8h2m9-8h2" />
+        </symbol>
+        <symbol id="i-audit" viewBox="0 0 24 24">
+          <path d="M4 8a9 9 0 1 1-1 7M3 3v6h6m3-4v7l4 2" />
+        </symbol>
+        <symbol id="i-refresh" viewBox="0 0 24 24">
+          <path
+            d="M20 7a9 9 0 0 0-16 0M20 2v6h-6M4 17a9 9 0 0 0 16 0M4 22v-6h6"
+          />
+        </symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24">
+          <path d="M4 12h16m-6-6 6 6-6 6" />
+        </symbol>
+        <symbol id="i-search" viewBox="0 0 24 24">
+          <circle cx="10" cy="10" r="6" />
+          <path d="m15 15 6 6" />
+        </symbol>
+      </defs>
+    </svg>
+    <div class="shell">
+      <aside class="sidebar">
+        <a
+          class="brand"
+          href="#overview"
+          aria-label="Monster Slayer, pulpit operatora"
+          ><svg class="brand-mark" viewBox="0 0 48 56" aria-hidden="true">
+            <path
+              d="m24 3 19 10-4 25-15 15L9 38 5 13Zm0 8-5 17 5 15 5-15ZM9 15l10 13-7 5m27-18L29 28l7 5"
+            /></svg
+          ><span>MONSTER<br />SLAYER<small>ATLAS OPERATORA</small></span></a
+        >
+        <div class="scope">
+          <span class="scope-mark">LAB</span
+          ><span>Środowisko testowe<small>Rekonstrukcja 1.1.116</small></span>
+        </div>
+        <p class="nav-label">ZARZĄDZANIE ŚWIATEM</p>
+        <nav aria-label="Panel administracyjny">
+          <a href="#overview" data-view="overview" aria-current="page"
+            ><svg><use href="#i-overview" /></svg>Pulpit<span class="nav-index"
+              >01</span
+            ></a
+          >
+          <a href="#world" data-view="world"
+            ><svg><use href="#i-map" /></svg>Mapa i spawny<span
+              class="nav-index"
+              >02</span
+            ></a
+          >
+          <a href="#weather" data-view="weather"
+            ><svg><use href="#i-weather" /></svg>Pogoda<span class="nav-index"
+              >03</span
+            ></a
+          >
+          <a href="#news" data-view="news"
+            ><svg><use href="#i-news" /></svg>Komunikaty<span class="nav-index"
+              >04</span
+            ></a
+          >
+          <a href="#tasks" data-view="tasks"
+            ><svg><use href="#i-tasks" /></svg>Zadania<span class="nav-index"
+              >05</span
+            ></a
+          >
+          <a href="#profiles" data-view="profiles"
+            ><svg><use href="#i-profiles" /></svg>Gracze<span class="nav-index"
+              >06</span
+            ></a
+          >
+          <a href="#testers" data-view="testers"><svg><use href="#i-profiles" /></svg>Testerzy<span class="nav-index">07</span></a>
+          <a href="#catalogue" data-view="catalogue"
+            ><svg><use href="#i-catalogue" /></svg>Katalog gry<span
+              class="nav-index"
+              >08</span
+            ></a
+          >
+          <a href="#audit" data-view="audit"
+            ><svg><use href="#i-audit" /></svg>Historia operacji<span
+              class="nav-index"
+              >09</span
+            ></a
+          >
+          <a href="#help" data-view="help"><svg><use href="#i-catalogue" /></svg>Pomoc<span class="nav-index">10</span></a>
+          <a href="#engine" data-view="engine"><svg><use href="#i-refresh" /></svg>Silnik<span class="nav-index">11</span></a>
+        </nav>
+        <div class="sidebar-note">
+          <span class="rule-ornament" aria-hidden="true">◇</span>
+          <p>Kontrola nad światem.<br />Ślad po każdej zmianie.</p>
+          <small
+            >Dostęp przez chronioną bramę.<br />Zmiany dotyczą tego serwera
+            LAB.</small
+          >
+        </div>
+      </aside>
+      <div class="workspace">
+        <div class="topbar">
+          <p>MONSTER SLAYER <span>/</span> PANEL ADMINISTRACYJNY</p>
+          <div class="language-control">
+            <label for="ui-language">Język panelu</label>
+            <select id="ui-language"></select>
+            <span id="language-status" role="status" hidden></span>
+          </div>
+          <span id="connection-state" class="connection"
+            >Łączenie z panelem</span
+          >
+        </div>
+        <main id="main" tabindex="-1">
+          <header class="page-header">
+            <div>
+              <p id="page-kicker" class="eyebrow">CENTRUM DOWODZENIA</p>
+              <h1 id="page-title">Pulpit operatora</h1>
+              <p id="page-description" class="page-description">
+                Świat gry, gracze i publikacje w jednym miejscu.
+              </p>
+            </div>
+            <button id="refresh" class="secondary">
+              <svg><use href="#i-refresh" /></svg>Odśwież
+            </button>
+          </header>
+          <div class="context-line">
+            <p id="freshness">Pobieranie danych…</p>
+            <span id="draft-state" hidden>Niezapisana wersja robocza</span>
+          </div>
+          <div
+            id="notice"
+            class="notice"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></div>
+          <section id="view-overview" class="view" aria-labelledby="page-title">
+            <div class="status-band">
+              <span
+                id="server-mark"
+                class="status-mark"
+                aria-hidden="true"
+              ></span>
+              <div>
+                <h2 id="server-status">Sprawdzanie połączenia</h2>
+                <p id="server-detail">Oczekiwanie na odpowiedź panelu.</p>
+              </div>
+              <span class="outline-label">PRYWATNY LAB</span>
+            </div>
+            <section class="server-metrics" aria-labelledby="server-metrics-title">
+              <div class="section-heading">
+                <div><p class="eyebrow">BIEŻĄCE ZUŻYCIE ZASOBÓW</p><h2 id="server-metrics-title">Stan serwera</h2></div>
+                <button id="server-metrics-refresh" type="button" class="secondary">Odśwież metryki</button>
+              </div>
+              <div class="server-metrics-meta">
+                <p id="server-metrics-state" role="status">Pobieranie danych…</p>
+                <p id="server-metrics-time">Brak pomiaru</p>
+              </div>
+              <div class="server-resource-columns">
+                <article aria-labelledby="server-process-title">
+                  <div class="server-resource-heading"><h3 id="server-process-title">Proces gry</h3><span id="server-process-state">—</span></div>
+                  <dl class="server-resource-values">
+                    <div><dt>CPU procesu</dt><dd><span id="server-process-cpu">—</span><small id="server-process-cpu-window" hidden></small></dd></div>
+                    <div><dt>RAM procesu (RSS)</dt><dd id="server-process-memory">—</dd></div>
+                  </dl>
+                  <p class="hint">CPU procesu: 100% odpowiada jednemu rdzeniowi logicznemu. Wartość może przekroczyć 100%.</p>
+                  <dl class="facts compact"><div><dt>Czas działania procesu</dt><dd id="server-process-uptime">—</dd></div></dl>
+                </article>
+                <article aria-labelledby="server-host-title">
+                  <div class="server-resource-heading"><h3 id="server-host-title">Cała maszyna</h3><span id="server-host-state">—</span></div>
+                  <dl class="server-resource-values">
+                    <div><dt>CPU maszyny</dt><dd><span id="server-host-cpu">—</span><small id="server-host-cpu-window" hidden></small></dd></div>
+                    <div><dt>RAM użyty / całkowity</dt><dd id="server-host-memory">—</dd></div>
+                  </dl>
+                  <meter id="server-host-memory-meter" min="0" max="100" aria-label="Wykorzystanie pamięci maszyny" hidden></meter>
+                  <p class="hint">CPU maszyny uwzględnia wszystkie rdzenie. RAM użyty to pamięć całkowita minus dostępna.</p>
+                  <dl class="facts compact server-host-facts">
+                    <div><dt>Obciążenie 1 / 5 / 15 min</dt><dd id="server-host-load">—</dd></div>
+                    <div><dt>Rdzenie logiczne</dt><dd id="server-host-cores">—</dd></div>
+                    <div><dt>Czas działania maszyny</dt><dd id="server-host-uptime">—</dd></div>
+                  </dl>
+                </article>
+              </div>
+              <p class="hint server-metrics-footnote">Odczyt co około 5 s, gdy ten widok jest otwarty. Metryki nie sprawdzają rozgrywki ani zewnętrznych usług.</p>
+              <details class="server-metrics-help"><summary>Jak czytać obciążenie?</summary><p class="hint">Obciążenie to średnia liczba zadań gotowych do pracy lub czekających na operacje wejścia/wyjścia. Porównuj je z liczbą rdzeni logicznych; to nie procent CPU. Dane maszyny pochodzą z Linux i nie opisują limitów kontenera.</p></details>
+            </section>
+            <div class="metrics">
+              <div>
+                <span>Profile graczy</span><strong id="profile-count">—</strong
+                ><a href="#profiles"
+                  >Przeglądaj graczy <span aria-hidden="true">↗</span></a
+                >
+              </div>
+              <div>
+                <span>Aktywne połączenia</span
+                ><strong id="session-count">—</strong
+                ><small>Bieżące sesje gry</small>
+              </div>
+              <div>
+                <span>Potwory / komórkę</span
+                ><strong id="density-value">—</strong
+                ><a href="#world"
+                  >Zarządzaj mapą <span aria-hidden="true">↗</span></a
+                >
+              </div>
+              <div>
+                <span>Następny reset</span
+                ><strong id="reset-clock" class="metric-clock">—</strong
+                ><small id="local-zone">Czas lokalny</small>
+              </div>
+            </div>
+            <div class="overview-columns">
+              <article class="section-block">
+                <div class="section-heading">
+                  <div>
+                    <p class="eyebrow">PANEL ROBOCZY</p>
+                    <h2>Co chcesz zrobić?</h2>
+                  </div>
+                </div>
+                <a class="destination" href="#world"
+                  ><span class="destination-symbol"
+                    ><svg><use href="#i-map" /></svg
+                  ></span>
+                  <div>
+                    <h3>Zmień częstotliwość potworów</h3>
+                    <p>Wagi kategorii, gatunki i gęstość spotkań.</p>
+                  </div>
+                  <svg><use href="#i-arrow" /></svg></a
+                ><a class="destination" href="#weather"
+                  ><span class="destination-symbol"><svg><use href="#i-weather" /></svg></span>
+                  <div><h3>Ustaw pogodę dla graczy</h3><p>Warunki automatyczne lub czasowe wymuszenie.</p></div>
+                  <svg><use href="#i-arrow" /></svg></a
+                ><a class="destination" href="#news"
+                  ><span class="destination-symbol"
+                    ><svg><use href="#i-news" /></svg
+                  ></span>
+                  <div>
+                    <h3>Opublikuj komunikat dla graczy</h3>
+                    <p>Treść „Co nowego”, okładki i wyróżnienie.</p>
+                  </div>
+                  <svg><use href="#i-arrow" /></svg></a
+                ><a class="destination" href="#tasks"
+                  ><span class="destination-symbol"
+                    ><svg><use href="#i-tasks" /></svg
+                  ></span>
+                  <div>
+                    <h3>Edytuj rotację i zasadę stempli</h3>
+                    <p>Wagi losowania zadań i zachowanie serii stempli.</p>
+                  </div>
+                  <svg><use href="#i-arrow" /></svg
+                ></a>
+              </article>
+              <article class="section-block clock-panel">
+                <p class="eyebrow">RYTM ŚWIATA</p>
+                <h2>Doba serwera</h2>
+                <p>
+                  Stemple i zadania dzienne resetują się o północy UTC. Pozycja
+                  gracza wpływa na światło i siedliska.
+                </p>
+                <dl class="facts">
+                  <div>
+                    <dt>Teraz na serwerze</dt>
+                    <dd id="utc-now">—</dd>
+                  </div>
+                  <div>
+                    <dt>Następny reset lokalnie</dt>
+                    <dd id="local-reset">—</dd>
+                  </div>
+                  <div>
+                    <dt>Granica doby</dt>
+                    <dd>00:00 UTC</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">DZIENNIK OPERATORA</p>
+                <h2>Ostatnie zmiany</h2>
+              </div>
+              <a href="#audit"
+                >Cała historia <span aria-hidden="true">↗</span></a
+              >
+            </div>
+            <div id="overview-receipts" class="compact-receipts">
+              <p class="muted">Pobieranie historii…</p>
+            </div>
+            <details class="help-disclosure">
+              <summary>Kiedy zmiany stają się widoczne w grze?</summary>
+              <ul class="timing">
+                <li>
+                  <strong>Komunikaty</strong
+                  ><span>Przy kolejnym otwarciu „Co nowego”.</span>
+                </li>
+                <li>
+                  <strong>Gęstość potworów</strong
+                  ><span
+                    >Nowe żądania mapy po odczycie konfiguracji, zwykle do
+                    sekundy. Pobraną komórkę musi odświeżyć klient.</span
+                  >
+                </li>
+                <li>
+                  <strong>Rotacja dzienna</strong
+                  ><span
+                    >Przy kolejnym losowaniu; przydzielone zadania
+                    pozostają.</span
+                  >
+                </li>
+                <li>
+                  <strong>Nowe definicje</strong
+                  ><span
+                    >Po zastosowaniu katalogu w oknie serwisowym i restarcie
+                    serwera oraz LAB.</span
+                  >
+                </li>
+              </ul>
+            </details>
+          </section>
+          <section id="view-world" class="view" hidden>
+            <div class="world-navigation" aria-label="Mapa i ustawienia">
+              <button type="button" data-world-tab="map" aria-pressed="true">Podgląd mapy</button>
+              <button type="button" data-world-tab="settings" aria-pressed="false">Ustawienia świata</button>
+              <button type="button" data-world-tab="gps" aria-pressed="false">GPS i dystans</button>
+              <a href="#help" data-help-topic="help-world">Jak edytować świat?</a>
+            </div>
+            <div id="world-settings" hidden>
+            <div class="spawn-controls">
+              <form id="balance-form" class="balance-editor">
+                <fieldset id="balance-fields" disabled>
+                  <div class="section-heading">
+                    <div><p class="eyebrow">POLITYKA SPOTKAŃ</p><h2>Ustaw częstotliwość potworów</h2></div>
+                    <span class="outline-label">PRYWATNY LAB</span>
+                  </div>
+                  <p class="hint" id="balance-scope">Zmiany dotyczą nowych generacji zwykłych potworów na całym serwerze. Dotychczasowe spotkania wygasają naturalnie w ciągu 30 minut. Restart nie jest potrzebny.</p>
+                  <div class="rarity-editor" aria-describedby="balance-weight-help">
+                    <label>Pospolity<input id="balance-common" type="number" min="0" max="10000" step="1" required /><output id="balance-common-percent">—</output></label>
+                    <label>Rzadki<input id="balance-rare" type="number" min="0" max="10000" step="1" required /><output id="balance-rare-percent">—</output></label>
+                    <label>Legendarny<input id="balance-legendary" type="number" min="0" max="10000" step="1" required /><output id="balance-legendary-percent">—</output></label>
+                  </div>
+                  <p class="hint" id="balance-weight-help">Wagi 0–10000; suma musi być dodatnia. Procenty pokazują proporcje przed sprawdzeniem dostępności. Biom, pogoda i pora dnia nadal ograniczają gatunki.</p>
+                  <p id="balance-error" class="inline-status balance-error" role="status" hidden></p>
+                  <div class="balance-actions">
+                    <button type="submit" id="balance-save">Zapisz częstotliwość</button>
+                    <button type="button" id="balance-defaults" class="secondary">Ustaw domyślne w edytorze</button>
+                    <button type="button" id="balance-discard" class="secondary text-button">Odrzuć wersję roboczą</button>
+                  </div>
+                  <p id="balance-draft-state" class="hint" role="status">Pobieranie danych…</p>
+                  <details class="species-editor">
+                    <summary>Gatunki — częstotliwość i wyłączenia</summary>
+                    <p class="hint" id="species-help">Mnożnik 1 zachowuje zwykłą częstotliwość gatunku; 0 wyłącza go z nowych spotkań. Zakres 0–1000, liczby całkowite. Mnożniki działają wewnątrz kategorii i nie gwarantują spotkania.</p>
+                    <div class="species-filters">
+                      <label>Szukaj gatunku<input id="species-search" type="search" placeholder="Szukaj nazwy lub identyfikatora" /></label>
+                      <label>Rzadkość<select id="species-rarity"><option value="">Wszystkie</option><option value="1">Pospolity</option><option value="2">Rzadki</option><option value="3">Legendarny</option></select></label>
+                    </div>
+                    <div id="species-table" class="species-table" tabindex="-1"></div>
+                    <button type="submit" class="species-save">Zapisz częstotliwość</button>
+                  </details>
+                </fieldset>
+              </form>
+              <aside class="world-policy-summary">
+              <form id="world-form">
+                <p class="eyebrow">POLITYKA SPOTKAŃ</p>
+                <h2>Gęstość potworów</h2>
+                <label
+                  >Limit potworów na komórkę<input
+                    id="world-density"
+                    type="number"
+                    min="6"
+                    max="18"
+                    required
+                /></label>
+                <p class="hint">
+                  Zakres 6–18. Rzeczywista liczba zależy od dostępnych miejsc,
+                  siedlisk, pogody i pory dnia. Zwykłe spotkania są wspólne dla
+                  poziomów graczy.
+                </p>
+                <button type="submit">Zapisz gęstość</button>
+              </form>
+                <div class="balance-saved">
+                  <h3>Zapisane ustawienia</h3>
+                  <dl class="facts compact">
+                    <div><dt>Wagi kategorii</dt><dd id="world-rarity-weights">—</dd></div>
+                    <div><dt>Aktywne dla nowych generacji</dt><dd id="balance-effective">—</dd></div>
+                    <div><dt>Nowe generacje od</dt><dd id="world-balance-from">—</dd></div>
+                    <div><dt>Pełne przejście do</dt><dd id="world-balance-until">—</dd></div>
+                    <div><dt>Efektywny limit / komórkę</dt><dd id="world-effective">—</dd></div>
+                    <div><dt>Czas życia potwora</dt><dd id="world-lifetime">—</dd></div>
+                  </dl>
+                  <p id="balance-transition" class="hint" role="status"></p>
+                  <a href="#audit">Historia operacji</a>
+                </div>
+              </aside>
+            </div>
+
+            </div>
+            <div id="world-observation">
+            <div class="workbench-heading">
+              <div>
+                <h2>Obszar dostarczony klientowi</h2>
+                <p>
+                  Ostatnia zarejestrowana odpowiedź mapy dla wybranego profilu.
+                </p>
+              </div>
+              <span class="outline-label">ODCZYT ŚWIATA</span>
+            </div>
+            <form id="map-form" class="coordinates-form">
+              <label
+                >Profil klienta<select id="map-profile" required>
+                  <option value="">Wybierz profil…</option>
+                </select></label
+              ><button type="submit">
+                <svg><use href="#i-search" /></svg>Pokaż ostatni obszar
+              </button>
+              <p class="hint">
+                Ostatni obszar z dowolnej sesji profilu. To nie bieżąca pozycja telefonu. Panel nie uruchamia gry ani nie generuje spotkań.
+              </p>
+            </form>
+            <div
+              id="map-message"
+              class="inline-status"
+              role="status"
+              hidden
+            ></div>
+            <div class="map-filters">
+              <label>Szukaj obiektu na mapie<input id="map-search" type="search" placeholder="Szukaj nazwy lub identyfikatora" /></label>
+              <label>Rzadkość potworów<select id="map-rarity"><option value="">Wszystkie</option><option value="1">Pospolity</option><option value="2">Rzadki</option><option value="3">Legendarny</option></select></label>
+              <button id="map-filter-reset" class="secondary" type="button">Wyczyść filtry</button>
+            </div>
+            <div class="map-workspace">
+              <div class="map-stage">
+                <div class="map-toolbar">
+                  <span id="map-area-label">Nie wybrano obszaru</span
+                  ><span class="map-north" aria-label="Północ u góry">N ↑</span>
+                </div>
+                <div id="map-empty" class="map-empty">
+                  <svg class="large-icon"><use href="#i-map" /></svg>
+                  <h3>Spójrz na świat z góry</h3>
+                  <p>
+                    Wybierz profil, aby zobaczyć ostatnie dane mapy wysłane do
+                    jego klienta. Brak obserwacji nie oznacza pustego świata.
+                  </p>
+                </div>
+                <svg
+                  id="world-map"
+                  viewBox="0 0 900 620"
+                  role="img"
+                  tabindex="0"
+                  aria-describedby="map-interaction-help"
+                  aria-labelledby="map-svg-title map-svg-desc"
+                  hidden
+                >
+                  <title id="map-svg-title">
+                    Mapa spotkań wybranego obszaru
+                  </title>
+                  <desc id="map-svg-desc">
+                    Mapa z lokalną geometrią OpenStreetMap. Dostępna lista obiektów znajduje się poniżej.
+                  </desc>
+                </svg>
+                <p id="map-filter-empty" class="map-filter-empty" hidden>Brak obiektów pasujących do aktywnych filtrów.</p>
+                <div id="map-scale" class="map-scale" hidden></div>
+                <div class="map-zoom" aria-label="Skala mapy">
+                  <button
+                    type="button"
+                    id="map-zoom-out"
+                    aria-label="Oddal mapę"
+                  >
+                    −</button
+                  ><span id="map-zoom-label">100%</span
+                  ><button
+                    type="button"
+                    id="map-zoom-in"
+                    aria-label="Przybliż mapę"
+                  >
+                    +</button
+                  ><button
+                    type="button"
+                    id="map-zoom-reset"
+                    aria-label="Pokaż cały obszar"
+                  >
+                    Całość
+                  </button>
+                </div>
+              </div>
+              <aside class="map-inspector">
+                <p class="eyebrow">WARSTWY MAPY</p>
+                <fieldset id="map-layers">
+                  <legend class="sr">Widoczne warstwy</legend>
+                  <label class="check"><input type="checkbox" value="context" checked /> OpenStreetMap</label>
+                  <label class="check"
+                    ><input type="checkbox" value="monster" checked /><span
+                      class="legend-symbol monster"
+                      >◆</span
+                    >
+                    Potwory <strong id="layer-monster">—</strong></label
+                  ><label class="check"
+                    ><input type="checkbox" value="herb" checked /><span
+                      class="legend-symbol herb"
+                      >●</span
+                    >
+                    Zioła <strong id="layer-herb">—</strong></label
+                  ><label class="check"
+                    ><input type="checkbox" value="nest" checked /><span
+                      class="legend-symbol nest"
+                      >■</span
+                    >
+                    Nemetony <strong id="layer-nest">—</strong></label
+                  ><label class="check"
+                    ><input type="checkbox" value="quest" checked /><span
+                      class="legend-symbol quest"
+                      >▲</span
+                    >
+                    Zadania <strong id="layer-quest">—</strong></label
+                  ><label class="check"
+                    ><input type="checkbox" value="cells" checked /> Środki
+                    komórek</label
+                  >
+                </fieldset>
+                <p class="rarity-legend"><span aria-hidden="true">○</span> <span>Rzadki</span> · <span aria-hidden="true">◌</span> <span>Legendarny</span></p>
+                <div class="inspector-divider"></div>
+                <p class="eyebrow">WYBRANY PUNKT</p>
+                <div id="map-selection">
+                  <p class="muted">
+                    Wybierz znacznik na mapie lub obiekt z listy.
+                  </p>
+                </div>
+                <details class="map-source"><summary>Źródło i czas obserwacji</summary>
+                <dl id="map-metadata" class="facts compact">
+                  <div>
+                    <dt>Źródło</dt>
+                    <dd>Oczekuje na odczyt</dd>
+                  </div>
+                </dl></details>
+              </aside>
+            </div>
+            <p class="hint map-cluster-help">Grupa punktów — kliknij liczbę, aby przybliżyć. Wszystkie obiekty są na liście.</p>
+            <p class="hint" id="map-interaction-help">Przeciągnij mapę, aby przesunąć widok. Klawiatura: strzałki przesuwają, +/− zmienia skalę, Home pokazuje całość. Pozycje obiektów pozostają bez zmian.</p>
+            <p id="map-context-status" class="hint" role="status"></p>
+            <details id="placement-editor" class="placement-editor">
+              <summary>Rozmieszczenie miejsc</summary>
+              <p>Ustawienia całego serwera. Zapis działa od następnej północy UTC. Dotychczasowe dni i spotkania zachowują swoje miejsca.</p>
+              <p class="hint">Punkty preferowane muszą leżeć na dostępnej ścieżce lub w parku albo lesie. Odstępy od dróg, budynków i wody pozostają obowiązkowe. Miejsce nie gwarantuje potwora.</p>
+              <p id="placement-status" class="inline-status" role="status"></p>
+              <form id="placement-form">
+                <fieldset id="placement-fields" disabled>
+                  <legend class="sr">Rozmieszczenie miejsc</legend>
+                  <div class="placement-settings">
+                    <label>Limit miejsc w komórce<input id="placement-cap" type="number" min="8" max="64" step="1" required /></label>
+                    <label>Minimalny odstęp (m)<input id="placement-spacing" type="number" min="35" max="120" step="1" required /></label>
+                  </div>
+                  <div class="section-heading"><h3>Wykluczone obszary</h3><button id="placement-add-area" class="secondary" type="button">Dodaj obszar</button></div>
+                  <div id="placement-exclusions" class="placement-controls"></div>
+                  <div class="section-heading"><h3>Punkty preferowane</h3><button id="placement-add-point" class="secondary" type="button">Dodaj punkt</button></div>
+                  <div id="placement-preferred" class="placement-controls"></div>
+                  <p class="hint">Nowy wpis używa wybranego obiektu lub środka widoku. Współrzędne można poprawić przed podglądem. Maksymalnie 32 obszary i 64 punkty.</p>
+                  <div class="button-row">
+                    <button id="placement-preview" type="button" class="secondary">Sprawdź podgląd</button>
+                    <button type="submit">Zapisz na następny dzień</button>
+                    <button id="placement-discard" type="button" class="secondary">Odrzuć wersję roboczą</button>
+                  </div>
+                </fieldset>
+              </form>
+              <p id="placement-preview-status" class="hint" role="status"></p>
+              <div id="placement-diagnostics" class="table-wrap" tabindex="0" role="region" aria-label="Rozmieszczenie miejsc"></div>
+            </details>
+            <div class="section-heading">
+              <h2>
+                Obiekty w obszarze <span id="map-count" class="count">—</span>
+              </h2>
+            </div>
+            <details class="map-object-list"><summary>Pokaż listę obiektów</summary>
+            <div id="map-objects" class="table-wrap" tabindex="-1">
+              <p class="empty-state">Najpierw otwórz obszar mapy.</p>
+            </div></details>
+            </div>
+            <div id="world-gps" hidden>
+              <div class="section-heading">
+                <div><p class="eyebrow">GPS i dystans</p><h2>Ochrona naliczania dystansu</h2></div>
+                <a href="#help" data-help-topic="help-gps">Jak to działa?</a>
+              </div>
+              <p>Pomiary z klienta i decyzje serwera dla wybranego profilu.</p>
+              <form id="gps-form" class="coordinates-form">
+                <label>Profil klienta<select id="gps-profile" required><option value="">Wybierz profil…</option></select></label>
+                <button type="submit" id="gps-refresh">Odśwież dane GPS</button>
+              </form>
+              <details class="gps-policy-editor"><summary>Tryb dla nowych sesji GPS</summary>
+                <form id="gps-policy-form"><fieldset id="gps-policy-fields" disabled>
+                  <p id="gps-policy-status" class="hint">Oczekuje na odczyt</p>
+                  <label>Tryb ochrony<select id="gps-policy-mode"><option value="shadow">Tryb obserwacji</option><option value="protected">Ochrona aktywna</option></select></label>
+                  <p class="callout">Tryb dotyczy nowych sesji klientów GPS. Uruchom LAB ponownie. Profile z aktywną ochroną pozostają chronione także po wybraniu obserwacji.</p>
+                  <button type="submit">Zapisz tryb dla nowych sesji</button>
+                </fieldset></form>
+              </details>
+              <p id="gps-message" class="callout" role="status">Wybierz profil, aby sprawdzić GPS i dystans.</p>
+              <div id="gps-content" hidden>
+                <div id="gps-status" class="gps-status"></div>
+                <p id="gps-observed" class="hint"></p>
+                <div id="gps-counters" class="gps-counters"></div>
+                <div class="gps-detail-grid">
+                  <article><h3>Ostatni pomiar GPS</h3><div id="gps-fix"></div></article>
+                  <article><h3>Odrzucone pomiary</h3><div id="gps-rejections"></div></article>
+                </div>
+                <details class="gps-events" open><summary>Ostatnie decyzje serwera</summary><div id="gps-events" class="table-wrap"></div></details>
+                <details class="gps-policy"><summary>Reguły i zakres ochrony</summary><div id="gps-policy"></div></details>
+              </div>
+            </div>
+          </section>
+          <section id="view-weather" class="view" hidden>
+            <div id="weather-content">
+              <p class="empty-state">Pobieranie konfiguracji pogody…</p>
+            </div>
+            <div class="split policy-section">
+              <form id="weather-form">
+                <p class="eyebrow">GLOBALNA POLITYKA POGODY</p>
+                <h2>Sterowanie warunkami</h2>
+                <label
+                  >Tryb pogody<select id="weather-mode">
+                    <option value="automatic">
+                      Automatyczny — dane dostawcy
+                    </option>
+                    <option value="manual">Ręczny — wszyscy gracze</option>
+                  </select></label
+                >
+                <div id="weather-manual" hidden>
+                  <label>Warunki<select id="weather-code"></select></label
+                  ><label
+                    >Obowiązuje do (Twój czas lokalny)<input
+                      id="weather-expiry"
+                      type="datetime-local"
+                  /></label>
+                  <p class="hint">
+                    Wymuszenie wygasa najpóźniej po 24 godzinach. Po tym czasie
+                    powraca pogoda automatyczna.
+                  </p>
+                </div>
+                <div class="callout">
+                  Zmiana dotyczy całego serwera LAB. Zachowane generacje spotkań
+                  pozostają przypisane do dotychczasowych warunków.
+                </div>
+                <button type="submit">Zapisz politykę pogody</button>
+              </form>
+              <article>
+                <p class="eyebrow">JAK TO DZIAŁA</p>
+                <h2>Pogoda i spawny</h2>
+                <p>
+                  Automatyczny tryb korzysta z konfiguracji dostawcy i pamięci
+                  podręcznej serwera. Brak dostawcy lub świeżego odczytu jest
+                  wskazany w statusie.
+                </p>
+                <p>
+                  Ręczne wymuszenie służy do czasowych warunków na całym
+                  serwerze. Nie przenosi potworów i nie wymienia spotkań już
+                  przypisanych do istniejącej generacji.
+                </p>
+                <p class="hint">
+                  Zegar serwera i granica doby stempli nie ulegają zmianie.
+                </p>
+              </article>
+            </div>
+          </section>
+          <section id="view-news" class="view" hidden>
+            <div class="section-toolbar">
+              <div class="inline-controls">
+                <label
+                  >Język publikacji<select id="news-language">
+                    <option value="pl">Polski</option>
+                    <option value="en">English</option>
+                  </select></label
+                ><span id="news-total" class="muted"></span>
+              </div>
+              <button id="news-add">+ Nowy komunikat</button>
+            </div>
+            <div class="publication-note">
+              <span class="status-dot"></span> Publikacja do zakładki „Co
+              nowego” przy następnym otwarciu przez gracza.
+            </div>
+            <div class="editor-layout">
+              <div class="news-index">
+                <p class="eyebrow">KOMUNIKATY</p>
+                <div
+                  id="news-list"
+                  class="entry-list"
+                  aria-label="Wiadomości"
+                ></div>
+                <button id="news-save-empty" class="secondary" hidden>
+                  Opublikuj pustą listę
+                </button>
+              </div>
+              <div class="news-editor">
+                <div id="news-errors" class="validation-errors" role="alert" tabindex="-1" hidden></div>
+                <form id="news-form">
+                  <div class="section-heading">
+                    <h2>Edytor komunikatu</h2>
+                    <span id="news-edit-state" class="outline-label"
+                      >WERSJA ROBOCZA</span
+                    >
+                  </div>
+                  <label
+                    >Tytuł<input
+                      id="news-title"
+                      required
+                      maxlength="240"
+                      placeholder="Co nowego w świecie gry?" /></label
+                  ><label
+                    >Krótki opis<input
+                      id="news-short"
+                      maxlength="500"
+                      placeholder="Opis widoczny na liście wiadomości" /></label
+                  ><label
+                    >Treść<textarea
+                      id="news-content"
+                      rows="9"
+                      required
+                      placeholder="Napisz komunikat dla graczy…"
+                    ></textarea>
+                  </label>
+                  <div class="two-fields">
+                    <label
+                      >Data wyświetlana<input
+                        id="news-date"
+                        type="date"
+                        min="0001-01-01" max="9999-12-31"
+                        aria-describedby="news-date-help"
+                        required /></label
+                    ><label
+                      >Okładka: nazwa pliku lub adres<input
+                        id="news-image"
+                        placeholder="default.png"
+                        aria-describedby="news-image-help"
+                        list="cover-options" /><datalist
+                        id="cover-options"
+                      ></datalist
+                    ></label>
+                  </div>
+                  <p id="news-date-help" class="hint">Data jest etykietą w grze, bez planowania publikacji. Formularz zapisuje ją jako DD/MM/RRRR, np. 04/10/2026.</p>
+                  <p id="news-image-help" class="hint">Pozostaw puste, aby użyć okładki domyślnej. Własny plik najpierw prześlij w bibliotece: 1–64 litery A–Z, cyfry, _ lub -, potem .png, .jpg lub .jpeg, np. aktualizacja.png. Możesz podać pełny publiczny adres HTTPS obrazu; jego dostępność zależy od zewnętrznego serwera.</p>
+                  <details><summary>Identyfikatory komunikatu</summary><p class="hint">Nowe wpisy otrzymują je automatycznie. Zmieniaj je tylko przy poprawianiu importowanej listy. ID musi być dodatnie i unikalne; grupa ma 1–128 znaków bez średnika.</p><div class="two-fields"><label>ID<input id="news-id" type="number" min="1" max="2147483647" step="1" required /></label><label>Grupa<input id="news-group" maxlength="128" required /></label></div></details>
+                  <label class="check"
+                    ><input id="news-featured" type="checkbox" /> Wyróżnij tę
+                    wiadomość</label
+                  >
+                  <div class="actions">
+                    <button type="submit">Opublikuj wiadomości</button
+                    ><button type="button" id="news-remove" class="text-danger">
+                      Usuń z wersji roboczej
+                    </button>
+                  </div>
+                  <p class="hint">
+                    Publikujesz całą listę wybranego języka. Usunięcie w
+                    edytorze zacznie obowiązywać po publikacji.
+                  </p>
+                </form>
+                <div
+                  id="news-preview"
+                  class="news-preview"
+                  aria-label="Tekstowy podgląd komunikatu"
+                >
+                  <p class="eyebrow">PODGLĄD TREŚCI</p>
+                  <span id="preview-date" class="muted"></span>
+                  <h2 id="preview-title">Wybierz komunikat</h2>
+                  <p id="preview-short" class="preview-lead"></p>
+                  <div id="preview-content"></div>
+                  <p class="hint">
+                    Podgląd tekstowy; układ i formatowanie w grze mogą się
+                    różnić.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <details>
+              <summary>Biblioteka okładek</summary>
+              <p>
+                PNG lub JPEG, do 2 MiB i 4096 × 4096 px. Nowa nazwa nie
+                zastępuje istniejącej okładki.
+              </p>
+              <form id="image-form" class="inline-form">
+                <label
+                  >Plik obrazu<input
+                    id="image-file"
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    required /></label
+                ><button type="submit" class="secondary">Dodaj okładkę</button>
+              </form>
+              <p id="image-list" class="muted"></p>
+            </details>
+          </section>
+          <section id="view-tasks" class="view" hidden>
+            <div class="subnav" aria-label="Sekcje zadań">
+              <button data-task-tab="daily" aria-pressed="true">
+                Dzienne <span id="daily-count"></span></button
+              ><button data-task-tab="timed" aria-pressed="false">
+                Czasowe <span id="timed-count"></span></button
+              ><button data-task-tab="hunt" aria-pressed="false">Stemple</button
+              ><button data-task-tab="trinkets" aria-pressed="false">
+                Bibeloty <span id="trinket-count"></span></button
+              ><button data-task-tab="catalogue" aria-pressed="false">
+                Nowe definicje
+              </button>
+            </div>
+            <div id="task-daily" class="task-section">
+              <div class="section-heading">
+                <div>
+                  <h2>Rotacja dzienna</h2>
+                  <p>
+                    Waga 0 wyłącza z nowych losowań. Co najmniej 3 zadania muszą
+                    być dostępne od poziomu 1.
+                  </p>
+                </div>
+                <label class="search-label"
+                  ><svg><use href="#i-search" /></svg
+                  ><input
+                    id="task-search"
+                    type="search"
+                    aria-label="Szukaj zadania"
+                    placeholder="Szukaj zadania"
+                /></label>
+              </div>
+              <form id="rotation-form">
+                <div class="save-bar save-bar-top">
+                  <p>Zmieniasz wagi przyszłych losowań.</p>
+                  <button type="submit">Zapisz rotację</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <caption class="sr">
+                      Rotacja zadań dziennych
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th>Zadanie</th>
+                        <th>Warunek / cel</th>
+                        <th>Nagroda</th>
+                        <th>Waga</th>
+                        <th>Od poziomu</th>
+                      </tr>
+                    </thead>
+                    <tbody id="rotation-rows"></tbody>
+                  </table>
+                </div>
+                <div class="save-bar">
+                  <p>Zmiana dotyczy kolejnych losowań.</p>
+                  <button type="submit">Zapisz rotację</button>
+                </div>
+              </form>
+            </div>
+            <div id="task-timed" class="task-section" hidden>
+              <div class="section-heading">
+                <h2>Harmonogram wydarzeń</h2>
+                <span class="outline-label">ODCZYT</span>
+              </div>
+              <div id="events" class="event-list"></div>
+              <p class="hint">
+                Dodanie wydarzenia wymaga przygotowania katalogu w sekcji „Nowe
+                definicje”.
+              </p>
+            </div>
+            <div id="task-hunt" class="task-section" hidden>
+              <h2>Stemple i ciągłość serii</h2>
+              <p>
+                Stempel korzysta z granicy doby 00:00 UTC. Zasada poniżej wpływa
+                na kolejne sprawdzenie serii.
+              </p>
+              <form id="hunt-form" class="section-block">
+                <label class="check"
+                  ><input id="hunt-streak" type="checkbox" /> Przerwij serię po
+                  pominięciu dnia</label
+                >
+                <div id="hunt-summary"></div>
+                <button type="submit">Zapisz zasadę stempli</button>
+              </form>
+            </div>
+            <div id="task-trinkets" class="task-section" hidden>
+              <div class="section-heading">
+                <h2>Bibeloty i osiągnięcia</h2>
+                <span class="outline-label">DEFINICJE</span>
+              </div>
+              <div id="trinket-list" class="table-wrap"></div>
+            </div>
+            <div id="task-catalogue-section" class="task-section" hidden>
+              <h2>Przygotuj nową wersję katalogu</h2>
+              <p>
+                Dodawaj nowe identyfikatory i zachowaj istniejące definicje. Ta
+                operacja tworzy sprawdzoną wersję do zastosowania w oknie
+                serwisowym.
+              </p>
+              <div class="callout">
+                Wymaga zatrzymania gry i ponownego uruchomienia serwera oraz
+                LAB. Zapis poniżej nie przełącza aktywnego katalogu.
+              </div>
+              <form id="stage-form">
+                <label
+                  >Katalog zadań (JSON)<textarea
+                    id="task-catalogue"
+                    class="code"
+                    rows="20"
+                    spellcheck="false"
+                  ></textarea></label
+                ><button type="submit" class="secondary">
+                  Sprawdź i przygotuj katalog
+                </button>
+              </form>
+              <p id="staged-list" class="muted"></p>
+            </div>
+          </section>
+          <section id="view-profiles" class="view" hidden>
+            <div class="section-toolbar">
+              <p>Podgląd postępu i obsługa zapisów graczy.</p>
+              <label class="search-label"
+                ><svg><use href="#i-search" /></svg
+                ><input
+                  id="profile-search"
+                  type="search"
+                  aria-label="Szukaj gracza"
+                  placeholder="Nazwa lub identyfikator profilu"
+              /></label>
+            </div>
+            <div class="callout">
+              Zmiany zapisu wymagają zamknięcia LAB na objętych nimi
+              urządzeniach. Przed zastąpieniem postępu powstaje kopia.
+            </div>
+            <div class="table-wrap">
+              <table>
+                <caption class="sr">
+                  Zapisane profile
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Gracz / profil</th>
+                    <th>Postęp</th>
+                    <th>Połączenie</th>
+                    <th>Działania</th>
+                  </tr>
+                </thead>
+                <tbody id="players"></tbody>
+              </table>
+            </div>
+            <p id="profiles-empty" class="empty-state" hidden>
+              Brak zapisanych profili. Pierwszy zapis gry pojawi się tutaj
+              automatycznie.
+            </p>
+          </section>
+          <section id="view-testers" class="view" hidden>
+            <p id="testers-unavailable" class="hint" hidden>Rejestr instalacji jest niedostępny lub transport nie jest skonfigurowany. Odśwież stan przed zmianami.</p>
+            <div id="testers-enabled" hidden>
+              <div class="tester-enrollment">
+                <div><p class="eyebrow">PRZYJMOWANIE NOWYCH INSTALACJI</p><h2 id="enrollment-state"></h2><p id="enrollment-detail"></p></div>
+                <form id="enrollment-form" class="tester-window-form">
+                  <label>Czas okna (minuty)<input id="enrollment-minutes" type="number" min="1" max="10" value="10" required /></label>
+                  <label>Liczba miejsc<input id="enrollment-slots" type="number" min="1" max="16" value="1" required /></label>
+                  <button type="submit">Otwórz rejestrację</button><button type="button" class="secondary" id="enrollment-close">Zamknij rejestrację</button>
+                </form>
+              </div>
+              <p class="hint">Okno służy tylko do otrzymania kodu. Termin ważności kodu jest widoczny na liście. Zamknięcie rejestracji nie odbiera dostępu zatwierdzonym testerom.</p>
+              <div class="section-toolbar"><label>Szukaj kodu lub profilu<input id="tester-search" type="search" placeholder="Kod, nazwa lub identyfikator profilu" /></label>
+                <label>Stan dostępu<select id="tester-filter"><option value="all">Wszystkie</option><option value="pending">Oczekuje na zatwierdzenie</option><option value="approved">Dostęp aktywny</option><option value="expired">Dostęp wygasł</option><option value="revoked">Dostęp cofnięty</option><option value="request-expired">Kod wygasł</option></select></label></div>
+              <p id="testers-observed" class="hint"></p>
+              <div class="table-wrap"><table class="tester-table"><caption class="sr-only">Instalacje testowe i przypisania</caption><thead><tr><th scope="col">Kod instalacji</th><th scope="col">Stan</th><th scope="col">Przypisany profil</th><th scope="col">Ważne do</th><th scope="col">Działania</th></tr></thead><tbody id="tester-rows"></tbody></table></div>
+              <p id="tester-empty" class="hint" hidden>Brak instalacji pasujących do wyszukiwania. Nowy tester musi uruchomić LAB podczas otwartego okna rejestracji.</p>
+              <div class="section-toolbar"><p id="tester-count"></p><div class="actions"><button id="tester-prev" type="button" class="secondary">Poprzednia</button><button id="tester-next" type="button" class="secondary">Następna</button></div></div>
+              <a href="#help">Pomoc dotycząca dostępu testerów</a>
+            </div>
+          </section>
+          <section id="view-catalogue" class="view" hidden>
+            <div class="section-toolbar">
+              <div class="inline-controls">
+                <label
+                  >Rodzaj danych<select id="catalogue-kind">
+                    <option value="monsters">Potwory</option>
+                    <option value="items">Przedmioty</option>
+                    <option value="recipes">Receptury</option>
+                    <option value="skills">Umiejętności</option>
+                  </select></label
+                ><span id="catalogue-total" class="muted"></span>
+              </div>
+              <label class="search-label"
+                ><svg><use href="#i-search" /></svg
+                ><input
+                  id="catalogue-search"
+                  type="search"
+                  placeholder="Nazwa, typ lub identyfikator"
+                  aria-label="Szukaj w katalogu gry"
+              /></label>
+            </div>
+            <div class="publication-note">
+              Dane używane przez serwer. Katalog jest udostępniony do odczytu;
+              wartości rekonstrukcji nie dowodzą historycznego balansu.
+            </div>
+            <div id="catalogue-content" class="table-wrap">
+              <p class="empty-state">Pobieranie katalogu…</p>
+            </div>
+            <div id="catalogue-detail" class="catalogue-detail" hidden></div>
+          </section>
+          <section id="view-help" class="view" hidden>
+            <div class="help-intro"><p>Wybierz operację, sprawdź jej zakres i przejdź do właściwego edytora. Pomoc oraz zmiana języka zachowują otwarte wersje robocze.</p><button type="button" id="help-return" class="secondary">Wróć do poprzedniego widoku</button></div>
+            <div class="help-topics">
+              <details id="help-world" open><summary>Mapa, częstotliwość i gęstość</summary>
+                <p>Ostatni obszar z dowolnej sesji profilu. To nie bieżąca pozycja telefonu. Panel nie uruchamia gry ani nie generuje spotkań.</p>
+                <ol><li>Filtruj rodzaj, rzadkość lub nazwę. Mapa i lista używają tych samych filtrów. Wybierz punkt, aby zobaczyć pozycję i wygaśnięcie.</li><li>W ustawieniach świata zmień wagi kategorii, mnożnik gatunku lub limit potworów na komórkę. Mnożnik 0 wyłącza gatunek; 1 przywraca zwykłą częstotliwość.</li><li>Zapisz formularz i sprawdź potwierdzenie oraz zapisane ustawienia. Wagi dotyczą nowych generacji; dotychczasowe spotkania wygasają do 30 minut. Limit dotyczy kolejnych żądań mapy.</li></ol>
+                <p class="hint">Ustawienia całego serwera. Zapis działa od następnej północy UTC. Dotychczasowe dni i spotkania zachowują swoje miejsca.</p>
+                <div class="help-links"><a href="#world" data-world-open="map">Podgląd mapy</a><a href="#world" data-world-open="settings">Ustawienia świata</a></div>
+              </details>
+              <details id="help-gps"><summary>GPS i dystans</summary><p>Wybierz profil w zakładce GPS i dystans. Sprawdź tryb ochrony, czas pomiaru i decyzje serwera. Odrzucony skok pozycji nie dodaje kilometrów w trybie ochrony.</p><p>Stary klient przesyła sam przyrost dystansu. Pełna walidacja wymaga klienta wysyłającego pomiary GPS z czasem i dokładnością. Brak pomiarów nie oznacza, że gracz stoi w miejscu.</p><p>Tryb obserwacji pokazuje ocenę pomiarów bez zmiany sposobu naliczania. Po włączeniu ochrony serwer nalicza zaakceptowane odcinki; dotychczasowy dystans i nagrody pozostają.</p><a href="#world" data-world-open="gps">GPS i dystans</a></details>
+              <details id="help-weather"><summary>Pogoda</summary><p>Wybierz tryb automatyczny albo czasowe ustawienie ręczne. Przy ręcznym ustawieniu podaj warunki i termin wygaśnięcia, a następnie zapisz. Polityka obejmuje cały serwer i kolejne odczyty.</p><a href="#weather">Sterowanie warunkami</a></details>
+              <details id="help-news"><summary>Komunikaty: format i publikacja</summary>
+                <ol><li>Wybierz język treści, np. PL. Język panelu jest niezależny. Zmiana języka treści wymaga odrzucenia niezapisanej wersji.</li><li>Dodaj wpis. Wymagane są tytuł, treść i prawidłowa data. Krótki opis oraz okładka mogą być puste. Same spacje w tytule lub treści są błędem.</li><li>Data jest wyświetlana w grze. Przyszła data nie opóźnia publikacji. W formularzu wybierz datę z kalendarza; JSON używa DD/MM/RRRR.</li><li>Własną okładkę prześlij najpierw przez bibliotekę, a potem wybierz jej nazwę we wpisie. Wysłanie obrazu nie publikuje komunikatu. Pusta okładka wybiera obraz domyślny.</li><li>Sprawdź podgląd tekstu, język, liczbę wpisów i usunięcia. Publikujesz całą listę danego języka. Usunięcie ostatniego wpisu wymaga publikacji pustej listy.</li><li>Po zapisie sprawdź potwierdzenie i odczyt z serwera. Gracz pobiera treść przy kolejnym otwarciu „Co nowego”; restart silnika nie jest potrzebny.</li></ol>
+                <p>Lista zawiera najwyżej 100 wpisów. ID jest dodatnią liczbą całkowitą, unikalną w tej liście. Grupa zawiera 1–128 znaków bez średnika. Formularz generuje oba identyfikatory. Wyróżnić można jeden istniejący wpis; featured: 0 oznacza brak wyróżnienia.</p>
+                <p>Nazwa okładki: 1–64 litery A–Z, cyfry, _ lub -, następnie .png, .jpg lub .jpeg. Bez spacji, polskich liter i katalogów. Plik do 2 MiB, maksymalnie 4096 × 4096 px. Pełny adres HTTP(S) jest dopuszczony, lecz jego dostępność zależy od zewnętrznego serwera.</p>
+                <p>Błąd wskazuje numer wpisu i pole. Kliknij go, popraw wartość i opublikuj ponownie. Niepoprawny wpis blokuje zapis całej listy. Konflikt rewizji wymaga porównania aktualnego zapisu; nie usuwa wersji roboczej.</p>
+                <p>Przykład dokumentu wiadomości. Edytor sam dołącza aktualną rewizję do żądania zapisu. Nazwy pól i typy są obowiązkowe; treść traktuj jako zwykły tekst, a wygląd sprawdź w grze.</p>
+                <pre><code>{
+  "featured": 1,
+  "news_list": [{
+    "id": 1,
+    "group_id": "news-1",
+    "title": "Update",
+    "short_description": "Test update",
+    "date": "04/10/2026",
+    "image_url": "",
+    "content": "The test world is available."
+  }]
+}</code></pre>
+                <p>Brak tłumaczenia w grze uruchamia kolejno język bazowy i domyślny język serwera. Pusta, poprawna lista jest osobną publikacją; nie oznacza brakującego pliku.</p><a href="#news">Redaguj komunikaty</a></details>
+              <details id="help-tasks"><summary>Zadania i wydarzenia</summary><p>W rotacji dziennej ustaw wagi i wymagane poziomy; zmiany dotyczą kolejnych losowań. Zasada stempli działa przy następnym sprawdzeniu serii. Nowy katalog definicji jest przygotowywany do osobnego zastosowania w oknie serwisowym, a nie od razu uruchamiany.</p><a href="#tasks">Zadania i wydarzenia</a></details>
+              <details id="help-profiles"><summary>Gracze: postęp, bibeloty i kilometry</summary><ol><li>Otwórz Gracze, znajdź profil i wybierz Szczegóły. Sprawdź ID, nazwę oraz etykietę przed interpretacją danych.</li><li>Rozwiń fabułę, zadania dzienne, czasowe, bibeloty lub stemple. Tabele pokazują licznik, cel i stan nagrody. Wpisy można wyszukać po warunku, nazwie lub ID.</li><li>Odśwież postęp gracza, aby ponownie odczytać zapis. Odczyt nie losuje zadań, nie przyznaje bibelotów i nie odbiera nagród. Liczniki okien czasowych mogą wymagać aktualizacji przez grę.</li></ol><p>Zadanie gotowe do odbioru nie oznacza nagrody odebranej. Odebrane zadania dzienne znikają z zapisu; nie ma pełnej historii ich ukończenia. Końcowa nagroda wydarzenia wymaga odbioru nagród poszczególnych zadań. Bibeloty są przyznawane automatycznie po sprawdzeniu warunku w grze.</p><p>Dystans to kilometry naliczone w grze. Historyczny stan mógł uwzględniać teleporty. Zaakceptowane odcinki ochrony są pokazane osobno, od jej uruchomienia lub ostatniego resetu, kopii albo przywrócenia. Brak danych nie oznacza zera ani potwierdzonej pieszej trasy.</p><p>Etykieta zmienia opis w panelu. Kopiowanie, reset, przywrócenie i zegar fabuły wymagają zamknięcia LAB oraz sprawdzenia profilu docelowego. Kopia zastępuje postęp celu; nie przenosi przypisań urządzeń. Po zmianie zapisu uruchom LAB ponownie.</p><a href="#profiles">Gracze</a></details>
+              <details id="help-recovery"><summary>Wersje robocze, konflikt i odzyskiwanie</summary><p>Przejście między sekcjami zachowuje niezapisane formularze w tej karcie. Zamknięcie lub przeładowanie strony może je utracić. Odświeżenie danych wymaga zgody na odrzucenie zmian w bieżącym widoku.</p><p>Konflikt oznacza, że ktoś zmienił zapis od czasu odczytu. Porównaj aktualną wersję przed ponownym zapisem. Po błędzie sieci sprawdź historię operacji: żądanie mogło już zostać wykonane.</p><p>Historia zawiera wynik i identyfikator operacji. Dostępne kopie można przejrzeć przed przywróceniem; przywrócenie ustawień zapisuje kolejną wersję. Nigdy nie traktuj samego kliknięcia jako potwierdzenia zmiany.</p><a href="#audit">Historia operacji</a></details>
+              <details id="help-testers"><summary>Testerzy: kod, dostęp i profil</summary><p>Hasło i CAPTCHA chronią pobieranie APK. Zatwierdzenie kodu instalacji jest osobną kontrolą dostępu do gry; pobranie pliku nie zatwierdza urządzenia.</p><p>Otwórz rejestrację, poproś testera o uruchomienie LAB, odszukaj jego kod i zatwierdź nowy osobny profil lub świadomie wybierz istniejący zapis.</p><p>Czas dostępu liczony jest od chwili zapisu. Ustawienie krótszego okresu może skrócić istniejący dostęp. Zmiana przypisania rozłącza instalację i zachowuje oba zapisy; nie kopiuje postępu. Inne instalacje tego profilu zachowują przypisanie.</p><p>Po błędzie sprawdź historię i odśwież stan przed kolejną zmianą. Zatwierdzenie instalacji nie potwierdza jeszcze wejścia testera do gry.</p><a href="#testers">Testerzy</a></details>
+              <details id="help-engine"><summary>Silnik: start, stop i restart</summary><ol><li>Otwórz Silnik i sprawdź świeżość odczytu, host, wersję oraz aktywne sesje. Proces działający bez gotowości jest pokazany oddzielnie.</li><li>Wybierz działanie i sprawdź jego zakres w potwierdzeniu. Stop oraz restart przerywają połączenia graczy. Start korzysta z aktualnie wybranej wersji; nie wdraża nowego pakietu.</li><li>Po zatwierdzeniu obserwuj operację aż do wyniku. Gotowość może wymagać do 3 minut, w tym oczekiwania na zwolnienie portów.</li><li>Po utracie odpowiedzi wybierz Sprawdź wynik. Panel szuka tego samego identyfikatora operacji i nie wysyła ponownie polecenia. Odśwież stan przed nową decyzją.</li></ol><p>Panel i jego historia operacji silnika działają w oddzielnej usłudze. Zatrzymanie gry pozostawia możliwość jej uruchomienia. Pozostałe zakładki wymagające API gry zgłaszają niedostępność. Mapy, brama HTTPS i pobieranie APK są osobnymi usługami; przyciski silnika ich nie restartują.</p><a href="#engine">Silnik</a></details>
+              <details id="help-map-source"><summary>Skąd pochodzą mapy</summary><p>Podkład powstaje z lokalnie przygotowanych danych OpenStreetMap. Adapter tworzy kafle zgodne z formatem klienta. Osobna usługa rozmieszczenia wybiera miejsca spotkań z tego samego indeksu. Projekt nie wymaga klucza Google Maps ani pobierania obrazów z publicznego serwera kafli OSM.</p><p>Pokrycie zależy od zaimportowanego obszaru. Poza nim nie ma gwarancji podkładu ani prawidłowych miejsc spotkań. Zmiana wag potworów nie rozszerza pokrycia. Import i indeksowanie nowego obszaru wymagają narzędzi serwerowych opisanych w dokumentacji repozytorium.</p><p>Dane map: © OpenStreetMap contributors, ODbL. Nazwa dostawcy w metadanych nie zastępuje widocznej atrybucji w interfejsie.</p><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Prawa do danych OpenStreetMap</a></details>
+              <details id="help-status"><summary>Stan serwera i katalog</summary><p>Pulpit pokazuje osobno proces gry i całą maszynę. CPU procesu 100% oznacza jeden rdzeń. Sprawdź czas próbki i okno uśredniania; odpowiedź API nie potwierdza działania wszystkich usług ani rozgrywki.</p><p>Katalog pokazuje dane używane przez serwer. Jest widokiem odczytu: nie służy do dowolnej edycji potworów, przedmiotów lub receptur. Sterowanie procesem gry znajduje się w osobnej sekcji Silnik.</p><div class="help-links"><a href="#overview">Stan serwera</a><a href="#catalogue">Katalog gry</a></div></details>
+            </div>
+          </section>
+          <section id="view-engine" class="view" hidden>
+            <div class="publication-note">Sterowanie działa niezależnie od procesu gry. Zatrzymanie silnika pozostawia ten panel dostępny.</div>
+            <article class="engine-overview"><p class="eyebrow">SILNIK GRY</p><h2 id="engine-state" aria-live="polite">Oczekiwanie na odczyt</h2><div id="engine-facts"></div>
+              <div class="actions"><button id="engine-start" disabled>Uruchom silnik</button><button id="engine-restart" class="secondary" disabled>Uruchom ponownie silnik</button><button id="engine-stop" class="text-danger" disabled>Zatrzymaj silnik</button></div>
+              <p class="hint">Start korzysta z aktualnie wybranej wersji. Restart nie wdraża nowego pakietu. Zatrzymanie i restart przerywają sesje graczy. Usługi map, pobierania APK i brama HTTPS pozostają osobnymi usługami.</p>
+              <p id="engine-error" class="error" role="alert" hidden></p>
+              <div id="engine-uncertain" class="validation-errors" hidden><p>Oczekiwanie na wynik polecenia. Panel sprawdza zapisany identyfikator operacji i nie wysyła ponownie polecenia.</p><div class="actions"><button id="engine-check" class="secondary">Sprawdź wynik</button><button id="engine-clear-unknown" class="secondary" hidden>Zamknij niepotwierdzone oczekiwanie</button></div></div>
+            </article>
+            <h2>Operacje silnika</h2><p class="hint">Przyjęcie polecenia nie oznacza gotowości gry. Wynik zawiera stan przed i po operacji. Limit oczekiwania: 3 minuty.</p><div id="engine-jobs" class="receipt-list"></div>
+          </section>
+          <section id="view-audit" class="view" hidden>
+            <div class="section-toolbar">
+              <p>Ostatnie 30 operacji wykonanych przez panel.</p>
+              <label
+                >Wynik<select id="audit-filter">
+                  <option value="all">Wszystkie</option>
+                  <option value="applied">Zapisane</option>
+                  <option value="staged">Przygotowane</option>
+                  <option value="refused">Odrzucone</option>
+                  <option value="failed">Błędy</option>
+                </select></label
+              >
+            </div>
+            <p class="hint">
+              Historia nie obejmuje ręcznych zmian plików. Brama uwierzytelnia
+              operatora; ten rejestr zapisuje działanie i jego cel.
+            </p>
+            <div id="receipts" class="receipt-list"></div>
+          </section>
+          <footer>
+            <span
+              >MONSTER SLAYER <span class="footer-divider">/</span> ATLAS
+              OPERATORA</span
+            ><span>Prywatny LAB · 1.1.116</span>
+          </footer>
+        </main>
+      </div>
+    </div>
+    <dialog id="engine-dialog" aria-labelledby="engine-dialog-title"><form id="engine-form"><p class="eyebrow">STEROWANIE SILNIKIEM</p><h2 id="engine-dialog-title" tabindex="-1"></h2><div id="engine-review"></div><p id="engine-effect" class="operation-warning"></p><label class="tester-check"><input type="checkbox" id="engine-reviewed" required />Sprawdziłem usługę, aktywne sesje i skutki polecenia.</label><p id="engine-dialog-error" class="error" role="alert" tabindex="-1" hidden></p><div class="actions"><button id="engine-submit" type="submit">Wykonaj polecenie</button><button id="engine-dialog-close" class="secondary" type="button">Anuluj</button></div></form></dialog>
+    <dialog id="tester-dialog" aria-labelledby="tester-dialog-title">
+      <form id="tester-form">
+        <p class="eyebrow">DOSTĘP DO LAB</p><h2 id="tester-dialog-title" tabindex="-1"></h2><p id="tester-target" class="target"></p>
+        <div id="tester-profile-fields"><label>Przypisanie<select id="tester-mode"><option value="new">Nowy osobny profil</option><option value="existing">Istniejący profil</option></select></label>
+          <label id="tester-existing-label" hidden>Wybierz profil<select id="tester-profile"></select></label></div>
+        <div id="tester-duration-fields" class="tester-duration"><label>Czas dostępu od teraz<input id="tester-duration" type="number" min="1" max="525600" value="30" required /></label><label>Jednostka<select id="tester-unit"><option value="86400">Dni</option><option value="3600">Godziny</option><option value="60">Minuty</option></select></label></div>
+        <div id="tester-preview" class="tester-preview" aria-live="polite"></div>
+        <label id="tester-typed-label" hidden>Wpisz kod wybranej instalacji<input id="tester-confirm-code" autocomplete="off" maxlength="9" /></label>
+        <label class="tester-check"><input type="checkbox" id="tester-reviewed" required />Sprawdziłem kod, profil i skutki zmiany.</label>
+        <p id="tester-error" class="error" role="alert" tabindex="-1" hidden></p>
+        <div class="actions"><button id="tester-submit" type="submit">Zapisz zmianę</button><button id="tester-dialog-close" type="button" class="secondary">Zamknij</button></div>
+      </form>
+    </dialog>
+    <dialog id="profile-dialog" aria-labelledby="dialog-title">
+      <form id="profile-form">
+        <button
+          type="button"
+          id="dialog-close"
+          class="dialog-close"
+          aria-label="Zamknij"
+        >
+          ×
+        </button>
+        <p class="eyebrow">ZMIANA ZAPISU · LAB</p>
+        <h2 id="dialog-title"></h2>
+        <p id="dialog-effect"></p>
+        <p class="target" id="dialog-target"></p>
+        <label id="source-label" hidden
+          >Profil źródłowy<select id="profile-source"></select></label
+        ><label id="clock-label" hidden
+          >Przesuń zegar fabuły o sekundy<input
+            id="clock-seconds"
+            type="number"
+            min="1"
+            max="2592000"
+            value="3600" /></label
+        ><label
+          >Wpisz identyfikator profilu docelowego<input
+            id="profile-confirm"
+            autocomplete="off"
+            required
+        /></label>
+        <p class="hint">
+          Przed zmianą powstaje prywatna kopia zapisu. Przypisania urządzeń i
+          kont pozostają bez zmian. LAB musi być zamknięty.
+        </p>
+        <div id="dialog-error" role="alert" hidden></div>
+        <div class="actions">
+          <button type="submit" id="profile-submit" class="danger">
+            Zapisz zmianę</button
+          ><button type="button" id="dialog-cancel" class="secondary">
+            Anuluj
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="conflict-dialog" aria-labelledby="conflict-title">
+      <div class="dialog-content">
+        <button
+          type="button"
+          id="conflict-close"
+          class="dialog-close"
+          aria-label="Zamknij"
+        >
+          ×
+        </button>
+        <p class="eyebrow">KONFLIKT WERSJI</p>
+        <h2 id="conflict-title">Porównaj przed ponownym zapisem</h2>
+        <p>
+          Twoja wersja robocza pozostaje w edytorze. Poniżej aktualny zapis
+          serwera; odświeżenie edytora wymaga osobnego potwierdzenia.
+        </p>
+        <pre id="conflict-content" class="code"></pre>
+        <div id="conflict-actions"></div>
+        <button type="button" id="conflict-done" class="secondary">
+          Wróć do mojej wersji
+        </button>
+      </div>
+    </dialog>
+    <dialog id="label-dialog" aria-labelledby="label-title">
+      <form id="label-form">
+        <h2 id="label-title">Etykieta operatora</h2>
+        <p id="label-target" class="hint"></p>
+        <label>Etykieta<input id="profile-label" maxlength="64" autocomplete="off" /></label>
+        <p class="hint">Do 64 znaków. Puste pole usuwa etykietę. Nazwa w grze, urządzenia i postęp pozostają bez zmian.</p>
+        <p id="label-result" role="status" class="inline-status" hidden></p>
+        <div class="dialog-actions"><button type="submit">Zapisz etykietę</button><button type="button" id="label-close" class="secondary">Zamknij</button></div>
+      </form>
+    </dialog>
+    <dialog id="detail-dialog" aria-labelledby="detail-title">
+      <button
+        type="button"
+        id="detail-close"
+        class="dialog-close"
+        aria-label="Zamknij"
+      >
+        ×
+      </button>
+      <p class="eyebrow">PODGLĄD ZAPISU · LAB</p>
+      <h2 id="detail-title"></h2>
+      <div id="detail-content"></div>
+      <button type="button" id="detail-done" class="secondary">
+        Zamknij podgląd
+      </button>
+    </dialog>
+  </body>
+</html>

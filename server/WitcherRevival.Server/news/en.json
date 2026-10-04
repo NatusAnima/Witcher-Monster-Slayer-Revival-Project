@@ -1,0 +1,14 @@
+{
+  "news_list": [
+    {
+      "id": 2026093001,
+      "group_id": "revival-news-preview-20260930",
+      "title": "Welcome to the Path!",
+      "short_description": "Messages from the server team will appear here.",
+      "date": "30/09/2026",
+      "image_url": "",
+      "content": "Welcome, Witcher!\nThis sample message is for testing the What's new tab.\nServer updates, events and maintenance announcements will appear here."
+    }
+  ],
+  "featured": 2026093001
+}

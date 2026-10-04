@@ -21,9 +21,12 @@ public static class ApiProtocol
     public static ApiRequest Parse(byte[] payload)
     {
         var b = new ByteBuffer(payload);
-        b.ReadByte();                          // API_VERSION
+        if (b.ReadByte() != ApiVersion) throw new InvalidDataException("Unsupported API envelope version.");
         byte msgType = b.ReadByte();
+        if (msgType != MsgRequest) throw new InvalidDataException("Only request envelopes are supported.");
         int rcvCount = b.ReadInt();
+        if (rcvCount < 0 || rcvCount > 4096 || (long)rcvCount * 8 + 12 > b.RemainingToRead)
+            throw new InvalidDataException("Invalid API acknowledgement count.");
         var received = new long[rcvCount];
         for (int i = 0; i < rcvCount; i++) received[i] = b.ReadLong();
         long id = b.ReadLong();

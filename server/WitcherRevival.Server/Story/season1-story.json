@@ -1,0 +1,5442 @@
+{
+ "source": "season1_story.py (graphs of s01_story_common_assets_all, overlay season1_quests.py)",
+ "quests": [
+  {
+   "id": 149,
+   "code": "s01mq01",
+   "name": "Good Money",
+   "journal": "assets/_bundledassets/story/journal/s01/s01mq01_scholar/log_s01mq01.asset",
+   "criteria": "f100>=4"
+  },
+  {
+   "id": 104,
+   "code": "s01mq04",
+   "name": "Evil Never Sleeps",
+   "journal": "assets/_bundledassets/story/journal/s01/s01mq04_cursed_one/log_s01mq04.asset",
+   "criteria": "f1001>=1"
+  },
+  {
+   "id": 148,
+   "code": "s01hq05",
+   "name": "To The Rescue",
+   "journal": "assets/_bundledassets/story/journal/s01/s01hq05_bandit_and_devourer/log_s01hq05.asset",
+   "criteria": "f1001>=1"
+  },
+  {
+   "id": 150,
+   "code": "s01mq02",
+   "name": "Pride Ain't Cheap",
+   "journal": "assets/_bundledassets/story/journal/s01/s01mq02_cure/log_s01mq02.asset",
+   "criteria": "f1001>=1"
+  },
+  {
+   "id": 159,
+   "code": "s01hq02",
+   "name": "What Lurks in the Nemeta",
+   "journal": "assets/_bundledassets/story/journal/s01/s01hq02_nests/log_s01hq02.asset",
+   "criteria": "f1003>=1"
+  },
+  {
+   "id": 147,
+   "code": "s01hq03",
+   "name": "The Dark Side Of The Full Moon",
+   "journal": "assets/_bundledassets/story/journal/s01/s01hq03_blacksmith/log_s01hq03.asset",
+   "criteria": "f1001>=1"
+  },
+  {
+   "id": 158,
+   "code": "s01hq01",
+   "name": "Sword in the Stone",
+   "journal": "assets/_bundledassets/story/journal/s01/s01hq01_sword_in_stone/log_s01hq01.asset",
+   "criteria": "f46>=1"
+  },
+  {
+   "id": 161,
+   "code": "s01hq06",
+   "name": "Monster Slayer",
+   "journal": "assets/_bundledassets/story/journal/s01/s01hq06_trolling/log_s01hq06.asset",
+   "criteria": "f1000>=1"
+  },
+  {
+   "id": 160,
+   "code": "s01hq04",
+   "name": "Will O' The Wisp",
+   "journal": "assets/_bundledassets/story/journal/s01/s01hq04_firefly/log_s01hq04.asset",
+   "criteria": "f1001>=1"
+  },
+  {
+   "id": 153,
+   "code": "s01mq05",
+   "name": "The Great Mushrooming",
+   "journal": "assets/_bundledassets/story/journal/s01/s01mq05_mushroom_hunt/log_s01mq05.asset",
+   "criteria": "f1001>=1"
+  },
+  {
+   "id": 152,
+   "code": "s01mq03",
+   "name": "The Sins Of Our Fathers",
+   "journal": "assets/_bundledassets/story/journal/s01/s01mq03_striga/log_s01mq03.asset",
+   "criteria": "f54>=4"
+  },
+  {
+   "id": 154,
+   "code": "s01mq06",
+   "name": "Intruder",
+   "journal": "assets/_bundledassets/story/journal/s01/s01mq06_frightener/log_s01mq06.asset",
+   "criteria": "f31>=5"
+  }
+ ],
+ "nodes": [
+  {
+   "id": 11491,
+   "quest": 149,
+   "key": "s01mq01_margit",
+   "graph": "s01/s01mq01_scholar/s01mq01_scholar_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq01/scholar_lq.asset",
+   "instance": 5124757846625354024,
+   "kind": "giver",
+   "root": "f53<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 297,
+   "quest": 149,
+   "key": "s01mq01_cocoon_1",
+   "graph": "s01/s01mq01_scholar/s01mq01_cocoon_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq01/endrega_cocoon_lq.asset",
+   "instance": 5124757812265615657,
+   "kind": "poi",
+   "root": "",
+   "show": "f53=1",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 11492,
+   "quest": 149,
+   "key": "s01mq01_cocoon_2",
+   "graph": "s01/s01mq01_scholar/s01mq01_cocoon_02",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq01/endrega_cocoon_lq.asset",
+   "instance": 5124757812265615659,
+   "kind": "poi",
+   "root": "",
+   "show": "f53=2",
+   "min": 40,
+   "max": 150,
+   "near": "s01mq01_cocoon_1",
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 11493,
+   "quest": 149,
+   "key": "s01mq01_margit_2",
+   "graph": "s01/s01mq01_scholar/s01mq01_scholar_02",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq01/scholar_lq.asset",
+   "instance": 5124760000000011493,
+   "kind": "poi",
+   "root": "",
+   "show": "f53=3",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq01_margit",
+   "copies": 1
+  },
+  {
+   "id": 16160,
+   "quest": 104,
+   "key": "s01mq04_bedwyr",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_cursedone_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/cursed_one_lq.asset",
+   "instance": -1535181733259528674,
+   "kind": "giver",
+   "root": "f72<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 16161,
+   "quest": 104,
+   "key": "s01mq04_nest",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_nest",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/arachnomorph_lq.asset",
+   "instance": 5124757846625354105,
+   "kind": "poi",
+   "root": "",
+   "show": "f72=1",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 16162,
+   "quest": 104,
+   "key": "s01mq04_bedwyr_curse",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_cursedone_02",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/cursed_one_lq.asset",
+   "instance": 5124757812265615444,
+   "kind": "poi",
+   "root": "",
+   "show": "f72=2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq04_bedwyr",
+   "copies": 1
+  },
+  {
+   "id": 16163,
+   "quest": 104,
+   "key": "s01mq04_hemlock",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_herb_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/water_hemlocks_lq.asset",
+   "instance": 5124757812265615576,
+   "kind": "poi",
+   "root": "",
+   "show": "f72=4 & f74<1",
+   "min": 200,
+   "max": 650,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 16164,
+   "quest": 104,
+   "key": "s01mq04_hound",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_leshen_hound_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s00/prolog/footprint_placeholder.asset",
+   "instance": 5495828128343280735,
+   "kind": "poi",
+   "root": "",
+   "show": "f72=4 & f73<1",
+   "min": 200,
+   "max": 650,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 16165,
+   "quest": 104,
+   "key": "s01mq04_campfire",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_licho_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/camp_fire_2_lq.asset",
+   "instance": 5124757949704568918,
+   "kind": "poi",
+   "root": "",
+   "show": "f72=5",
+   "min": 150,
+   "max": 500,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 16166,
+   "quest": 104,
+   "key": "s01mq04_bedwyr_end",
+   "graph": "s01/s01mq04_cursed_one/s01mq04_cursedone_03",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/cursed_one_cured_lq.asset",
+   "instance": 5124757743546138711,
+   "kind": "poi",
+   "root": "",
+   "show": "f72=6 & f75>=1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq04_bedwyr",
+   "copies": 1
+  },
+  {
+   "id": 16167,
+   "quest": 104,
+   "key": "s01mq04_journal",
+   "graph": "s01/quest_item_buttons/qi_journal",
+   "poi": "",
+   "instance": -7211234396400059245,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 218,
+   "quest": 104,
+   "key": "s01mq04_journal_craft",
+   "graph": "s01/quest_item_buttons/qi_journal_button",
+   "poi": "",
+   "instance": 5124760000000000218,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 222,
+   "quest": 104,
+   "key": "s01mq04_amulet",
+   "graph": "s01/quest_item_buttons/qi_amulet_button",
+   "poi": "",
+   "instance": 5124757743546138846,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 224,
+   "quest": 104,
+   "key": "s01mq04_amulet_1",
+   "graph": "s01/quest_item_buttons/qi_amulet_button_1",
+   "poi": "",
+   "instance": 5124760000000000224,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 223,
+   "quest": 104,
+   "key": "s01mq04_amulet_2",
+   "graph": "s01/quest_item_buttons/qi_amulet_button_2",
+   "poi": "",
+   "instance": 5124757949704569055,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 292,
+   "quest": 148,
+   "key": "s01hq05_kienan",
+   "graph": "s01/s01hq05_bandit_and_devourer/s01hq05_bandit",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq05/actor_lq.asset",
+   "instance": 5124757812265615652,
+   "kind": "giver",
+   "root": "f65<1 & f143<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 17920,
+   "quest": 148,
+   "key": "s01hq05_kienan_again",
+   "graph": "s01/s01hq05_bandit_and_devourer/s01hq05_bandit_again",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq05/actor_lq.asset",
+   "instance": 5124757812265615816,
+   "kind": "poi",
+   "root": "",
+   "show": "wait:s01hq05_kienan.no_help:1800 & f143<1 & !out:s01hq05_kienan_again.help & !out:s01hq05_kienan_again.end",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01hq05_kienan",
+   "copies": 1
+  },
+  {
+   "id": 293,
+   "quest": 148,
+   "key": "s01hq05_pit",
+   "graph": "s01/s01hq05_bandit_and_devourer/s01hq05_wife",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq05/bandit_wife_lq.asset",
+   "instance": 5124757812265615653,
+   "kind": "poi",
+   "root": "",
+   "show": "f143=1 & f121<1 | out:s01hq05_kienan_again.help & f121<1",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 294,
+   "quest": 148,
+   "key": "s01hq05_treasure",
+   "graph": "s01/s01hq05_bandit_and_devourer/s01hq05_treasure",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq05/treasure_placeholder.asset",
+   "instance": 5124757812265615654,
+   "kind": "poi",
+   "root": "",
+   "show": "f200=1",
+   "min": 200,
+   "max": 600,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 301,
+   "quest": 150,
+   "key": "s01mq02_witcher",
+   "graph": "s01/s01mq02_cure/s01mq02_witcher",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq02/young_vesemir_meditating_lq.asset",
+   "instance": 5124757777905877293,
+   "kind": "giver",
+   "root": "f54<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 302,
+   "quest": 150,
+   "key": "s01mq02_varik",
+   "graph": "s01/s01mq02_cure/s01mq02_medic_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq02/medic_lq.asset",
+   "instance": 5124757777905877294,
+   "kind": "poi",
+   "root": "",
+   "show": "f54=1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18000,
+   "quest": 150,
+   "key": "s01mq02_drowner",
+   "graph": "s01/s01mq02_cure/s01mq02_drowner",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq02/drowner_lq.asset",
+   "instance": 5124757812265615665,
+   "kind": "poi",
+   "root": "",
+   "show": "f54=2 & f29<1",
+   "min": 200,
+   "max": 650,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18001,
+   "quest": 150,
+   "key": "s01mq02_plant",
+   "graph": "s01/s01mq02_cure/s01mq02_plant",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq02/poisonous_plant.asset",
+   "instance": 5124758018424045874,
+   "kind": "poi",
+   "root": "",
+   "show": "f54=2 & f29=1",
+   "min": 200,
+   "max": 650,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18002,
+   "quest": 150,
+   "key": "s01mq02_varik_2",
+   "graph": "s01/s01mq02_cure/s01mq02_medic_02",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq02/medic_lq.asset",
+   "instance": 5124760595404423476,
+   "kind": "poi",
+   "root": "",
+   "show": "f54=2 & f29>=3",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq02_varik",
+   "copies": 1
+  },
+  {
+   "id": 18003,
+   "quest": 150,
+   "key": "s01mq02_vesemir",
+   "graph": "s01/s01mq02_cure/s01mq02_medic_03",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/youngvesemir_lq.asset",
+   "instance": 5124757743546138933,
+   "kind": "poi",
+   "root": "",
+   "show": "f54=3 & wait:s01mq02_varik_2.medic_02:1440",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq02_varik",
+   "copies": 1
+  },
+  {
+   "id": 304,
+   "quest": 150,
+   "key": "s01mq02_potion",
+   "graph": "s01/quest_item_buttons/qi_potion_button",
+   "poi": "",
+   "instance": 5124757846625354032,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18360,
+   "quest": 159,
+   "key": "s01hq02_nemeton",
+   "graph": "s01/s01hq02_nests/s01hq02_nest",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/nest_lq.asset",
+   "instance": 5124756678394249603,
+   "kind": "giver",
+   "root": "f47<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18361,
+   "quest": 159,
+   "key": "s01hq02_notebook",
+   "graph": "s01/quest_item_buttons/qi_notebook",
+   "poi": "",
+   "instance": 5124760000000018361,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18362,
+   "quest": 159,
+   "key": "s01hq02_notebook_button",
+   "graph": "s01/quest_item_buttons/qi_notebook_button",
+   "poi": "",
+   "instance": 5124760000000018362,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18363,
+   "quest": 159,
+   "key": "s01hq02_well",
+   "graph": "s01/s01hq02_nests/s01hq02_scholar",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq02/scholar_well.asset",
+   "instance": 5124757812265615748,
+   "kind": "poi",
+   "root": "",
+   "show": "f47=2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 289,
+   "quest": 147,
+   "key": "s01hq03_lothar",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_blacksmith",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/blacksmith_lq.asset",
+   "instance": 5124757812265615649,
+   "kind": "giver",
+   "root": "f119<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 17880,
+   "quest": 147,
+   "key": "s01hq03_forge",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_blacksmith",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/blacksmith_lq.asset",
+   "instance": 5124760000000017880,
+   "kind": "poi",
+   "root": "",
+   "show": "f119=0 & f141<2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01hq03_lothar",
+   "copies": 1
+  },
+  {
+   "id": 17881,
+   "quest": 147,
+   "key": "s01hq03_tracks",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_tracks",
+   "poi": "assets/_bundledassets/story/poi_settings/s00/prolog/footprint_placeholder.asset",
+   "instance": 5124760000000017881,
+   "kind": "poi",
+   "root": "",
+   "show": "f119=1",
+   "min": 200,
+   "max": 600,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 291,
+   "quest": 147,
+   "key": "s01hq03_werewolf",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_werewolf",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq03/werewolf_lq.asset",
+   "instance": 5124757812265615651,
+   "kind": "poi",
+   "root": "",
+   "show": "f119=2",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 464,
+   "quest": 147,
+   "key": "s01hq03_farewell",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_blacksmith_final",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/blacksmith_lq.asset",
+   "instance": 5124757777905877456,
+   "kind": "poi",
+   "root": "",
+   "show": "f141=4 & f119<3",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01hq03_lothar",
+   "copies": 1
+  },
+  {
+   "id": 381,
+   "quest": 147,
+   "key": "s01hq03_new_smith",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_new_smith",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/new_blacksmith_lq.asset",
+   "instance": 5124757777905877373,
+   "kind": "poi",
+   "root": "",
+   "show": "f141=2 & f64<1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01hq03_lothar",
+   "copies": 1
+  },
+  {
+   "id": 399,
+   "quest": 158,
+   "key": "s01hq01_map",
+   "graph": "s01/s01hq01_sword_in_stone/s01hq01_map",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124757777905877391,
+   "kind": "queued",
+   "root": "",
+   "show": "f46=1 & !started:158 & !done:158",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 400,
+   "quest": 158,
+   "key": "s01hq01_map_button",
+   "graph": "s01/quest_item_buttons/qi_map_button",
+   "poi": "",
+   "instance": 5124760000000000400,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 385,
+   "quest": 158,
+   "key": "s01hq01_stone",
+   "graph": "s01/s01hq01_sword_in_stone/s01hq01_sword_in_stone",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq01/quest_golem_alt.asset",
+   "instance": 5124758018424045953,
+   "kind": "poi",
+   "root": "",
+   "show": "f46=2",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 395,
+   "quest": 161,
+   "key": "s01hq06_troll",
+   "graph": "s01/s01hq06_trolling/s01hq06_conversation",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq06/troll_corpse_lq.asset",
+   "instance": 5124757777905877387,
+   "kind": "giver",
+   "root": "f144<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 396,
+   "quest": 161,
+   "key": "s01hq06_cave",
+   "graph": "s01/s01hq06_trolling/s01hq06_investigation",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq06/troll_corpse_lq.asset",
+   "instance": 5124757812265615756,
+   "kind": "poi",
+   "root": "",
+   "show": "f144=1 & !out:s01hq06_cave.fleder",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18440,
+   "quest": 161,
+   "key": "s01hq06_fleder",
+   "graph": "s01/s01hq06_trolling/s01hq06_fleder",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq06/fleder_lq.asset",
+   "instance": 5124760629764161934,
+   "kind": "poi",
+   "root": "",
+   "show": "out:s01hq06_cave.fleder & f144<5",
+   "min": 200,
+   "max": 650,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 390,
+   "quest": 160,
+   "key": "s01hq04_nemeton",
+   "graph": "s01/s01hq04_firefly/s01hq04_firefly",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq04/firefly_nest_lq.asset",
+   "instance": 5124757812265615750,
+   "kind": "giver",
+   "root": "f120<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 446,
+   "quest": 160,
+   "key": "s01hq04_stump",
+   "graph": "s01/s01hq04_firefly/s01hq04_stump",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq04/firefly_stump_lq.asset",
+   "instance": 5124757812265615806,
+   "kind": "poi",
+   "root": "",
+   "show": "f120=1 & !out:s01hq04_stump.stump",
+   "min": 150,
+   "max": 400,
+   "near": "s01hq04_nemeton",
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 393,
+   "quest": 160,
+   "key": "s01hq04_plant",
+   "graph": "s01/s01hq04_firefly/s01hq04_catch",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq04/firefly_plant_lq.asset",
+   "instance": 5124757812265615753,
+   "kind": "poi",
+   "root": "",
+   "show": "out:s01hq04_stump.stump & !out:s01hq04_plant.catch",
+   "min": 150,
+   "max": 400,
+   "near": "s01hq04_stump",
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 394,
+   "quest": 160,
+   "key": "s01hq04_treasure",
+   "graph": "s01/s01hq04_firefly/s01hq04_treasure",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/hq04/firefly_treasure_lq.asset",
+   "instance": 5124757812265615754,
+   "kind": "poi",
+   "root": "",
+   "show": "out:s01hq04_plant.catch",
+   "min": 150,
+   "max": 400,
+   "near": "s01hq04_plant",
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18120,
+   "quest": 153,
+   "key": "s01mq05_madman",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_madman",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/mad_lad_lq.asset",
+   "instance": -9066522481681465465,
+   "kind": "giver",
+   "root": "f56<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18121,
+   "quest": 153,
+   "key": "s01mq05_chest",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_treasure",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/mad_lad_treasure_lq.asset",
+   "instance": 5124760000000018121,
+   "kind": "poi",
+   "root": "",
+   "show": "f56=1",
+   "min": 200,
+   "max": 600,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 321,
+   "quest": 153,
+   "key": "s01mq05_vogt",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_vogt",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/vogt_lq.asset",
+   "instance": 5124757812265615681,
+   "kind": "poi",
+   "root": "",
+   "show": "f56=2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 331,
+   "quest": 153,
+   "key": "s01mq05_mushroom",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_mushroom",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/mushroom_lq.asset",
+   "instance": 5124733107613729099,
+   "kind": "poi",
+   "root": "",
+   "show": "f56=3 & !wait:s01mq05_vogt.vogt:1440",
+   "min": 60,
+   "max": 450,
+   "near": null,
+   "placeOf": null,
+   "copies": 5
+  },
+  {
+   "id": 327,
+   "quest": 153,
+   "key": "s01mq05_champion",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_champion",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124757640466923847,
+   "kind": "queued",
+   "root": "",
+   "show": "f56=3 & f153<1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 325,
+   "quest": 153,
+   "key": "s01mq05_corpse",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_corpse",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": -233535061437048840,
+   "kind": "queued",
+   "root": "",
+   "show": "f56=3 & !out:s01mq05_corpse.corpse & !out:s01mq05_corpse.no_nest",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 324,
+   "quest": 153,
+   "key": "s01mq05_monster_corpse",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_monster_corpse",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124760000000000324,
+   "kind": "queued",
+   "root": "",
+   "show": "f56=3 & f58<1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 326,
+   "quest": 153,
+   "key": "s01mq05_dehael",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_dehael",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124757296869540164,
+   "kind": "queued",
+   "root": "",
+   "show": "f56=3 & !out:s01mq05_dehael.dehael & !out:s01mq05_dehael.no_reward",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 495,
+   "quest": 153,
+   "key": "s01mq05_enough",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_enough",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124760000000000495,
+   "kind": "queued",
+   "root": "",
+   "show": "f56=3",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 330,
+   "quest": 153,
+   "key": "s01mq05_nest",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_nest",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/nest_lq.asset",
+   "instance": 5124733141973467466,
+   "kind": "poi",
+   "root": "",
+   "show": "out:s01mq05_corpse.corpse & f8<3",
+   "min": 200,
+   "max": 600,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18122,
+   "quest": 153,
+   "key": "s01mq05_leshen",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_leshen",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/leshen_lq.asset",
+   "instance": 5124757812265615688,
+   "kind": "poi",
+   "root": "",
+   "show": "f58=1 & f9<4",
+   "min": 200,
+   "max": 600,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 347,
+   "quest": 153,
+   "key": "s01mq05_final",
+   "graph": "s01/s01mq05_mushroom_hunt/s01mq05_final",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/vogt_lq.asset",
+   "instance": 5124757812265615707,
+   "kind": "poi",
+   "root": "",
+   "show": "f56=3 & wait:s01mq05_vogt.vogt:1440",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq05_vogt",
+   "copies": 1
+  },
+  {
+   "id": 18080,
+   "quest": 152,
+   "key": "s01mq03_vesemir",
+   "graph": "s01/s01mq03_striga/s01mq03_vesemir",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/youngvesemir_lq.asset",
+   "instance": 5124757846625354038,
+   "kind": "giver",
+   "root": "f55<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18081,
+   "quest": 152,
+   "key": "s01mq03_instruction",
+   "graph": "s01/s01mq03_striga/s01mq03_instruction",
+   "poi": "",
+   "instance": 5124760000000018081,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 311,
+   "quest": 152,
+   "key": "s01mq03_hermit",
+   "graph": "s01/s01mq03_striga/s01mq03_hermit",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq04/hermit_lq.asset",
+   "instance": 5124756128638435639,
+   "kind": "poi",
+   "root": "",
+   "show": "f55>=1 & f147<1",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18082,
+   "quest": 152,
+   "key": "s01mq03_tracks",
+   "graph": "s01/s01mq03_striga/s01mq03_tracks",
+   "poi": "assets/_bundledassets/story/poi_settings/s00/prolog/footprint_placeholder.asset",
+   "instance": 5124760000000018082,
+   "kind": "poi",
+   "root": "",
+   "show": "f147=1 & f129<2",
+   "min": 200,
+   "max": 600,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18083,
+   "quest": 152,
+   "key": "s01mq03_vodnik",
+   "graph": "s01/s01mq03_striga/s01mq03_vodnik",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/vodnik_lq.asset",
+   "instance": 5124757846625354043,
+   "kind": "poi",
+   "root": "",
+   "show": "f129=2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18084,
+   "quest": 152,
+   "key": "s01mq03_thorstein",
+   "graph": "s01/s01mq03_striga/s01mq03_thorstein",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/thorstein_lq.asset",
+   "instance": 5124757846625354044,
+   "kind": "poi",
+   "root": "",
+   "show": "f129=3 & f26<1",
+   "min": 150,
+   "max": 500,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18085,
+   "quest": 152,
+   "key": "s01mq03_lure",
+   "graph": "s01/s01mq03_striga/s01mq03_lure",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/tombstone_lq.asset",
+   "instance": 5124757846625354102,
+   "kind": "poi",
+   "root": "",
+   "show": "f26>=1 & f127<1 & f147<2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 313,
+   "quest": 152,
+   "key": "s01mq03_lair",
+   "graph": "s01/s01mq03_striga/s01mq03_striga",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/striga_lair_lq.asset",
+   "instance": 5124755716321575225,
+   "kind": "poi",
+   "root": "",
+   "show": "f127=1 & f147<2",
+   "min": 40,
+   "max": 200,
+   "near": "s01mq03_lure",
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18086,
+   "quest": 152,
+   "key": "s01mq03_armor",
+   "graph": "s01/s01mq03_striga/s01mq03_armor",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/armor_chest_lq.asset",
+   "instance": 5124760000000018086,
+   "kind": "poi",
+   "root": "",
+   "show": "f55>=5 & f179<1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq03_lair",
+   "copies": 1
+  },
+  {
+   "id": 18160,
+   "quest": 154,
+   "key": "s01mq06_dehael",
+   "graph": "s01/s01mq06_frightener/s01mq06_start",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq06/dehael_lq.asset",
+   "instance": 5124760000000018160,
+   "kind": "giver",
+   "root": "f57<1 & f162<1",
+   "show": "",
+   "min": 80,
+   "max": 300,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 403,
+   "quest": 154,
+   "key": "s01mq06_dehael_queued",
+   "graph": "s01/s01mq06_frightener/s01mq06_start",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq06/dehael_lq.asset",
+   "instance": 5124760000000000403,
+   "kind": "queued",
+   "root": "",
+   "show": "f31>=5 & !started:154 & !done:154",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18161,
+   "quest": 154,
+   "key": "s01mq06_vogt",
+   "graph": "s01/s01mq06_frightener/s01mq06_vogt_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/vogt_lq.asset",
+   "instance": 5124757777905877340,
+   "kind": "poi",
+   "root": "",
+   "show": "f57<1 & f162<1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18162,
+   "quest": 154,
+   "key": "s01mq06_massacre",
+   "graph": "s01/s01mq06_frightener/s01mq06_massacre_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq06/mans_corpse_1.asset",
+   "instance": 5124757777905877342,
+   "kind": "poi",
+   "root": "",
+   "show": "f57=1 | f162=1",
+   "min": 300,
+   "max": 800,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18163,
+   "quest": 154,
+   "key": "s01mq06_frightener",
+   "graph": "s01/s01mq06_frightener/s01mq06_frightener_01",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq06/frightener_lair_lq.asset",
+   "instance": 5124756162998174047,
+   "kind": "poi",
+   "root": "",
+   "show": "f57=2 & f59<1 | f162=2 & f59<1",
+   "min": 100,
+   "max": 400,
+   "near": "s01mq06_massacre",
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18164,
+   "quest": 154,
+   "key": "s01mq06_vesemir",
+   "graph": "s01/s01mq06_frightener/s01mq06_vesemir",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq03/youngvesemir_lq.asset",
+   "instance": 5124757056351371617,
+   "kind": "poi",
+   "root": "",
+   "show": "f57=2 & f59>=1 | f162=2 & f59>=1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18165,
+   "quest": 154,
+   "key": "s01mq06_archespore",
+   "graph": "s01/s01mq06_frightener/s01mq06_archespore",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq06/archespore_lq.asset",
+   "instance": 5124757777905877346,
+   "kind": "poi",
+   "root": "",
+   "show": "f57=4 & f27=1 | f162=4 & f27=1",
+   "min": 200,
+   "max": 650,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 357,
+   "quest": 154,
+   "key": "s01mq06_solvent",
+   "graph": "s01/quest_item_buttons/qi_solvent_button",
+   "poi": "",
+   "instance": 5124756128638435685,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 358,
+   "quest": 154,
+   "key": "s01mq06_poison",
+   "graph": "s01/quest_item_buttons/qi_poison_button",
+   "poi": "",
+   "instance": 5124760000000000358,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 478,
+   "quest": 154,
+   "key": "s01mq06_poison_01",
+   "graph": "s01/quest_item_buttons/qi_poison_01_button",
+   "poi": "",
+   "instance": 5124756162998174174,
+   "kind": "button",
+   "root": "",
+   "show": "",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 361,
+   "quest": 154,
+   "key": "s01mq06_lair",
+   "graph": "s01/s01mq06_frightener/s01mq06_frightener_02",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq06/frightener_lair_lq.asset",
+   "instance": 5124757812265615721,
+   "kind": "poi",
+   "root": "",
+   "show": "f57=5 & f61<2 | f162=5 & f61<2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq06_frightener",
+   "copies": 1
+  },
+  {
+   "id": 18166,
+   "quest": 154,
+   "key": "s01mq06_thorstein",
+   "graph": "s01/s01mq06_frightener/s01mq06_thorstein",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/thorstein_lq.asset",
+   "instance": 5124756128638435780,
+   "kind": "poi",
+   "root": "",
+   "show": "f61>=2 & f124<1",
+   "min": 150,
+   "max": 500,
+   "near": null,
+   "placeOf": null,
+   "copies": 1
+  },
+  {
+   "id": 18167,
+   "quest": 154,
+   "key": "s01mq06_vogt_end",
+   "graph": "s01/s01mq06_frightener/s01mq06_vogt_02",
+   "poi": "assets/_bundledassets/story/poi_settings/s01/mq05/vogt_lq.asset",
+   "instance": 5124760000000018167,
+   "kind": "poi",
+   "root": "",
+   "show": "f61>=2 & f124>=1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01mq06_vogt",
+   "copies": 1
+  }
+ ],
+ "outputs": [
+  {
+   "id": 1001,
+   "node": 11491,
+   "name": "scholar_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 60,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1002,
+   "node": 11491,
+   "name": "CT_first_cocoon",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1003,
+   "node": 11491,
+   "name": "CT_second_cocoon",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1004,
+   "node": 11491,
+   "name": "CT_final_scholar",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1005,
+   "node": 297,
+   "name": "dehael",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1006,
+   "node": 297,
+   "name": "two_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1007,
+   "node": 297,
+   "name": "one_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1008,
+   "node": 297,
+   "name": "endriagaworker_01",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "14": 1
+   }
+  },
+  {
+   "id": 1009,
+   "node": 297,
+   "name": "endriagaworker_02",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "14": 1
+   }
+  },
+  {
+   "id": 1010,
+   "node": 11492,
+   "name": "embrions",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1011,
+   "node": 11492,
+   "name": "one_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1012,
+   "node": 11492,
+   "name": "endriagatailed",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "15": 1
+   }
+  },
+  {
+   "id": 1013,
+   "node": 11492,
+   "name": "two_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1014,
+   "node": 11492,
+   "name": "endriagaworker",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "14": 1
+   }
+  },
+  {
+   "id": 1015,
+   "node": 11493,
+   "name": "scholar_02",
+   "endpoint": true,
+   "exp": 1200,
+   "gold": 40,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1016,
+   "node": 16160,
+   "name": "start",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1017,
+   "node": 16160,
+   "name": "CT_arachno",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1018,
+   "node": 16160,
+   "name": "CT_captain",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1019,
+   "node": 16160,
+   "name": "CT_cursed",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1020,
+   "node": 16160,
+   "name": "CT_reading_notes",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1021,
+   "node": 16160,
+   "name": "CT_ingredients",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1022,
+   "node": 16160,
+   "name": "CT_dehael",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1023,
+   "node": 16160,
+   "name": "CT_licho_fight",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1024,
+   "node": 16160,
+   "name": "CT_amulet_throw",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1025,
+   "node": 16160,
+   "name": "CT_bedwyr_final",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1026,
+   "node": 16161,
+   "name": "nest",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1027,
+   "node": 16161,
+   "name": "two_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1028,
+   "node": 16161,
+   "name": "one_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1029,
+   "node": 16161,
+   "name": "arachnomorph_01",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "19": 1
+   }
+  },
+  {
+   "id": 1030,
+   "node": 16161,
+   "name": "arachnomorph_02",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "19": 1
+   }
+  },
+  {
+   "id": 1031,
+   "node": 16162,
+   "name": "curse_start",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1032,
+   "node": 16162,
+   "name": "punch",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1033,
+   "node": 16163,
+   "name": "herb",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1034,
+   "node": 16164,
+   "name": "hound_killed",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "30": 1
+   }
+  },
+  {
+   "id": 1035,
+   "node": 16164,
+   "name": "hound_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1036,
+   "node": 16165,
+   "name": "licho_killed",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "32": 1
+   }
+  },
+  {
+   "id": 1037,
+   "node": 16165,
+   "name": "licho_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1038,
+   "node": 16166,
+   "name": "no_reward",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1039,
+   "node": 16166,
+   "name": "final",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 35,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1040,
+   "node": 16167,
+   "name": "read",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1041,
+   "node": 218,
+   "name": "journal",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 50,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1042,
+   "node": 222,
+   "name": "amulet",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1043,
+   "node": 223,
+   "name": "amulet",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1044,
+   "node": 223,
+   "name": "amulet_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1045,
+   "node": 292,
+   "name": "no_help",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1046,
+   "node": 292,
+   "name": "help",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1047,
+   "node": 292,
+   "name": "CT_trap",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1048,
+   "node": 292,
+   "name": "CT_chest",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1049,
+   "node": 292,
+   "name": "CT_first_refusal",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1050,
+   "node": 292,
+   "name": "CT_help_again",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1051,
+   "node": 17920,
+   "name": "help",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1052,
+   "node": 17920,
+   "name": "end",
+   "endpoint": true,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1053,
+   "node": 293,
+   "name": "actor_free",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 45,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1054,
+   "node": 293,
+   "name": "actor_escape",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 45,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1055,
+   "node": 293,
+   "name": "actor_dead",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 45,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1056,
+   "node": 293,
+   "name": "actor_bribe",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1057,
+   "node": 293,
+   "name": "devourer_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1058,
+   "node": 293,
+   "name": "devourer",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "10": 1
+   }
+  },
+  {
+   "id": 1059,
+   "node": 293,
+   "name": "devourer_again",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1060,
+   "node": 294,
+   "name": "treasure",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 45,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1061,
+   "node": 301,
+   "name": "witcher",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1062,
+   "node": 301,
+   "name": "CT_medic_talk_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1063,
+   "node": 301,
+   "name": "CT_drowner_fight",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1064,
+   "node": 301,
+   "name": "CT_drinking",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1065,
+   "node": 301,
+   "name": "CT_scolo_fight",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1066,
+   "node": 301,
+   "name": "CT_drinking_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1067,
+   "node": 301,
+   "name": "CT_all_ingredients",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1068,
+   "node": 301,
+   "name": "CT_waiting",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1069,
+   "node": 301,
+   "name": "CT_vesemir_talk",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1070,
+   "node": 302,
+   "name": "medic_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1071,
+   "node": 18000,
+   "name": "drowner",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "3": 1
+   }
+  },
+  {
+   "id": 1072,
+   "node": 18000,
+   "name": "drowner_lost",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1073,
+   "node": 18001,
+   "name": "scolo_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1074,
+   "node": 18001,
+   "name": "scolo_dead",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1075,
+   "node": 18001,
+   "name": "scolo_again",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "34": 1
+   }
+  },
+  {
+   "id": 1076,
+   "node": 18002,
+   "name": "medic_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1077,
+   "node": 18002,
+   "name": "resuply",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1078,
+   "node": 18003,
+   "name": "vesemir",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 0,
+   "items": {
+    "potions": {
+     "205": 2
+    },
+    "oils": {
+     "307": 1
+    }
+   },
+   "kills": {}
+  },
+  {
+   "id": 1079,
+   "node": 304,
+   "name": "potion",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1080,
+   "node": 18360,
+   "name": "nest",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1081,
+   "node": 18360,
+   "name": "CT_well",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1082,
+   "node": 18361,
+   "name": "notebook",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1083,
+   "node": 18362,
+   "name": "notebook",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1084,
+   "node": 18363,
+   "name": "scholar",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 100,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1085,
+   "node": 289,
+   "name": "full_moon_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1086,
+   "node": 289,
+   "name": "full_moon_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1087,
+   "node": 289,
+   "name": "full_moon_03",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1088,
+   "node": 289,
+   "name": "full_moon_04",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1089,
+   "node": 289,
+   "name": "blacksmith_alarmed",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1090,
+   "node": 289,
+   "name": "CT_hunt",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1091,
+   "node": 289,
+   "name": "CT_lost",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1092,
+   "node": 289,
+   "name": "CT_lothar",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1093,
+   "node": 289,
+   "name": "CT_conway",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1094,
+   "node": 289,
+   "name": "CT_alarmed",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1095,
+   "node": 289,
+   "name": "CT_second_inv",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1096,
+   "node": 289,
+   "name": "CT_lothar_escape",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1097,
+   "node": 17880,
+   "name": "full_moon_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1098,
+   "node": 17880,
+   "name": "full_moon_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1099,
+   "node": 17880,
+   "name": "full_moon_03",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1100,
+   "node": 17880,
+   "name": "full_moon_04",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1101,
+   "node": 17880,
+   "name": "blacksmith_alarmed",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1102,
+   "node": 17880,
+   "name": "CT_hunt",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1103,
+   "node": 17880,
+   "name": "CT_lost",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1104,
+   "node": 17880,
+   "name": "CT_lothar",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1105,
+   "node": 17880,
+   "name": "CT_conway",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1106,
+   "node": 17880,
+   "name": "CT_alarmed",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1107,
+   "node": 17880,
+   "name": "CT_second_inv",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1108,
+   "node": 17880,
+   "name": "CT_lothar_escape",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1109,
+   "node": 17881,
+   "name": "tracks",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1110,
+   "node": 291,
+   "name": "werewolf_friend",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1111,
+   "node": 291,
+   "name": "werewolf_dead",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "6": 1
+   }
+  },
+  {
+   "id": 1112,
+   "node": 291,
+   "name": "werewolf_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1113,
+   "node": 291,
+   "name": "too_late",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1114,
+   "node": 464,
+   "name": "blacksmith",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1115,
+   "node": 464,
+   "name": "blacksmith_map",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1116,
+   "node": 381,
+   "name": "new_blacksmith",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1117,
+   "node": 399,
+   "name": "map",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1118,
+   "node": 399,
+   "name": "map_bought",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1119,
+   "node": 399,
+   "name": "CT_stone",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1120,
+   "node": 400,
+   "name": "map_button",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1121,
+   "node": 385,
+   "name": "dusk",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1122,
+   "node": 385,
+   "name": "sword",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 0,
+   "items": {
+    "swords": {
+     "17": 1
+    }
+   },
+   "kills": {}
+  },
+  {
+   "id": 1123,
+   "node": 385,
+   "name": "golem_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1124,
+   "node": 385,
+   "name": "inscription",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1125,
+   "node": 385,
+   "name": "dawn",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1126,
+   "node": 385,
+   "name": "golem_again",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "28": 1
+   }
+  },
+  {
+   "id": 1127,
+   "node": 385,
+   "name": "golem",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "28": 1
+   }
+  },
+  {
+   "id": 1128,
+   "node": 395,
+   "name": "won",
+   "endpoint": true,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "22": 1
+   }
+  },
+  {
+   "id": 1129,
+   "node": 395,
+   "name": "lost",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1130,
+   "node": 395,
+   "name": "help",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1131,
+   "node": 395,
+   "name": "refuse",
+   "endpoint": true,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1132,
+   "node": 395,
+   "name": "CT_corpse",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1133,
+   "node": 395,
+   "name": "CT_shaman",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1134,
+   "node": 395,
+   "name": "CT_attack",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1135,
+   "node": 396,
+   "name": "lost",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1136,
+   "node": 396,
+   "name": "won",
+   "endpoint": true,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "22": 1
+   }
+  },
+  {
+   "id": 1137,
+   "node": 396,
+   "name": "fleder",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1138,
+   "node": 18440,
+   "name": "won",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 100,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1139,
+   "node": 18440,
+   "name": "lost",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1140,
+   "node": 18440,
+   "name": "grey_rocks",
+   "endpoint": true,
+   "exp": 350,
+   "gold": 100,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1141,
+   "node": 18440,
+   "name": "nekker_shaman",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "33": 1
+   }
+  },
+  {
+   "id": 1142,
+   "node": 390,
+   "name": "firefly",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 100,
+   "items": {},
+   "kills": {
+    "24": 1
+   }
+  },
+  {
+   "id": 1143,
+   "node": 390,
+   "name": "CT_stump",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1144,
+   "node": 390,
+   "name": "CT_flower",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1145,
+   "node": 390,
+   "name": "CT_chest",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1146,
+   "node": 446,
+   "name": "stump",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1147,
+   "node": 393,
+   "name": "catch",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1148,
+   "node": 394,
+   "name": "treasure",
+   "endpoint": true,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1149,
+   "node": 18120,
+   "name": "madlad",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1150,
+   "node": 18120,
+   "name": "CT_vogt",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1151,
+   "node": 18120,
+   "name": "CT_champ",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1152,
+   "node": 18120,
+   "name": "CT_cyclop",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1153,
+   "node": 18120,
+   "name": "CT_dehael",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1154,
+   "node": 18120,
+   "name": "CT_hand",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1155,
+   "node": 18120,
+   "name": "CT_finale",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1156,
+   "node": 18121,
+   "name": "treasure",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 50,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1157,
+   "node": 321,
+   "name": "vogt",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1158,
+   "node": 327,
+   "name": "champion",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1159,
+   "node": 327,
+   "name": "one_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1160,
+   "node": 327,
+   "name": "two_left",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1161,
+   "node": 327,
+   "name": "basket",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1162,
+   "node": 327,
+   "name": "nekker_01",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "4": 1
+   }
+  },
+  {
+   "id": 1163,
+   "node": 327,
+   "name": "nekker_02",
+   "endpoint": false,
+   "exp": 100,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "4": 1
+   }
+  },
+  {
+   "id": 1164,
+   "node": 327,
+   "name": "nekkers",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1165,
+   "node": 327,
+   "name": "nekker_01_again",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1166,
+   "node": 327,
+   "name": "nekker_02_again",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1167,
+   "node": 325,
+   "name": "corpse",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1168,
+   "node": 325,
+   "name": "no_nest",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1169,
+   "node": 324,
+   "name": "monster_corpse",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1170,
+   "node": 326,
+   "name": "dehael",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1171,
+   "node": 326,
+   "name": "no_reward",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1172,
+   "node": 495,
+   "name": "enough",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1173,
+   "node": 330,
+   "name": "nest",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1174,
+   "node": 330,
+   "name": "cockatrice",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "7": 1
+   }
+  },
+  {
+   "id": 1175,
+   "node": 330,
+   "name": "forktail",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "7": 1
+   }
+  },
+  {
+   "id": 1176,
+   "node": 18122,
+   "name": "leshen",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "31": 1
+   }
+  },
+  {
+   "id": 1177,
+   "node": 18122,
+   "name": "leshen_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1178,
+   "node": 347,
+   "name": "fiend_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1179,
+   "node": 347,
+   "name": "first_place",
+   "endpoint": true,
+   "exp": 750,
+   "gold": 120,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1180,
+   "node": 347,
+   "name": "second_place",
+   "endpoint": true,
+   "exp": 750,
+   "gold": 120,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1181,
+   "node": 347,
+   "name": "third_place",
+   "endpoint": true,
+   "exp": 750,
+   "gold": 120,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1182,
+   "node": 347,
+   "name": "peleton",
+   "endpoint": true,
+   "exp": 750,
+   "gold": 120,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1183,
+   "node": 347,
+   "name": "last_place",
+   "endpoint": true,
+   "exp": 750,
+   "gold": 120,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1184,
+   "node": 347,
+   "name": "fiend",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "21": 1
+   }
+  },
+  {
+   "id": 1185,
+   "node": 347,
+   "name": "fiend_again",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1186,
+   "node": 18080,
+   "name": "vesemir",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1187,
+   "node": 18080,
+   "name": "CT_hermit",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1188,
+   "node": 18080,
+   "name": "CT_tracking",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1189,
+   "node": 18080,
+   "name": "CT_vodnik",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1190,
+   "node": 18080,
+   "name": "CT_thorstein",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1191,
+   "node": 18080,
+   "name": "CT_lure",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1192,
+   "node": 18080,
+   "name": "CT_ritual",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1193,
+   "node": 18081,
+   "name": "instruction",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1194,
+   "node": 311,
+   "name": "hermit",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1195,
+   "node": 311,
+   "name": "arachas",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "18": 1
+   }
+  },
+  {
+   "id": 1196,
+   "node": 311,
+   "name": "arachas_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1197,
+   "node": 18082,
+   "name": "tracks",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1198,
+   "node": 18083,
+   "name": "vodnik",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "36": 1
+   }
+  },
+  {
+   "id": 1199,
+   "node": 18083,
+   "name": "skip_shop",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1200,
+   "node": 18083,
+   "name": "vodnik_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1201,
+   "node": 18084,
+   "name": "thorstein",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1202,
+   "node": 18085,
+   "name": "lure",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1203,
+   "node": 313,
+   "name": "striga_killed_knew",
+   "endpoint": true,
+   "exp": 750,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1204,
+   "node": 313,
+   "name": "candle_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1205,
+   "node": 313,
+   "name": "striga_killed",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1206,
+   "node": 313,
+   "name": "hermit_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1207,
+   "node": 313,
+   "name": "curse_lifted_knew",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1208,
+   "node": 313,
+   "name": "curse_lifted",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1209,
+   "node": 313,
+   "name": "candle_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1210,
+   "node": 313,
+   "name": "candle_03",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1211,
+   "node": 313,
+   "name": "candle_burns",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1212,
+   "node": 313,
+   "name": "striga_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1213,
+   "node": 313,
+   "name": "striga_albino",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "35": 1
+   }
+  },
+  {
+   "id": 1214,
+   "node": 18086,
+   "name": "armor",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 0,
+   "items": {
+    "armors": {
+     "8": 1
+    }
+   },
+   "kills": {}
+  },
+  {
+   "id": 1215,
+   "node": 18160,
+   "name": "start",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1216,
+   "node": 18160,
+   "name": "mushroom_timer_start",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1217,
+   "node": 18160,
+   "name": "CT_massacre_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1218,
+   "node": 18160,
+   "name": "CT_first_fight",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1219,
+   "node": 18160,
+   "name": "CT_vesemir",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1220,
+   "node": 18160,
+   "name": "CT_archespore",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1221,
+   "node": 18160,
+   "name": "CT_solvent",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1222,
+   "node": 18160,
+   "name": "CT_poison_hidden",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1223,
+   "node": 18160,
+   "name": "CT_poison",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1224,
+   "node": 18160,
+   "name": "CT_frightener_hidden",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1225,
+   "node": 18160,
+   "name": "CT_frightener_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1226,
+   "node": 18160,
+   "name": "CT_poison_no_timer",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1227,
+   "node": 18160,
+   "name": "CT_lair",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1228,
+   "node": 18160,
+   "name": "CT_massacre_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1229,
+   "node": 18160,
+   "name": "CT_dhl_talk",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1230,
+   "node": 18160,
+   "name": "CT_dhl_dead",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1231,
+   "node": 18160,
+   "name": "CT_frightener_03",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1232,
+   "node": 18160,
+   "name": "CT_vogt_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1233,
+   "node": 403,
+   "name": "start",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1234,
+   "node": 403,
+   "name": "mushroom_timer_start",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1235,
+   "node": 403,
+   "name": "CT_massacre_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1236,
+   "node": 403,
+   "name": "CT_first_fight",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1237,
+   "node": 403,
+   "name": "CT_vesemir",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1238,
+   "node": 403,
+   "name": "CT_archespore",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1239,
+   "node": 403,
+   "name": "CT_solvent",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1240,
+   "node": 403,
+   "name": "CT_poison_hidden",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1241,
+   "node": 403,
+   "name": "CT_poison",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1242,
+   "node": 403,
+   "name": "CT_frightener_hidden",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1243,
+   "node": 403,
+   "name": "CT_frightener_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1244,
+   "node": 403,
+   "name": "CT_poison_no_timer",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1245,
+   "node": 403,
+   "name": "CT_lair",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1246,
+   "node": 403,
+   "name": "CT_massacre_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1247,
+   "node": 403,
+   "name": "CT_dhl_talk",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1248,
+   "node": 403,
+   "name": "CT_dhl_dead",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1249,
+   "node": 403,
+   "name": "CT_frightener_03",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1250,
+   "node": 403,
+   "name": "CT_vogt_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1251,
+   "node": 18161,
+   "name": "vogt",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1252,
+   "node": 18162,
+   "name": "massacre_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1253,
+   "node": 18163,
+   "name": "frightener",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1254,
+   "node": 18163,
+   "name": "frightener_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1255,
+   "node": 18163,
+   "name": "trophy",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "25": 1
+   }
+  },
+  {
+   "id": 1256,
+   "node": 18163,
+   "name": "no_trophy",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1257,
+   "node": 18164,
+   "name": "vesemir",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1258,
+   "node": 18165,
+   "name": "archespore",
+   "endpoint": false,
+   "exp": 250,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1259,
+   "node": 18165,
+   "name": "archespore_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1260,
+   "node": 357,
+   "name": "solvent",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1261,
+   "node": 357,
+   "name": "sorcerer",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1262,
+   "node": 358,
+   "name": "poison",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1263,
+   "node": 358,
+   "name": "poison_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1264,
+   "node": 478,
+   "name": "poison_hidden",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1265,
+   "node": 361,
+   "name": "frightener",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1266,
+   "node": 361,
+   "name": "trophy",
+   "endpoint": false,
+   "exp": 600,
+   "gold": 0,
+   "items": {},
+   "kills": {
+    "25": 1
+   }
+  },
+  {
+   "id": 1267,
+   "node": 361,
+   "name": "frightener_fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1268,
+   "node": 18166,
+   "name": "thorstein_shop",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1269,
+   "node": 18167,
+   "name": "full_reward",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1270,
+   "node": 18167,
+   "name": "reward",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1271,
+   "node": 18167,
+   "name": "bad_reward",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1272,
+   "node": 18167,
+   "name": "bonus_reward",
+   "endpoint": true,
+   "exp": 500,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1273,
+   "node": 18167,
+   "name": "full_reward_dhl",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1274,
+   "node": 18167,
+   "name": "reward_dhl",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1275,
+   "node": 18167,
+   "name": "bad_reward_dhl",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1276,
+   "node": 18167,
+   "name": "bonus_reward_dhl",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  }
+ ],
+ "modifiers": [
+  {
+   "id": 1,
+   "slug": "s01_blacksmith",
+   "seconds": null
+  },
+  {
+   "id": 2,
+   "slug": "s01_curse",
+   "seconds": null
+  },
+  {
+   "id": 3,
+   "slug": "s01_mushrooming",
+   "seconds": 1440
+  },
+  {
+   "id": 4,
+   "slug": "s01_candle",
+   "seconds": null
+  },
+  {
+   "id": 5,
+   "slug": "s01_potion",
+   "seconds": null
+  },
+  {
+   "id": 6,
+   "slug": "s01_24h",
+   "seconds": 1440
+  },
+  {
+   "id": 7,
+   "slug": "s01_12h",
+   "seconds": 1440
+  },
+  {
+   "id": 8,
+   "slug": "s01_firefly",
+   "seconds": null
+  }
+ ],
+ "monsters": [
+  {
+   "id": 17,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/ACTOR_FIGHTABLE",
+   "model": "assets/_bundledassets/characters/monsters/s00/actor_fightable/actor_fightable_lq/actor_fightable_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/actor_fightable/actor_fightable_hq/actor_fightable_hq_presentation.prefab",
+   "trophy": "",
+   "slug": "actor_fightable"
+  },
+  {
+   "id": 18,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/ARACHAS",
+   "model": "assets/_bundledassets/characters/monsters/s00/arachas/arachas_lq/arachas_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/arachas/arachas_hq/arachas_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_arachas.png",
+   "slug": "arachas"
+  },
+  {
+   "id": 19,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/BESTIARY/ARACHNOMORPH",
+   "model": "assets/_bundledassets/characters/monsters/s00/arachnomorph/arachnomorph_lq/arachnomorph_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/arachnomorph/arachnomorph_hq/arachnomorph_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_arachnomorph.png",
+   "slug": "arachnomorph"
+  },
+  {
+   "id": 20,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/ARCHESPORE",
+   "model": "assets/_bundledassets/characters/monsters/s00/archespore/archespore_lq/archespore_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/archespore/archespore_hq/archespore_hq_presentation.prefab",
+   "trophy": "",
+   "slug": "archespore"
+  },
+  {
+   "id": 21,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/BIES_LVL1",
+   "model": "assets/_bundledassets/characters/monsters/s00/bies_lvl1/bies_lvl1_lq/bies_lvl1_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/bies_lvl1/bies_lvl1_hq/bies_lvl1_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_bies_lvl1.png",
+   "slug": "bies_lvl1"
+  },
+  {
+   "id": 22,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/CAVETROLL",
+   "model": "assets/_bundledassets/characters/monsters/s00/cavetroll/cavetroll_lq/cavetroll_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/cavetroll/cavetroll_hq/cavetroll_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_cavetroll.png",
+   "slug": "cavetroll"
+  },
+  {
+   "id": 23,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/FOGLING_LVL1",
+   "model": "assets/_bundledassets/characters/monsters/s00/fogling_lvl1/fogling_lvl1_lq/fogling_lvl1_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/fogling_lvl1/fogling_lvl1_hq/fogling_lvl1_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_fogling_lvl1.png",
+   "slug": "fogling_lvl1"
+  },
+  {
+   "id": 24,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/FOGLINGIGNISFATUUS",
+   "model": "assets/_bundledassets/characters/monsters/s00/foglingignisfatuus/foglingignisfatuus_lq/foglingignisfatuus_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/foglingignisfatuus/foglingignisfatuus_hq/foglingignisfatuus_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_foglingignisfatuus.png",
+   "slug": "foglingignisfatuus"
+  },
+  {
+   "id": 25,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/FRIGHTENER",
+   "model": "assets/_bundledassets/characters/monsters/s00/frightener/frightener_lq/frightener_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/frightener/frightener_hq/frightener_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_frightener.png",
+   "slug": "frightener"
+  },
+  {
+   "id": 26,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/GOLEM_LVL1",
+   "model": "assets/_bundledassets/characters/monsters/s00/golem_lvl1/golem_lvl1_lq/golem_lvl1_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/golem_lvl1/golem_lvl1_hq/golem_lvl1_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_golem_lvl1.png",
+   "slug": "golem_lvl1"
+  },
+  {
+   "id": 27,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/GOLEM_LVL2",
+   "model": "assets/_bundledassets/characters/monsters/s00/golem_lvl2/golem_lvl2_lq/golem_lvl2_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/golem_lvl2/golem_lvl2_hq/golem_lvl2_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_golem_lvl2.png",
+   "slug": "golem_lvl2"
+  },
+  {
+   "id": 28,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/GOLEM_LVL2",
+   "model": "assets/_bundledassets/characters/monsters/s00/golem_lvl2/golem_lvl2_lq/golem_lvl2_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/golem_lvl2/golem_lvl2_hq/golem_lvl2_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_golem_lvl2.png",
+   "slug": "golem_lvl2_hq01"
+  },
+  {
+   "id": 29,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/HERMIT_FIGHTABLE",
+   "model": "assets/_bundledassets/characters/monsters/s00/hermit_fightable/hermit_fightable_lq/hermit_fightable_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/hermit_fightable/hermit_fightable_lq/hermit_fightable_lq.prefab",
+   "trophy": "",
+   "slug": "hermit_fightable"
+  },
+  {
+   "id": 30,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/LESHENSDOG_LVL2",
+   "model": "assets/_bundledassets/characters/monsters/s00/leshensdog_lvl2/leshensdog_lvl2_lq/leshensdog_lvl2_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/leshensdog_lvl2/leshensdog_lvl2_hq/leshensdog_lvl2_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_leshensdog_lvl2.png",
+   "slug": "leshensdog_lvl2"
+  },
+  {
+   "id": 31,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/LESSUN",
+   "model": "assets/_bundledassets/characters/monsters/s00/lessun/lessun_lq/lessun_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/lessun/lessun_hq/lessun_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_lessun.png",
+   "slug": "lessun"
+  },
+  {
+   "id": 32,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/LIKHO",
+   "model": "assets/_bundledassets/characters/monsters/s00/likho/likho_lq/likho_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/likho/likho_hq/likho_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_licho.png",
+   "slug": "likho"
+  },
+  {
+   "id": 33,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/NEKKERWARRIOR_LVL3",
+   "model": "assets/_bundledassets/characters/monsters/s00/nekkerwarrior_lvl3/nekkerwarrior_lvl3_lq/nekkerwarrior_lvl3_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/nekkerwarrior_lvl3/nekkerwarrior_lvl3_hq/nekkerwarrior_lvl3_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_nekkerwarrior_lvl3.png",
+   "slug": "nekkerwarrior_lvl3"
+  },
+  {
+   "id": 34,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/BESTIARY/SCOLOPENDROMORPH_LVL1",
+   "model": "assets/_bundledassets/characters/monsters/s00/scolopendromorph_lvl1/scolopendromorph_lvl1_lq/scolopendromorph_lvl1_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/scolopendromorph_lvl1/scolopendromorph_lvl1_hq/scolopendromorph_lvl1_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_scolopendromorph_lvl1.png",
+   "slug": "scolopendromorph_lvl1"
+  },
+  {
+   "id": 35,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/BESTIARY/STRIGA_ALBINO",
+   "model": "assets/_bundledassets/characters/monsters/s00/striga_albino/striga_albino_lq/striga_albino_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/striga_albino/striga_albino_hq/striga_albino_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_striga_albino.png",
+   "slug": "striga_albino"
+  },
+  {
+   "id": 36,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/BESTIARY/VODYANOI",
+   "model": "assets/_bundledassets/characters/monsters/s00/vodyanoi/vodyanoi_lq/vodyanoi_lq.prefab",
+   "image": "assets/_bundledassets/characters/monsters/s00/vodyanoi/vodyanoi_hq/vodyanoi_hq_presentation.prefab",
+   "trophy": "assets/_bundledassets/ui/monster_trophies/trophy_vodyanoi.png",
+   "slug": "vodyanoi"
+  }
+ ],
+ "vulnerabilities": {
+  "actor_fightable": [
+   6,
+   2
+  ],
+  "arachas": [
+   5,
+   3,
+   1
+  ],
+  "arachnomorph": [
+   5,
+   3,
+   1
+  ],
+  "archespore": [
+   6,
+   2,
+   1
+  ],
+  "bies_lvl1": [
+   6,
+   3,
+   1
+  ],
+  "cavetroll": [
+   6,
+   3,
+   4
+  ],
+  "fogling_lvl1": [
+   5,
+   2,
+   4
+  ],
+  "foglingignisfatuus": [
+   5,
+   2,
+   4
+  ],
+  "frightener": [
+   6,
+   2
+  ],
+  "golem_lvl1": [
+   7
+  ],
+  "golem_lvl2": [
+   7
+  ],
+  "golem_lvl2_hq01": [
+   7
+  ],
+  "hermit_fightable": [
+   6,
+   2
+  ],
+  "leshensdog_lvl2": [
+   6,
+   3,
+   1
+  ],
+  "lessun": [
+   6,
+   3,
+   1
+  ],
+  "likho": [
+   6,
+   3,
+   4
+  ],
+  "nekkerwarrior_lvl3": [
+   6,
+   2
+  ],
+  "scolopendromorph_lvl1": [
+   6,
+   3
+  ],
+  "striga_albino": [
+   6,
+   2,
+   1
+  ],
+  "vodyanoi": [
+   5,
+   3,
+   1
+  ]
+ },
+ "walks": {
+  "149": [
+   [
+    "s01mq01_margit",
+    "scholar_01",
+    {
+     "53": 1,
+     "175": 60
+    },
+    [
+     "s01mq01_cocoon_1"
+    ]
+   ],
+   [
+    "s01mq01_cocoon_1",
+    "endriagaworker_01",
+    {
+     "1": 1
+    },
+    [
+     "s01mq01_cocoon_1"
+    ]
+   ],
+   [
+    "s01mq01_cocoon_1",
+    "endriagaworker_02",
+    {
+     "1": 2
+    },
+    [
+     "s01mq01_cocoon_1"
+    ]
+   ],
+   [
+    "s01mq01_cocoon_1",
+    "dehael",
+    {
+     "1": 4,
+     "53": 2
+    },
+    [
+     "s01mq01_cocoon_2"
+    ]
+   ],
+   [
+    "s01mq01_cocoon_2",
+    "endriagaworker",
+    {
+     "1": 5
+    },
+    [
+     "s01mq01_cocoon_2"
+    ]
+   ],
+   [
+    "s01mq01_cocoon_2",
+    "endriagatailed",
+    {
+     "1": 6
+    },
+    [
+     "s01mq01_cocoon_2"
+    ]
+   ],
+   [
+    "s01mq01_cocoon_2",
+    "embrions",
+    {
+     "53": 3,
+     "50": 1
+    },
+    [
+     "s01mq01_margit_2"
+    ]
+   ],
+   [
+    "s01mq01_margit_2",
+    "scholar_02",
+    {
+     "53": 4,
+     "1000": 1,
+     "1001": 1,
+     "1003": 1,
+     "31": 1
+    },
+    []
+   ]
+  ],
+  "104": [
+   [
+    "s01mq04_bedwyr",
+    "start",
+    {
+     "72": 1
+    },
+    [
+     "s01mq04_nest"
+    ]
+   ],
+   [
+    "s01mq04_nest",
+    "arachnomorph_01",
+    {
+     "35": 1
+    },
+    [
+     "s01mq04_nest"
+    ]
+   ],
+   [
+    "s01mq04_nest",
+    "nest",
+    {
+     "72": 2
+    },
+    [
+     "s01mq04_bedwyr_curse"
+    ]
+   ],
+   [
+    "s01mq04_bedwyr_curse",
+    "curse_start",
+    {
+     "72": 3,
+     "82": 1,
+     "80": 1
+    },
+    []
+   ],
+   [
+    "s01mq04_journal",
+    "read",
+    {
+     "72": 4
+    },
+    [
+     "s01mq04_hemlock",
+     "s01mq04_hound"
+    ]
+   ],
+   [
+    "s01mq04_hemlock",
+    "herb",
+    {
+     "74": 1,
+     "80": 2
+    },
+    [
+     "s01mq04_hound"
+    ]
+   ],
+   [
+    "s01mq04_hound",
+    "hound_killed",
+    {
+     "73": 1,
+     "80": 4
+    },
+    []
+   ],
+   [
+    "s01mq04_journal_craft",
+    "journal",
+    {
+     "72": 5,
+     "80": 5,
+     "81": 1
+    },
+    [
+     "s01mq04_campfire"
+    ]
+   ],
+   [
+    "s01mq04_campfire",
+    "licho_killed",
+    {
+     "72": 6,
+     "82": 4
+    },
+    []
+   ],
+   [
+    "s01mq04_amulet_2",
+    "amulet",
+    {
+     "75": 1,
+     "82": 0
+    },
+    [
+     "s01mq04_bedwyr_end"
+    ]
+   ],
+   [
+    "s01mq04_bedwyr_end",
+    "final",
+    {
+     "31": 2
+    },
+    []
+   ]
+  ],
+  "148": [
+   [
+    "s01hq05_kienan",
+    "help",
+    {
+     "65": 1,
+     "143": 1,
+     "10148": 1
+    },
+    [
+     "s01hq05_pit"
+    ]
+   ],
+   [
+    "s01hq05_pit",
+    "devourer",
+    {},
+    [
+     "s01hq05_pit"
+    ]
+   ],
+   [
+    "s01hq05_pit",
+    "actor_bribe",
+    {
+     "23": 2,
+     "121": 4,
+     "143": 6,
+     "200": 1,
+     "10148": 2
+    },
+    [
+     "s01hq05_treasure"
+    ]
+   ],
+   [
+    "s01hq05_treasure",
+    "treasure",
+    {
+     "187": 1,
+     "200": 0
+    },
+    []
+   ]
+  ],
+  "150": [
+   [
+    "s01mq02_witcher",
+    "witcher",
+    {
+     "54": 1,
+     "52": 1
+    },
+    [
+     "s01mq02_varik"
+    ]
+   ],
+   [
+    "s01mq02_varik",
+    "medic_01",
+    {
+     "54": 2,
+     "28": 1
+    },
+    [
+     "s01mq02_drowner"
+    ]
+   ],
+   [
+    "s01mq02_drowner",
+    "drowner",
+    {
+     "28": 2,
+     "29": 1
+    },
+    [
+     "s01mq02_plant"
+    ]
+   ],
+   [
+    "s01mq02_potion",
+    "potion",
+    {
+     "28": -1
+    },
+    [
+     "s01mq02_plant"
+    ]
+   ],
+   [
+    "s01mq02_plant",
+    "scolo_again",
+    {
+     "29": 3
+    },
+    [
+     "s01mq02_varik_2"
+    ]
+   ],
+   [
+    "s01mq02_varik_2",
+    "medic_02",
+    {
+     "54": 3,
+     "29": -1
+    },
+    []
+   ],
+   [
+    "wait",
+    1440
+   ],
+   [
+    null,
+    null,
+    null,
+    [
+     "s01mq02_vesemir"
+    ]
+   ],
+   [
+    "s01mq02_vesemir",
+    "vesemir",
+    {
+     "54": 4,
+     "31": 3
+    },
+    []
+   ]
+  ],
+  "159": [
+   [
+    "s01hq02_nemeton",
+    "nest",
+    {
+     "47": 1,
+     "1003": 0
+    },
+    []
+   ],
+   [
+    "s01hq02_notebook",
+    "notebook",
+    {
+     "47": 2
+    },
+    [
+     "s01hq02_well"
+    ]
+   ],
+   [
+    "s01hq02_well",
+    "scholar",
+    {
+     "47": 3
+    },
+    []
+   ]
+  ],
+  "147": [
+   [
+    "s01hq03_lothar",
+    "full_moon_01",
+    {
+     "119": 1,
+     "131": 2
+    },
+    [
+     "s01hq03_tracks"
+    ]
+   ],
+   [
+    "s01hq03_tracks",
+    "tracks",
+    {
+     "119": 2
+    },
+    [
+     "s01hq03_werewolf"
+    ]
+   ],
+   [
+    "s01hq03_werewolf",
+    "werewolf_dead",
+    {
+     "46": 1,
+     "119": 0,
+     "141": 2,
+     "172": 3
+    },
+    [
+     "s01hq03_new_smith"
+    ]
+   ],
+   [
+    "s01hq03_new_smith",
+    "new_blacksmith",
+    {
+     "64": 1,
+     "116": 10
+    },
+    []
+   ]
+  ],
+  "158": [
+   [
+    "s01hq01_map",
+    "map",
+    {
+     "46": 1,
+     "10158": 1
+    },
+    []
+   ],
+   [
+    "s01hq01_map_button",
+    "map_button",
+    {
+     "46": 2
+    },
+    [
+     "s01hq01_stone"
+    ]
+   ],
+   [
+    "s01hq01_stone",
+    "inscription",
+    {
+     "10158": 5
+    },
+    [
+     "s01hq01_stone"
+    ]
+   ],
+   [
+    "s01hq01_stone",
+    "golem",
+    {
+     "42": -1,
+     "183": 1
+    },
+    [
+     "s01hq01_stone"
+    ]
+   ],
+   [
+    "s01hq01_stone",
+    "sword",
+    {},
+    []
+   ]
+  ],
+  "161": [
+   [
+    "s01hq06_troll",
+    "help",
+    {
+     "144": 1,
+     "1000": 2
+    },
+    [
+     "s01hq06_cave"
+    ]
+   ],
+   [
+    "s01hq06_cave",
+    "fleder",
+    {
+     "10161": 2
+    },
+    [
+     "s01hq06_fleder"
+    ]
+   ],
+   [
+    "s01hq06_fleder",
+    "nekker_shaman",
+    {
+     "1000": 0,
+     "10161": 4
+    },
+    [
+     "s01hq06_fleder"
+    ]
+   ],
+   [
+    "s01hq06_fleder",
+    "grey_rocks",
+    {
+     "144": 5
+    },
+    []
+   ]
+  ],
+  "160": [
+   [
+    "s01hq04_nemeton",
+    "firefly",
+    {
+     "120": 1,
+     "175": 100
+    },
+    [
+     "s01hq04_stump"
+    ]
+   ],
+   [
+    "s01hq04_stump",
+    "stump",
+    {},
+    [
+     "s01hq04_plant"
+    ]
+   ],
+   [
+    "s01hq04_plant",
+    "catch",
+    {},
+    [
+     "s01hq04_treasure"
+    ]
+   ],
+   [
+    "s01hq04_treasure",
+    "treasure",
+    {
+     "120": 2
+    },
+    []
+   ]
+  ],
+  "153": [
+   [
+    "s01mq05_madman",
+    "madlad",
+    {
+     "56": 1
+    },
+    [
+     "s01mq05_chest"
+    ]
+   ],
+   [
+    "s01mq05_chest",
+    "treasure",
+    {
+     "56": 2,
+     "175": 50
+    },
+    [
+     "s01mq05_vogt"
+    ]
+   ],
+   [
+    "s01mq05_vogt",
+    "vogt",
+    {
+     "56": 3,
+     "176": 1
+    },
+    [
+     "s01mq05_mushroom",
+     "s01mq05_champion",
+     "s01mq05_corpse",
+     "s01mq05_monster_corpse",
+     "s01mq05_dehael",
+     "s01mq05_enough"
+    ]
+   ],
+   [
+    "s01mq05_corpse",
+    "corpse",
+    {
+     "34": 1,
+     "10153": 17
+    },
+    [
+     "s01mq05_mushroom",
+     "s01mq05_champion",
+     "s01mq05_monster_corpse",
+     "s01mq05_dehael",
+     "s01mq05_enough",
+     "s01mq05_nest"
+    ]
+   ],
+   [
+    "wait",
+    1440
+   ],
+   [
+    null,
+    null,
+    null,
+    [
+     "s01mq05_champion",
+     "s01mq05_monster_corpse",
+     "s01mq05_dehael",
+     "s01mq05_enough",
+     "s01mq05_nest",
+     "s01mq05_final"
+    ]
+   ],
+   [
+    "s01mq05_final",
+    "fiend",
+    {
+     "12": 2
+    },
+    [
+     "s01mq05_champion",
+     "s01mq05_monster_corpse",
+     "s01mq05_dehael",
+     "s01mq05_enough",
+     "s01mq05_nest",
+     "s01mq05_final"
+    ]
+   ],
+   [
+    "s01mq05_final",
+    "second_place",
+    {
+     "56": 4,
+     "160": 4,
+     "31": 4
+    },
+    []
+   ]
+  ],
+  "152": [
+   [
+    "s01mq03_vesemir",
+    "vesemir",
+    {
+     "55": 1,
+     "51": 1
+    },
+    [
+     "s01mq03_hermit"
+    ]
+   ],
+   [
+    "s01mq03_hermit",
+    "arachas",
+    {
+     "197": 2
+    },
+    [
+     "s01mq03_hermit"
+    ]
+   ],
+   [
+    "s01mq03_hermit",
+    "hermit",
+    {
+     "147": 1
+    },
+    [
+     "s01mq03_tracks"
+    ]
+   ],
+   [
+    "s01mq03_tracks",
+    "tracks",
+    {
+     "129": 2
+    },
+    [
+     "s01mq03_vodnik"
+    ]
+   ],
+   [
+    "s01mq03_vodnik",
+    "vodnik",
+    {
+     "129": 3,
+     "32": 1
+    },
+    [
+     "s01mq03_thorstein"
+    ]
+   ],
+   [
+    "s01mq03_thorstein",
+    "thorstein",
+    {
+     "26": 1
+    },
+    [
+     "s01mq03_lure"
+    ]
+   ],
+   [
+    "s01mq03_lure",
+    "lure",
+    {
+     "127": 1,
+     "134": 1
+    },
+    [
+     "s01mq03_lair"
+    ]
+   ],
+   [
+    "s01mq03_lair",
+    "curse_lifted",
+    {
+     "55": 5,
+     "147": 2,
+     "127": -1
+    },
+    [
+     "s01mq03_armor"
+    ]
+   ],
+   [
+    "s01mq03_armor",
+    "armor",
+    {
+     "179": 1,
+     "31": 5
+    },
+    []
+   ]
+  ],
+  "154": [
+   [
+    "s01mq06_dehael",
+    "start",
+    {},
+    [
+     "s01mq06_vogt"
+    ]
+   ],
+   [
+    "s01mq06_vogt",
+    "vogt",
+    {
+     "162": 1
+    },
+    [
+     "s01mq06_massacre"
+    ]
+   ],
+   [
+    "s01mq06_massacre",
+    "massacre_01",
+    {
+     "162": 2
+    },
+    [
+     "s01mq06_frightener"
+    ]
+   ],
+   [
+    "s01mq06_frightener",
+    "frightener_fail",
+    {
+     "59": 1
+    },
+    [
+     "s01mq06_vesemir"
+    ]
+   ],
+   [
+    "s01mq06_vesemir",
+    "vesemir",
+    {
+     "162": 4,
+     "27": 1
+    },
+    [
+     "s01mq06_archespore"
+    ]
+   ],
+   [
+    "s01mq06_archespore",
+    "archespore",
+    {
+     "27": 2
+    },
+    []
+   ],
+   [
+    "s01mq06_solvent",
+    "solvent",
+    {
+     "27": -3,
+     "162": 5
+    },
+    [
+     "s01mq06_lair"
+    ]
+   ],
+   [
+    "s01mq06_lair",
+    "frightener",
+    {
+     "61": 2,
+     "163": 1
+    },
+    [
+     "s01mq06_thorstein"
+    ]
+   ],
+   [
+    "s01mq06_thorstein",
+    "thorstein_shop",
+    {
+     "124": 1
+    },
+    [
+     "s01mq06_vogt_end"
+    ]
+   ],
+   [
+    "s01mq06_vogt_end",
+    "full_reward",
+    {
+     "166": 1
+    },
+    []
+   ]
+  ]
+ }
+}

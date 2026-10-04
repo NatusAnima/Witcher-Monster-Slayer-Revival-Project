@@ -1,0 +1,3890 @@
+{
+ "source": "world_bestiary.py (client bestiary texts and settings of 1.1.116, community sheet M01)",
+ "species": [
+  {
+   "monster_id": 2,
+   "slug": "alghoul",
+   "name": "Alghoul",
+   "sheet": "Alghoul",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN",
+    "DUSK"
+   ]
+  },
+  {
+   "monster_id": 101,
+   "slug": "alghoul_lvl2",
+   "name": "Spotted Alghoul",
+   "sheet": "Spotted Alghoul",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 102,
+   "slug": "alp",
+   "name": "Alp",
+   "sheet": "Alp",
+   "family": 10,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 103,
+   "slug": "ancientlessun",
+   "name": "Ancient Leshen",
+   "sheet": "Ancient Leshen",
+   "family": 6,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 18,
+   "slug": "arachas",
+   "name": "Common Arachas",
+   "sheet": "Common Arachas",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 104,
+   "slug": "arachas_lvl2",
+   "name": "Hermit Arachas",
+   "sheet": "Hermit Arachas",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 105,
+   "slug": "arachas_lvl4",
+   "name": "Royal Arachas",
+   "sheet": "Royal Arachas",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 106,
+   "slug": "arachasmorph",
+   "name": "Venomous Arachas",
+   "sheet": "Venomous Arachas",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 19,
+   "slug": "arachnomorph",
+   "name": "Arachnomorph",
+   "sheet": "Arachnomorph",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "FOREST",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 20,
+   "slug": "archespore",
+   "name": "Archespore",
+   "sheet": "Archspore",
+   "family": 11,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 107,
+   "slug": "archespore_lvl2",
+   "name": "Vizimian Archespore",
+   "sheet": "Vizimian Archespore",
+   "family": 11,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 8,
+   "slug": "banshee",
+   "name": "Beann'shie",
+   "sheet": "Beann'shie",
+   "family": 7,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 108,
+   "slug": "barghest",
+   "name": "Barghest",
+   "sheet": "Barghest",
+   "family": 7,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 109,
+   "slug": "basilisk_lvl1",
+   "name": "Basilisk",
+   "sheet": "Basilisk",
+   "family": 2,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 110,
+   "slug": "basiliskwhite",
+   "name": "Silver Basilisk",
+   "sheet": "Silver Basilisk",
+   "family": 2,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 21,
+   "slug": "bies_lvl1",
+   "name": "Fiend",
+   "sheet": "Fiend",
+   "family": 6,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 111,
+   "slug": "bies_lvl2",
+   "name": "Tiger Fiend",
+   "sheet": "Tiger Fiend",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DUSK"
+   ]
+  },
+  {
+   "monster_id": 112,
+   "slug": "bloedzuiger",
+   "name": "Bloedzuiger",
+   "sheet": "Bloodzuiger",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 113,
+   "slug": "bloedzuiger_lvl2",
+   "name": "Leecher",
+   "sheet": "Leecher",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 114,
+   "slug": "bruxa",
+   "name": "Bruxa",
+   "sheet": "Bruxa",
+   "family": 10,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 115,
+   "slug": "caretaker",
+   "name": "Tormented",
+   "sheet": "Tormented",
+   "family": 6,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 22,
+   "slug": "cavetroll",
+   "name": "Rock Troll",
+   "sheet": "Rock Troll",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 116,
+   "slug": "cavetroll_lvl2",
+   "name": "Ice Troll",
+   "sheet": "Ice Troll",
+   "family": 3,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "RAIN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 117,
+   "slug": "cavetroll_lvl3",
+   "name": "Magma Troll",
+   "sheet": "Magma Troll",
+   "family": 3,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 118,
+   "slug": "chort_lvl1",
+   "name": "Chort",
+   "sheet": "Chort",
+   "family": 6,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 119,
+   "slug": "chort_lvl2",
+   "name": "Howler",
+   "sheet": "Howler",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DUSK"
+   ]
+  },
+  {
+   "monster_id": 120,
+   "slug": "chort_lvl3",
+   "name": "Tarry Chort",
+   "sheet": "Tarry Chort",
+   "family": 6,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "FOG",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 121,
+   "slug": "cockatrice",
+   "name": "Cockatrice",
+   "sheet": "Cockatrice",
+   "family": 2,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 122,
+   "slug": "cockatriceshrieker",
+   "name": "Shrieker",
+   "sheet": "Shrieker",
+   "family": 2,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 123,
+   "slug": "cyclop",
+   "name": "Cyclops",
+   "sheet": "Cyclops",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 124,
+   "slug": "cyclop_lvl2",
+   "name": "Farbaut",
+   "sheet": "Farbaut",
+   "family": 3,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 125,
+   "slug": "cyclop_lvl3",
+   "name": "Grimnir",
+   "sheet": "Grimnir",
+   "family": 3,
+   "rarity": 3,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 10,
+   "slug": "devourer",
+   "name": "Devourer",
+   "sheet": "Devourer",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 1,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 126,
+   "slug": "djinn",
+   "name": "D'jinni",
+   "sheet": "D'Jinni",
+   "family": 5,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 127,
+   "slug": "dracolizard",
+   "name": "Gray Slyzard",
+   "sheet": "Gray Slyzard",
+   "family": 2,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 128,
+   "slug": "dracolizardmatriarch",
+   "name": "Graphite Slyzard",
+   "sheet": "Graphite Slyzard",
+   "family": 2,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 3,
+   "slug": "drowner",
+   "name": "Drowner",
+   "sheet": "Drowner",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 129,
+   "slug": "drowner_lvl2",
+   "name": "Water Devil",
+   "sheet": "Water Devil",
+   "family": 1,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 130,
+   "slug": "drownermucknixer",
+   "name": "Drowned Dead",
+   "sheet": "Drowned Dead",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 131,
+   "slug": "ekima",
+   "name": "Ekimmara",
+   "sheet": "Ekimmara",
+   "family": 10,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 132,
+   "slug": "elementaldaoearth",
+   "name": "D'ao",
+   "sheet": "D'ao",
+   "family": 5,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 133,
+   "slug": "elementaldaored",
+   "name": "Fire Elemental",
+   "sheet": "Fire Elemental",
+   "family": 5,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 16,
+   "slug": "endriagaspikey",
+   "name": "Endrega Drone",
+   "sheet": "Endrega Drone",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 15,
+   "slug": "endriagatailed",
+   "name": "Endrega Warrior",
+   "sheet": "Endrega Warrior",
+   "family": 8,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 134,
+   "slug": "endriagatailed_lvl2",
+   "name": "Endrega Charger",
+   "sheet": "Endrega Charger",
+   "family": 8,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 14,
+   "slug": "endriagaworker",
+   "name": "Endrega Worker",
+   "sheet": "Endrega Worker",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 135,
+   "slug": "fleder",
+   "name": "Fleder",
+   "sheet": "Fleder",
+   "family": 10,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 136,
+   "slug": "fleder_lvl2",
+   "name": "Pale Fleder",
+   "sheet": "Pale Fleder",
+   "family": 10,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 23,
+   "slug": "fogling_lvl1",
+   "name": "Foglet",
+   "sheet": "Foglet",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 24,
+   "slug": "foglingignisfatuus",
+   "name": "Ignis Fatuus",
+   "sheet": "Ignis Fatuus",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 137,
+   "slug": "foglingtangalore",
+   "name": "Royal Foglet",
+   "sheet": "Royal Foglet",
+   "family": 1,
+   "rarity": 3,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 138,
+   "slug": "forktail",
+   "name": "Forktail",
+   "sheet": "Forktail",
+   "family": 2,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 139,
+   "slug": "forktail_lvl2",
+   "name": "Green Forktail",
+   "sheet": "Green Forktail",
+   "family": 2,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 140,
+   "slug": "forktailblue",
+   "name": "Blue Forktail",
+   "sheet": "Blue Forktail",
+   "family": 2,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 25,
+   "slug": "frightener",
+   "name": "Frightener",
+   "sheet": "Frightener",
+   "family": 8,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 141,
+   "slug": "fugas",
+   "name": "Sylvan",
+   "sheet": "Sylvan",
+   "family": 6,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DUSK"
+   ]
+  },
+  {
+   "monster_id": 142,
+   "slug": "fugas_lvl2",
+   "name": "Sylvan Dearg",
+   "sheet": "Sylvan Dearg",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 13,
+   "slug": "gargoyle",
+   "name": "Gargoyle",
+   "sheet": "Gargoyle",
+   "family": 5,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 3,
+   "tags": [
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 143,
+   "slug": "garkain_lvl1",
+   "name": "Garkain",
+   "sheet": "Garkain",
+   "family": 10,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 144,
+   "slug": "garkain_lvl3",
+   "name": "Mottled Garkain",
+   "sheet": "Mottled Garkain",
+   "family": 10,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 145,
+   "slug": "garkainalpha",
+   "name": "Alpha Garkain",
+   "sheet": "Alpha Garkain",
+   "family": 10,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 146,
+   "slug": "gernichora",
+   "name": "Gernichora",
+   "sheet": "Gernichora",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 1,
+   "slug": "ghoul",
+   "name": "Ghoul",
+   "sheet": "Ghoul",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "URBAN"
+   ]
+  },
+  {
+   "monster_id": 147,
+   "slug": "ghoul_lvl2",
+   "name": "Pale-Faced Ghoul",
+   "sheet": "Pale-Faced Ghoul",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 26,
+   "slug": "golem_lvl1",
+   "name": "Golem",
+   "sheet": "Golem",
+   "family": 5,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "WATER",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 27,
+   "slug": "golem_lvl2",
+   "name": "Stone Golem",
+   "sheet": "Stone Golem",
+   "family": 5,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 148,
+   "slug": "golemice",
+   "name": "Ice Elemental",
+   "sheet": "Ice Elemental",
+   "family": 5,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 149,
+   "slug": "gravehag",
+   "name": "Grave Hag",
+   "sheet": "Grave Hag",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "URBAN"
+   ]
+  },
+  {
+   "monster_id": 150,
+   "slug": "gravehag_lvl2",
+   "name": "Burier",
+   "sheet": "Burier",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN"
+   ]
+  },
+  {
+   "monster_id": 151,
+   "slug": "gravehagmourntart",
+   "name": "Grim Hag",
+   "sheet": "Grim Hag",
+   "family": 1,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 152,
+   "slug": "grottore",
+   "name": "Grottore",
+   "sheet": "Grottore",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 9,
+   "slug": "gryphon",
+   "name": "Griffin",
+   "sheet": "Griffin",
+   "family": 4,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 153,
+   "slug": "gryphonarch",
+   "name": "Archgriffin",
+   "sheet": "Archgriffin",
+   "family": 4,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 154,
+   "slug": "harpy",
+   "name": "Harpy",
+   "sheet": "Harpy",
+   "family": 4,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 155,
+   "slug": "harpy_lvl3",
+   "name": "Green Harpy",
+   "sheet": "Green Harpy",
+   "family": 4,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 156,
+   "slug": "harpyerynia",
+   "name": "Erynia",
+   "sheet": "Erynia",
+   "family": 4,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 157,
+   "slug": "headless_nobleman",
+   "name": "Headless Nobleman",
+   "sheet": "Headless Nobleman",
+   "family": 7,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 158,
+   "slug": "hiver_lvl2",
+   "name": "Stinger",
+   "sheet": "Stinger",
+   "family": 11,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 159,
+   "slug": "hym",
+   "name": "Hym",
+   "sheet": "Hym",
+   "family": 7,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "FOG",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 160,
+   "slug": "icegiant",
+   "name": "Ice Giant",
+   "sheet": "Ice Giant",
+   "family": 3,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 161,
+   "slug": "katakan",
+   "name": "Katakan",
+   "sheet": "Katakan",
+   "family": 10,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 206,
+   "slug": "katakan_lvl4",
+   "name": "Golden Katakan",
+   "sheet": "Golden Katakan",
+   "family": 10,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "FOG",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 162,
+   "slug": "kikimore_lvl1",
+   "name": "Kikimore Worker",
+   "sheet": "Kikimore Worker",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 163,
+   "slug": "kikimore_lvl2",
+   "name": "Kikimore Warrior",
+   "sheet": "Kikimore Warrior",
+   "family": 8,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 164,
+   "slug": "knight_dark",
+   "name": "Dark Knight",
+   "sheet": "Dark Knight",
+   "family": 7,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 165,
+   "slug": "knight_fire",
+   "name": "Calidus",
+   "sheet": "Calidus",
+   "family": 7,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 166,
+   "slug": "leshensdog",
+   "name": "Spriggan Hound",
+   "sheet": "Spriggan Hound",
+   "family": 6,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 30,
+   "slug": "leshensdog_lvl2",
+   "name": "Leshen Hound",
+   "sheet": "Leshen Hound",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 31,
+   "slug": "lessun",
+   "name": "Leshen",
+   "sheet": "Leshen",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 32,
+   "slug": "likho",
+   "name": "Liho",
+   "sheet": "Liho",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 167,
+   "slug": "lycantrop",
+   "name": "Lycanthrope",
+   "sheet": "Lycanthrope",
+   "family": 11,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT",
+    "FULL_MOON_ONLY"
+   ]
+  },
+  {
+   "monster_id": 4,
+   "slug": "nekker",
+   "name": "Nekker",
+   "sheet": "Nekker",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 168,
+   "slug": "nekker_lvl2",
+   "name": "Swamp Nekker",
+   "sheet": "Swamp Nekker",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "WATER",
+    "NON_URBAN"
+   ]
+  },
+  {
+   "monster_id": 169,
+   "slug": "nekker_lvl3",
+   "name": "Royal Nekker",
+   "sheet": "Royal Nekker",
+   "family": 3,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 5,
+   "slug": "nekkerwarrior",
+   "name": "Nekker Warrior",
+   "sheet": "Nekker Warrior",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 170,
+   "slug": "nekkerwarrior_lvl2",
+   "name": "Carnage Nekker",
+   "sheet": "Carnage Nekker",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 33,
+   "slug": "nekkerwarrior_lvl3",
+   "name": "Nekker Shaman",
+   "sheet": "Nekker Shaman",
+   "family": 3,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 171,
+   "slug": "nightwraith",
+   "name": "Nightwraith",
+   "sheet": "Nightwraith",
+   "family": 7,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT",
+    "MIDNIGHT"
+   ]
+  },
+  {
+   "monster_id": 172,
+   "slug": "nightwraith_lvl2",
+   "name": "Nightmare",
+   "sheet": "Nightmare",
+   "family": 7,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT",
+    "MIDNIGHT"
+   ]
+  },
+  {
+   "monster_id": 173,
+   "slug": "noonwraith",
+   "name": "Noonwraith",
+   "sheet": "Noonwraith",
+   "family": 7,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY",
+    "NOON"
+   ]
+  },
+  {
+   "monster_id": 174,
+   "slug": "noonwraith_lvl2",
+   "name": "Wailwraith",
+   "sheet": "Wailwraith",
+   "family": 7,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NOON"
+   ]
+  },
+  {
+   "monster_id": 175,
+   "slug": "noonwraith_plague",
+   "name": "Plague Maiden",
+   "sheet": "Plague Maiden",
+   "family": 7,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NOON"
+   ]
+  },
+  {
+   "monster_id": 176,
+   "slug": "originalvampire",
+   "name": "Unseen Elder",
+   "sheet": "Unseen Elder",
+   "family": 10,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 177,
+   "slug": "pixie",
+   "name": "Pixie",
+   "sheet": "Pixie",
+   "family": 5,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "URBAN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 178,
+   "slug": "rotfiend_lvl1",
+   "name": "Rotfiend",
+   "sheet": "Rotfiend",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 179,
+   "slug": "rotfiend_lvl2",
+   "name": "Putrifier",
+   "sheet": "Putrifier",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 180,
+   "slug": "sandcrab",
+   "name": "Sandcrab",
+   "sheet": "Sandcrab",
+   "family": 8,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 34,
+   "slug": "scolopendromorph_lvl1",
+   "name": "Scolopendromorph",
+   "sheet": "Scolopendromorph",
+   "family": 8,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 181,
+   "slug": "scolopendromorph_lvl2",
+   "name": "Writher",
+   "sheet": "Writher",
+   "family": 8,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 182,
+   "slug": "scurver",
+   "name": "Scurver",
+   "sheet": "Scurver",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "URBAN"
+   ]
+  },
+  {
+   "monster_id": 183,
+   "slug": "sharley",
+   "name": "Shaelmaar",
+   "sheet": "Shaelmaar",
+   "family": 6,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 184,
+   "slug": "sharley_lvl2",
+   "name": "Russet Shaelmaar",
+   "sheet": "Russet Shaelmaar",
+   "family": 6,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 185,
+   "slug": "sharley_lvl3",
+   "name": "Dung Shaelmaar",
+   "sheet": "Dung Shaelmaar",
+   "family": 6,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 186,
+   "slug": "sirenlamia",
+   "name": "Siren",
+   "sheet": "Siren",
+   "family": 4,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 187,
+   "slug": "sirenmorszczynka",
+   "name": "Sea Witch",
+   "sheet": "Sea Witch",
+   "family": 4,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 7,
+   "slug": "smalldraconid",
+   "name": "Rarasha",
+   "sheet": "Rarasha",
+   "family": 2,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 188,
+   "slug": "spriggan",
+   "name": "Spriggan",
+   "sheet": "Spriggan",
+   "family": 6,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 189,
+   "slug": "striga",
+   "name": "Striga",
+   "sheet": "Striga",
+   "family": 11,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 35,
+   "slug": "striga_albino",
+   "name": "White Striga",
+   "sheet": "White Striga",
+   "family": 11,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 190,
+   "slug": "succubus_lvl1",
+   "name": "Succubus",
+   "sheet": "Succubus",
+   "family": 4,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "URBAN",
+    "DUSK"
+   ]
+  },
+  {
+   "monster_id": 191,
+   "slug": "succubus_lvl2",
+   "name": "Night Succubus",
+   "sheet": "Night Succubus",
+   "family": 4,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 192,
+   "slug": "toad",
+   "name": "Giant Toad",
+   "sheet": "Giant Toad",
+   "family": 11,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 193,
+   "slug": "ulfhedinn",
+   "name": "Ulfhedinn",
+   "sheet": "Ulfhedinn",
+   "family": 11,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NIGHT",
+    "FULL_MOON_ONLY"
+   ]
+  },
+  {
+   "monster_id": 36,
+   "slug": "vodyanoi",
+   "name": "Vodnik",
+   "sheet": "Vodnik",
+   "family": 3,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ]
+  },
+  {
+   "monster_id": 194,
+   "slug": "waterhag",
+   "name": "Water Hag",
+   "sheet": "Water Hag",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 195,
+   "slug": "waterhagabaya",
+   "name": "Swamp Hag",
+   "sheet": "Swamp Hag",
+   "family": 1,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 196,
+   "slug": "waterhagbilgehag",
+   "name": "Depth Lurker",
+   "sheet": "Depth Lurker",
+   "family": 1,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ]
+  },
+  {
+   "monster_id": 197,
+   "slug": "wererat",
+   "name": "Wild Wererat",
+   "sheet": "Wild Wererat",
+   "family": 11,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "FOREST"
+   ]
+  },
+  {
+   "monster_id": 198,
+   "slug": "wererat_lvl2",
+   "name": "Wererat Warrior",
+   "sheet": "Wererat Warrior",
+   "family": 11,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 199,
+   "slug": "wererat_treasure",
+   "name": "Wererat Gatherer",
+   "sheet": "Wererat Gatherer",
+   "family": 11,
+   "rarity": 2,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "URBAN",
+    "FOG",
+    "DAWN",
+    "DUSK"
+   ]
+  },
+  {
+   "monster_id": 200,
+   "slug": "wererat_yellow",
+   "name": "Thundster",
+   "sheet": "Thundster",
+   "family": 11,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG"
+   ]
+  },
+  {
+   "monster_id": 6,
+   "slug": "werewolf",
+   "name": "Werewolf",
+   "sheet": "Werewolf",
+   "family": 11,
+   "rarity": 1,
+   "skulls": 1,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT",
+    "FULL_MOON_ONLY"
+   ]
+  },
+  {
+   "monster_id": 201,
+   "slug": "wicht",
+   "name": "Wight",
+   "sheet": "Wight",
+   "family": 1,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2"
+   ]
+  },
+  {
+   "monster_id": 11,
+   "slug": "wraith",
+   "name": "Wraith",
+   "sheet": "Wraith",
+   "family": 7,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 12,
+   "slug": "wraith_lvl2",
+   "name": "Voiceless",
+   "sheet": "Voiceless",
+   "family": 7,
+   "rarity": 1,
+   "skulls": 2,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 202,
+   "slug": "wraithpenitant",
+   "name": "Penitent",
+   "sheet": "Penitent",
+   "family": 7,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ]
+  },
+  {
+   "monster_id": 203,
+   "slug": "wyvern_lvl1",
+   "name": "Wyvern ",
+   "sheet": "Wyvern",
+   "family": 2,
+   "rarity": 1,
+   "skulls": 0,
+   "difficulty": 1,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 204,
+   "slug": "wyverngold",
+   "name": "Copper Wyvern",
+   "sheet": "Copper Wyvern",
+   "family": 2,
+   "rarity": 3,
+   "skulls": 3,
+   "difficulty": 3,
+   "tags": [
+    "NEUTRAL2",
+    "FOG",
+    "DAY"
+   ]
+  },
+  {
+   "monster_id": 205,
+   "slug": "wyvernroyal",
+   "name": "Royal Wyvern",
+   "sheet": "Royal Wyvern",
+   "family": 2,
+   "rarity": 2,
+   "skulls": 1,
+   "difficulty": 2,
+   "tags": [
+    "NEUTRAL2",
+    "DAY"
+   ]
+  }
+ ],
+ "monsters": [
+  {
+   "id": 101,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ALGHOUL_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/alghoul_lvl2/alghoul_lvl2_lq/alghoul_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/alghoul_lvl2/alghoul_lvl2_hq/alghoul_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_alghoul_lvl2.png",
+   "slug": "alghoul_lvl2"
+  },
+  {
+   "id": 102,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/ALP",
+   "model": "Assets/_bundledassets/characters/monsters/s00/alp/alp_lq/alp_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/alp/alp_hq/alp_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_alp.png",
+   "slug": "alp"
+  },
+  {
+   "id": 103,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ANCIENTLESSUN",
+   "model": "Assets/_bundledassets/characters/monsters/s00/ancientlessun/ancientlessun_lq/ancientlessun_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/ancientlessun/ancientlessun_hq/ancientlessun_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_ancientlessun.png",
+   "slug": "ancientlessun"
+  },
+  {
+   "id": 104,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/ARACHAS_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/arachas_lvl2/arachas_lvl2_lq/arachas_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/arachas_lvl2/arachas_lvl2_hq/arachas_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_arachas_lvl2.png",
+   "slug": "arachas_lvl2"
+  },
+  {
+   "id": 105,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ARACHAS_LVL4",
+   "model": "Assets/_bundledassets/characters/monsters/s00/arachas_lvl4/arachas_lvl4_lq/arachas_lvl4_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/arachas_lvl4/arachas_lvl4_hq/arachas_lvl4_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_arachas_lvl4.png",
+   "slug": "arachas_lvl4"
+  },
+  {
+   "id": 106,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ARACHASMORPH",
+   "model": "Assets/_bundledassets/characters/monsters/s00/arachasmorph/arachasmorph_lq/arachasmorph_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/arachasmorph/arachasmorph_hq/arachasmorph_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_arachas_morph.png",
+   "slug": "arachasmorph"
+  },
+  {
+   "id": 107,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ARCHESPORE_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/archespore_lvl2/archespore_lvl2_lq/archespore_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/archespore_lvl2/archespore_lvl2_hq/archespore_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_echinops_lvl2.png",
+   "slug": "archespore_lvl2"
+  },
+  {
+   "id": 108,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/BARGHEST",
+   "model": "Assets/_bundledassets/characters/monsters/s00/barghest/barghest_lq/barghest_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/barghest/barghest_hq/barghest_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_barghest.png",
+   "slug": "barghest"
+  },
+  {
+   "id": 109,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/BASILISK_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/basilisk_lvl1/basilisk_lvl1_lq/basilisk_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/basilisk_lvl1/basilisk_lvl1_hq/basilisk_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_basilisk.png",
+   "slug": "basilisk_lvl1"
+  },
+  {
+   "id": 110,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/BASILISKWHITE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/basiliskwhite/basiliskwhite_lq/basiliskwhite_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/basiliskwhite/basiliskwhite_hq/basiliskwhite_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_basiliskwhite.png",
+   "slug": "basiliskwhite"
+  },
+  {
+   "id": 111,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/BIES_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/bies_lvl2/bies_lvl2_lq/bies_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/bies_lvl2/bies_lvl2_hq/bies_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_bies_lvl2.png",
+   "slug": "bies_lvl2"
+  },
+  {
+   "id": 112,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/BLOEDZUIGER",
+   "model": "Assets/_bundledassets/characters/monsters/s00/bloedzuiger/bloedzuiger_lq/bloedzuiger_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/bloedzuiger/bloedzuiger_hq/bloedzuiger_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_bloedzuiger.png",
+   "slug": "bloedzuiger"
+  },
+  {
+   "id": 113,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/BLOEDZUIGER_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/bloedzuiger_lvl2/bloedzuiger_lvl2_lq/bloedzuiger_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/bloedzuiger_lvl2/bloedzuiger_lvl2_hq/bloedzuiger_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_bloedzuiger_lvl2.png",
+   "slug": "bloedzuiger_lvl2"
+  },
+  {
+   "id": 114,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/BRUXA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/bruxa/bruxa_lq/bruxa_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/bruxa/bruxa_hq/bruxa_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_bruxa.png",
+   "slug": "bruxa"
+  },
+  {
+   "id": 115,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CARETAKER",
+   "model": "Assets/_bundledassets/characters/monsters/s00/caretaker/caretaker_lq/caretaker_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/caretaker/caretaker_hq/caretaker_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_caretaker.png",
+   "slug": "caretaker"
+  },
+  {
+   "id": 116,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CAVETROLL_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cavetroll_lvl2/cavetroll_lvl2_lq/cavetroll_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cavetroll_lvl2/cavetroll_lvl2_hq/cavetroll_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cavetroll_lvl2.png",
+   "slug": "cavetroll_lvl2"
+  },
+  {
+   "id": 117,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CAVETROLL_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cavetroll_lvl3/cavetroll_lvl3_lq/cavetroll_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cavetroll_lvl3/cavetroll_lvl3_hq/cavetroll_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cavetroll_lvl3.png",
+   "slug": "cavetroll_lvl3"
+  },
+  {
+   "id": 118,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CHORT_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/chort_lvl1/chort_lvl1_lq/chort_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/chort_lvl1/chort_lvl1_hq/chort_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_chort_lvl1.png",
+   "slug": "chort_lvl1"
+  },
+  {
+   "id": 119,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CHORT_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/chort_lvl2/chort_lvl2_lq/chort_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/chort_lvl2/chort_lvl2_hq/chort_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_chort_lvl2.png",
+   "slug": "chort_lvl2"
+  },
+  {
+   "id": 120,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CHORT_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/chort_lvl3/chort_lvl3_lq/chort_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/chort_lvl3/chort_lvl3_hq/chort_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_chort_lvl3.png",
+   "slug": "chort_lvl3"
+  },
+  {
+   "id": 121,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/COCKATRICE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cockatrice/cockatrice_lq/cockatrice_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cockatrice/cockatrice_hq/cockatrice_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cockatrice.png",
+   "slug": "cockatrice"
+  },
+  {
+   "id": 122,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/COCKATRICESHRIEKER",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cockatriceshrieker/cockatriceshrieker_lq/cockatriceshrieker_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cockatriceshrieker/cockatriceshrieker_hq/cockatriceshrieker_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cockatriceshrieker.png",
+   "slug": "cockatriceshrieker"
+  },
+  {
+   "id": 123,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CYCLOP",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cyclop/cyclop_lq/cyclop_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cyclop/cyclop_hq/cyclop_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cyclop.png",
+   "slug": "cyclop"
+  },
+  {
+   "id": 124,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CYCLOP_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cyclop_lvl2/cyclop_lvl2_lq/cyclop_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cyclop_lvl2/cyclop_lvl2_hq/cyclop_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cyclop_lvl2.png",
+   "slug": "cyclop_lvl2"
+  },
+  {
+   "id": 125,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/CYCLOP_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/cyclop_lvl3/cyclop_lvl3_lq/cyclop_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/cyclop_lvl3/cyclop_lvl3_hq/cyclop_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_cyclop_lvl3.png",
+   "slug": "cyclop_lvl3"
+  },
+  {
+   "id": 126,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/DJINN",
+   "model": "Assets/_bundledassets/characters/monsters/s00/djinn/djinn_lq/djinn_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/djinn/djinn_hq/djinn_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_djinn.png",
+   "slug": "djinn"
+  },
+  {
+   "id": 127,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/DRACOLIZARD",
+   "model": "Assets/_bundledassets/characters/monsters/s00/dracolizard/dracolizard_lq/dracolizard_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/dracolizard/dracolizard_hq/dracolizard_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_dracolizard.png",
+   "slug": "dracolizard"
+  },
+  {
+   "id": 128,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/DRACOLIZARDMATRIARCH",
+   "model": "Assets/_bundledassets/characters/monsters/s00/dracolizardmatriarch/dracolizardmatriarch_lq/dracolizardmatriarch_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/dracolizardmatriarch/dracolizardmatriarch_hq/dracolizardmatriarch_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_dracolizardmatriarch.png",
+   "slug": "dracolizardmatriarch"
+  },
+  {
+   "id": 129,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/DROWNER_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/drowner_lvl2/drowner_lvl2_lq/drowner_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/drowner_lvl2/drowner_lvl2_hq/drowner_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_drowner_lvl2.png",
+   "slug": "drowner_lvl2"
+  },
+  {
+   "id": 130,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/DROWNERMUCKNIXER",
+   "model": "Assets/_bundledassets/characters/monsters/s00/drownermucknixer/drownermucknixer_lq/drownermucknixer_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/drownermucknixer/drownermucknixer_hq/drownermucknixer_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_drownermucknixer.png",
+   "slug": "drownermucknixer"
+  },
+  {
+   "id": 131,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/EKIMA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/ekima/ekima_lq/ekima_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/ekima/ekima_hq/ekima_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_ekima.png",
+   "slug": "ekima"
+  },
+  {
+   "id": 132,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ELEMENTALDAOEARTH",
+   "model": "Assets/_bundledassets/characters/monsters/s00/elementaldaoearth/elementaldaoearth_lq/elementaldaoearth_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/elementaldaoearth/elementaldaoearth_hq/elementaldaoearth_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_elementaldaoearth.png",
+   "slug": "elementaldaoearth"
+  },
+  {
+   "id": 133,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ELEMENTALDAORED",
+   "model": "Assets/_bundledassets/characters/monsters/s00/elementaldaored/elementaldaored_lq/elementaldaored_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/elementaldaored/elementaldaored_hq/elementaldaored_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_elementaldaored.png",
+   "slug": "elementaldaored"
+  },
+  {
+   "id": 134,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/ENDRIAGATAILED_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/endriagatailed_lvl2/endriagatailed_lvl2_lq/endriagatailed_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/endriagatailed_lvl2/endriagatailed_lvl2_hq/endriagatailed_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_endriagatailed_lvl2.png",
+   "slug": "endriagatailed_lvl2"
+  },
+  {
+   "id": 135,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/FLEDER",
+   "model": "Assets/_bundledassets/characters/monsters/s00/fleder/fleder_lq/fleder_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/fleder/fleder_hq/fleder_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_fleder.png",
+   "slug": "fleder"
+  },
+  {
+   "id": 136,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/FLEDER_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/fleder_lvl2/fleder_lvl2_lq/fleder_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/fleder_lvl2/fleder_lvl2_hq/fleder_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_fleder_lvl2.png",
+   "slug": "fleder_lvl2"
+  },
+  {
+   "id": 137,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/FOGLINGTANGALORE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/foglingtangalore/foglingtangalore_lq/foglingtangalore_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/foglingtangalore/foglingtangalore_hq/foglingtangalore_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_foglingtangalore.png",
+   "slug": "foglingtangalore"
+  },
+  {
+   "id": 138,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/FORKTAIL",
+   "model": "Assets/_bundledassets/characters/monsters/s00/forktail/forktail_lq/forktail_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/forktail/forktail_hq/forktail_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_forktail.png",
+   "slug": "forktail"
+  },
+  {
+   "id": 139,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/FORKTAIL_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/forktail_lvl2/forktail_lvl2_lq/forktail_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/forktail_lvl2/forktail_lvl2_hq/forktail_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_forktail_lvl2.png",
+   "slug": "forktail_lvl2"
+  },
+  {
+   "id": 140,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/FORKTAILBLUE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/forktailblue/forktailblue_lq/forktailblue_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/forktailblue/forktailblue_hq/forktailblue_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_forktailblue.png",
+   "slug": "forktailblue"
+  },
+  {
+   "id": 141,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/FUGAS",
+   "model": "Assets/_bundledassets/characters/monsters/s00/fugas/fugas_lq/fugas_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/fugas/fugas_hq/fugas_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_fugas.png",
+   "slug": "fugas"
+  },
+  {
+   "id": 142,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/FUGAS_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/fugas_lvl2/fugas_lvl2_lq/fugas_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/fugas_lvl2/fugas_lvl2_hq/fugas_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_fugas_lvl2.png",
+   "slug": "fugas_lvl2"
+  },
+  {
+   "id": 143,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/GARKAIN_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/garkain_lvl1/garkain_lvl1_lq/garkain_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/garkain_lvl1/garkain_lvl1_hq/garkain_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_garkain_lvl1.png",
+   "slug": "garkain_lvl1"
+  },
+  {
+   "id": 144,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/GARKAIN_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/garkain_lvl3/garkain_lvl3_lq/garkain_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/garkain_lvl3/garkain_lvl3_hq/garkain_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_garkain_lvl3.png",
+   "slug": "garkain_lvl3"
+  },
+  {
+   "id": 145,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/GARKAINALPHA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/garkainalpha/garkainalpha_lq/garkainalpha_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/garkainalpha/garkainalpha_hq/garkainalpha_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_garkainalpha.png",
+   "slug": "garkainalpha"
+  },
+  {
+   "id": 146,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/GERNICHORA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/gernichora/gernichora_lq/gernichora_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/gernichora/gernichora_hq/gernichora_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_gernichora.png",
+   "slug": "gernichora"
+  },
+  {
+   "id": 147,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/GHOUL_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/ghoul_lvl2/ghoul_lvl2_lq/ghoul_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/ghoul_lvl2/ghoul_lvl2_hq/ghoul_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_ghoul_lvl2.png",
+   "slug": "ghoul_lvl2"
+  },
+  {
+   "id": 148,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/GOLEMICE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/golemice/golemice_lq/golemice_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/golemice/golemice_hq/golemice_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_golemice.png",
+   "slug": "golemice"
+  },
+  {
+   "id": 149,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/GRAVEHAG",
+   "model": "Assets/_bundledassets/characters/monsters/s00/gravehag/gravehag_lq/gravehag_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/gravehag/gravehag_hq/gravehag_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_gravehag.png",
+   "slug": "gravehag"
+  },
+  {
+   "id": 150,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/GRAVEHAG_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/gravehag_lvl2/gravehag_lvl2_lq/gravehag_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/gravehag_lvl2/gravehag_lvl2_hq/gravehag_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_gravehag_lvl2.png",
+   "slug": "gravehag_lvl2"
+  },
+  {
+   "id": 151,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/GRAVEHAGMOURNTART",
+   "model": "Assets/_bundledassets/characters/monsters/s00/gravehagmourntart/gravehagmourntart_lq/gravehagmourntart_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/gravehagmourntart/gravehagmourntart_hq/gravehagmourntart_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_gravehagmourntart.png",
+   "slug": "gravehagmourntart"
+  },
+  {
+   "id": 152,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/GROTTORE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/grottore/grottore_lq/grottore_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/grottore/grottore_hq/grottore_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_grottore.png",
+   "slug": "grottore"
+  },
+  {
+   "id": 153,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/GRYPHONARCH",
+   "model": "Assets/_bundledassets/characters/monsters/s00/gryphonarch/gryphonarch_lq/gryphonarch_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/gryphonarch/gryphonarch_hq/gryphonarch_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_gryphonarch.png",
+   "slug": "gryphonarch"
+  },
+  {
+   "id": 154,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/HARPY",
+   "model": "Assets/_bundledassets/characters/monsters/s00/harpy/harpy_lq/harpy_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/harpy/harpy_hq/harpy_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_harpy.png",
+   "slug": "harpy"
+  },
+  {
+   "id": 155,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/HARPY_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/harpy_lvl3/harpy_lvl3_lq/harpy_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/harpy_lvl3/harpy_lvl3_hq/harpy_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_harpy_lvl3.png",
+   "slug": "harpy_lvl3"
+  },
+  {
+   "id": 156,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/HARPYERYNIA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/harpyerynia/harpyerynia_lq/harpyerynia_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/harpyerynia/harpyerynia_hq/harpyerynia_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_harpyerynia.png",
+   "slug": "harpyerynia"
+  },
+  {
+   "id": 157,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/HEADLESS_NOBLEMAN",
+   "model": "Assets/_bundledassets/characters/monsters/s00/headless_nobleman/headless_nobleman_lq/headless_nobleman_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/headless_nobleman/headless_nobleman_hq/headless_nobleman_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_headless_nobleman.png",
+   "slug": "headless_nobleman"
+  },
+  {
+   "id": 158,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/HIVER_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/hiver_lvl2/hiver_lvl2_lq/hiver_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/hiver_lvl2/hiver_lvl2_hq/hiver_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_hiver_lvl2.png",
+   "slug": "hiver_lvl2"
+  },
+  {
+   "id": 159,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/HYM",
+   "model": "Assets/_bundledassets/characters/monsters/s00/hym/hym_lq/hym_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/hym/hym_hq/hym_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_hym.png",
+   "slug": "hym"
+  },
+  {
+   "id": 160,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ICEGIANT",
+   "model": "Assets/_bundledassets/characters/monsters/s00/icegiant/icegiant_lq/icegiant_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/icegiant/icegiant_hq/icegiant_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_icegiant.png",
+   "slug": "icegiant"
+  },
+  {
+   "id": 161,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/KATAKAN",
+   "model": "Assets/_bundledassets/characters/monsters/s00/katakan/katakan_lq/katakan_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/katakan/katakan_hq/katakan_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_katakan.png",
+   "slug": "katakan"
+  },
+  {
+   "id": 206,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/KATAKAN_LVL4",
+   "model": "Assets/_bundledassets/characters/monsters/s00/katakan_lvl4/katakan_lvl4_lq/katakan_lvl4_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/katakan_lvl4/katakan_lvl4_hq/katakan_lvl4_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_katakan_lvl4.png",
+   "slug": "katakan_lvl4"
+  },
+  {
+   "id": 162,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/KIKIMORE_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/kikimore_lvl1/kikimore_lvl1_lq/kikimore_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/kikimore_lvl1/kikimore_lvl1_hq/kikimore_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_kikimore_lvl1.png",
+   "slug": "kikimore_lvl1"
+  },
+  {
+   "id": 163,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/KIKIMORE_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/kikimore_lvl2/kikimore_lvl2_lq/kikimore_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/kikimore_lvl2/kikimore_lvl2_hq/kikimore_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_kikimore_lvl2.png",
+   "slug": "kikimore_lvl2"
+  },
+  {
+   "id": 164,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/KNIGHT_DARK",
+   "model": "Assets/_bundledassets/characters/monsters/s00/knight_dark/knight_dark_lq/knight_dark_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/knight_dark/knight_dark_hq/knight_dark_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_knight_dark.png",
+   "slug": "knight_dark"
+  },
+  {
+   "id": 165,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/KNIGHT_FIRE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/knight_fire/knight_fire_lq/knight_fire_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/knight_fire/knight_fire_hq/knight_fire_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_knight_fire.png",
+   "slug": "knight_fire"
+  },
+  {
+   "id": 166,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/LESHENSDOG",
+   "model": "Assets/_bundledassets/characters/monsters/s00/leshensdog/leshensdog_lq/leshensdog_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/leshensdog/leshensdog_hq/leshensdog_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_leshensdog.png",
+   "slug": "leshensdog"
+  },
+  {
+   "id": 167,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/LYCANTROP",
+   "model": "Assets/_bundledassets/characters/monsters/s00/lycantrop/lycantrop_lq/lycantrop_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/lycantrop/lycantrop_hq/lycantrop_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_lycantrop.png",
+   "slug": "lycantrop"
+  },
+  {
+   "id": 168,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/NEKKER_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/nekker_lvl2/nekker_lvl2_lq/nekker_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/nekker_lvl2/nekker_lvl2_hq/nekker_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_nekker_lvl2.png",
+   "slug": "nekker_lvl2"
+  },
+  {
+   "id": 169,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/NEKKER_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/nekker_lvl3/nekker_lvl3_lq/nekker_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/nekker_lvl3/nekker_lvl3_hq/nekker_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_nekker_lvl3.png",
+   "slug": "nekker_lvl3"
+  },
+  {
+   "id": 170,
+   "family_id": 3,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/NEKKERWARRIOR_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/nekkerwarrior_lvl2/nekkerwarrior_lvl2_lq/nekkerwarrior_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/nekkerwarrior_lvl2/nekkerwarrior_lvl2_hq/nekkerwarrior_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_nekkerwarrior_lvl2.png",
+   "slug": "nekkerwarrior_lvl2"
+  },
+  {
+   "id": 171,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/NIGHTWRAITH",
+   "model": "Assets/_bundledassets/characters/monsters/s00/nightwraith/nightwraith_lq/nightwraith_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/nightwraith/nightwraith_hq/nightwraith_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_nightwraith.png",
+   "slug": "nightwraith"
+  },
+  {
+   "id": 172,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/NIGHTWRAITH_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/nightwraith_lvl2/nightwraith_lvl2_lq/nightwraith_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/nightwraith_lvl2/nightwraith_lvl2_hq/nightwraith_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_nightwraith_lvl2.png",
+   "slug": "nightwraith_lvl2"
+  },
+  {
+   "id": 173,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/NOONWRAITH",
+   "model": "Assets/_bundledassets/characters/monsters/s00/noonwraith/noonwraith_lq/noonwraith_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/noonwraith/noonwraith_hq/noonwraith_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_noonwraith.png",
+   "slug": "noonwraith"
+  },
+  {
+   "id": 174,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/NOONWRAITH_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/noonwraith_lvl2/noonwraith_lvl2_lq/noonwraith_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/noonwraith_lvl2/noonwraith_lvl2_hq/noonwraith_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_noonwraith_lvl2.png",
+   "slug": "noonwraith_lvl2"
+  },
+  {
+   "id": 175,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/NOONWRAITH_PLAGUE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/noonwraith_plague/noonwraith_plague_lq/noonwraith_plague_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/noonwraith_plague/noonwraith_plague_hq/noonwraith_plague_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_noonwraith_plague.png",
+   "slug": "noonwraith_plague"
+  },
+  {
+   "id": 176,
+   "family_id": 10,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ORIGINALVAMPIRE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/originalvampire/originalvampire_lq/originalvampire_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/originalvampire/originalvampire_hq/originalvampire_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_originalvampire.png",
+   "slug": "originalvampire"
+  },
+  {
+   "id": 177,
+   "family_id": 5,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/PIXIE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/pixie/pixie_lq/pixie_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/pixie/pixie_hq/pixie_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_pixie.png",
+   "slug": "pixie"
+  },
+  {
+   "id": 178,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/ROTFIEND_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/rotfiend_lvl1/rotfiend_lvl1_lq/rotfiend_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/rotfiend_lvl1/rotfiend_lvl1_hq/rotfiend_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_rotfiend_lvl1.png",
+   "slug": "rotfiend_lvl1"
+  },
+  {
+   "id": 179,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ROTFIEND_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/rotfiend_lvl2/rotfiend_lvl2_lq/rotfiend_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/rotfiend_lvl2/rotfiend_lvl2_hq/rotfiend_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_rotfiend_lvl2.png",
+   "slug": "rotfiend_lvl2"
+  },
+  {
+   "id": 180,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/SANDCRAB",
+   "model": "Assets/_bundledassets/characters/monsters/s00/sandcrab/sandcrab_lq/sandcrab_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/sandcrab/sandcrab_hq/sandcrab_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_sandcrab.png",
+   "slug": "sandcrab"
+  },
+  {
+   "id": 181,
+   "family_id": 8,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/SCOLOPENDROMORPH_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/scolopendromorph_lvl2/scolopendromorph_lvl2_lq/scolopendromorph_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/scolopendromorph_lvl2/scolopendromorph_lvl2_hq/scolopendromorph_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_scolopendromorph_lvl2.png",
+   "slug": "scolopendromorph_lvl2"
+  },
+  {
+   "id": 182,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/SCURVER",
+   "model": "Assets/_bundledassets/characters/monsters/s00/scurver/scurver_lq/scurver_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/scurver/scurver_hq/scurver_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_scurver.png",
+   "slug": "scurver"
+  },
+  {
+   "id": 183,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/SHARLEY",
+   "model": "Assets/_bundledassets/characters/monsters/s00/sharley/sharley_lq/sharley_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/sharley/sharley_hq/sharley_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_sharley.png",
+   "slug": "sharley"
+  },
+  {
+   "id": 184,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/SHARLEY_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/sharley_lvl2/sharley_lvl2_lq/sharley_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/sharley_lvl2/sharley_lvl2_hq/sharley_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_sharley_lvl2.png",
+   "slug": "sharley_lvl2"
+  },
+  {
+   "id": 185,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/SHARLEY_LVL3",
+   "model": "Assets/_bundledassets/characters/monsters/s00/sharley_lvl3/sharley_lvl3_lq/sharley_lvl3_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/sharley_lvl3/sharley_lvl3_hq/sharley_lvl3_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_sharley_lvl3.png",
+   "slug": "sharley_lvl3"
+  },
+  {
+   "id": 186,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/SIRENLAMIA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/sirenlamia/sirenlamia_lq/sirenlamia_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/sirenlamia/sirenlamia_hq/sirenlamia_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_sirenlamia.png",
+   "slug": "sirenlamia"
+  },
+  {
+   "id": 187,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/SIRENMORSZCZYNKA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/sirenmorszczynka/sirenmorszczynka_lq/sirenmorszczynka_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/sirenmorszczynka/sirenmorszczynka_hq/sirenmorszczynka_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_sirenmorszczynka.png",
+   "slug": "sirenmorszczynka"
+  },
+  {
+   "id": 188,
+   "family_id": 6,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/SPRIGGAN",
+   "model": "Assets/_bundledassets/characters/monsters/s00/spriggan/spriggan_lq/spriggan_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/spriggan/spriggan_hq/spriggan_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_spriggan.png",
+   "slug": "spriggan"
+  },
+  {
+   "id": 189,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/STRIGA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/striga/striga_lq/striga_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/striga/striga_hq/striga_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_striga.png",
+   "slug": "striga"
+  },
+  {
+   "id": 190,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/SUCCUBUS_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/succubus_lvl1/succubus_lvl1_lq/succubus_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/succubus_lvl1/succubus_lvl1_hq/succubus_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_succubus_lvl1.png",
+   "slug": "succubus_lvl1"
+  },
+  {
+   "id": 191,
+   "family_id": 4,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/SUCCUBUS_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/succubus_lvl2/succubus_lvl2_lq/succubus_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/succubus_lvl2/succubus_lvl2_hq/succubus_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_succubus_lvl2.png",
+   "slug": "succubus_lvl2"
+  },
+  {
+   "id": 192,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/TOAD",
+   "model": "Assets/_bundledassets/characters/monsters/s00/toad/toad_lq/toad_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/toad/toad_hq/toad_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_toad.png",
+   "slug": "toad"
+  },
+  {
+   "id": 193,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/ULFHEDINN",
+   "model": "Assets/_bundledassets/characters/monsters/s00/ulfhedinn/ulfhedinn_lq/ulfhedinn_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/ulfhedinn/ulfhedinn_hq/ulfhedinn_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_ulfhedinn.png",
+   "slug": "ulfhedinn"
+  },
+  {
+   "id": 194,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/WATERHAG",
+   "model": "Assets/_bundledassets/characters/monsters/s00/waterhag/waterhag_lq/waterhag_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/waterhag/waterhag_hq/waterhag_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_waterhag.png",
+   "slug": "waterhag"
+  },
+  {
+   "id": 195,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/WATERHAGABAYA",
+   "model": "Assets/_bundledassets/characters/monsters/s00/waterhagabaya/waterhagabaya_lq/waterhagabaya_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/waterhagabaya/waterhagabaya_hq/waterhagabaya_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_waterhagabaya.png",
+   "slug": "waterhagabaya"
+  },
+  {
+   "id": 196,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/WATERHAGBILGEHAG",
+   "model": "Assets/_bundledassets/characters/monsters/s00/waterhagbilgehag/waterhagbilgehag_lq/waterhagbilgehag_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/waterhagbilgehag/waterhagbilgehag_hq/waterhagbilgehag_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_waterhagbilgehag.png",
+   "slug": "waterhagbilgehag"
+  },
+  {
+   "id": 197,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/WERERAT",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wererat/wererat_lq/wererat_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wererat/wererat_hq/wererat_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wererat.png",
+   "slug": "wererat"
+  },
+  {
+   "id": 198,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/WERERAT_LVL2",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wererat_lvl2/wererat_lvl2_lq/wererat_lvl2_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wererat_lvl2/wererat_lvl2_hq/wererat_lvl2_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wererat_lvl2.png",
+   "slug": "wererat_lvl2"
+  },
+  {
+   "id": 199,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/WERERAT_TREASURE",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wererat_treasure/wererat_treasure_lq/wererat_treasure_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wererat_treasure/wererat_treasure_hq/wererat_treasure_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wererat_treasure.png",
+   "slug": "wererat_treasure"
+  },
+  {
+   "id": 200,
+   "family_id": 11,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/WERERAT_YELLOW",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wererat_yellow/wererat_yellow_lq/wererat_yellow_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wererat_yellow/wererat_yellow_hq/wererat_yellow_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wererat_yellow.png",
+   "slug": "wererat_yellow"
+  },
+  {
+   "id": 201,
+   "family_id": 1,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/WICHT",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wicht/wicht_lq/wicht_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wicht/wicht_hq/wicht_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wicht.png",
+   "slug": "wicht"
+  },
+  {
+   "id": 202,
+   "family_id": 7,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/WRAITHPENITANT",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wraithpenitant/wraithpenitant_lq/wraithpenitant_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wraithpenitant/wraithpenitant_hq/wraithpenitant_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wraithpenitant.png",
+   "slug": "wraithpenitant"
+  },
+  {
+   "id": 203,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 1,
+   "difficulty": 1,
+   "name": "MONSTERS/NAMES/WYVERN_LVL1",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wyvern_lvl1/wyvern_lvl1_lq/wyvern_lvl1_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wyvern_lvl1/wyvern_lvl1_hq/wyvern_lvl1_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wyvern_lvl1.png",
+   "slug": "wyvern_lvl1"
+  },
+  {
+   "id": 204,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 3,
+   "difficulty": 3,
+   "name": "MONSTERS/NAMES/WYVERNGOLD",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wyverngold/wyverngold_lq/wyverngold_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wyverngold/wyverngold_hq/wyverngold_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wyverngold.png",
+   "slug": "wyverngold"
+  },
+  {
+   "id": 205,
+   "family_id": 2,
+   "encounter_distance": 50,
+   "attack_animation_time": 2000,
+   "rarity": 2,
+   "difficulty": 2,
+   "name": "MONSTERS/NAMES/WYVERNROYAL",
+   "model": "Assets/_bundledassets/characters/monsters/s00/wyvernroyal/wyvernroyal_lq/wyvernroyal_lq.prefab",
+   "image": "Assets/_bundledassets/characters/monsters/s00/wyvernroyal/wyvernroyal_hq/wyvernroyal_hq_presentation.prefab",
+   "trophy": "Assets/_bundledassets/ui/monster_trophies/trophy_wyvernroyal.png",
+   "slug": "wyvernroyal"
+  }
+ ],
+ "vulnerabilities": {
+  "alghoul_lvl2": [
+   6,
+   2
+  ],
+  "alp": [
+   5,
+   2
+  ],
+  "ancientlessun": [
+   6,
+   3,
+   1
+  ],
+  "arachas_lvl2": [
+   6,
+   3
+  ],
+  "arachas_lvl4": [
+   6,
+   3
+  ],
+  "arachasmorph": [
+   5,
+   3,
+   1
+  ],
+  "archespore_lvl2": [
+   5,
+   2,
+   1
+  ],
+  "barghest": [
+   5,
+   2
+  ],
+  "basilisk_lvl1": [
+   6,
+   2,
+   4
+  ],
+  "basiliskwhite": [
+   6,
+   2,
+   4
+  ],
+  "bies_lvl2": [
+   6,
+   3,
+   1
+  ],
+  "bloedzuiger": [
+   6,
+   3,
+   1
+  ],
+  "bloedzuiger_lvl2": [
+   6,
+   3,
+   1
+  ],
+  "bruxa": [
+   5,
+   2,
+   1
+  ],
+  "caretaker": [
+   5,
+   3,
+   4
+  ],
+  "cavetroll_lvl2": [
+   6,
+   3,
+   1,
+   4
+  ],
+  "cavetroll_lvl3": [
+   6,
+   3,
+   4
+  ],
+  "chort_lvl1": [
+   6,
+   3
+  ],
+  "chort_lvl2": [
+   6,
+   3
+  ],
+  "chort_lvl3": [
+   6,
+   3
+  ],
+  "cockatrice": [
+   6,
+   2,
+   1,
+   4
+  ],
+  "cockatriceshrieker": [
+   6,
+   2,
+   1,
+   4
+  ],
+  "cyclop": [
+   6,
+   3
+  ],
+  "cyclop_lvl2": [
+   6,
+   3
+  ],
+  "cyclop_lvl3": [
+   6,
+   3
+  ],
+  "djinn": [
+   7
+  ],
+  "dracolizard": [
+   6,
+   3,
+   4
+  ],
+  "dracolizardmatriarch": [
+   6,
+   3,
+   4
+  ],
+  "drowner_lvl2": [
+   5,
+   2,
+   1
+  ],
+  "drownermucknixer": [
+   5,
+   3,
+   1
+  ],
+  "ekima": [
+   6,
+   3,
+   1
+  ],
+  "elementaldaoearth": [
+   7
+  ],
+  "elementaldaored": [
+   7
+  ],
+  "endriagatailed_lvl2": [
+   6,
+   3,
+   1
+  ],
+  "fleder": [
+   6,
+   3
+  ],
+  "fleder_lvl2": [
+   6,
+   3
+  ],
+  "foglingtangalore": [
+   5,
+   2,
+   4
+  ],
+  "forktail": [
+   6,
+   3,
+   4
+  ],
+  "forktail_lvl2": [
+   6,
+   3
+  ],
+  "forktailblue": [
+   6,
+   3,
+   4
+  ],
+  "fugas": [
+   6,
+   3
+  ],
+  "fugas_lvl2": [
+   6,
+   3
+  ],
+  "garkain_lvl1": [
+   6,
+   2
+  ],
+  "garkain_lvl3": [
+   6,
+   2
+  ],
+  "garkainalpha": [
+   6,
+   2
+  ],
+  "gernichora": [
+   6,
+   3,
+   1
+  ],
+  "ghoul_lvl2": [
+   5,
+   2
+  ],
+  "golemice": [
+   7
+  ],
+  "gravehag": [
+   5,
+   2
+  ],
+  "gravehag_lvl2": [
+   5,
+   2
+  ],
+  "gravehagmourntart": [
+   5,
+   2
+  ],
+  "grottore": [
+   6,
+   3
+  ],
+  "gryphonarch": [
+   5,
+   3,
+   1,
+   4
+  ],
+  "harpy": [
+   5,
+   3,
+   1,
+   4
+  ],
+  "harpy_lvl3": [
+   6,
+   3,
+   1,
+   4
+  ],
+  "harpyerynia": [
+   6,
+   3,
+   1,
+   4
+  ],
+  "headless_nobleman": [
+   5,
+   2
+  ],
+  "hiver_lvl2": [
+   5,
+   2,
+   1,
+   4
+  ],
+  "hym": [
+   5,
+   2,
+   1
+  ],
+  "icegiant": [
+   6,
+   3,
+   1
+  ],
+  "katakan": [
+   6,
+   3
+  ],
+  "katakan_lvl4": [
+   6,
+   3
+  ],
+  "kikimore_lvl1": [
+   5,
+   3,
+   1
+  ],
+  "kikimore_lvl2": [
+   6,
+   3,
+   1
+  ],
+  "knight_dark": [
+   6,
+   3
+  ],
+  "knight_fire": [
+   6,
+   3
+  ],
+  "leshensdog": [
+   6,
+   3,
+   1
+  ],
+  "lycantrop": [
+   5,
+   2,
+   1
+  ],
+  "nekker_lvl2": [
+   5,
+   3,
+   4
+  ],
+  "nekker_lvl3": [
+   5,
+   2,
+   4
+  ],
+  "nekkerwarrior_lvl2": [
+   6,
+   2
+  ],
+  "nightwraith": [
+   5,
+   2
+  ],
+  "nightwraith_lvl2": [
+   5,
+   2
+  ],
+  "noonwraith": [
+   5,
+   2
+  ],
+  "noonwraith_lvl2": [
+   5,
+   2
+  ],
+  "noonwraith_plague": [
+   5,
+   2
+  ],
+  "originalvampire": [
+   5,
+   2,
+   1
+  ],
+  "pixie": [
+   5,
+   2
+  ],
+  "rotfiend_lvl1": [
+   5,
+   2,
+   1
+  ],
+  "rotfiend_lvl2": [
+   5,
+   2,
+   1
+  ],
+  "sandcrab": [
+   6,
+   3
+  ],
+  "scolopendromorph_lvl2": [
+   6,
+   3
+  ],
+  "scurver": [
+   5,
+   3,
+   1
+  ],
+  "sharley": [
+   6,
+   3,
+   4
+  ],
+  "sharley_lvl2": [
+   6,
+   3,
+   4
+  ],
+  "sharley_lvl3": [
+   6,
+   3,
+   4
+  ],
+  "sirenlamia": [
+   5,
+   2,
+   1,
+   4
+  ],
+  "sirenmorszczynka": [
+   5,
+   2,
+   1,
+   4
+  ],
+  "spriggan": [
+   6,
+   3,
+   1
+  ],
+  "striga": [
+   5,
+   2
+  ],
+  "succubus_lvl1": [
+   5,
+   3,
+   4
+  ],
+  "succubus_lvl2": [
+   5,
+   3,
+   4
+  ],
+  "toad": [
+   6,
+   3
+  ],
+  "ulfhedinn": [
+   5,
+   2,
+   1
+  ],
+  "waterhag": [
+   5,
+   2,
+   1
+  ],
+  "waterhagabaya": [
+   5,
+   3,
+   1
+  ],
+  "waterhagbilgehag": [
+   5,
+   3,
+   1
+  ],
+  "wererat": [
+   5,
+   2,
+   4
+  ],
+  "wererat_lvl2": [
+   5,
+   2,
+   4
+  ],
+  "wererat_treasure": [
+   6,
+   2
+  ],
+  "wererat_yellow": [
+   6,
+   2
+  ],
+  "wicht": [
+   5,
+   2
+  ],
+  "wraithpenitant": [
+   5,
+   2
+  ],
+  "wyvern_lvl1": [
+   6,
+   3
+  ],
+  "wyverngold": [
+   6,
+   2,
+   4
+  ],
+  "wyvernroyal": [
+   6,
+   3,
+   1
+  ]
+ },
+ "left_out": {
+  "actor_fightable": "fight target with its settings attached by its graph",
+  "dummy_lvl1": "fight target with its settings attached by its graph",
+  "dummy_lvl2": "fight target with its settings attached by its graph",
+  "dummy_lvl3": "fight target with its settings attached by its graph",
+  "golem_lvl2_hq01": "fight target with its settings attached by its graph",
+  "hermit_fightable": "fight target with its settings attached by its graph",
+  "likho_cursed": "no bestiary name or texts in I2Languages"
+ }
+}

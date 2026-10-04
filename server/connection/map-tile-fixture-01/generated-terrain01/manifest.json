@@ -1,0 +1,11 @@
+{
+  "status": "SYNTHETIC_FIXTURE_ONLY_NOT_CLIENT_VALIDATED",
+  "bytes": 47,
+  "sha256": "dcb12aff9e921e2bc02edc91868131a7bd32208b7ff3acff3f72c86a8d9e1c8e",
+  "coordinates_source": "invented constants(1,2,3)",
+  "grid": "first derivative;2x2;all differences0;multiplier1.0",
+  "derived_heights": "all0 by per-row prefix sum",
+  "scope": "Explicit flat terrain candidate only; renderer/interpolation not verified.",
+  "client_execution": false,
+  "served_over_network": false
+}

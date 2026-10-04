@@ -1,6 +1,5 @@
 using System.IO.Compression;
 using System.Text;
-using System.Text.Json;
 
 namespace WitcherRevival.Server.Net;
 
@@ -20,8 +19,11 @@ public static class PreloaderStaticData
     public static readonly byte[] Magic = { 0x90, 0x43, 0x28, 0x4A };
     public const byte MessageType = 0x04;
 
-    // Container's 82 top-level arrays, keyed by their actual [DataMember(Name=...)] snake_case values
-    // extracted from libil2cpp.so DataMemberAttribute generator stubs (RVAs in dump.cs 692936-693099).
+    // 82 inherited top-level arrays, plus five confirmed empty 1.1.116 relations:
+    // BombEffects, three inputs of LoadContracts/MapDetails, and Events.
+    // The inherited names/offset annotations below describe the upstream 1.0.43 data;
+    // this remains a partial sample, not the complete 92-field 1.1.116 Container.
+    // Names were extracted from libil2cpp.so DataMemberAttribute generator stubs.
     // Il2CppDumper hides the Name= arg — every field has a DIFFERENT snake_case name from the C# field.
     // IL2CPP DCJS matches JSON keys against these Name= values; sending PascalCase field names → all null.
     // Order = field-declaration order (struct offsets 0x10..0x298); DCJS reader is forward-only.
@@ -37,9 +39,12 @@ public static class PreloaderStaticData
         "contract_actions",               // 0x40  ContractActions
         "contract_crafts",                // 0x48  ContractCrafts
         "contract_combat_usages",         // 0x50  ContractCombatPreparationItems
+        "contract_allowed_swords",        // 1.1.116 ContractSwordUsages, empty boot mapping
         "contract_monsters",              // 0x58  ContractMonsters
         "contract_quests",                // 0x60  ContractQuests
         "contract_skills",                // 0x68  ContractSkills
+        "contract_ingredients",           // 1.1.116 ContractIngredients, empty boot mapping
+        "contract_bombs",                 // 1.1.116 ContractBombs, empty boot mapping
         "daily_quests",                   // 0x70  DailyContracts
         "difficulties",                   // 0x78  Difficulties
         "effects",                        // 0x80  Effects
@@ -51,6 +56,7 @@ public static class PreloaderStaticData
         "inapp_prices",                   // 0xB0  InAppPrices
         "inapp_price_shops",              // 0xB8  InAppPricePerShops
         "potion_to_effect",               // 0xC0  PotionEffects
+        "bomb_to_effect",                 // 1.1.116 BombEffects: empty boot mapping, no recovered balance
         "oil_to_effect",                  // 0xC8  OilEffects
         "skill_to_effect",                // 0xD0  SkillEffects
         "sword_to_effect",                // 0xD8  SwordEffects
@@ -110,6 +116,14 @@ public static class PreloaderStaticData
         "consumables_player_modifiers",   // 0x288 ConsumablesPlayerModifiers
         "summoning_scrolls_player_modifiers", // 0x290 SummoningScrollsPlayerModifiers
         "packs_types",                    // 0x298 PackTypes
+        "events",                        // 1.1.116 Events: empty boot collection, no recovered event data
+        // The remaining 1.1.116 Container arrays (DataMember names from the client). A missing key leaves the
+        // array null: DataManager.LoadShop reads ShopBundlesAvailability for every bundle and throws on null.
+        "shop_bundles_availability",
+        "shop_bundles_availability_data",
+        "daily_quest_contracts",
+        "daily_quest_rewards",
+        "event_rewards",
     };
 
     // Static-data content for the info screens (Equipment, Bestiary, Skills, Achievements, Statistics)
@@ -160,35 +174,254 @@ public static class PreloaderStaticData
     //
     // Each entry is one JSON object per element; BuildContainerJson joins them into a compact
     // single-line JSON array (same wire shape the client already accepted for the loadout arrays).
-    // The rows themselves live in StaticData/static_data.json: { "<container array name>": [ { element }, ... ] }, keys in
-    // DataMember Name= snake_case and field order; "_notes" keeps the per-table findings. Rows are passed through
-    // verbatim (GetRawText keeps key order). tools/data_sources/ rebuilds the wiki-derived tables in that file.
-    private static readonly Dictionary<string, string[]> ContentOverrides = LoadContent();
-
-    private static Dictionary<string, string[]> LoadContent()
+    internal static readonly Dictionary<string, string[]> ContentOverrides = new()
     {
-        using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "StaticData", "static_data.json")));
-        var tables = new Dictionary<string, string[]>();
-        foreach (var table in doc.RootElement.EnumerateObject())
-            if (!table.Name.StartsWith('_'))
-                tables[table.Name] = table.Value.EnumerateArray().Select(row => row.GetRawText()).ToArray();
-        return tables;
-    }
+        // Structural investigation-entry fixture: the donor requests Bomb 401.
+        // Exact old fields/types and empty relation branches are verified in
+        // connection/fight-equipment-data-review/. Visual selection and zero
+        // stats are authored placeholders, not historical balance or combat data.
+        ["bombs"] = new[]
+        {
+            """{"id":401,"slug":"bomb_basic","priority":0,"delay":0,"duration":0,"value":0,"radius":0,"explode_style":0,"prefab_path":"assets/_bundledassets/appearance/bomb/bomb_basic/prefab_bomb_basic.prefab"}""",
+        },
+        // Authored prologue fixture: wire node IDs 1/2 belong to tracked quest 145.
+        // Exact 1.1.116 DataMember names are verified in connection/quest-node-data-review/.
+        // One output/edge makes node 1 the sole root; names/criteria/topology are not
+        // recovered historical records. These quest rows add no reward or combat data.
+        ["quests"] = new[]
+        {
+            """{"id":145,"season_id":0,"name":"LAB prologue","journal_log":"","activation_criteria":""}""",
+        },
+        ["quest_nodes"] = new[]
+        {
+            """{"id":1,"quest_id":145,"name":"LAB Thorstein","activation_criteria":""}""",
+            """{"id":2,"quest_id":145,"name":"LAB dead horse","activation_criteria":""}""",
+            """{"id":3,"quest_id":145,"name":"LAB griffin","activation_criteria":""}""",
+        },
+        ["quest_node_outputs"] = new[]
+        {
+            """{"id":1,"quest_node_id":1,"name":"thorstein","endpoint":0}""",
+            """{"id":2,"quest_node_id":2,"name":"2ghouls_left","endpoint":0}""",
+        },
+        ["quest_node_edges"] = new[]
+        {
+            """{"from_quest_node_output_id":1,"to_quest_node_id":2}""",
+            """{"from_quest_node_output_id":2,"to_quest_node_id":3}""",
+        },
+        // Synthetic boot fixture: RPC94 RewardId=0 resolves to existing sword type9/id1.
+        // Exact 1.1.116 schema and lookup: connection/weekly-reward-*-review/.
+        // Not historical weekly rewards; reward claiming and Sprite loading require runtime checks.
+        ["weekly_quests_rewards"] = new[]
+        {
+            """{"id":0,"weekly_quest_tier_id":0,"item_type_id":9,"amount":1,"gold":0,"item_id":1}""",
+        },
+        ["swords"] = new[]
+        {
+            """{"id":1,"slug":"sword_steel_griffin","priority":0,"sword_type":0,"prefab_path":"Assets/_bundledassets/appearance/sword/sword_steel_griffin/prefab_sword_steel_griffin.prefab","auto_equip_priority":0}""",
+            """{"id":2,"slug":"sword_silver_griffin","priority":1,"sword_type":1,"prefab_path":"Assets/_bundledassets/appearance/sword/sword_silver_griffin/prefab_sword_silver_griffin.prefab","auto_equip_priority":1}""",
+            """{"id":3,"slug":"sword_steel_wolven","priority":2,"sword_type":0,"prefab_path":"Assets/_bundledassets/appearance/sword/sword_steel_wolven/prefab_sword_steel_wolven.prefab","auto_equip_priority":2}""",
+            """{"id":4,"slug":"sword_silver_wolven","priority":3,"sword_type":1,"prefab_path":"Assets/_bundledassets/appearance/sword/sword_silver_wolven/prefab_sword_silver_wolven.prefab","auto_equip_priority":3}""",
+            """{"id":5,"slug":"sword_steel_ursine","priority":4,"sword_type":0,"prefab_path":"Assets/_bundledassets/appearance/sword/sword_steel_ursine/prefab_sword_steel_ursine.prefab","auto_equip_priority":4}""",
+            """{"id":6,"slug":"sword_silver_ursine","priority":5,"sword_type":1,"prefab_path":"Assets/_bundledassets/appearance/sword/sword_silver_ursine/prefab_sword_silver_ursine.prefab","auto_equip_priority":5}""",
+        },
+        ["armors"] = new[]
+        {
+            """{"id":1,"slug":"armor_ursine","priority":0,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_ursine/prefab_armor_ursine.prefab"}""",
+            """{"id":2,"slug":"armor_griffin","priority":1,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_griffin/prefab_armor_griffin.prefab"}""",
+            """{"id":3,"slug":"armor_wolven","priority":2,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_wolven/prefab_armor_wolven.prefab"}""",
+            """{"id":4,"slug":"armor_feline","priority":3,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_feline/prefab_armor_feline.prefab"}""",
+            """{"id":5,"slug":"armor_manticore","priority":4,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_manticore/prefab_armor_manticore.prefab"}""",
+            """{"id":6,"slug":"armor_kaer_morhen","priority":5,"prefab_path":"Assets/_bundledassets/appearance/armor/armor_kaer_morhen/prefab_armor_kaer_morhen.prefab"}""",
+        },
+        ["customization_heads"] = new[]
+        {
+            """{"id":1,"slug":"head_caucasian_1","prefab_path":"Assets/_bundledassets/appearance/head/head_caucasian_1/prefab_head_caucasian_1.prefab"}""",
+            """{"id":2,"slug":"head_asian_1","prefab_path":"Assets/_bundledassets/appearance/head/head_asian_1/prefab_head_asian_1.prefab"}""",
+            """{"id":3,"slug":"head_african_1","prefab_path":"Assets/_bundledassets/appearance/head/head_african_1/prefab_head_african_1.prefab"}""",
+        },
+        // Combat-tab skill tree (all slugs are real game_data/skills/<slug>.asset keys; row/column/icon/tab
+        // come from that scriptable, so the tree renders at its designed position). Roots: 1,2,3 (player-owned).
+        ["skills"] = new[]
+        {
+            """{"id":1,"slug":"fast_attack","cost":1,"required_level":1}""",
+            """{"id":2,"slug":"strong_attack","cost":1,"required_level":1}""",
+            """{"id":3,"slug":"parry","cost":1,"required_level":2}""",
+            """{"id":4,"slug":"muscle_memory","cost":1,"required_level":3,"parent_id":1}""",
+            """{"id":5,"slug":"strength_training","cost":1,"required_level":3,"parent_id":2}""",
+            """{"id":6,"slug":"hit_deflection","cost":2,"required_level":4,"parent_id":3}""",
+            """{"id":7,"slug":"precise_blows","cost":2,"required_level":5,"parent_id":4}""",
+            """{"id":8,"slug":"crushing_blows","cost":2,"required_level":5,"parent_id":5}""",
+        },
+        // Skill unlock effects. In 1.1.116, Effects.GetUtilityEffect builds UnlockBrainPatch for effect
+        // ids 47 "fastswordattack", 48 "strongswordattack", 49 "parry" and 50 "deflect";
+        // PlayerInventory.OnPlayerSkillsLoaded adds those patches for owned skills, and fights with
+        // FightEquipmentNode.OverrideSkills=0 (the prologue Alghul) use only them. Without these rows an
+        // owned "parry" skill has no effect and parrying is impossible. GetEffectLists looks every
+        // effect_id up in "effects" (effect_type_id 2 = EffectType.Utility). Keys are the verified
+        // DataMember names (Container.Effect: id, name, effect_type_id; Container.ItemEffect: item_id,
+        // effect_id, power, effect_apply_type_id); 18 = ApplyTime.OnSkillUnlock. Names and power are
+        // authored labels, not recovered server records; see connection/skill-effects-review/.
+        ["effects"] = new[]
+        {
+            """{"id":47,"name":"lab_unlock_fastswordattack","effect_type_id":2}""",
+            """{"id":48,"name":"lab_unlock_strongswordattack","effect_type_id":2}""",
+            """{"id":49,"name":"lab_unlock_parry","effect_type_id":2}""",
+            """{"id":50,"name":"lab_unlock_deflect","effect_type_id":2}""",
+        },
+        ["skill_to_effect"] = new[]
+        {
+            """{"item_id":1,"effect_id":47,"power":1,"effect_apply_type_id":18}""",
+            """{"item_id":2,"effect_id":48,"power":1,"effect_apply_type_id":18}""",
+            """{"item_id":3,"effect_id":49,"power":1,"effect_apply_type_id":18}""",
+            """{"item_id":6,"effect_id":50,"power":1,"effect_apply_type_id":18}""",
+        },
+        // Prerequisite edges mirror the parent_id tree (Skill.HasFulfilledPrerequisities checks these).
+        ["skill_requirements"] = new[]
+        {
+            """{"skill_id":4,"required_skill_id":1}""",
+            """{"skill_id":5,"required_skill_id":2}""",
+            """{"skill_id":6,"required_skill_id":3}""",
+            """{"skill_id":7,"required_skill_id":4}""",
+            """{"skill_id":8,"required_skill_id":5}""",
+        },
+        // Original eight monsters plus the separately documented synthetic Griffin fixture below have
+        // <slug>_lq + <slug>_hq(+_presentation) prefabs, <slug>_settings.asset and a trophy png
+        // in catalog.json. difficulty references difficulties ids 1..3 below (IIntStorage<Difficulty> lookup
+        // — a dangling id would fail). rarity indexes MonsterRaritySettings (common/rare/legendary).
+        ["monsters"] = new[]
+        {
+            """{"id":1,"family_id":1,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/GHOUL","model":"Assets/_bundledassets/characters/monsters/s00/ghoul/ghoul_lq/ghoul_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/ghoul/ghoul_hq/ghoul_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_ghoul.png","slug":"ghoul"}""",
+            """{"id":2,"family_id":1,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":2,"name":"MONSTERS/BESTIARY/ALGHOUL","model":"Assets/_bundledassets/characters/monsters/s00/alghoul/alghoul_lq/alghoul_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/alghoul/alghoul_hq/alghoul_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_alghoul.png","slug":"alghoul"}""",
+            """{"id":3,"family_id":1,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/DROWNER","model":"Assets/_bundledassets/characters/monsters/s00/drowner/drowner_lq/drowner_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/drowner/drowner_hq/drowner_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_drowner.png","slug":"drowner"}""",
+            """{"id":4,"family_id":3,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/NEKKER","model":"Assets/_bundledassets/characters/monsters/s00/nekker/nekker_lq/nekker_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/nekker/nekker_hq/nekker_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_nekker.png","slug":"nekker"}""",
+            """{"id":5,"family_id":3,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":2,"name":"MONSTERS/BESTIARY/NEKKERWARRIOR","model":"Assets/_bundledassets/characters/monsters/s00/nekkerwarrior/nekkerwarrior_lq/nekkerwarrior_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/nekkerwarrior/nekkerwarrior_hq/nekkerwarrior_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_nekker_warrior.png","slug":"nekkerwarrior"}""",
+            """{"id":6,"family_id":11,"encounter_distance":50,"attack_animation_time":2000,"rarity":2,"difficulty":3,"name":"MONSTERS/BESTIARY/WEREWOLF","model":"Assets/_bundledassets/characters/monsters/s00/werewolf/werewolf_lq/werewolf_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/werewolf/werewolf_hq/werewolf_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_werewolf.png","slug":"werewolf"}""",
+            """{"id":7,"family_id":2,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":2,"name":"MONSTERS/BESTIARY/SMALLDRACONID","model":"Assets/_bundledassets/characters/monsters/s00/smalldraconid/smalldraconid_lq/smalldraconid_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/smalldraconid/smalldraconid_hq/smalldraconid_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_smalldraconid.png","slug":"smalldraconid"}""",
+            """{"id":8,"family_id":7,"encounter_distance":50,"attack_animation_time":2000,"rarity":2,"difficulty":3,"name":"MONSTERS/BESTIARY/BANSHEE","model":"Assets/_bundledassets/characters/monsters/s00/banshee/banshee_lq/banshee_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/banshee/banshee_hq/banshee_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_banshee.png","slug":"banshee"}""",
+            // Synthetic combat-preparation fixture for the Griffin story node.
+            // ID 9 and the numeric encounter/balance fields are test values, not recovered 1.1.116 server data.
+            // The slug, family, localization key, and three asset addresses are verified in the 1.1.116 client/catalog.
+            """{"id":9,"family_id":4,"encounter_distance":50,"attack_animation_time":2000,"rarity":1,"difficulty":1,"name":"MONSTERS/BESTIARY/GRYPHON","model":"Assets/_bundledassets/characters/monsters/s00/gryphon/gryphon_lq/gryphon_lq.prefab","image":"Assets/_bundledassets/characters/monsters/s00/gryphon/gryphon_hq/gryphon_hq_presentation.prefab","trophy":"Assets/_bundledassets/ui/monster_trophies/trophy_gryphon.png","slug":"gryphon"}""",
+        },
+        // Three synthetic Griffin knowledge rows supply the description mapping consumed by the
+        // 1.1.116 Monster.Creator path, testing one candidate repair for the observed LoadMonsters
+        // missing-key failure. Their IDs and thresholds are placeholders, not recovered balance.
+        // INFO_1..3 localization keys are present in the client.
+        // Existing 1..24 rows remain the sample data for monsters 1..8.
+        ["monster_descriptions"] = new[]
+        {
+            """{"id":1,"monster_id":1,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/GHOUL/INFO_1"}""",
+            """{"id":2,"monster_id":1,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/GHOUL/INFO_2"}""",
+            """{"id":3,"monster_id":1,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/GHOUL/INFO_3"}""",
+            """{"id":4,"monster_id":2,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/ALGHOUL/INFO_1"}""",
+            """{"id":5,"monster_id":2,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/ALGHOUL/INFO_2"}""",
+            """{"id":6,"monster_id":2,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/ALGHOUL/INFO_3"}""",
+            """{"id":7,"monster_id":3,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/DROWNER/INFO_1"}""",
+            """{"id":8,"monster_id":3,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/DROWNER/INFO_2"}""",
+            """{"id":9,"monster_id":3,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/DROWNER/INFO_3"}""",
+            """{"id":10,"monster_id":4,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/NEKKER/INFO_1"}""",
+            """{"id":11,"monster_id":4,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/NEKKER/INFO_2"}""",
+            """{"id":12,"monster_id":4,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/NEKKER/INFO_3"}""",
+            """{"id":13,"monster_id":5,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/NEKKERWARRIOR/INFO_1"}""",
+            """{"id":14,"monster_id":5,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/NEKKERWARRIOR/INFO_2"}""",
+            """{"id":15,"monster_id":5,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/NEKKERWARRIOR/INFO_3"}""",
+            """{"id":16,"monster_id":6,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/WEREWOLF/INFO_1"}""",
+            """{"id":17,"monster_id":6,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/WEREWOLF/INFO_2"}""",
+            """{"id":18,"monster_id":6,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/WEREWOLF/INFO_3"}""",
+            """{"id":19,"monster_id":7,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/SMALLDRACONID/INFO_1"}""",
+            """{"id":20,"monster_id":7,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/SMALLDRACONID/INFO_2"}""",
+            """{"id":21,"monster_id":7,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/SMALLDRACONID/INFO_3"}""",
+            """{"id":22,"monster_id":8,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/BANSHEE/INFO_1"}""",
+            """{"id":23,"monster_id":8,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/BANSHEE/INFO_2"}""",
+            """{"id":24,"monster_id":8,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/BANSHEE/INFO_3"}""",
+            """{"id":25,"monster_id":9,"level":1,"threshold":1,"content":"MONSTERS/DESCRIPTIONS/GRYPHON/INFO_1"}""",
+            """{"id":26,"monster_id":9,"level":2,"threshold":5,"content":"MONSTERS/DESCRIPTIONS/GRYPHON/INFO_2"}""",
+            """{"id":27,"monster_id":9,"level":3,"threshold":10,"content":"MONSTERS/DESCRIPTIONS/GRYPHON/INFO_3"}""",
+        },
+        // Full canonical family set (ids are engine constants, see header comment). Image fields are
+        // dropped by the client (Family.Factory<int,string>), hence empty. ANIMAL(9) has no I2 term in
+        // stringliteral.json — it fails soft to the raw string if any UI ever shows it.
+        ["monster_families"] = new[]
+        {
+            """{"id":1,"name":"MONSTERS/FAMILIES/NECROPHAGE","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":2,"name":"MONSTERS/FAMILIES/DRACONIDE","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":3,"name":"MONSTERS/FAMILIES/OGROID","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":4,"name":"MONSTERS/FAMILIES/HYBRID","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":5,"name":"MONSTERS/FAMILIES/ELEMENTAL","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":6,"name":"MONSTERS/FAMILIES/RELICT","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":7,"name":"MONSTERS/FAMILIES/SPECTER","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":8,"name":"MONSTERS/FAMILIES/INSECTOID","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":9,"name":"MONSTERS/FAMILIES/ANIMAL","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":10,"name":"MONSTERS/FAMILIES/VAMPIRE","big_image":"","small_image":"","small_light_image":""}""",
+            """{"id":11,"name":"MONSTERS/FAMILIES/CURSED","big_image":"","small_image":"","small_light_image":""}""",
+        },
+        // Real trophy-achievement slugs from stringliteral.json (client builds ACHIEVEMENTS/NAMES/<SLUG_UPPER>
+        // and .../DESCRIPTIONS/... terms from the slug). contract_id=0: the contracts array is empty this
+        // round, and no contract with id 0 exists to dangle.
+        ["achievements"] = new[]
+        {
+            """{"id":1,"slug":"trophy_from_vizima_to_beauclair","contract_id":0}""",
+            """{"id":2,"slug":"trophy_legendary_monster_slayer","contract_id":0}""",
+            """{"id":3,"slug":"trophy_in_forest_dark","contract_id":0}""",
+            """{"id":4,"slug":"trophy_lizard_slayer","contract_id":0}""",
+            """{"id":5,"slug":"trophy_disturbed_the_water","contract_id":0}""",
+            """{"id":6,"slug":"trophy_fear_no_more","contract_id":0}""",
+        },
+        // Rising thresholds; GameSocketService serves Exp = the level-5 threshold (1000).
+        ["level_ups"] = new[]
+        {
+            """{"id":1,"exp_threshold":0,"skill_points":1}""",
+            """{"id":2,"exp_threshold":100,"skill_points":1}""",
+            """{"id":3,"exp_threshold":300,"skill_points":1}""",
+            """{"id":4,"exp_threshold":600,"skill_points":1}""",
+            """{"id":5,"exp_threshold":1000,"skill_points":1}""",
+            """{"id":6,"exp_threshold":1500,"skill_points":1}""",
+            """{"id":7,"exp_threshold":2100,"skill_points":1}""",
+            """{"id":8,"exp_threshold":2800,"skill_points":1}""",
+            """{"id":9,"exp_threshold":3600,"skill_points":1}""",
+            """{"id":10,"exp_threshold":4500,"skill_points":1}""",
+        },
+        // Slugs are real catalog keys: assets/_bundledassets/characters/difficulty/tier_<n>.asset
+        // (AssetsPaths.GetPathForDifficulty builds the address from the slug).
+        ["difficulties"] = new[]
+        {
+            """{"id":1,"slug":"tier_1","player_attack_count":3,"enemy_attack_count":1}""",
+            """{"id":2,"slug":"tier_2","player_attack_count":3,"enemy_attack_count":2}""",
+            """{"id":3,"slug":"tier_3","player_attack_count":3,"enemy_attack_count":3}""",
+        },
+    };
 
     /// <summary>The DataContract JSON the client will deserialize into a Container.</summary>
-    public static string BuildContainerJson(bool emptyObject = false)
+    public static string BuildContainerJson(bool emptyObject = false, DrivingWarningSettings? drivingWarningSettings = null,
+        TaskCatalog.Catalog? tasks = null, SkillBalancePolicy? policy = null)
     {
         if (emptyObject) return "{}";
-        // Emit all 82 arrays. The keys are the actual DataMember Name= snake_case values
-        // extracted from libil2cpp.so — IL2CPP DCJS matches on Name=, not the C# field names.
+        // Emit 92 arrays (every 1.1.116 Container array). The keys are DataMember Name= snake_case values;
+        // BombEffects is confirmed by its 1.1.116 attribute generator at RVA 0x158d414.
+        // See connection/item-effects-native-review/ and the BombEffects DataMember evidence.
+        // The three added contract aliases are proven in connection/contracts-datamember-review/.
+        // IL2CPP DCJS matches on Name=, not the C# field names.
         // Arrays present in ContentOverrides get their element objects joined into a JSON array;
         // every other array stays [].
         var sb = new StringBuilder("{");
+        var taskRows = tasks is null ? new Dictionary<string, string[]>() : TaskCatalog.Rows(tasks);
+        var reconstruction = policy is null ? ReconstructionRows.Tables : ReconstructionRows.Build(policy);
         for (int i = 0; i < ContainerArrays.Length; i++)
         {
             if (i > 0) sb.Append(',');
             sb.Append('"').Append(ContainerArrays[i]).Append("\":");
-            if (ContentOverrides.TryGetValue(ContainerArrays[i], out var entries))
+            // Reconstructed tables (Reconstruction.cs) replace the inherited samples; quest tables append
+            // the tutorial quest after the prologue rows so existing ids stay unchanged.
+            string[]? entries = null;
+            if (reconstruction.TryGetValue(ContainerArrays[i], out var rebuilt)) entries = rebuilt;
+            else if (ContentOverrides.TryGetValue(ContainerArrays[i], out var inherited)) entries = inherited;
+            if (ReconstructionRows.AppendedRows.TryGetValue(ContainerArrays[i], out var appended))
+                entries = [.. entries ?? [], .. appended];
+            if (ContainerArrays[i] == "game_configuration" && drivingWarningSettings is { Rows.Count: > 0 })
+                entries = [.. entries ?? [], .. drivingWarningSettings.Rows];
+            if (taskRows.TryGetValue(ContainerArrays[i], out var taskEntries))
+                entries = ContainerArrays[i] is "game_configuration" or "player_modifiers" ? [.. entries ?? [], .. taskEntries] : taskEntries;
+            if (entries is not null)
             {
                 sb.Append('[');
                 for (int j = 0; j < entries.Length; j++)
@@ -222,8 +455,9 @@ public static class PreloaderStaticData
 
     /// <summary>gzip(Container JSON) — the raw body the CdnPreloader downloads from the static-data URL
     /// and feeds to GZipStream(Decompress) -> DataContractJsonSerializer(Container).</summary>
-    public static byte[] GzipContainer(bool emptyObject = false)
-        => Gzip(Encoding.UTF8.GetBytes(BuildContainerJson(emptyObject)));
+    public static byte[] GzipContainer(bool emptyObject = false, DrivingWarningSettings? drivingWarningSettings = null,
+        TaskCatalog.Catalog? tasks = null, SkillBalancePolicy? policy = null)
+        => Gzip(Encoding.UTF8.GetBytes(BuildContainerJson(emptyObject, drivingWarningSettings, tasks, policy)));
 
     private static byte[] Gzip(byte[] data)
     {
