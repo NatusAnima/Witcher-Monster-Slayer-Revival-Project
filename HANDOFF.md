@@ -41,6 +41,14 @@ We are working to map out the API requests the client sends when navigating the 
    `POST /debug/quest/<step>?replace=true`, then relaunch. The edges after prolog_01 are inferred. All 31 monsters the
    graphs fight were added to static data (family/rarity/difficulty from the wiki bestiary, including the griffin, which
    was missing). Checklist and details: `docs/server-feature-inventory.md` §4.
+   Also new, all untested on device: player modifiers 90/91/92 persisted (timed quest effects, ids 1-8 in
+   `player_modifiers`), DistanceTraveled accumulates, TrackQuest persists, and quest items that report to a server
+   node (notebook 401, striga notes 402, Bedwyr's journal 219) get Hidden steps.
+   **Device test order:** (1) boot still reaches 100% with 44 monsters and the new tables; (2) the save migrates to
+   `prolog_01_thorstein` (`curl localhost:8081/debug/quests`); (3) play the griffin (the `gryphon` monster was missing
+   before); (4) prolog_02 end to end; (5) beat any monster and grep `scratch/frida.log` for the POI DESPAWN TRACE lines
+   (the "defeated monster stays on the map" bug); (6) jump into S01 lines with
+   `curl -X POST "localhost:8081/debug/quest/<step>?replace=true"` + relaunch, and tick the checklist.
 6. **"Cannot access a disposed object" / `mono-io-layer-error (111)` reconnect-loop noise:** recurring every ~6-7s throughout every session (correlated with `ThreadedClient` socket teardown/reopen). Confirmed **cosmetic/non-blocking** on 2026-07-10 — boot reaches 200/200 and quest clicks work fine despite it firing continuously in the background. Leave deprioritized.
 7. **Before starting any live session, verify the ACTUAL `WitcherRevival.Server` process is running** — `Get-NetTCPConnection -LocalPort 4253` should show it LISTENing, and `scratch/server.log` should be growing. On 2026-07-10 two unrelated `dotnet run --project WebApi/Client` processes from a different project were mistaken for it, and 20+ minutes were lost debugging a client-side "Server connection timed out" that was actually just "nothing is listening on 4253."
 
