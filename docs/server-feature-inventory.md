@@ -207,7 +207,7 @@ with every row's source in `tools/data_sources/static_data_sources.json`.
 | ID | Method | Status |
 |---|---|---|
 | 84 / 85 AddExpiringEffect / GetExpiringEffects | | 🔴 / 🟡 empty |
-| 90 / 91 / 92 Add / Get / RemovePlayerModifier | | 🔴 / 🟡 empty / 🔴 |
+| 90 / 91 / 92 Add / Get / RemovePlayerModifier | (id, seconds) / `{}` / id | ✅ persisted in `data/player.json` (untested on device). Story graphs' "Add Expiring Effect" node sends 90, not 84: Varik's 12 h wait, the curse, the candles, the firefly chase, the mushroom contest. Ids 1-8 = static `player_modifiers` (slugs from `NOTIFICATIONS/EFFECT/S01_*`); their stat effects are unknown. |
 | 99 UseConsumable | id → (id, count) | 🔴 |
 
 ### Shop & in-app purchases

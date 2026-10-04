@@ -156,7 +156,7 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     private const int M_SetTutorialFinished = 30, M_EquipSword = 55, M_EndBehaviourGraph = 57;
     private const int M_GetFacts = 58, M_GetAllFacts = 59, M_AcquireSkill = 64, M_TrackQuest = 72;
     private const int M_SetFacts = 78, M_AddSkillPoints = 93, M_ResolveRewards = 119;
-    private const int M_SetName = 29, M_SetGender = 46;
+    private const int M_SetName = 29, M_SetGender = 46, M_AddPlayerModifier = 90, M_RemovePlayerModifier = 92;
 
     // Shared player-state values (server is stateless this round; keeps the boot batch and the
     // post-boot action replies coherent with each other and with the ID contract).
@@ -226,6 +226,13 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         public byte Gender { get; set; }
         public int Head { get; set; } = 1;   // id 1 = head_caucasian_1 in static data
         public bool? TutorialFinished { get; set; }  // null = config Player:TutorialFinished (default false)
+        public List<PlayerModifier> Modifiers { get; set; } = new();
+    }
+    private sealed class PlayerModifier
+    {
+        public int Id { get; set; }
+        public int Start { get; set; }
+        public int Expire { get; set; }
     }
     private const string ProfilePath = "data/player.json";
     private readonly Profile _profile = LoadProfile();
@@ -331,6 +338,8 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             M_GetDailyShopBundles => BuildGetDailyShopBundlesResponse(),
             M_GetOneTimeShopBundles => BuildGetOneTimeShopBundlesResponse(),
             M_GetPlayerModifiers => BuildGetPlayerModifiersResponse(),
+            M_AddPlayerModifier => AddPlayerModifier(req),
+            M_RemovePlayerModifier => RemovePlayerModifier(ReadIntParam(req, fallback: 0)),
             // Post-boot player actions (request layouts decoded from dump.cs — see each builder/helper):
             M_DistanceTraveled => BuildIntResponse(true, TotalDistanceTraveled),
             M_EquipArmor or M_EquipSword or M_EquipSteelSword or M_EquipSilverSword
@@ -483,11 +492,9 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
         b.WriteByte(1);
         b.WriteInt(0);
 
-        // Method 91 — GetPlayerModifiers
-        // Deserializer (0x1F7B160): [int unknown/status] [int count] [items...]
+        // Method 91 — GetPlayerModifiers (see WritePlayerModifiers)
         b.WriteInt(91);
-        b.WriteInt(0);
-        b.WriteInt(0);
+        WritePlayerModifiers(b);
 
         // Method 70 — GetFinishedSeasonQuests
         // [int Season][int setN][set][int TrackedQuestId=-1][int listN][list]
@@ -665,11 +672,10 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
     }
 
     /// GetPlayerModifiersResponse: [int Result/Success][int count][items...].
-    private static byte[] BuildGetPlayerModifiersResponse()
+    private byte[] BuildGetPlayerModifiersResponse()
     {
         var b = new ByteBuffer();
-        b.WriteInt(0);  // Success/Result = 0
-        b.WriteInt(0);  // list count
+        WritePlayerModifiers(b);
         return b.ToArray();
     }
 
@@ -705,6 +711,57 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             return fallback;
         }
         return new ByteBuffer(req.Data).ReadInt();
+    }
+
+    // ── Player modifiers (timed quest effects) ──────────────────────────────────
+    // Story graphs' "Add Expiring Effect" node sends AddPlayerModifierRequest (90) = [int ModifierId][int Seconds]
+    // (IntIntRequest 0x31D4518; -1 = until removed). Ids are static-data player_modifiers (s01_12h, s01_curse, …),
+    // which PlayerModifiersModule.GetActiveEffects resolves at combat start. Replies (Factory.Deserialize 0x31D9234 /
+    // 0x1F7B160 / 0x1F7B27C) carry Result 0 = success; ExpiringPlayerModifier (0x31D06D0) = [Id][Start][Expire] (Unix s).
+
+    /// GetPlayerModifiersResponse: [int Result][int count][ExpiringPlayerModifier×count]; expired ones are dropped.
+    private void WritePlayerModifiers(ByteBuffer b)
+    {
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        List<PlayerModifier> live;
+        lock (_factsLock) live = _profile.Modifiers.Where(m => m.Expire > now).ToList();
+        b.WriteInt(0);
+        b.WriteInt(live.Count);
+        foreach (var m in live) WritePlayerModifier(b, m);
+    }
+
+    private static void WritePlayerModifier(ByteBuffer b, PlayerModifier m)
+    {
+        b.WriteInt(m.Id);
+        b.WriteInt(m.Start);
+        b.WriteInt(m.Expire);
+    }
+
+    /// AddPlayerModifierResponse: [int n > 3 (checked, then ignored)][int Result][ExpiringPlayerModifier]. Re-adding
+    /// an id replaces it (a 0 s add ends the firefly timer).
+    private byte[] AddPlayerModifier(ApiProtocol.ApiRequest req)
+    {
+        var r = new ByteBuffer(req.Data);
+        int id = r.ReadInt(), seconds = r.ReadInt();
+        int now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var m = new PlayerModifier { Id = id, Start = now, Expire = seconds < 0 ? int.MaxValue : now + seconds };
+        UpdateProfile(p => { p.Modifiers.RemoveAll(x => x.Id == id); p.Modifiers.Add(m); }, 0);
+        log.LogInformation("  AddPlayerModifier: id={Id} for {Seconds}s", id, seconds);
+        var b = new ByteBuffer();
+        b.WriteInt(16);
+        b.WriteInt(0);
+        WritePlayerModifier(b, m);
+        return b.ToArray();
+    }
+
+    /// RemovePlayerModifierResponse: [int Result][int ModifierId].
+    private byte[] RemovePlayerModifier(int id)
+    {
+        UpdateProfile(p => p.Modifiers.RemoveAll(x => x.Id == id), 0);
+        var b = new ByteBuffer();
+        b.WriteInt(0);
+        b.WriteInt(id);
+        return b.ToArray();
     }
 
     private byte[] SetHead(int head) => UpdateProfile(p => p.Head = head, head);
