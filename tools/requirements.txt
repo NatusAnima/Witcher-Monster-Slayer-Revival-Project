@@ -1,5 +1,7 @@
 frida==17.15.3     # must match the Frida Gadget version tools/patch/patch_apk.py embeds
-lief==0.17.6       # patch_apk.py (adds libgadget.so to libmain.so's DT_NEEDED)
+lief==0.17.6       # client116/build_client.py and patch_apk.py (add libgadget.so to libmain.so's DT_NEEDED)
 UnityPy==1.25.0    # unity_extract/bundle_explorer.py
 numpy==2.2.6       # il2cpp_callers.py
 pyghidra==3.1.0    # ghidra_decomp.py (also needs Ghidra 12.1.4 in tools/ghidra-dist/ and JDK 21)
+# osmium==4.3.1 builds the map index (server/connection/map-road-fixture-01/osm_extract_index.py); install it
+# in the Python 3.12+ venv at local/venv, which tools/restart.py also uses for the map services.

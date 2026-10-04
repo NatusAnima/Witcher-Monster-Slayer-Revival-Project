@@ -13,6 +13,12 @@ tools/ghidra-dist/
 tools/patch/.cache/
 game.zip
 
+# Other project
+monster-slayer-reconstruction-main
+
+# Machine-local data: OSM extracts/indexes/tile caches, server state, build output, built APKs
+local/
+
 # Python Tools
 __pycache__/
 *.pyc
