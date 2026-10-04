@@ -268,12 +268,16 @@ with `python tools/unity_extract/quest_catalog.py --check` (`--check` lists mons
 
 The original server advanced quests by node output: the client's static data has `quest_node_outputs` and
 `quest_node_edges` (output → node), never shipped to us. **`StaticData/quests.json`** rebuilds them (format in its
-`_notes`): 105 steps (graph, QuestNodeInstanceId, QuestNodeId, POI settings, display mode, optional timer) and 186
+`_notes`): 107 steps (graph, QuestNodeInstanceId, QuestNodeId, POI settings, display mode, optional timer) and 188
 output edges. `Net/QuestFlow.cs` keeps the active steps (several at once) in `data/quest_state.json`; an output
 retires its step and activates the edge targets (`-x` retires another step, `{step, if: [fact, op, value]}` gates on a
 fact). An output with no edge keeps the step for a retry. **Queue Story Graph** `n` makes the client run the active node
 with QuestNodeId `n` right after the current graph (`BehaviourGraphModule.FireQueuedGraph`), so the steps it names
-keep those ids: 231, 287, 387, 395, 403. Still unknown: 297, 383, 399, 451, 474, 324-327, 464-471, 486-491, 495.
+keep those ids: 231, 287, 387, 395, 403. **Quest items** are client-side: each `QuestLog` entry in the journal bundles
+lists items that show while a fact holds, plus the graph a tap runs. Three run on a server node, found through
+`StoryModule.GetQuestNodeInstanceByQuestNodeId`: the nemeton notebook (`qi_notebook`, 401), Vesemir's striga notes
+(`s01mq03_instruction`, 402) and Bedwyr's journal (`qi_journal`, 219). Those steps are served Hidden (mode 6) under
+those ids. Still unknown: 297, 383, 399, 451, 474, 324-327, 464-471, 486-491, 495.
 
 **Dev triggering:** `curl localhost:8081/debug/quests`, `curl -X POST "localhost:8081/debug/quest/<step>?replace=true"`
 (drop the other steps), `curl -X DELETE localhost:8081/debug/quest/<step>`. The client picks it up on its next quest
@@ -281,7 +285,7 @@ reply or boot (`tools/restart.py`).
 
 Edges after prolog_01 are inferred from the journal step each output sets (`output_facts` in the catalog) and the wiki
 walkthroughs (`tools/data_sources/wiki/quests_pages.json`), so each line needs a play-through. Not served yet:
-free-roam/injectable graphs (`*_ig`, `*_short`), quest-item buttons (`qi_*`: no quest items in the inventory yet),
+free-roam/injectable graphs (`*_ig`, `*_short`), quest-item graphs that report to no node,
 some timers (`s01hq03_timer*`, `s01hq05_timer`, `s01mq02_potion`, `s01mq06_timer`, `s01hq04_too_late`) and
 checkpoint outputs (`CT_*`, fact 190). Every monster the graphs fight is in static data (`--check` = 0 missing).
 
