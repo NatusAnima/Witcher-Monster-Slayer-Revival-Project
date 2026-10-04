@@ -1,0 +1,825 @@
+{
+ "page": "XP",
+ "revid": 625967,
+ "sections": [
+  {
+   "title": "Rank progression",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Level",
+      "XP needed",
+      "Bronze Talents",
+      "Silver Talents",
+      "Gold Talents"
+     ],
+     "rows": [
+      {
+       "Level": "0",
+       "XP needed": "0",
+       "Bronze Talents": "–",
+       "Silver Talents": "–",
+       "Gold Talents": "–"
+      },
+      {
+       "Level": "1",
+       "XP needed": "1,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "2",
+       "XP needed": "3,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "3",
+       "XP needed": "6,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "4",
+       "XP needed": "10,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "5",
+       "XP needed": "15,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "6",
+       "XP needed": "21,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "7",
+       "XP needed": "28,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "8",
+       "XP needed": "36,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "9",
+       "XP needed": "45,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "10",
+       "XP needed": "55,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "11",
+       "XP needed": "66,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "12",
+       "XP needed": "78,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "13",
+       "XP needed": "91,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "14",
+       "XP needed": "105,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "15",
+       "XP needed": "120,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "16",
+       "XP needed": "136,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "17",
+       "XP needed": "153,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "18",
+       "XP needed": "171,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "19",
+       "XP needed": "190,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "20",
+       "XP needed": "210,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "21",
+       "XP needed": "231,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "22",
+       "XP needed": "253,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "23",
+       "XP needed": "276,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "24",
+       "XP needed": "300,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "25",
+       "XP needed": "325,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "26",
+       "XP needed": "351,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "27",
+       "XP needed": "378,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "28",
+       "XP needed": "406,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "29",
+       "XP needed": "435,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "30",
+       "XP needed": "465,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "31",
+       "XP needed": "496,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "32",
+       "XP needed": "528,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "33",
+       "XP needed": "561,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "34",
+       "XP needed": "595,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "35",
+       "XP needed": "630,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "36",
+       "XP needed": "666,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "37",
+       "XP needed": "703,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "38",
+       "XP needed": "741,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "39",
+       "XP needed": "780,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "40",
+       "XP needed": "820,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "41",
+       "XP needed": "861,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "42",
+       "XP needed": "903,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "43",
+       "XP needed": "946,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "44",
+       "XP needed": "990,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "45",
+       "XP needed": "1,035,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "46",
+       "XP needed": "1,081,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "47",
+       "XP needed": "1,128,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "48",
+       "XP needed": "1,176,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "49",
+       "XP needed": "1,225,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "50",
+       "XP needed": "1,275,000",
+       "Bronze Talents": "",
+       "Silver Talents": "",
+       "Gold Talents": ""
+      },
+      {
+       "Level": "Total:",
+       "XP needed": "1,275,000",
+       "Bronze Talents": "92 talents",
+       "Silver Talents": "76 talents",
+       "Gold Talents": "23 talents"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "{{Tw3}}",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Level",
+      "Xp to Level",
+      "Total Xp"
+     ],
+     "rows": [
+      {
+       "Level": "2",
+       "Xp to Level": "1,000",
+       "Total Xp": "1,000"
+      },
+      {
+       "Level": "3",
+       "Xp to Level": "1,000",
+       "Total Xp": "2,000"
+      },
+      {
+       "Level": "4",
+       "Xp to Level": "1,000",
+       "Total Xp": "3,000"
+      },
+      {
+       "Level": "...",
+       "Xp to Level": "...",
+       "Total Xp": "..."
+      },
+      {
+       "Level": "10",
+       "Xp to Level": "1,000",
+       "Total Xp": "9,000"
+      },
+      {
+       "Level": "11",
+       "Xp to Level": "1,500",
+       "Total Xp": "10,500"
+      },
+      {
+       "Level": "....",
+       "Xp to Level": "....",
+       "Total Xp": "...."
+      },
+      {
+       "Level": "20",
+       "Xp to Level": "1,500",
+       "Total Xp": "24,000"
+      },
+      {
+       "Level": "21",
+       "Xp to Level": "2,000",
+       "Total Xp": "26,000"
+      },
+      {
+       "Level": "...",
+       "Xp to Level": "...",
+       "Total Xp": "..."
+      },
+      {
+       "Level": "30",
+       "Xp to Level": "2,000",
+       "Total Xp": "44,000"
+      },
+      {
+       "Level": "....",
+       "Xp to Level": "....",
+       "Total Xp": "...."
+      },
+      {
+       "Level": "40",
+       "Xp to Level": "2,000",
+       "Total Xp": "64,000"
+      },
+      {
+       "Level": "....",
+       "Xp to Level": "....",
+       "Total Xp": "...."
+      },
+      {
+       "Level": "50",
+       "Xp to Level": "2,000",
+       "Total Xp": "84,000"
+      },
+      {
+       "Level": "....",
+       "Xp to Level": "....",
+       "Total Xp": "...."
+      },
+      {
+       "Level": "60",
+       "Xp to Level": "2,000",
+       "Total Xp": "104,000"
+      },
+      {
+       "Level": "....",
+       "Xp to Level": "....",
+       "Total Xp": "...."
+      },
+      {
+       "Level": "70",
+       "Xp to Level": "2000",
+       "Total Xp": "124,000"
+      }
+     ]
+    },
+    {
+     "headers": [
+      "Stats",
+      "Easy",
+      "Normal",
+      "Hard",
+      "Very Hard"
+     ],
+     "rows": [
+      {
+       "Stats": "Experience Gain",
+       "Easy": "100%",
+       "Normal": "100%",
+       "Hard": "90%",
+       "Very Hard": "80%"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "{{HoS}}",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Difference between quest level and Geralt's level",
+      "Easy and Normal",
+      "Hard",
+      "Very Hard"
+     ],
+     "rows": [
+      {
+       "Difference between quest level and Geralt's level": "+6 or higher",
+       "Easy and Normal": "100%",
+       "Hard": "90%",
+       "Very Hard": "80%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "+5",
+       "Easy and Normal": "150%",
+       "Hard": "150%",
+       "Very Hard": "150%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "+4",
+       "Easy and Normal": "150%",
+       "Hard": "150%",
+       "Very Hard": "144%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "+3",
+       "Easy and Normal": "148%",
+       "Hard": "138%",
+       "Very Hard": "128%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "+2",
+       "Easy and Normal": "132%",
+       "Hard": "122%",
+       "Very Hard": "112%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "+1",
+       "Easy and Normal": "116%",
+       "Hard": "106%",
+       "Very Hard": "96%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "0",
+       "Easy and Normal": "100%",
+       "Hard": "90%",
+       "Very Hard": "80%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "-1",
+       "Easy and Normal": "84%",
+       "Hard": "74%",
+       "Very Hard": "64%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "-2",
+       "Easy and Normal": "68%",
+       "Hard": "58%",
+       "Very Hard": "48%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "-3",
+       "Easy and Normal": "52%",
+       "Hard": "42%",
+       "Very Hard": "32%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "-4",
+       "Easy and Normal": "36%",
+       "Hard": "26%",
+       "Very Hard": "16%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "-5",
+       "Easy and Normal": "20%",
+       "Hard": "10%",
+       "Very Hard": "0%"
+      },
+      {
+       "Difference between quest level and Geralt's level": "-6 or lesser",
+       "Easy and Normal": "5%",
+       "Hard": "5%",
+       "Very Hard": "5%"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "{{TWMS}}",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Level",
+      "XP needed",
+      "Rewards"
+     ],
+     "rows": [
+      {
+       "Level": "1",
+       "XP needed": "",
+       "Rewards": ""
+      },
+      {
+       "Level": "2",
+       "XP needed": "1000",
+       "Rewards": ""
+      },
+      {
+       "Level": "3",
+       "XP needed": "1500",
+       "Rewards": "Skill point (5), Falcon (3), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "4",
+       "XP needed": "2000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "5",
+       "XP needed": "2500",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "6",
+       "XP needed": "3000",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "7",
+       "XP needed": "3500",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "8",
+       "XP needed": "4000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic oil (3), Basic bomb (2), Experience Scroll"
+      },
+      {
+       "Level": "9",
+       "XP needed": "4500",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "10",
+       "XP needed": "5000",
+       "Rewards": "Skill point (5), Monster Bait, Thunderbolt (5), Basic oil (5), Basic bomb (5)"
+      },
+      {
+       "Level": "11",
+       "XP needed": "6000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "12",
+       "XP needed": "7000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "13",
+       "XP needed": "8000",
+       "Rewards": "Skill point (5), Experience Scroll, Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "14",
+       "XP needed": "9000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "15",
+       "XP needed": "10000",
+       "Rewards": "Skill point (5), Monster Bait, Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "16",
+       "XP needed": "12000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "17",
+       "XP needed": "14000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "18",
+       "XP needed": "16000",
+       "Rewards": "Skill point (5), Experience Scroll, Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "19",
+       "XP needed": "18000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "20",
+       "XP needed": "20000",
+       "Rewards": "Skill point (5), Monster bait, Thunderbolt (5), Basic oil (5), Basic bomb (5)"
+      },
+      {
+       "Level": "21",
+       "XP needed": "25000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "22",
+       "XP needed": "30000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "23",
+       "XP needed": "35000",
+       "Rewards": "Skill point (5), Experience scroll, Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "24",
+       "XP needed": "40000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "25",
+       "XP needed": "45000",
+       "Rewards": "Skill point (5), Monster bait, Thunderbolt (5), Basic oil (5), Basic bomb (5)"
+      },
+      {
+       "Level": "26",
+       "XP needed": "55000",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "27",
+       "XP needed": "65000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "28",
+       "XP needed": "75000",
+       "Rewards": "Skill point (5), Experience Scroll, Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "29",
+       "XP needed": "85000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "30",
+       "XP needed": "95000",
+       "Rewards": "Skill point (5), Monster bait, Thunderbolt (5), Basic oil (5), Basic bomb (5)"
+      },
+      {
+       "Level": "31",
+       "XP needed": "120000",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "32",
+       "XP needed": "145000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "33",
+       "XP needed": "170000",
+       "Rewards": "Skill point (5), Experience Scroll, Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "34",
+       "XP needed": "195000",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "35",
+       "XP needed": "220000",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "36",
+       "XP needed": "270000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "37",
+       "XP needed": "345000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "38",
+       "XP needed": "445000",
+       "Rewards": "Skill point (5), Thunderbolt (5), Basic Oil (3), Basic bomb (2)"
+      },
+      {
+       "Level": "39",
+       "XP needed": "570000",
+       "Rewards": "Skill point (5), unknown"
+      },
+      {
+       "Level": "40",
+       "XP needed": "700000",
+       "Rewards": "Skill point (5), Monster bait, Thunderbolt (5), Basic oil (5), Basic bomb (5)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "'''Experience points''' (often abbreviated to '''XP''') are a quantitative measure of character progression throughout [[CD PROJEKT RED's The Witcher franchise|''The Witcher'' games]]. In all the games, XP is accumulated by completing quests, objectives, defeating enemies or monsters, or through special actions. These points are applied to a total score which is used to determine when the player will level up.\n\n== {{tw1}} ==\n[[File:Talent bronze.png|Bronze talent]] [[File:Talent silver.png|Silver talent]] [[File:Talent gold.png|Gold talent]]\n\nCompleting quests and defeating monsters are the primary ways to earn XP, but sometimes simply speaking to the right NPC at the right time (usually to advance a [[The Witcher quests|quest]]) also earns XP.\n\nBy accumulating these points, Geralt's '''level''' periodically increases. Level 1 requires 1000 XP, and each subsequent level increase requires 1000 more XP than the last. Each time Geralt levels up he receives several '''talents''' that he can use to improve abilities, attributes and skills in the Hero panel (during [[meditation]].)\n\nEvery ten levels, he also increases in '''rank''', although the only effect of this is to change his 'title'.\n\n=== Rank progression ===\n:[[File:GUI chr lvl.png|16px|Novitiate Witcher]] '''Novitiate Witcher''': Levels 1 – 9\n:[[File:GUI chr lvl.png|16px|Rising Witcher]] '''Rising Witcher''': Levels 10 – 19\n:[[File:GUI chr lvl.png|16px|Skilled Witcher]] '''Skilled Witcher''': Levels 20 – 29\n:[[File:GUI chr lvl.png|16px|Seasoned Witcher]] '''Seasoned Witcher''': Levels 30 – 39\n:[[File:GUI chr lvl.png|16px|Master Witcher]] '''Master Witcher''': Levels 40 – 49\n:[[File:GUI chr lvl.png|16px|Legendary Witcher]] '''Legendary Witcher''': Levels 50+\n\nThis table contains the cumulative experience required for each level along with the type and number of talents received upon reaching each one:\n\n{| class=\"fandom-table\" style=\"text-align:center; width:75%;\"\n|-\n! style=\"color:#ffffff;\" width=\"10%\" | Level\n! style=\"color:#ffffff;\" width=\"15%\" | XP needed\n! style=\"color:#000000; background:#b05b00;\" width=\"25%\" |Bronze Talents\n! style=\"color:#000000; background:#bfbfbf;\" width=\"25%\" |Silver Talents\n! style=\"color:#000000; background:#ffde00;\" width=\"25%\" |Gold Talents\n|-\n| '''0''' || 0 || – || – || –\n|-\n| '''1''' || 1,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''2''' || 3,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''3''' || 6,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''4''' || 10,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''5''' || 15,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''6''' || 21,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''7''' || 28,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''8''' || 36,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''9''' || 45,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''10''' || 55,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''11''' || 66,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''12''' || 78,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''13''' || 91,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''14''' || 105,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || ||\n|-\n| '''15''' || 120,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''16''' || 136,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''17''' || 153,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''18''' || 171,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''19''' || 190,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''20''' || 210,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''21''' || 231,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''22''' || 253,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''23''' || 276,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''24''' || 300,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''25''' || 325,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''26''' || 351,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''27''' || 378,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''28''' || 406,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''29''' || 435,000 || [[File:Talent bronze.png|22px|Bronze talent]] [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] ||\n|-\n| '''30''' || 465,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''31''' || 496,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''32''' || 528,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''33''' || 561,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''34''' || 595,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''35''' || 630,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''36''' || 666,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''37''' || 703,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''38''' || 741,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''39''' || 780,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''40''' || 820,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''41''' || 861,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''42''' || 903,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''43''' || 946,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''44''' || 990,000 || [[File:Talent bronze.png|22px|Bronze talent]] || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''45''' || 1,035,000 || || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''46''' || 1,081,000 || || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''47''' || 1,128,000 || || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''48''' || 1,176,000 || || [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] [[File:Talent silver.png|22px|Silver talent]] || [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''49''' || 1,225,000 || || || [[File:Talent gold.png|22px|Gold talent]] [[File:Talent gold.png|22px|Gold talent]]\n|-\n| '''50''' || 1,275,000 || || || [[File:Talent gold.png|22px|Gold talent]] [[File:Talent gold.png|22px|Gold talent]]\n|- style=\"color:#ffffff;\"\n| align=\"right\" |'''Total:''' || '''1,275,000''' || style=\"color:#000000; background:#b05b00;\" align=\"center\" | '''92 talents''' || style=\"color:#000000; background:#bfbfbf;\" align=\"center\" | '''76 talents''' || style=\"color:#000000; background:#ffde00;\" align=\"center\" | '''23 talents'''\n|}\n\n=== Notes ===\n* There are 111 Bronze, 102 Silver and 33 Gold talents to choose from.\n** Of these, 11 Bronze are given free of charge due to Geralt's previous training.\n** Two more Bronze are obtained as 'story abilities' (also free).\n** One extra Silver is obtained by completing the [[Ripples]] quest.\n** An additional 6 Bronze, 3 Silver and 2 Gold come from mutagenic potions rather than XP.\n** Thus, having reached level 50 and consumed all mutagenic potions along the way, Geralt can acquire '''all''' Bronze talents, all but 22 of the Silver and all but 8 of the Gold.\n** You keep earning XP and levels even after reaching level 50, but you won't get any more talents for them.\n** [[Maximizing Experience Points]]\n\n== {{tw2}} ==\nIn ''The Witcher 2'', Geralt can progress through a maximum of 35 experience levels, each of which requires 1000 XP. For each level, Geralt's Vitality increases and he receives one talent point to apply to a [[The Witcher 2 skills|skill tree]]. Before talents can be allocated to Swordsmanship, Alchemy or Magic, 6 points must be spent in the Training tree.\n\n== {{Tw3}} ==\n{{Xp}}\n\nIn ''The Witcher 3'', Geralt earns ability points each time he levels up. These points are used to obtain upgrades to combat [[The Witcher 3 abilities|abilities]], [[The Witcher 3: Wild Hunt - Guide to Witcher Signs|signs]], or other skills. There are 70 levels worth of XP totaling 124,000 XP. From levels 1-10, 1000XP is required to reach the next level. From levels 11-20, 1,500 XP is required to reach the next level. For levels above 21 to the maximum of 70 (100 with {{BaW}}), 2,000 XP is required to reach the next level. For the first 20 levels of New Game +, you gain twice as much experience points as in a regular game (from all sources). The table below shows the XP required for highlighted levels.\n\n{| class=\"fandom-table\" style=\"text-align:center; width:50%;\"\n! width=\"20%\" |Level\n! width=\"40%\" |{{Xp}} to Level\n! width=\"40%\" |Total {{Xp}}\n|-\n| 2\n|1,000\n|1,000\n|-\n|3\n|1,000\n|2,000\n|-\n|4\n|1,000\n|3,000\n|-\n|...\n|...\n|...\n|-\n|10\n|1,000\n|9,000\n|-\n|11\n|1,500\n|10,500\n|-\n|....\n|....\n|....\n|-\n|20\n|1,500\n|24,000\n|-\n|21\n|2,000\n|26,000\n|-\n|...\n|...\n|...\n|-\n|30\n|2,000\n|44,000\n|-\n|....\n|....\n|....\n|-\n|40\n|2,000\n|64,000\n|-\n|....\n|....\n|....\n|-\n|50\n|2,000\n|84,000\n|-\n|....\n|....\n|....\n|-\n|60\n|2,000\n|104,000\n|-\n|....\n|....\n|....\n|-\n|70\n|2000\n|124,000\n|}\n\nThe amount of {{Xp}} received for completing quests depends on the difficulty level and Geralt's level. If Geralt is six or more levels higher than the recommended quest level, he only gets 5% of the total {{Xp}} reward for the quest (a few exceptions exist).\n\n{{Condition|Note}} Since [[Patch 4.0 (The Witcher 3)|Patch 4.0]], the level difference after which quest {{Xp}} decreases to 5% is changed from 6 to 10.\n\n{| class=\"fandom-table\" width=\"100%\"\n! width=\"40%\" |Stats\n! width=\"15%\" |Easy\n! width=\"15%\" |Normal\n! width=\"15%\" |Hard\n! width=\"15%\" |Very Hard\n|-\n|Experience Gain\n|100%\n| 100%\n| 90%\n|80%\n|}\n\n<br/>Regardless of the above, Geralt receives 1 {{Xp}} for every 10 {{Crown}} paid during the quest by selecting the yellow dialogue option (this rule does not work in some [[Hearts of Stone quests]] and [[Blood and Wine quests]]).\n\nIn addition, there's {{xp}} earned each time when [[Axii]] is used in dialogues, depending on [[Delusion]]'s level:\n* Level 1: 25{{xp}}\n* Level 2: 35{{xp}}\n* Level 3: 40{{xp}}\n\nAnother source of {{Xp}} is combat. You gain from 1 to 48 {{Xp}} for killing an enemy. The amount depends on the difficulty level, Geralt's level, and the enemy's type and level. If Geralt is six or more levels above the enemy, the kill awards only 1 {{Xp}} (2 {{Xp}} on lower difficulty levels). Enemy upscaling does not affect the number of {{Xp}} received in combat. In some quests, such as [[The Battle of Kaer Morhen]], no {{Xp}} are earned for defeating enemies. Geralt usually receives 1 {{Xp}} for defeating an enemy in a fist fight.\n\n[[Abandoned site|Abandoned sites]] and [[Monster nest|Monster nests]] both reward {{Xp}} unaffected by the level constraint and difficulty level.\n\n==={{HoS}}===\nThe number of experience points received for doing [[Hearts of Stone quests]] is presented below:\n\n{| class=\"fandom-table\" width=\"75%\"\n!width=40% | Difference between quest level and Geralt's level\n!width=20% | Easy and Normal\n!width=20% | Hard \n!width=20% | Very Hard\n|-\n| +6 or higher\n|100%\n|90%\n|80%\n|-\n| +5\n|150%\n|150%\n|150%\n|-\n| +4\n|150%\n|150%\n|144%\n|-\n| +3\n|148%\n| 138%\n|128%\n|-\n| +2\n|132%\n|122%\n|112%\n|-\n| +1\n|116%\n|106%\n|96%\n|-\n| 0\n|100%\n|90%\n|80%\n|-\n| -1\n|84%\n|74%\n|64% \n|-\n| -2\n|68%\n|58%\n|48%\n|-\n| -3\n|52%\n|42%\n|32%\n|-\n| -4\n|36%\n|26%\n| 16%\n|-\n| -5\n|20%\n|10%\n|0%\n|-\n| -6 or lesser\n|5%\n|5%\n|5%\n|}\n\n=={{TWMS}}==\n{| class=\"fandom-table\" width=\"100%\"\n! width=\"10%\" |Level \n! width=\"10%\" |XP needed\n! width=\"80%\" |Rewards\n|-\n|1\n|\n|\n|-\n|2\n|1000\n|\n|-\n|3\n|1500\n|Skill point (5), [[The Witcher Monster Slayer potions|Falcon]] (3), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|4\n|2000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|5\n|2500\n|Skill point (5), unknown\n|-\n|6\n|3000\n|Skill point (5), unknown\n|-\n|7\n|3500\n|Skill point (5), unknown\n|-\n|8\n|4000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2), [[The Witcher Monster Slayer boosters|Experience Scroll]]\n|-\n|9\n|4500\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|10\n|5000\n| Skill point (5), [[The Witcher Monster Slayer baits|Monster Bait]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (5), [[The Witcher Monster Slayer bombs|Basic bomb]] (5)\n|-\n| 11\n|6000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|12\n|7000 \n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2) \n|-\n|13\n|8000\n|Skill point (5), [[The Witcher Monster Slayer scrolls|Experience Scroll]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|14\n|9000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|15\n|10000 \n|Skill point (5), [[The Witcher Monster Slayer baits|Monster Bait]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|16 \n|12000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 17\n|14000\n| Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|18\n|16000\n|Skill point (5), [[The Witcher Monster Slayer scrolls|Experience Scroll]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 19\n|18000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 20\n|20000\n|Skill point (5), [[The Witcher Monster Slayer baits|Monster bait]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (5), [[The Witcher Monster Slayer bombs|Basic bomb]] (5)\n|-\n| 21\n|25000\n| Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 22\n|30000\n| Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|23\n|35000\n|Skill point (5), [[The Witcher Monster Slayer scrolls|Experience scroll]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 24\n|40000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 25\n|45000\n|Skill point (5), [[The Witcher Monster Slayer baits|Monster bait]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (5), [[The Witcher Monster Slayer bombs|Basic bomb]] (5)\n|-\n| 26\n|55000\n| Skill point (5), unknown \n|-\n|27\n|65000\n| Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2) \n|-\n|28\n|75000\n| Skill point (5), [[The Witcher Monster Slayer scrolls|Experience Scroll]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 29\n|85000\n| Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 30\n|95000\n|Skill point (5), [[The Witcher Monster Slayer baits|Monster bait]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (5), [[The Witcher Monster Slayer bombs|Basic bomb]] (5)\n|-\n| 31\n|120000\n|Skill point (5), unknown\n|-\n|32\n| 145000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|33\n|170000 \n|Skill point (5), [[The Witcher Monster Slayer scrolls|Experience Scroll]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|34\n|195000\n|Skill point (5), unknown\n|-\n|35\n|220000\n|Skill point (5), unknown\n|-\n| 36\n|270000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|37\n|345000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n| 38\n|445000\n|Skill point (5), [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic Oil]] (3), [[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|39\n|570000\n| Skill point (5), unknown\n|-\n|40\n|700000\n|Skill point (5), [[The Witcher Monster Slayer baits|Monster bait]], [[The Witcher Monster Slayer potions|Thunderbolt]] (5), [[The Witcher Monster Slayer oils|Basic oil]] (5), [[The Witcher Monster Slayer bombs|Basic bomb]] (5)\n|}\n\n== See Also==\n\n*[[Character development]]\n\n[[Category:The Witcher character development]]\n[[Category:The Witcher 2 character development]]\n[[Category:The Witcher 3 character development]]\n[[Category:Pages with tables]]\n\n[[ar:خبرة]]\n[[cs:Talenty]]\n[[de:Erfahrungspunkte und Talente]]\n[[es:Puntos de experiencia]]\n[[fr:Tableau d'avancement du Sorceleur]]\n[[it:Punti esperienza]]\n[[hu:Tapasztalati Pontok]]\n[[pl:Punkty doświadczenia]]\n[[uk:Досвід]]\n[[Category:The Witcher Monster Slayer]]"
+}

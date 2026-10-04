@@ -1,0 +1,118 @@
+{
+ "page": "The Witcher Monster Slayer ingredients",
+ "revid": 579210,
+ "sections": [
+  {
+   "title": "(intro)",
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Description",
+      "Price v1.2"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Bear Fat",
+       "Description": "An ALCHEMY INGREDIENT required for crafting OILS.",
+       "Price v1.2": "200"
+      },
+      {
+       "Image": "",
+       "Name": "Bundle of herbs",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "2"
+      },
+      {
+       "Image": "",
+       "Name": "Cursed remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Draconid remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Elemental remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Hybrid remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Insectoid remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Linen Cloth",
+       "Description": "An ALCHEMY INGREDIENT required for crafting BAIT.",
+       "Price v1.2": "200"
+      },
+      {
+       "Image": "",
+       "Name": "Necrophage remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Ogroid remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Powdered monster tissue",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Relict remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Root",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "2"
+      },
+      {
+       "Image": "",
+       "Name": "Specter remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Vampire remains",
+       "Description": "An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.",
+       "Price v1.2": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "White Gull",
+       "Description": "An ALCHEMY INGREDIENT required for crafting POTIONS.",
+       "Price v1.2": "200"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all available '''[[ingredients]]''' in {{TWMS}}. They were needed to craft [[The Witcher Monster Slayer bombs|bombs]], [[The Witcher Monster Slayer oils|oils]], [[The Witcher Monster Slayer potions|potions]] and [[The Witcher Monster Slayer baits|baits]]. Monster remains and [[powdered monster tissue]] were obtained by slaying [[The Witcher Monster Slayer bestiary|monsters]], while herbs and roots were gathered from shrubs. Version 1.2 added 3 store-bought ingredients: [[bear fat]], [[White Gull]] and linen cloth.\n\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"15%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"55%\" |Description\n! data-sort-type=\"number\" width=\"10%\" |Price v1.2\n|-\n|[[File:twms_ingredient_bear_fat.png|center|50px]]\n|Bear Fat\n|An ALCHEMY INGREDIENT required for crafting [[The Witcher Monster Slayer oils|OILS]].\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|[[File:twms_ingredient_herb bundle.png|center|50px]]\n|Bundle of herbs\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|[[File:twms_currency_crystal.png|20px]]2\n|-\n|[[File:twms_ingredient_cursed_remains.png|center|50px]]\n|Cursed remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_draconid_remains.png|center|50px]]\n|Draconid remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_elemental_remains.png|center|50px]]\n|Elemental remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_hybrid_remains.png|center|50px]]\n|Hybrid remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_insectoid_remains.png|center|50px]]\n|Insectoid remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_linen_cloth.png|center|50px]]\n|Linen Cloth\n|An ALCHEMY INGREDIENT required for crafting [[The Witcher Monster Slayer baits|BAIT]].\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|[[File:twms_ingredient_necrophage_remains.png|center|50px]]\n|Necrophage remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_ogroid_remains.png|center|50px]]\n|Ogroid remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_powdered_monster_tissue.png|center|50px]]\n|Powdered monster tissue\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_relict_remains.png|center|50px]]\n|Relict remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient root.png|center|50px]]\n|Root\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|[[File:twms_currency_crystal.png|20px]]2\n|-\n|[[File:twms_ingredient_specter_remains.png|center|50px]]\n|Specter remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredient_vampire_remains.png|center|50px]]\n|Vampire remains\n|An ALCHEMY INGREDIENT used for crafting items at CRAFTING STATIONS, which can be found in the ALCHEMY section.\n|n/a\n|-\n|[[File:twms_ingredients_white_gull.png|center|50px]]\n|White Gull\n|An ALCHEMY INGREDIENT required for crafting [[The Witcher Monster Slayer potions|POTIONS]].\n|[[File:twms_currency_gold_coin.png|20px]]200\n|}\n\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[Category:Ingredients| ]]\n\n[[pl:Składniki w grze Wiedźmin Pogromca Potworów]]\n[[de:The Witcher Monster Slayer Zutaten]]\n[[uk:Складники гри Відьмак: Вбивця чудовиськ]]"
+}

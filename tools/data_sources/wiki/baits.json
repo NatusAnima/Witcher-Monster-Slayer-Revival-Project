@@ -1,0 +1,88 @@
+{
+ "page": "The Witcher Monster Slayer baits",
+ "revid": 587739,
+ "sections": [
+  {
+   "title": "(intro)",
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Description",
+      "Ingredients"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Cursed Ones bait",
+       "Description": "Lures cursed ones to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Necrophage remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Draconid bait",
+       "Description": "Lures draconids to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Vampire remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Elemental bait",
+       "Description": "Lures elementa to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Relict remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Hybrid bait",
+       "Description": "Lures hybrids to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Specter remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Insectoid bait",
+       "Description": "Lures insectoids to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Draconid remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Necrophage bait",
+       "Description": "Lures necrophages to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Ogroid remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Ogroid bait",
+       "Description": "Lures ogroids to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Insectoid remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Relict bait",
+       "Description": "Lures relicts to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Cursed remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Specter bait",
+       "Description": "Lures specters to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Elemental remains (15)"
+      },
+      {
+       "Image": "",
+       "Name": "Universal bait",
+       "Description": "Lures random monsters to a nemeton.",
+       "Ingredients": "Linen cloth (1); Powdered Monster tissue (30); Root (4)"
+      },
+      {
+       "Image": "",
+       "Name": "Vampire bait",
+       "Description": "Lures vampires to a nemeton.",
+       "Ingredients": "Linen cloth (1); Root (4); Hybrid remains (15)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all '''baits''' available in {{TWMS}}. In version 1.1 only a basic lure was available, which attracted random [[The Witcher Monster Slayer bestiary|monsters]] to [[nemeton|nemeta]]. This item could not be crafted, but was available for purchase or received as a reward for completing [[The Witcher Monster Slayer contracts|contracts]] or leveling up. Patch 1.2 restored class-specific lures, which could be crafted at the alchemy station after reaching level 30.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"25%\" |Description\n! class=\"unsortable\" width=\"35%\" |Ingredients\n|-\n|[[File:twms lure_cursed.png|center|50px]]\n|Cursed Ones bait\n|Lures [[cursed one]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Necrophage remains (15)\n|-\n|[[File:twms lure_draconid.png|center|50px]]\n|Draconid bait\n|Lures [[draconid]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Vampire remains (15)\n|-\n|[[File:twms lure_elemental.png|center|50px]]\n|Elemental bait\n|Lures [[elementa]] to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Relict remains (15)\n|-\n|[[File:twms lure_hybrid.png|center|50px]]\n|Hybrid bait\n|Lures [[hybrid]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Specter remains (15)\n|-\n|[[File:twms lure_insectoid.png|center|50px]]\n|Insectoid bait\n|Lures [[insectoid]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Draconid remains (15)\n|-\n|[[File:twms lure_necrophage.png|center|50px]]\n|Necrophage bait\n|Lures [[necrophage]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Ogroid remains (15)\n|-\n|[[File:twms lure_ogroid.png|center|50px]]\n|Ogroid bait\n|Lures [[ogroid]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Insectoid remains (15)\n|-\n|[[File:twms lure_relict.png|center|50px]]\n|Relict bait\n|Lures [[relict]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Cursed remains (15)\n|-\n|[[File:twms lure_specter.png|center|50px]]\n|Specter bait\n|Lures [[specter]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Elemental remains (15)\n|-\n|[[File:twms lure_basic.png|center|50px]]\n|Universal bait\n|Lures random [[The Witcher Monster Slayer bestiary|monsters]] to a [[nemeton]].\n|Linen cloth (1)<br/>Powdered Monster tissue (30)<br/>Root (4)\n|-\n|[[File:twms lure_vampire.png|center|50px]]\n|Vampire bait\n|Lures [[vampire]]s to a [[nemeton]].\n|Linen cloth (1)<br/>Root (4)<br/>Hybrid remains (15)\n|}\n[[pl:Przynęty w grze Wiedźmin Pogromca Potworów]]\n[[uk:Принади (Відьмак: Вбивця чудовиськ)]]\n[[Category:The Witcher Monster Slayer]]"
+}

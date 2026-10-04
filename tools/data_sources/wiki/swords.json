@@ -1,0 +1,153 @@
+{
+ "page": "The Witcher Monster Slayer swords",
+ "revid": 587743,
+ "sections": [
+  {
+   "title": "Steel swords",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Price"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Caerme",
+       "Effect": "A STEEL SWORD that increases CRITICAL HIT damage by 50%.",
+       "Price": "6,400"
+      },
+      {
+       "Image": "",
+       "Name": "Feline Steel Sword",
+       "Effect": "A STEEL SWORD that increases damage dealt with FAST ATTACKS by 15%.",
+       "Price": "1,600"
+      },
+      {
+       "Image": "",
+       "Name": "Griffin Steel Sword",
+       "Effect": "A STEEL SWORD that increases the effectiveness of SIGNS by 30%.",
+       "Price": "3,200"
+      },
+      {
+       "Image": "",
+       "Name": "Kaer Morhen Steel Sword",
+       "Effect": "A STEEL SWORD that increases EXPERIENCE POINTS gain for killing monsters by 10%.",
+       "Price": "n/aNot for sale. Handed out to every Witcher logging in during the first week after release."
+      },
+      {
+       "Image": "",
+       "Name": "Manticore Steel Sword",
+       "Effect": "A STEEL SWORD that reduces COOLDOWN for casting SIGNS by 30%.",
+       "Price": "3,200"
+      },
+      {
+       "Image": "",
+       "Name": "Ursine Steel Sword",
+       "Effect": "A STEEL SWORD that increases damage dealt with STRONG ATTACKS by 15%.",
+       "Price": "1,600"
+      },
+      {
+       "Image": "",
+       "Name": "Witcher's Steel Sword",
+       "Effect": "A STEEL SWORD that is part of the starting inventory.",
+       "Price": "0"
+      },
+      {
+       "Image": "",
+       "Name": "Wolven Steel Sword",
+       "Effect": "A STEEL SWORD that accelerates CRITICAL HIT METER charging during MELEE COMBAT by 10%.",
+       "Price": "3,200"
+      },
+      {
+       "Image": "",
+       "Name": "Dawnbringer",
+       "Effect": "A STEEL SWORD that increases all damage dealt at night by 10%.",
+       "Price": "n/aThe Dawnbringer steel sword is acquired by completing the quest Sword in the Stone."
+      },
+      {
+       "Image": "",
+       "Name": "Incandescent Heart",
+       "Effect": "A STEEL SWORD with a 15% chance to inflict extra FIRE damage.",
+       "Price": "n/aThe Incandescent Heart steel sword is acquired by completing 7 Timed Challenges during the Midinváerne winter holiday event."
+      },
+      {
+       "Image": "",
+       "Name": "Khopesh",
+       "Effect": "A STEEL SWORD that increases damage dealt against cursed ones by 75%.",
+       "Price": "n/aThe Khopesh steel sword is acquired by completing 4 Timed Challenges during the Lammas event."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Silver swords",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Price"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "A'Báeth",
+       "Effect": "A SILVER SWORD that increases EXPERIENCE POINTS gain for killing monsters by 25%.",
+       "Price": "12,000"
+      },
+      {
+       "Image": "",
+       "Name": "Feline Silver Sword",
+       "Effect": "A SILVER SWORD that increases damage dealt with FAST ATTACKS by 15%.",
+       "Price": "1,800"
+      },
+      {
+       "Image": "",
+       "Name": "Griffin Silver Sword",
+       "Effect": "A SILVER SWORD that increases the effectiveness of SIGNS by 30%.",
+       "Price": "3,600"
+      },
+      {
+       "Image": "",
+       "Name": "Manticore Silver Sword",
+       "Effect": "A SILVER SWORD that reduces COOLDOWN for casting SIGNS by 30%.",
+       "Price": "3,600"
+      },
+      {
+       "Image": "",
+       "Name": "Melltith",
+       "Effect": "A SILVER SWORD that adds a 15% chance to inflict FIRE damage.",
+       "Price": "7,200"
+      },
+      {
+       "Image": "",
+       "Name": "Ursine Silver Sword",
+       "Effect": "A SILVER SWORD that increases damage dealt with STRONG ATTACKS by 15%.",
+       "Price": "1,800"
+      },
+      {
+       "Image": "",
+       "Name": "Witcher's Silver Sword",
+       "Effect": "A STEEL SWORD that is part of the starter pack.",
+       "Price": "$4.99Available as part of the Starter Pack, available in the game's shop."
+      },
+      {
+       "Image": "",
+       "Name": "Wolven Silver Sword",
+       "Effect": "A SILVER SWORD that accelerated CRITICAL HIT METER charging during MELEE COMBAT by 10%.",
+       "Price": "3,600"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all '''swords''' found in {{TWMS}}.\n\n==Steel swords==\n{| class=\"fandom-table sortable\" width=\"100%;\"\n! class=\"unsortable\" width=\"20%\" |Image\n! width=\"25%\" |Name\n! width=\"40%\" |Effect\n! data-sort-type=\"number\" width=\"15%\" |Price\n|-\n|[[File:Twms sword caerme.png|center|200px]]\n|Caerme\n|A STEEL SWORD that increases CRITICAL HIT damage by 50%.\n|[[File:twms currency_gold_coin.png|20px]]6,400\n|-\n|[[File:Twms sword feline steel.png|center|200px]]\n|Feline Steel Sword\n|A STEEL SWORD that increases damage dealt with FAST ATTACKS by 15%.\n|[[File:twms currency_gold_coin.png|20px]]1,600\n|-\n|[[File:Twms sword griffin steel.png|center|200px]]\n|Griffin Steel Sword\n|A STEEL SWORD that increases the effectiveness of SIGNS by 30%.\n|[[File:twms currency_gold_coin.png|20px]]3,200\n|-\n|[[File:TWMS Kaer Morhen Steel.png|200px]]\n|Kaer Morhen Steel Sword\n|A STEEL SWORD that increases EXPERIENCE POINTS gain for killing monsters by 10%.\n|''n/a''<ref name=\"kaermorhen\">Not for sale. Handed out to every Witcher logging in during the first week after release.</ref>\n|-\n|[[File:Twms sword manticore steel.png|center|200px]]\n|Manticore Steel Sword\n|A STEEL SWORD that reduces COOLDOWN for casting SIGNS by 30%.\n|[[File:twms currency_gold_coin.png|20px]]3,200\n|-\n|[[File:Twms sword ursine steel.png|center|200px]]\n|Ursine Steel Sword\n|A STEEL SWORD that increases damage dealt with STRONG ATTACKS by 15%.\n|[[File:twms currency_gold_coin.png|20px]]1,600\n|-\n|[[File:Twms sword witchers steel.png|center|200px]]\n|Witcher's Steel Sword\n|A STEEL SWORD that is part of the starting inventory.\n|0\n|-\n|[[File:Twms sword wolven steel.png|center|200px]]\n|Wolven Steel Sword\n|A STEEL SWORD that accelerates CRITICAL HIT METER charging during MELEE COMBAT by 10%.\n|[[File:twms currency_gold_coin.png|20px]]3,200\n|-\n|[[File:TWMS Dawnbringer.png|200px]]\n|Dawnbringer\n|A STEEL SWORD that increases all damage dealt at night by 10%.\n|''n/a''<ref name=\"Dawnbringer\">The Dawnbringer steel sword is acquired by completing the quest [[Sword in the Stone]].</ref>\n|-\n|[[File:TWMS Incandescent Heart.png|200px]]\n|Incandescent Heart\n|A STEEL SWORD with a 15% chance to inflict extra FIRE damage.\n|''n/a''<ref name=\"Incandescent Heart\">The Incandescent Heart steel sword is acquired by completing 7 Timed Challenges during the Midinváerne winter holiday event.</ref>\n|-\n|[[File:Twms sword khopesh.png|center|200px]]\n|Khopesh\n|A STEEL SWORD that increases damage dealt against [[cursed one]]s by 75%.\n|''n/a''<ref name=\"Khopesh\">The Khopesh steel sword is acquired by completing 4 Timed Challenges during the Lammas event.</ref>\n|}\n==Silver swords==\n{| class=\"fandom-table sortable\" width=\"100%;\"\n! class=\"unsortable\" width=\"20%\" |Image\n! width=\"25%\" |Name\n! width=\"40%\" |Effect\n! data-sort-type=\"number\" width=\"15%\" |Price\n|-\n|[[File:Twms sword abaeth.png|center|200px]]\n|A'Báeth\n|A SILVER SWORD that increases EXPERIENCE POINTS gain for killing monsters by 25%.\n|[[File:twms currency_gold_coin.png|20px]]12,000\n|-\n|[[File:Twms sword feline silver.png|center|200px]]\n|Feline Silver Sword\n|A SILVER SWORD that increases damage dealt with FAST ATTACKS by 15%.\n|[[File:twms currency_gold_coin.png|20px]]1,800\n|-\n|[[File:Twms sword griffin silver.png|center|200px]]\n|Griffin Silver Sword\n|A SILVER SWORD that increases the effectiveness of SIGNS by 30%.\n|[[File:twms currency_gold_coin.png|20px]]3,600\n|-\n|[[File:Twms sword manticore silver.png|center|200px]]\n|Manticore Silver Sword\n|A SILVER SWORD that reduces COOLDOWN for casting SIGNS by 30%.\n|[[File:twms currency_gold_coin.png|20px]]3,600\n|-\n|[[File:Twms sword melltith.png|center|200px]]\n|Melltith\n|A SILVER SWORD that adds a 15% chance to inflict FIRE damage.\n|[[File:twms currency_gold_coin.png|20px]]7,200\n|-\n|[[File:Twms sword ursine silver.png|center|200px]]\n|Ursine Silver Sword\n|A SILVER SWORD that increases damage dealt with STRONG ATTACKS by 15%.\n|[[File:twms currency_gold_coin.png|20px]]1,800\n|-\n|[[File:TWMS Witchers Silver Sword.png|200px]]\n|Witcher's Silver Sword\n|A STEEL SWORD that is part of the starter pack.\n|$4.99<ref name=\"witcher silver\">Available as part of the Starter Pack, available in the game's shop.</ref>\n|-\n|[[File:Twms sword wolven silver.png|center|200px]]\n|Wolven Silver Sword\n|A SILVER SWORD that accelerated CRITICAL HIT METER charging during MELEE COMBAT by 10%.\n|[[File:twms currency_gold_coin.png|20px]]3,600\n|}\n\n== References ==\n<references />\n[[Category:The Witcher Monster Slayer]]\n[[Category:Weapons]]\n[[Category:Pages with tables]]\n[[pl:Miecze w grze Wiedźmin Pogromca Potworów]]\n[[uk:Сталеві мечі (Відьмак: Вбивця чудовиськ)]]"
+}

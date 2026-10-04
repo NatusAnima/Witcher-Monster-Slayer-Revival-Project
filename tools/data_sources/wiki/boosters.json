@@ -1,0 +1,41 @@
+{
+ "page": "The Witcher Monster Slayer boosters",
+ "revid": 568747,
+ "sections": [
+  {
+   "title": "(intro)",
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Cost",
+      "Description"
+     ],
+     "rows": [
+      {
+       "Name": "Experience Scroll",
+       "Cost": "120",
+       "Description": "A booster that increases experience gain by 100%. The effect lasts 30 min."
+      },
+      {
+       "Name": "Summoning Scroll",
+       "Cost": "200",
+       "Description": "Summons 5 random monsters, including 4 common and 1 common or rare."
+      },
+      {
+       "Name": "Ingredients Scroll",
+       "Cost": "120",
+       "Description": "A booster that increases the number of alchemy ingredients acquired from monsters and plants by 100%. The effect lasts for 30 min."
+      },
+      {
+       "Name": "Range Scroll",
+       "Cost": "80",
+       "Description": "Increases the range of interaction on the map by 50%. The effect lasts for 30 min."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "There are different kinds of boosters in {{TWMS}}.\n{| class=\"fandom-table\"\n!Name\n!Cost\n!Description\n|-\n|Experience Scroll\n|120\n|A booster that increases experience gain by 100%. The effect lasts 30 min.\n|-\n|Summoning Scroll\n|200\n|Summons 5 random monsters, including 4 common and 1 common or rare.\n|-\n|Ingredients Scroll\n|120\n|A booster that increases the number of alchemy ingredients acquired from monsters and plants by 100%. The effect lasts for 30 min.\n|-\n|Range Scroll\n|80\n|Increases the range of interaction on the map by 50%. The effect lasts for 30 min.\n|}\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]"
+}

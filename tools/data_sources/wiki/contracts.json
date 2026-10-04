@@ -1,0 +1,287 @@
+{
+ "page": "The Witcher Monster Slayer contracts",
+ "revid": 580882,
+ "sections": [
+  {
+   "title": "Inventory of Potential Daily Tasks",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Description",
+      "Reward",
+      "Notes"
+     ],
+     "rows": [
+      {
+       "Name": "Witcher: The Professional",
+       "Description": "Kill 4 monsters while using oil",
+       "Reward": "60",
+       "Notes": "Use an oil and kill 4 monsters. Note that bear fat (25) and repair (30) costs of one oil mean that using this contract to kill commons is only worth 5 coins, so you may want to switch it if you have no other uses for oil."
+      },
+      {
+       "Name": "Swordmaster",
+       "Description": "Parry an opponent's attack 10 times.",
+       "Reward": "60",
+       "Notes": "To parry, press and hold when the red 'attack warning' lights. Accumulates over multiple fights."
+      },
+      {
+       "Name": "Not Quite Dragons",
+       "Description": "Kill 3 monsters from the draconid class.",
+       "Reward": "95",
+       "Notes": "For example wyverns and forktails appear during the day. See also Bestiary."
+      },
+      {
+       "Name": "Craft oils",
+       "Description": "Craft 3 basic oils.",
+       "Reward": "50",
+       "Notes": "Access the crafting station in your inventory. 3 basic oils require a total of 15 Powdered monster tissue (from monster kills and Alchemist's packs) and 9 Bundles of herbs (harvested from the map or from Herbalist's packs)"
+      },
+      {
+       "Name": "Use oils",
+       "Description": "Use 2 basic oils.",
+       "Reward": "50",
+       "Notes": "An oil can be applied to the weapon in the start of the battle by selecting it into the oil slot."
+      },
+      {
+       "Name": "Craft bombs",
+       "Description": "Craft 2 basic bombs.",
+       "Reward": "50",
+       "Notes": "2 basic bombs will require total of 10 Powdered monster tissue, 6 Bundles of herbs, and 2 Roots (harvested from the map or from Herbalist's packs)."
+      },
+      {
+       "Name": "Throw bombs",
+       "Description": "Throw 3 basic bombs.",
+       "Reward": "50",
+       "Notes": "Bombs can be brewn in the inventory and are used in battle selection. The battle does not need to be won for the throws to count."
+      },
+      {
+       "Name": "Burn 'em All",
+       "Description": "Kill 3 monsters vulnerable to fire.",
+       "Reward": "50",
+       "Notes": "The vulnerabilities of a monster can see in the Bestiary. It is not required to use a fire attack."
+      },
+      {
+       "Name": "They're Both for Monsters",
+       "Description": "Kill 3 monsters vulnerable to steel.",
+       "Reward": "50",
+       "Notes": "The vulnerabilities of a monster can see in the Bestiary."
+      },
+      {
+       "Name": "",
+       "Description": "Parry 5 attacks.",
+       "Reward": "50",
+       "Notes": "Parry an attack from a monster in combat by pressing and holding when the red attack warning sign appears above the critical hit bar."
+      },
+      {
+       "Name": "Demonsterization",
+       "Description": "Clear 1 nemeton.",
+       "Reward": "50",
+       "Notes": "Nemeta can only be accessed at level 10. They appear tree-like by walking around on the map."
+      },
+      {
+       "Name": "Grumpy old creatures",
+       "Description": "Kill 3 monsters from the relict class.",
+       "Reward": "80",
+       "Notes": "The class of a monster can be shown in the Bestiary."
+      },
+      {
+       "Name": "Full moon rising",
+       "Description": "Kill 1 werewolf.",
+       "Reward": "100",
+       "Notes": "A werewolf will only appear during full moon and has a one skull difficulty level. See also: Bestiary."
+      },
+      {
+       "Name": "Wet nightmare",
+       "Description": "Kill 3 monsters that usually live near water.",
+       "Reward": "80",
+       "Notes": "For example Water Hags. Rain helps (potentially snowing as well). See also: Bestiary."
+      },
+      {
+       "Name": "Ghostslayer",
+       "Description": "Kill 5 monsters from the specter class.",
+       "Reward": "50",
+       "Notes": "Wraiths are reasonably available easy monsters in the evening time. See also: Bestiary."
+      },
+      {
+       "Name": "Cadaver-eaters",
+       "Description": "Kill 3 ghouls.",
+       "Reward": "80",
+       "Notes": "See also: Bestiary."
+      },
+      {
+       "Name": "Two in One",
+       "Description": "Kill 5 monsters from the hybrid class.",
+       "Reward": "50",
+       "Notes": "For example the succubus. See also: Bestiary."
+      },
+      {
+       "Name": "Grumpy Old Creatures",
+       "Description": "Kill 5 monsters from the relict class.",
+       "Reward": "50",
+       "Notes": "For example the Spriggan Hound. See also: Bestiary."
+      },
+      {
+       "Name": "Deadly Swing",
+       "Description": "Kill 3 monsters with a tail.",
+       "Reward": "80",
+       "Notes": "For example the wererat. See also: Bestiary."
+      },
+      {
+       "Name": "On the Path",
+       "Description": "Travel a distance of at least 1 km.",
+       "Reward": "50",
+       "Notes": "Go for a walk."
+      },
+      {
+       "Name": "As Strong as a Horse",
+       "Description": "Perform 20 strong attacks.",
+       "Reward": "50",
+       "Notes": "To perform a strong attack, swipe more slowly during a fight. These do not need to be completed in a single fight."
+      },
+      {
+       "Name": "Soaking Dead",
+       "Description": "Kill 3 drowners.",
+       "Reward": "80",
+       "Notes": "Drowners spawn near water or during rain. See also: Bestiary."
+      },
+      {
+       "Name": "Ogre My Dead Body",
+       "Description": "Kill 5 monsters from the ogroid class.",
+       "Reward": "50",
+       "Notes": "For example nekkers. See also: Bestiary."
+      },
+      {
+       "Name": "Full of Terrors",
+       "Description": "Kill 1 nocturnal monster.",
+       "Reward": "80",
+       "Notes": "For example a vampire. See also: Bestiary."
+      },
+      {
+       "Name": "High Noon",
+       "Description": "Kill 1 noonwraith.",
+       "Reward": "100",
+       "Notes": "The noonwraith spawns only around midday. See also: Bestiary."
+      },
+      {
+       "Name": "The Magician",
+       "Description": "Cast signs 2 times in 1 fight.",
+       "Reward": "50",
+       "Notes": "Any sign will do, for example igni."
+      },
+      {
+       "Name": "",
+       "Description": "Perform 10 critical hits.",
+       "Reward": "",
+       "Notes": ""
+      },
+      {
+       "Name": "Business as Ususal",
+       "Description": "Kill 10 common monsters.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Vertical",
+       "Description": "Kill 3 monsters moving on two limbs.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Small but ferocious",
+       "Description": "Kill 3 nekkers.",
+       "Reward": "80",
+       "Notes": ""
+      },
+      {
+       "Name": "Out of Their Element",
+       "Description": "Kill 3 elementa class monsters.",
+       "Reward": "80",
+       "Notes": ""
+      },
+      {
+       "Name": "Consequently strong",
+       "Description": "Perform 8 strong attacks in 1 fight.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Consequently fast",
+       "Description": "Perform 8 fast attacks in 1 fight.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "On Your Guard",
+       "Description": "Parry an opponent's attacks 3 times in 1 fight.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Fiery Surprise",
+       "Description": "Cast Igni 3 times in 1 fight.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Big-Game Hunting",
+       "Description": "Kill 5 monsters vurnerable to strong attacks.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Silver Lining",
+       "Description": "Kill 3 monsters vurnerable to silver.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Boy, Do They Suck!",
+       "Description": "Kill 3 monsters from the vampire class.",
+       "Reward": "80 (v1.1); 95 (v1.2)",
+       "Notes": ""
+      },
+      {
+       "Name": "Deadly Fast",
+       "Description": "Kill 5 monsters vurnerable to fast attacks.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Well-oiled",
+       "Description": "Craft 3 oils.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Quick as the Wind",
+       "Description": "Perform 30 fast attacks.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Above the Ground",
+       "Description": "Kill 3 flying monsters.",
+       "Reward": "80",
+       "Notes": ""
+      },
+      {
+       "Name": "Pest control",
+       "Description": "Kill 5 monsters from the insectoid class.",
+       "Reward": "50",
+       "Notes": ""
+      },
+      {
+       "Name": "Brewing",
+       "Description": "Craft 3 witcher potions.",
+       "Reward": "60 (v1.2)",
+       "Notes": ""
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "In {{TWMS}}, '''Contracts''' are optional small quests which the character can undertake in exchange for gold coins.\n\nContracts are accessed through the contract menu in the lower right corner of the map view.\n\n== Daily Tasks ==\nAfter the November 2021 update, 3 contracts are given a day. If a contract has not been completed, completing one the next day frees up a slot and the third (or second, etc) contract of the new day will appear again.\n\nOne contract can be changed once a day by pressing the circular-arrow reload icon in the upper right corner of the page. After this it is possible to 'delete' a contract by pressing the trashbin icon, which has the same effect as completing it would be, without rewards.\n\n== Daily Hunt ==\nIn addition, the first kill of a day gives a stamp shown on the Daily Hunt stamp list. One stamp can be earned a day, and collecting 5 stamps rewards a [[The Witcher Monster Slayer scrolls|summoning scroll]].\n\n== Timed Tasks ==\nAn additional set of themed \"[[The Witcher Monster Slayer timed tasks|Timed Tasks]]\" have been added in the November update into a tab behind the daily, which can provide additional rewards and coins if they are all completed. Occasionally, there have been bugs in claiming specific missions even though they show up as complete, and the fixes have been prompt.\n\nIt is worth noting that in the [[The Witcher Monster Slayer timed tasks|timed tasks]], the phrasing '''\"Kill <monster> while using only <something>\"''', for example \"Kill any monster from the OGROID class while using only SIGNS\", means that: \n\n* You can do damage with signs, obviously, but also \n* You may use potions and oils, AND \n* It is also ok to cause and avoid damage as a side effect of normal or perfect parrying.\n\nIn other words, to \"kill only by using signs\" means you must kill without using fast or strong attacks or bombs, but all other boosters are fine. Similarly killing only with bombs allows parrying, but probably not any signs.\n\n== Inventory of Potential Daily Tasks ==\nNote: After the May 2022 update, task rewards have changed (seems that they have increased). Those appearing above \"Craft oils\" are validated to have appeared after the update.\n{| class=\"fandom-table\"\n!Name\n!Description\n!Reward\n!Notes\n|-\n|Witcher: The Professional\n|Kill 4 [[The Witcher Monster Slayer bestiary|monsters]] while using [[The Witcher Monster Slayer oils|oil]]\n|60\n|Use an [[The Witcher Monster Slayer oils|oil]] and kill 4 [[The Witcher Monster Slayer bestiary|monsters]]. Note that [[The Witcher Monster Slayer ingredients|bear fat]] (25) and repair (30) costs of one oil mean that using this contract to kill commons is only worth 5 coins, so you may want to switch it if you have no other uses for oil.\n|-\n|Swordmaster\n|Parry an opponent's attack 10 times.\n|60\n|To parry, press and hold when the red 'attack warning' lights. Accumulates over multiple fights.\n|-\n|Not Quite Dragons\n|Kill 3 monsters from the [[draconid]] class.\n|95\n|For example [[wyvern]]s and [[forktail]]s appear during the day. See also [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Craft oils\n|Craft 3 basic [[The Witcher Monster Slayer oils|oils]].\n|50\n|Access the crafting station in your inventory. 3 [[The Witcher Monster Slayer oils|basic oils]] require a total of 15 [[The Witcher Monster Slayer gifts|Powdered monster tissue]] (from monster kills and [[The Witcher Monster Slayer gifts|Alchemist's packs]]) and 9 [[The Witcher Monster Slayer ingredients|Bundles of herbs]] (harvested from the map or from [[The Witcher Monster Slayer gifts|Herbalist's packs]])\n|-\n|Use [[The Witcher Monster Slayer oils|oils]]\n|Use 2 basic [[The Witcher Monster Slayer oils|oils]].\n|50\n|An [[The Witcher Monster Slayer oils|oil]] can be applied to the weapon in the start of the battle by selecting it into the oil slot.\n|-\n|Craft bombs\n|Craft 2 [[The Witcher Monster Slayer bombs|basic bombs]].\n|50\n|2 [[The Witcher Monster Slayer bombs|basic bombs]] will require total of 10 Powdered monster tissue, 6 Bundles of herbs, and 2 Roots (harvested from the map or from Herbalist's packs).\n|-\n|Throw bombs\n|Throw 3 basic [[The Witcher Monster Slayer bombs|bombs]].\n|50\n|[[The Witcher Monster Slayer bombs|Bombs]] can be brewn in the inventory and are used in battle selection. The battle does not need to be won for the throws to count.\n|-\n|Burn 'em All\n|Kill 3 [[The Witcher Monster Slayer bestiary|monsters]] vulnerable to fire.\n|50\n|The vulnerabilities of a monster can see in the [[The Witcher Monster Slayer bestiary|Bestiary]]. It is not required to use a fire attack.\n|-\n|They're Both for Monsters\n|Kill 3 [[The Witcher Monster Slayer bestiary|monsters]] vulnerable to steel.\n|50\n|The vulnerabilities of a monster can see in the [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|\n|Parry 5 attacks.\n|50\n|Parry an attack from a monster in combat by pressing and holding when the red attack warning sign appears above the critical hit bar.\n|-\n|Demonsterization\n|Clear 1 [[nemeton]].\n|50\n|[[Nemeton|Nemeta]] can only be accessed at level 10. They appear tree-like by walking around on the map.\n|-\n|Grumpy old creatures\n|Kill 3 monsters from the [[relict]] class.\n|80\n|The class of a monster can be shown in the [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Full moon rising\n|Kill 1 [[werewolf]].\n|100\n|A [[werewolf]] will only appear during full moon and has a one skull difficulty level. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Wet nightmare\n|Kill 3 [[The Witcher Monster Slayer bestiary|monsters]] that usually live near water.\n|80\n|For example Water Hags. Rain helps (potentially snowing as well). See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Ghostslayer\n|Kill 5 monsters from the [[specter]] class.\n|50\n|Wraiths are reasonably available easy monsters in the evening time. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Cadaver-eaters\n|Kill 3 [[ghoul]]s.\n|80\n|See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Two in One\n|Kill 5 monsters from the [[hybrid]] class.\n|50\n|For example the succubus. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Grumpy Old Creatures\n|Kill 5 monsters from the [[relict]] class.\n|50\n|For example the [[The Witcher Monster Slayer bestiary|Spriggan Hound]]. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Deadly Swing\n|Kill 3 [[The Witcher Monster Slayer bestiary|monsters]] with a tail.\n|80\n|For example the [[wererat]]. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|On the Path\n|Travel a distance of at least 1 km.\n|50\n|Go for a walk.\n|-\n|As Strong as a Horse\n|Perform 20 strong attacks.\n|50\n|To perform a strong attack, swipe more slowly during a fight. These do not need to be completed in a single fight.\n|-\n|Soaking Dead\n|Kill 3 [[drowner]]s.\n|80\n|Drowners spawn near water or during rain. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Ogre My Dead Body\n|Kill 5 monsters from the [[ogroid]] class.\n|50\n|For example [[nekker]]s. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|Full of Terrors\n|Kill 1 nocturnal [[The Witcher Monster Slayer bestiary|monster]].\n|80\n|For example a vampire. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|High Noon\n|Kill 1 [[noonwraith]].\n|100\n|The [[noonwraith]] spawns only around midday. See also: [[The Witcher Monster Slayer bestiary|Bestiary]].\n|-\n|The Magician\n|Cast [[signs]] 2 times in 1 fight.\n|50\n|Any sign will do, for example igni.\n|-\n|\n|Perform 10 critical hits.\n|\n|\n|-\n|Business as Ususal\n|Kill 10 common [[The Witcher Monster Slayer bestiary|monsters]].\n|50\n|\n|-\n|Vertical\n|Kill 3 [[The Witcher Monster Slayer bestiary|monsters]] moving on two limbs.\n|50\n|\n|-\n|Small but ferocious\n|Kill 3 [[nekker]]s.\n|80\n|\n|-\n|Out of Their Element\n|Kill 3 [[elementa]] class monsters.\n|80\n|\n|-\n|Consequently strong\n|Perform 8 strong attacks in 1 fight.\n|50\n|\n|-\n|Consequently fast\n|Perform 8 fast attacks in 1 fight.\n|50\n|\n|-\n|On Your Guard\n|Parry an opponent's attacks 3 times in 1 fight.\n|50\n|\n|-\n|Fiery Surprise\n|Cast Igni 3 times in 1 fight.\n|50\n|\n|-\n|Big-Game Hunting\n|Kill 5 monsters vurnerable to strong attacks.\n|50\n|\n|-\n|Silver Lining\n|Kill 3 monsters vurnerable to silver.\n|50\n|\n|-\n|Boy, Do They Suck!\n|Kill 3 monsters from the vampire class.\n|80 (v1.1)<br/>95 (v1.2)\n|\n|-\n|Deadly Fast\n|Kill 5 monsters vurnerable to fast attacks.\n|50\n|\n|-\n|Well-oiled\n|Craft 3 oils.\n|50\n|\n|-\n|Quick as the Wind\n|Perform 30 fast attacks.\n|50\n|\n|-\n|Above the Ground\n|Kill 3 flying monsters.\n|80\n|\n|-\n|Pest control\n|Kill 5 monsters from the insectoid class.\n|50\n|\n|-\n|Brewing\n|Craft 3 witcher potions.\n|60 (v1.2)\n|\n|}\n\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[de:The Witcher Monster Slayer Tagesaufgaben]]\n[[pl:Kontrakty w grze Wiedźmin Pogromca Potworów]]\n[[ru:Задания (Охотник на чудовищ)]]"
+}

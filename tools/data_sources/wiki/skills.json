@@ -1,0 +1,509 @@
+{
+ "page": "The Witcher Monster Slayer skills",
+ "revid": 587742,
+ "sections": [
+  {
+   "title": "Alchemy",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Effect",
+      "Cost",
+      "Unlocking Level"
+     ],
+     "rows": [
+      {
+       "Name": "OIL PREPARATION",
+       "Effect": "Enables the creation of OILS that can be applied to SWORDS.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "BREWING",
+       "Effect": "Enables the creation of WITCHER POTIONS.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "BOMB CREATION",
+       "Effect": "Enables the creation of handheld BOMBS that can be thrown at opponents.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "ENHANCED OILS",
+       "Effect": "Increases OIL effectiveness by 5%.",
+       "Cost": "9",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "TAWNY OWL",
+       "Effect": "Unlocks a new FORMULA for a WITCHER POTION that accelerates the COOLDOWN after casting SIGNS by 30%.",
+       "Cost": "6",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "FIXATIVE",
+       "Effect": "CRITICAL HIT damage against the monster class that the applied OIL targets is increased by an additional 2%.; Level 2: 4%; Level 3: 6%; Level 4: 8%; Level 5: 10%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "CAT",
+       "Effect": "Unlocks a new FORMULA for a WITCHER POTION that increases all damage dealt by SWORD and SIGNS at night by 75%.",
+       "Cost": "6",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "STEADY AIM",
+       "Effect": "Throwing BOMBS take less time.",
+       "Cost": "6",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "ACQUIRED TOLERANCE",
+       "Effect": "Increases the maximum number of WITCHER POTION slots during PREPARATION by 1.",
+       "Cost": "9",
+       "Unlocking Level": "15"
+      },
+      {
+       "Name": "SQUALL",
+       "Effect": "Unlocks a new FORMULA for a WITCHER POTION that increases all damage dealt by SWORDS and SIGNS during precipitation by 75%.",
+       "Cost": "6",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "ADVANCED STEADY AIM",
+       "Effect": "Throwing BOMBS is even faster.",
+       "Cost": "9",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "PROTECTIVE COATING",
+       "Effect": "Reduces damage received from the monster class that the OIL targets by 2% while PARRYING.; Level 2: 4%; Level 3: 6%; Level 4: 8%; Level 5: 10%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "FAST METABOLISM",
+       "Effect": "Increases the maximum number of WITCHER POTION slots during PREPARATION by 1.",
+       "Cost": "9",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "PYROTECHNICS",
+       "Effect": "All BOMBS now deal 2% damage in addition to their normal effects.; Level 2: 4%; Level 3: 6%; Level 4: 8%; Level 5: 10%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "SUPERIOR OILS",
+       "Effect": "Increases OIL effectiveness by an additional 10%.",
+       "Cost": "9",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "WOLVERINE",
+       "Effect": "Unlocks a new FORMULA for a WITCHER POTION that increases all damage by 100% when the player's VITALITY reaches 50%.",
+       "Cost": "6",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "ADVANCED PYROTECHNICS",
+       "Effect": "Damage dealt by BOMBS charges the CRITICAL HIT METER.",
+       "Cost": "12",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "POTIONS MASTER",
+       "Effect": "Adds the chance to craft an additional WITCHER POTION.",
+       "Cost": "15",
+       "Unlocking Level": "35"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Combat",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Effect",
+      "Cost",
+      "Unlocking Level"
+     ],
+     "rows": [
+      {
+       "Name": "FAST ATTACK",
+       "Effect": "Allows you to perform FAST ATTACKS with a SWORD.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "STRONG ATTACK",
+       "Effect": "Allows you to perform a STRONG ATTACK with a SWORD.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "PARRY",
+       "Effect": "Enables PARRYING, a defensive technique that reduces damage taken.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "MUSCLE MEMORY",
+       "Effect": "Increases FAST ATTACK damage by 4%.; Level 2: 8%; Level 3: 12%; Level 4: 16%; Level 5: 20%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "STRENGTH TRAINING",
+       "Effect": "Increases the STRONG ATTACK damage by 4%.; Level 2: 8%; Level 3: 12%; Level 4: 16%; Level 5: 20%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "RESOLVE",
+       "Effect": "Loss of the CRITICAL HIT METER charge upon taking damage from UNPARRIED hits is lowered to 10%.; Level 2: 20%; Level 3: 30%",
+       "Cost": "1; 5; 15",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "PRECISE BLOWS",
+       "Effect": "Each FAST ATTACK accelerates the charging of the CRITICAL HIT METER.",
+       "Cost": "6",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "CRUSHING BLOWS",
+       "Effect": "Each STRONG ATTACK accelerates the charging of the CRITICAL HIT METER.",
+       "Cost": "6",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "FLEET-FOOTED",
+       "Effect": "PARRYING further reduces damage received from hits by 2%.; Level 2: 4%; Level 3: 6%; Level 4: 8%; Level 5: 10%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "ANATOMICAL KNOWLEDGE",
+       "Effect": "Increases CRITICAL HIT damage by 2%.; Level 2: 4%; Level 3: 6%; Level 4: 8%; Level 5: 10%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "15"
+      },
+      {
+       "Name": "HIT REFLECTION",
+       "Effect": "A PERFECT (perfectly timed) PARRY reflects damage back at the opponent.",
+       "Cost": "9",
+       "Unlocking Level": "15"
+      },
+      {
+       "Name": "LIGHTNING REFLEXES",
+       "Effect": "Slows time by an additional 5% while performing a CRITICAL HIT.; Level 2: 10%",
+       "Cost": "3; 7",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "COLD BLOOD",
+       "Effect": "Each successful PARRY charges the CRITICAL HIT METER.",
+       "Cost": "9",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "CRIPPLING STRIKE",
+       "Effect": "A perfectly-timed CRITICAL HIT delays the opponent's next attack by 1 s.",
+       "Cost": "9",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "COUNTERATTACK",
+       "Effect": "The next attack after a successful HIT REFLECTION deals 5% additional damage.; Level 2: 10%",
+       "Cost": "1; 3",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "RAZOR FOCUS",
+       "Effect": "Instantly gain some CRITICAL HIT METER charge when entering combat.",
+       "Cost": "12",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "BATTLE TRANCE",
+       "Effect": "Damage from UNPARRIED hits is reduced by 4%.; Level 2: 8%; Level 3: 12%; Level 4: 16%; Level 5: 20%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "UNDYING",
+       "Effect": "Allows the chance to survive the final blow of an opponent. This effect can occur only once per fight.",
+       "Cost": "18",
+       "Unlocking Level": "35"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Signs",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Effect",
+      "Cost",
+      "Unlocking Level"
+     ],
+     "rows": [
+      {
+       "Name": "WITCHER AURA",
+       "Effect": "Witcher Aura attracts a random monster, spawning it next to the player.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "IGNI SIGN",
+       "Effect": "Enables casting a SIGN that inflicts FIRE damage upon the opponent.",
+       "Cost": "n/a",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "PYROMANIAC",
+       "Effect": "Increases the chance of inflicting extra (9%) FIRE damage by 5%.; Level 2: 10%; Level 3: 15%; Level 4: 20%; Level 5: 25%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "n/a"
+      },
+      {
+       "Name": "FOCUS",
+       "Effect": "While casting SIGNS, time is slowed by 15%.; Level 2: 30%; Level 3: 45%; Level 4: 60%; Level 5: 75%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "AARD SIGN",
+       "Effect": "Enables casting a SIGN that inflicts KINETIC damage and delays the opponent's next attack by 1 s.",
+       "Cost": "5",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "QUEN SIGN",
+       "Effect": "Enables casting a SIGN that absorbs 70% of damage taken.",
+       "Cost": "5",
+       "Unlocking Level": "15"
+      },
+      {
+       "Name": "SHOCK WAVE",
+       "Effect": "Increases KINETIC damage dealt by AARD by 2%.; Level 2: 4%; Level 3: 6%; Level 4: 8%; Level 5: 10%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "15"
+      },
+      {
+       "Name": "QUEN DISCHARGE",
+       "Effect": "Reflects 10% of absorbed damage back at the opponent.; Level 2: 15%; Level 3: 20%; Level 4: 25%; Level 5: 30%",
+       "Cost": "1; 3; 5; 9; 15",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "ADRENALINE BURST",
+       "Effect": "Each successfully cast SIGN charges the CRITICAL HIT METER.",
+       "Cost": "9",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "QUEN INTENSITY",
+       "Effect": "Accelerates the charging of the CRITICAL HIT METER while casting QUEN.",
+       "Cost": "9",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "IGNI INTENSITY",
+       "Effect": "Accelerates the charging of the CRITICAL HIT METER while casting IGNI.",
+       "Cost": "9",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "AARD INTENSITY",
+       "Effect": "Accelerates the charging of the CRITICAL HIT METER while casting AARD.",
+       "Cost": "9",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "GORGED ON POWER",
+       "Effect": "Allows the chance to ignore the COOLDOWN after casting a SIGN.",
+       "Cost": "18",
+       "Unlocking Level": "35"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The Path",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Effect",
+      "Unlocking Level"
+     ],
+     "rows": [
+      {
+       "Name": "Fast Attack",
+       "Effect": "Allows you to perform FAST ATTACKS with a SWORD.",
+       "Unlocking Level": "1"
+      },
+      {
+       "Name": "Parrying",
+       "Effect": "Enables PARRYING, a defensive technique that reduces damage taken.",
+       "Unlocking Level": "1"
+      },
+      {
+       "Name": "Strong Attack",
+       "Effect": "Allows you to perform STRONG ATTACKS with a SWORD.",
+       "Unlocking Level": "1"
+      },
+      {
+       "Name": "Igni Sign",
+       "Effect": "Enables casting a SIGN, there is a COOLDOWN period during which sign-casting is disabled.",
+       "Unlocking Level": "1"
+      },
+      {
+       "Name": "Alchemy station",
+       "Effect": "Additional slot for an ALCHEMY STATION.",
+       "Unlocking Level": "2"
+      },
+      {
+       "Name": "Formulae: Potions",
+       "Effect": "A collection of POTION formulae.",
+       "Unlocking Level": "2"
+      },
+      {
+       "Name": "Witcher Aura",
+       "Effect": "Witcher Aura attracts a random monster, spawning it next to the player.",
+       "Unlocking Level": "2"
+      },
+      {
+       "Name": "Cold Blood",
+       "Effect": "Each successful PARRY charges the CRITICAL HIT METER.",
+       "Unlocking Level": "5"
+      },
+      {
+       "Name": "Formulae: Oils",
+       "Effect": "A collection of OIL formulae.",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "Aard sign",
+       "Effect": "Enables casting a SIGN that inflicts KINETIC damage and delays the opponent's next attack by 1 s.",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "Timed Tasks",
+       "Effect": "You've gained access to a new gameplay feature: TIMED TASKS. TIMED TASKS can be accessed from the map and work similarly to DAILY TASKS but pose a greater challenge and offer better rewards.",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "Formulae: Potions",
+       "Effect": "A collection of POTION formulae.",
+       "Unlocking Level": "10"
+      },
+      {
+       "Name": "Adrenaline Burst",
+       "Effect": "Each successful cast SIGN charges the CRITICAL HIT METER.",
+       "Unlocking Level": "15"
+      },
+      {
+       "Name": "Nemeta",
+       "Effect": "In nemeta, you can engage monsters and defeat them to earn gold coins and experience points as rewards. You can place bait in cleared nemeta to attreact monsters.",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "Formulae: Bait",
+       "Effect": "A collection of BAIT formulae.",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "Formulae: Potions",
+       "Effect": "A collection of POTION formulae.",
+       "Unlocking Level": "20"
+      },
+      {
+       "Name": "Protective Coating",
+       "Effect": "Reduces damage recieved from the monster class that the OIL targets by 2% while PARRYING.",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "Advanced Pyrotecnics",
+       "Effect": "Damage dealt by BOMBS charges the CRITICAL HIT METER.",
+       "Unlocking Level": "25"
+      },
+      {
+       "Name": "Hit Reflection",
+       "Effect": "A PERFECT (perfectly timed) PARRY reflects 30% of damage back at the opponent.",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "Formulae: Bait",
+       "Effect": "A collection of BAIT formulae.",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "Quen Sign",
+       "Effect": "Enables casting a SIGN that absorbs 50% of damage taken.",
+       "Unlocking Level": "30"
+      },
+      {
+       "Name": "Counteratack",
+       "Effect": "The next attack after a successful HIT REFLECTION deals 10% additional damage.",
+       "Unlocking Level": "32"
+      },
+      {
+       "Name": "Quen Discharge",
+       "Effect": "Reflects 10% of absorbed damage back at the opponent.",
+       "Unlocking Level": "32"
+      },
+      {
+       "Name": "Formulae: Potions",
+       "Effect": "A collection of POTION formulae.",
+       "Unlocking Level": "35"
+      },
+      {
+       "Name": "Crippling Strike",
+       "Effect": "A perfectly-timed CRITICAL HIT delays the opponent's next attack by 1 s.",
+       "Unlocking Level": "35"
+      },
+      {
+       "Name": "Gorged on Power",
+       "Effect": "Allows the chance to ignore the COOLDOWN after casting a SIGN.",
+       "Unlocking Level": "38"
+      },
+      {
+       "Name": "Potion Master",
+       "Effect": "Adds the chance to craft an additional WITCHER POTION.",
+       "Unlocking Level": "38"
+      },
+      {
+       "Name": "Undying",
+       "Effect": "Allows the chance to survive the final blow of an opponent. This effect can occur only once per fight.",
+       "Unlocking Level": "40"
+      },
+      {
+       "Name": "Formulae: Potions",
+       "Effect": "A collection of POTION formulae.",
+       "Unlocking Level": "40"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "Before update 1.2 there were 3 different '''skill''' branches in {{TWMS}}: '''[[#Alchemy|Alchemy]]''', '''[[#Combat|Combat]]''', and '''[[#Signs|Signs]]'''. In update 1.2 the 3 branch skill tree was removed and replaced with one simplified and unified tree - '''''the path'''''.\n\n==Alchemy==\nThis tables contains alchemy skills before update 1.2.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! width=\"25%\" |Name\n! class=\"unsortable\" width=\"50%\" |Effect\n! data-sort-type=\"number\" width=\"10%\" |Cost\n! data-sort-type=\"number\" width=\"15%\" |Unlocking Level\n|-\n|OIL PREPARATION\n|Enables the creation of [[The Witcher Monster Slayer oils|OILS]] that can be applied to [[The Witcher Monster Slayer swords|SWORDS]].\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|BREWING\n|Enables the creation of WITCHER [[The Witcher Monster Slayer potions|POTIONS]].\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|BOMB CREATION\n|Enables the creation of handheld [[The Witcher Monster Slayer bombs|BOMBS]] that can be thrown at opponents.\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|ENHANCED OILS\n|Increases OIL effectiveness by 5%.\n| align=\"center\" |9\n| align=\"center\" | ''n/a''\n|-\n|TAWNY OWL\n|Unlocks a new FORMULA for a WITCHER POTION that accelerates the COOLDOWN after casting SIGNS by 30%.\n| align=\"center\" |6\n| align=\"center\" | ''n/a''\n|-\n|FIXATIVE\n|CRITICAL HIT damage against the monster class that the applied OIL targets is increased by an additional 2%.<br/>Level 2: 4%<br/>Level 3: 6%<br/>Level 4: 8%<br/>Level 5: 10%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |10\n|-\n|CAT\n|Unlocks a new FORMULA for a WITCHER POTION that increases all damage dealt by SWORD and SIGNS at night by 75%.\n| align=\"center\" |6\n| align=\"center\" |10\n|-\n|STEADY AIM\n|Throwing BOMBS take less time.\n| align=\"center\" |6\n| align=\"center\" |10\n|-\n|ACQUIRED TOLERANCE\n|Increases the maximum number of WITCHER POTION slots during PREPARATION by 1.\n| align=\"center\" |9\n| align=\"center\" |15\n|-\n|SQUALL\n|Unlocks a new FORMULA for a WITCHER POTION that increases all damage dealt by SWORDS and SIGNS during precipitation by 75%.\n| align=\"center\" |6\n| align=\"center\" |20\n|-\n|ADVANCED STEADY AIM\n|Throwing BOMBS is even faster.\n| align=\"center\" |9\n| align=\"center\" |20\n|-\n|PROTECTIVE COATING\n|Reduces damage received from the monster class that the OIL targets by 2% while PARRYING.<br/>Level 2: 4%<br/>Level 3: 6%<br/>Level 4: 8%<br/>Level 5: 10%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |25\n|-\n|FAST METABOLISM\n|Increases the maximum number of WITCHER POTION slots during PREPARATION by 1.\n| align=\"center\" |9\n| align=\"center\" |25\n|-\n|PYROTECHNICS\n|All BOMBS now deal 2% damage in addition to their normal effects.<br/>Level 2: 4%<br/>Level 3: 6%<br/>Level 4: 8%<br/>Level 5: 10%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |25\n|-\n|SUPERIOR OILS\n|Increases OIL effectiveness by an additional 10%.\n| align=\"center\" |9\n| align=\"center\" |30\n|-\n|WOLVERINE\n|Unlocks a new FORMULA for a WITCHER POTION that increases all damage by 100% when the player's VITALITY reaches 50%.\n| align=\"center\" |6\n| align=\"center\" |30\n|-\n|ADVANCED PYROTECHNICS\n|Damage dealt by BOMBS charges the CRITICAL HIT METER.\n| align=\"center\" |12\n| align=\"center\" |30\n|-\n|POTIONS MASTER\n|Adds the chance to craft an additional WITCHER POTION.\n| align=\"center\" |15\n| align=\"center\" |35\n|}\n\n==Combat==\nThis tables contains combat skills before update 1.2.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! width=\"25%\" |Name\n! class=\"unsortable\" width=\"50%\" |Effect\n! data-sort-type=\"number\" width=\"10%\" |Cost\n! data-sort-type=\"number\" width=\"15%\" |Unlocking Level\n|-\n|FAST ATTACK\n|Allows you to perform FAST ATTACKS with a SWORD.\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|STRONG ATTACK\n|Allows you to perform a STRONG ATTACK with a SWORD.\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|PARRY\n|Enables PARRYING, a defensive technique that reduces damage taken.\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|MUSCLE MEMORY\n|Increases FAST ATTACK damage by 4%.<br/>Level 2: 8%<br/>Level 3: 12%<br/>Level 4: 16%<br/>Level 5: 20%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" | ''n/a''\n|-\n|STRENGTH TRAINING\n|Increases the STRONG ATTACK damage by 4%.<br/>Level 2: 8%<br/>Level 3: 12%<br/>Level 4: 16%<br/>Level 5: 20%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" | ''n/a''\n|-\n|RESOLVE\n|Loss of the CRITICAL HIT METER charge upon taking damage from UNPARRIED hits is lowered to 10%.<br/>Level 2: 20%<br/>Level 3: 30%\n| align=\"center\" |1<br/>5<br/>15\n| align=\"center\" | ''n/a''\n|-\n|PRECISE BLOWS\n|Each FAST ATTACK accelerates the charging of the CRITICAL HIT METER.\n| align=\"center\" |6\n| align=\"center\" |10\n|-\n|CRUSHING BLOWS\n|Each STRONG ATTACK accelerates the charging of the CRITICAL HIT METER.\n| align=\"center\" |6\n| align=\"center\" |10\n|-\n|FLEET-FOOTED\n|PARRYING further reduces damage received from hits by 2%.<br/>Level 2: 4%<br/>Level 3: 6%<br/>Level 4: 8%<br/>Level 5: 10%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |10\n|-\n|ANATOMICAL KNOWLEDGE\n|Increases CRITICAL HIT damage by 2%.<br/>Level 2: 4%<br/>Level 3: 6%<br/>Level 4: 8%<br/>Level 5: 10%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |15\n|-\n|HIT REFLECTION\n|A PERFECT (perfectly timed) PARRY reflects damage back at the opponent.\n| align=\"center\" |9\n| align=\"center\" |15\n|-\n|LIGHTNING REFLEXES\n|Slows time by an additional 5% while performing a CRITICAL HIT.<br/>Level 2: 10%\n| align=\"center\" |3<br/>7\n| align=\"center\" |20\n|-\n|COLD BLOOD\n|Each successful PARRY charges the CRITICAL HIT METER.\n| align=\"center\" |9\n| align=\"center\" |20\n|-\n|CRIPPLING STRIKE\n|A perfectly-timed CRITICAL HIT delays the opponent's next attack by 1 s.\n| align=\"center\" |9\n| align=\"center\" |25\n|-\n|COUNTERATTACK\n|The next attack after a successful HIT REFLECTION deals 5% additional damage.<br/>Level 2: 10%\n| align=\"center\" |1<br/>3\n| align=\"center\" |25\n|-\n|RAZOR FOCUS\n|Instantly gain some CRITICAL HIT METER charge when entering combat.\n| align=\"center\" |12\n| align=\"center\" |30\n|-\n|BATTLE TRANCE\n|Damage from UNPARRIED hits is reduced by 4%.<br/>Level 2: 8%<br/>Level 3: 12%<br/>Level 4: 16%<br/>Level 5: 20%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |30\n|-\n|UNDYING\n|Allows the chance to survive the final blow of an opponent. This effect can occur only once per fight.\n| align=\"center\" |18\n| align=\"center\" |35\n|}\n\n==Signs==\nThis tables contains sign skills before update 1.2.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! width=\"25%\" |Name\n! class=\"unsortable\" width=\"50%\" |Effect\n! data-sort-type=\"number\" width=\"10%\" |Cost\n! data-sort-type=\"number\" width=\"15%\" |Unlocking Level\n|-\n|WITCHER AURA\n|Witcher Aura attracts a random monster, spawning it next to the player.\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|IGNI SIGN\n|Enables casting a SIGN that inflicts FIRE damage upon the opponent.\n| align=\"center\" | ''n/a''\n| align=\"center\" | ''n/a''\n|-\n|PYROMANIAC\n|Increases the chance of inflicting extra (9%) FIRE damage by 5%.<br/>Level 2: 10%<br/>Level 3: 15%<br/>Level 4: 20%<br/>Level 5: 25%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" | ''n/a''\n|-\n|FOCUS\n|While casting SIGNS, time is slowed by 15%.<br/>Level 2: 30%<br/>Level 3: 45%<br/>Level 4: 60%<br/>Level 5: 75%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |10\n|-\n|AARD SIGN\n|Enables casting a SIGN that inflicts KINETIC damage and delays the opponent's next attack by 1 s.\n| align=\"center\" |5\n| align=\"center\" |10\n|-\n|QUEN SIGN\n|Enables casting a SIGN that absorbs 70% of damage taken.\n| align=\"center\" |5\n| align=\"center\" |15\n|-\n|SHOCK WAVE\n|Increases KINETIC damage dealt by AARD by 2%.<br/>Level 2: 4%<br/>Level 3: 6%<br/>Level 4: 8%<br/>Level 5: 10%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |15\n|-\n|QUEN DISCHARGE\n|Reflects 10% of absorbed damage back at the opponent.<br/>Level 2: 15%<br/>Level 3: 20%<br/>Level 4: 25%<br/>Level 5: 30%\n| align=\"center\" |1<br/>3<br/>5<br/>9<br/>15\n| align=\"center\" |20\n|-\n|ADRENALINE BURST\n|Each successfully cast SIGN charges the CRITICAL HIT METER.\n| align=\"center\" |9\n| align=\"center\" |25\n|-\n|QUEN INTENSITY\n|Accelerates the charging of the CRITICAL HIT METER while casting QUEN.\n| align=\"center\" |9\n| align=\"center\" |30\n|-\n|IGNI INTENSITY\n|Accelerates the charging of the CRITICAL HIT METER while casting IGNI.\n| align=\"center\" |9\n| align=\"center\" |30\n|-\n|AARD INTENSITY\n|Accelerates the charging of the CRITICAL HIT METER while casting AARD.\n| align=\"center\" |9\n| align=\"center\" |30\n|-\n|GORGED ON POWER\n|Allows the chance to ignore the COOLDOWN after casting a SIGN.\n| align=\"center\" |18\n| align=\"center\" |35\n|}\n\n==The Path==\nThis table contains all skills after update 1.2. Skills were awarded more or less every 5 levels and their number was greatly reduced. They were assigned to respecting levels and were automatically added after levelling up.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! width=\"25%\" |Name\n! class=\"unsortable\" width=\"60%\" |Effect\n! data-sort-type=\"number\" width=\"15%\" |Unlocking Level\n|-\n|Fast Attack\n|Allows you to perform FAST ATTACKS with a SWORD.\n| align=\"center\" |1\n|-\n|Parrying\n|Enables PARRYING, a defensive technique that reduces damage taken.\n| align=\"center\" |1\n|-\n|Strong Attack\n|Allows you to perform STRONG ATTACKS with a SWORD.\n| align=\"center\" |1\n|-\n|Igni Sign\n|Enables casting a SIGN, there is a COOLDOWN period during which sign-casting is disabled.\n| align=\"center\" |1\n|-\n|Alchemy station\n|Additional slot for an ALCHEMY STATION.\n| align=\"center\" |2\n|-\n|Formulae: Potions\n|A collection of POTION formulae.\n| align=\"center\" |2\n|-\n|Witcher Aura\n|Witcher Aura attracts a random monster, spawning it next to the player.\n| align=\"center\" |2\n|-\n|Cold Blood\n|Each successful PARRY charges the CRITICAL HIT METER.\n| align=\"center\" |5\n|-\n|Formulae: Oils\n|A collection of OIL formulae.\n| align=\"center\" |10\n|-\n|Aard sign\n|Enables casting a SIGN that inflicts KINETIC damage and delays the opponent's next attack by 1 s.\n| align=\"center\" |10\n|-\n|Timed Tasks\n|You've gained access to a new gameplay feature: TIMED TASKS. TIMED TASKS can be accessed from the map and work similarly to DAILY TASKS but pose a greater challenge and offer better rewards.\n| align=\"center\" |10\n|-\n|Formulae: Potions\n|A collection of POTION formulae.\n| align=\"center\" |10\n|-\n|Adrenaline Burst\n|Each successful cast SIGN charges the CRITICAL HIT METER.\n| align=\"center\" |15\n|-\n|Nemeta\n|In nemeta, you can engage monsters and defeat them to earn gold coins and experience points as rewards. You can place bait in cleared nemeta to attreact monsters.\n| align=\"center\" |20\n|-\n|Formulae: Bait\n|A collection of BAIT formulae.\n| align=\"center\" |20\n|-\n|Formulae: Potions\n|A collection of POTION formulae.\n| align=\"center\" |20\n|-\n|Protective Coating\n|Reduces damage recieved from the monster class that the OIL targets by 2% while PARRYING.\n| align=\"center\" |25\n|-\n|Advanced Pyrotecnics\n|Damage dealt by BOMBS charges the CRITICAL HIT METER.\n| align=\"center\" |25\n|-\n|Hit Reflection\n|A PERFECT (perfectly timed) PARRY reflects 30% of damage back at the opponent.\n| align=\"center\" |30\n|-\n|Formulae: Bait\n|A collection of BAIT formulae.\n| align=\"center\" |30\n|-\n|Quen Sign\n|Enables casting a SIGN that absorbs 50% of damage taken.\n| align=\"center\" |30\n|-\n|Counteratack\n|The next attack after a successful HIT REFLECTION deals 10% additional damage.\n| align=\"center\" |32\n|-\n|Quen Discharge\n|Reflects 10% of absorbed damage back at the opponent.\n| align=\"center\" |32\n|-\n|Formulae: Potions\n|A collection of POTION formulae.\n| align=\"center\" |35\n|-\n|Crippling Strike\n|A perfectly-timed CRITICAL HIT delays the opponent's next attack by 1 s.\n| align=\"center\" |35\n|-\n|Gorged on Power\n|Allows the chance to ignore the COOLDOWN after casting a SIGN.\n| align=\"center\" |38\n|-\n|Potion Master\n|Adds the chance to craft an additional WITCHER POTION.\n| align=\"center\" |38\n|-\n|Undying\n|Allows the chance to survive the final blow of an opponent. This effect can occur only once per fight.\n| align=\"center\" |40\n|-\n|Formulae: Potions\n|A collection of POTION formulae.\n| align=\"center\" |40\n|}\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[de:The Witcher Monster Slayer Fertigkeiten]]\n[[pl:Umiejętności w grze Wiedźmin Pogromca Potworów]]\n[[uk:Вміння (Відьмак: Вбивця чудовиськ)]]"
+}

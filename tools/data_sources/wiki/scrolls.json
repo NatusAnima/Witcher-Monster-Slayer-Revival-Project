@@ -1,0 +1,58 @@
+{
+ "page": "The Witcher Monster Slayer scrolls",
+ "revid": 587741,
+ "sections": [
+  {
+   "title": "(intro)",
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Description",
+      "Price v1.1",
+      "Price v1.2"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Experience scroll",
+       "Description": "A booster that increases experience gain by 100%.; The effect lasts for 30 minutes.",
+       "Price v1.1": "120",
+       "Price v1.2": "100"
+      },
+      {
+       "Image": "",
+       "Name": "Ingredients Scroll",
+       "Description": "A booster that increases the number of ALCHEMICAL INGREDIENTS acquired from monsters and plants by 100%.; The effect lasts for 30 minutes.",
+       "Price v1.1": "120",
+       "Price v1.2": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Lesser Summoning Scroll",
+       "Description": "Summon 3 random common monsters.",
+       "Price v1.1": "n/a",
+       "Price v1.2": "300"
+      },
+      {
+       "Image": "",
+       "Name": "Range scroll",
+       "Description": "Increases map interaction range by 50%.; The effect lasts for 30 minutes.",
+       "Price v1.1": "80",
+       "Price v1.2": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Summoning Scroll",
+       "Description": "Summons 5 random monsters, including 4 common and 1 common or rare.",
+       "Price v1.1": "200",
+       "Price v1.2": "500"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all '''scrolls''' available in {{TWMS}}. Scrolls could not be crafted, but they were available in the shop or given as a reward for completing [[The Witcher Monster Slayer contracts|contracts]] or levelling up.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"25%\" |Description\n! data-sort-type=\"number\" width=\"10%\" |Price v1.1\n! data-sort-type=\"number\" width=\"10%\" |Price v1.2\n|-\n|[[File:twms scroll_xp.png|center|50px]]\n|Experience scroll\n|A booster that increases experience gain by 100%.<br/>The effect lasts for 30 minutes.\n|[[File:twms currency_gold_coin.png|20px]]120\n|[[File:twms currency_crystal.png|20px]]100\n|-\n|[[File:twms scroll_ingredients.png|center|50px]]\n|Ingredients Scroll\n|A booster that increases the number of [[The Witcher Monster Slayer ingredients|ALCHEMICAL INGREDIENTS]] acquired from [[The Witcher Monster Slayer bestiary|monsters]] and plants by 100%.<br/>The effect lasts for 30 minutes.\n|[[File:twms currency_gold_coin.png|20px]]120\n|[[File:twms currency_crystal.png|20px]]30\n|-\n|[[File:twms scroll_summoning_lesser.png|center|50px]]\n|Lesser Summoning Scroll\n|Summon 3 random common [[The Witcher Monster Slayer bestiary|monsters]].\n|n/a\n|[[File:twms currency_gold_coin.png|20px]]300\n|-\n|[[File:twms scroll_range.png|center|50px]]\n|Range scroll\n|Increases map interaction range by 50%.<br/>The effect lasts for 30 minutes.\n|[[File:twms currency_gold_coin.png|20px]]80\n|[[File:twms currency_crystal.png|20px]]30\n|-\n|[[File:twms scroll_summoning.png|center|50px]]\n|Summoning Scroll\n|Summons 5 random [[The Witcher Monster Slayer bestiary|monsters]], including 4 common and 1 common or rare.\n|[[File:twms currency_gold_coin.png|20px]]200\n|[[File:twms currency_gold_coin.png|20px]]500\n|}\n[[pl:Zwoje w grze Wiedźmin Pogromca Potworów]]\n[[uk:Сувої (Відьмак: Вбивця чудовиськ)]]\n[[Category:The Witcher Monster Slayer]]"
+}

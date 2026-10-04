@@ -1,0 +1,111 @@
+{
+ "page": "The Witcher Monster Slayer bombs",
+ "revid": 579466,
+ "sections": [
+  {
+   "title": "Bombs before update 1.2",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Ingredients",
+      "Time",
+      "Price"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Basic bomb",
+       "Effect": "A BOMB that inflicts 525 damage points from KINETIC ENERGY.",
+       "Ingredients": "Powdered Monster tissue (5); Bunch of herbs (3); Root (1)",
+       "Time": "40",
+       "Price": "150"
+      },
+      {
+       "Image": "",
+       "Name": "Dancing Star",
+       "Effect": "A BOMB that inflicts 525 damage points from FIRE and 800 damage points from KINETIC ENERGY.",
+       "Ingredients": "Powdered Monster tissue (10); Bunch of herbs (7); Root (3)",
+       "Time": "120",
+       "Price": "300"
+      },
+      {
+       "Image": "",
+       "Name": "Dimeritium Bomb",
+       "Effect": "A BOMB that releases a cloud of DIMERITIUM slivers; making susceptible monsters vulnerable to all kinds of attacks. Additionally; it inflicts 525 damage points from KINETIC ENERGY.",
+       "Ingredients": "Powdered Monster tissue (10); Bunch of herbs (7); Root (3)",
+       "Time": "120",
+       "Price": "300"
+      },
+      {
+       "Image": "|",
+       "Name": "Grapeshot",
+       "Effect": "A BOMB that inflicts 525 damage points from STEEL and 800 damage points from KINETIC ENERGY.",
+       "Ingredients": "Powdered Monster tissue (10); Bunch of herbs (7); Root (3)",
+       "Time": "120",
+       "Price": "300"
+      },
+      {
+       "Image": "",
+       "Name": "Moon Dust",
+       "Effect": "A BOMB that inflicts 525 damage points from SILVER and 800 damage points from KINETIC ENERGY.",
+       "Ingredients": "Powdered Monster tissue (10); Bunch of herbs (7); Root (3)",
+       "Time": "120",
+       "Price": "300"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Bombs after update 1.2",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Price"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Basic bomb",
+       "Effect": "A BOMB that inflicts 1000 damage points from KINETIC ENERGY.",
+       "Price": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Dancing Star",
+       "Effect": "A BOMB that inflicts 2000 damage points from FIRE and 2000 damage points from KINETIC ENERGY.",
+       "Price": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Dimeritium Bomb",
+       "Effect": "A BOMB that releases a cloud of DIMERITIUM slivers; making susceptible monsters vulnerable to all kinds of attacks. Additionally; it inflicts 1000 damage points from KINETIC ENERGY.",
+       "Price": "15"
+      },
+      {
+       "Image": "|",
+       "Name": "Grapeshot",
+       "Effect": "A BOMB that inflicts 2000 damage points from STEEL and 2000 damage points from KINETIC ENERGY.",
+       "Price": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Moon Dust",
+       "Effect": "A BOMB that inflicts 2000 damage points from SILVER and 2000 damage points from KINETIC ENERGY.",
+       "Price": "15"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all '''bombs''' currently known for {{TWMS}}.\n\n===Bombs before update 1.2===\nBombs could be crafted using ingredients obtained from monsters and shrubs, but crafting required time. They were also available for purchase in [[Thorstein]]'s shop.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"35%\" |Effect\n! class=\"unsortable\" width=\"25%\" |Ingredients\n! data-sort-type=\"number\" width=\"10%\" |Time\n! data-sort-type=\"number\" width=\"10%\" |Price\n|-\n|[[File:twms bomb basic bomb.png|center|50px]]\n|Basic bomb\n|A BOMB that inflicts 525 damage points from KINETIC ENERGY.\n|Powdered Monster tissue (5)<br/>Bunch of herbs (3)<br/>Root (1)\n|40\n|[[File:twms_currency_gold_coin.png|20px]]150\n|-\n|[[File:twms bomb dancingstar.png|center|50px]]\n|[[Dancing Star]]\n|A BOMB that inflicts 525 damage points from FIRE and 800 damage points from KINETIC ENERGY.\n|Powdered Monster tissue (10)<br/>Bunch of herbs (7)<br/>Root (3)\n|120\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|[[File:twms bomb dimeritium.png|center|50px]]\n|[[Dimeritium bomb|Dimeritium Bomb]]\n|A BOMB that releases a cloud of DIMERITIUM slivers<br/>making susceptible monsters vulnerable to all kinds of attacks. Additionally<br/>it inflicts 525 damage points from KINETIC ENERGY.\n|Powdered Monster tissue (10)<br/>Bunch of herbs (7)<br/>Root (3)\n|120\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n||[[File:twms bomb grapeshot.png|center|50px]]\n|[[Grapeshot]]\n|A BOMB that inflicts 525 damage points from STEEL and 800 damage points from KINETIC ENERGY.\n|Powdered Monster tissue (10)<br/>Bunch of herbs (7)<br/>Root (3)\n|120\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|[[File:twms bomb moondust.png|center|50px]]\n|[[Moon Dust]]\n|A BOMB that inflicts 525 damage points from SILVER and 800 damage points from KINETIC ENERGY.\n|Powdered Monster tissue (10)<br/>Bunch of herbs (7)<br/>Root (3)\n|120\n|[[File:twms_currency_gold_coin.png|20px]]300\n|}\n\n===Bombs after update 1.2===\nBombs could no longer be crafted, they needed to be bought in the shop or they were given as a reward for completing contracts or levelling up.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"35%\" |Effect\n! data-sort-type=\"number\" width=\"10%\" |Price\n|-\n|[[File:twms bomb basic bomb.png|center|50px]]\n|Basic bomb\n|A BOMB that inflicts 1000 damage points from KINETIC ENERGY.\n|n/a\n|-\n|[[File:twms bomb dancingstar.png|center|50px]]\n|[[Dancing Star]]\n|A BOMB that inflicts 2000 damage points from FIRE and 2000 damage points from KINETIC ENERGY.\n|[[File:twms currency_crystal.png|20px]]15\n|-\n|[[File:twms bomb dimeritium.png|center|50px]]\n|[[Dimeritium bomb|Dimeritium Bomb]]\n|A BOMB that releases a cloud of DIMERITIUM slivers<br/>making susceptible monsters vulnerable to all kinds of attacks. Additionally<br/>it inflicts 1000 damage points from KINETIC ENERGY.\n|[[File:twms currency_crystal.png|20px]]15\n|-\n||[[File:twms bomb grapeshot.png|center|50px]]\n|[[Grapeshot]]\n|A BOMB that inflicts 2000 damage points from STEEL and 2000 damage points from KINETIC ENERGY.\n|[[File:twms currency_crystal.png|20px]]15\n|-\n|[[File:twms bomb moondust.png|center|50px]]\n|[[Moon Dust]]\n|A BOMB that inflicts 2000 damage points from SILVER and 2000 damage points from KINETIC ENERGY.\n|[[File:twms currency_crystal.png|20px]]15\n|}\n\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[Category:Bombs| ]]\n\n[[de:The Witcher Monster Slayer Bomben]]\n[[pl:Petardy w grze Wiedźmin Pogromca Potworów]]\n[[uk:Бомби (Відьмак: Вбивця чудовиськ)]]"
+}

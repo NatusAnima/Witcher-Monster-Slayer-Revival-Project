@@ -1,0 +1,76 @@
+{
+ "page": "The Witcher Monster Slayer crafting",
+ "revid": 579257,
+ "sections": [
+  {
+   "title": "Table of crafting stations available in version 1.1",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Number of uses",
+      "Price"
+     ],
+     "rows": [
+      {
+       "Name": "A Crafting Station",
+       "Number of uses": "unlimited",
+       "Price": "n/a"
+      },
+      {
+       "Name": "Basic Crafting Station",
+       "Number of uses": "20",
+       "Price": "300"
+      },
+      {
+       "Name": "Reinforced Crafting Station",
+       "Number of uses": "100",
+       "Price": "1200"
+      },
+      {
+       "Name": "Festive Crafting Station",
+       "Number of uses": "?",
+       "Price": "300"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "The amount of durability points needed to craft items",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Durability points",
+      "Items"
+     ],
+     "rows": [
+      {
+       "Durability points": "5",
+       "Items": "Tawny Owl, Swallow, Falcon"
+      },
+      {
+       "Durability points": "10",
+       "Items": "Petri's Philter"
+      },
+      {
+       "Durability points": "15",
+       "Items": "Thunderbolt, Swift, all oils"
+      },
+      {
+       "Durability points": "150",
+       "Items": "Universal bait"
+      },
+      {
+       "Durability points": "200",
+       "Items": "Class-specific baits"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "'''Crafting''' in {{TWMS}} required an alchemy station and appropriate [[The Witcher Monster Slayer ingredients|ingredients]] obtained from [[The Witcher Monster Slayer bestiary|monsters]] or bought at the [[Thorstein's shop|store]]. To craft an item, one needed to gather [[The Witcher Monster Slayer ingredients|ingredients]] specified in a recipe, and then wait a certain amount of time. Waiting time could be shortened by paying gold (v1.1) or crystals (v1.2). The crafting system differed with the game version.\n\n==Crafting in version 1.1==\nThe player was granted 1 crafting station, which had no usage limit. The game sometimes rewarded users with an additional ''basic crafting station''. However, it had a limited number of uses. When the limit was depleted, the station was removed from inventory. The store offered a variety of crafting stations, including seasonal ones. It was possible to craft [[The Witcher Monster Slayer potions|potions]], [[The Witcher Monster Slayer oils|oils]] and [[The Witcher Monster Slayer bombs|bombs]].\n\n===Table of crafting stations available in version 1.1===\n{| class=\"fandom-table sortable\" width=\"100%\"\n! width=\"20%\" |Name\n! data-sort-type=\"number\" width=\"10%\" |Number of uses\n! data-sort-type=\"number\" width=\"10%\" |Price\n|-\n|A Crafting Station\n|unlimited\n|n/a\n|-\n|Basic Crafting Station\n|20\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Reinforced Crafting Station\n|100\n|[[File:twms_currency_gold_coin.png|20px]]1200\n|-\n|Festive Crafting Station\n|?\n|[[File:twms_currency_gold_coin.png|20px]]300\n|}\n\n==Crafting in version 1.2==\nThe use limit was replaced with the durability meter. Each fully functioning station equaled 100 points. When an item was crafted, a respective amount of points were substracted. When the meter dropped to 0, the player had an option to pay [[File:twms_currency_gold_coin.png|20px]]200 to repair the basic station, or buy an additional station for [[File:twms_currency_crystal.png|20px]]100. The game allowed a maximum of 6 stations in the crafting tab. The only station available for purchase was the basic one, as the others were removed from the [[Thorstein's shop|store]]. In order to craft an item, in addition to gathered [[The Witcher Monster Slayer ingredients|ingredients]], the player had to buy an appropriate base - [[The Witcher Monster Slayer ingredients|White Gull, bear fat or linen cloth]]. It was possible to craft [[The Witcher Monster Slayer potions|potions]], [[The Witcher Monster Slayer oils|oils]] and [[The Witcher Monster Slayer baits|baits]]. The ability to craft [[The Witcher Monster Slayer bombs|bombs]] had been removed.\n\n===The amount of durability points needed to craft items===\n{| class=\"fandom-table sortable\" width=\"100%\"\n! data-sort-type=\"number\" width=\"10%\" |Durability points\n! width=\"20%\" |Items\n|-\n|5\n|[[The Witcher Monster Slayer potions|Tawny Owl, Swallow, Falcon]]\n|-\n|10\n|[[The Witcher Monster Slayer potions|Petri's Philter]]\n|-\n|15\n|[[The Witcher Monster Slayer potions|Thunderbolt, Swift]], all [[The Witcher Monster Slayer oils|oils]]\n|-\n|150\n|[[The Witcher Monster Slayer baits|Universal bait]]\n|-\n|200\n|[[The Witcher Monster Slayer baits|Class-specific baits]]\n|}\n\n[[pl:Wytwarzanie w grze Wiedźmin Pogromca Potworów]]\n[[Category:The Witcher Monster Slayer]]\n[[Category:Alchemy]]"
+}

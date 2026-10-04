@@ -1,0 +1,1459 @@
+{
+ "page": "The Witcher Monster Slayer bestiary",
+ "revid": 580603,
+ "sections": [
+  {
+   "title": "Common Creatures",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Skulls (pre-1.2)",
+      "Level",
+      "Type",
+      "Vulnerabilities",
+      "Occurrences"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Alghoul",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Can be found near human settlements. Increased activity around dusk."
+      },
+      {
+       "Image": "",
+       "Name": "Alp",
+       "Skulls (pre-1.2)": "0",
+       "Level": "8",
+       "Type": "Vampires",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Arachnomorph",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Archespore",
+       "Skulls (pre-1.2)": "1",
+       "Level": "14",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Strong; Silver; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Barghest",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Basilisk",
+       "Skulls (pre-1.2)": "1",
+       "Level": "13",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Silver; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Bloedzuiger",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Carnage Nekker",
+       "Skulls (pre-1.2)": "2",
+       "Level": "8",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Common in all natural environment types."
+      },
+      {
+       "Image": "",
+       "Name": "Chort",
+       "Skulls (pre-1.2)": "2",
+       "Level": "12",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Increased activity around dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Common Arachas",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain.; Increased activity around dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Common Echinops",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "6",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Increased activity around dusk."
+      },
+      {
+       "Image": "",
+       "Name": "Common Weremole",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "6",
+       "Type": "Cursed Ones",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Can be found near human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Cyclops",
+       "Skulls (pre-1.2)": "2",
+       "Level": "12",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Dark Knight",
+       "Skulls (pre-1.2)": "1",
+       "Level": "10",
+       "Type": "Specters",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Can be found near human settlements.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Drowner",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Strong; Silver; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Ekimmara",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Endrega Drone",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Endrega Worker",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Fiend",
+       "Skulls (pre-1.2)": "1",
+       "Level": "12",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Fleder",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Can be found near human settlements.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Foglet",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Forktail",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Fungoid",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "12",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Gargoyle",
+       "Skulls (pre-1.2)": "1",
+       "Level": "12",
+       "Type": "Elementa",
+       "Vulnerabilities": "Strong; Steel; Dimeritium",
+       "Occurrences": "Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Garkain",
+       "Skulls (pre-1.2)": "0",
+       "Level": "8",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Can be found near human settlements.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Ghoul",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Giant Toad",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain.; Increased activity around dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Golem",
+       "Skulls (pre-1.2)": "2",
+       "Level": "12",
+       "Type": "Elementa",
+       "Vulnerabilities": "Dimeritium",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Grave hag",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Green Forktail",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Griffin",
+       "Skulls (pre-1.2)": "1",
+       "Level": "12",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Steel; Fire; Kinetic",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Harpy",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Steel; Fire; Kinetic",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Hermit Arachas",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain.; Increased activity at dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Hiver",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "10",
+       "Type": "Cursed Ones",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Can be found near human settlements.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Kikimore Worker",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Leecher",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Nekker",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Common in all natural environment types."
+      },
+      {
+       "Image": "",
+       "Name": "Nekker Warrior",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Common in all natural environment types."
+      },
+      {
+       "Image": "",
+       "Name": "Nightwraith",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active.; Significantly increased activity around midnight."
+      },
+      {
+       "Image": "",
+       "Name": "Noonwraith",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day.; Significantly increased activity when the sun reaches its zenith."
+      },
+      {
+       "Image": "",
+       "Name": "Pale Fleder",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Can be found near human settlements.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Pale-Faced Ghoul",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Pixie",
+       "Skulls (pre-1.2)": "0",
+       "Level": "8",
+       "Type": "Elementa",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements.; Increased activity at dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Scareman",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "8",
+       "Type": "Elementa",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Special monster - appears only during Lammas."
+      },
+      {
+       "Image": "",
+       "Name": "Venomous Arachas",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Rarasha",
+       "Skulls (pre-1.2)": "0",
+       "Level": "10",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Rock Troll",
+       "Skulls (pre-1.2)": "1",
+       "Level": "14",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Rotfiend",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Royal Arachas",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Scolopendromorph",
+       "Skulls (pre-1.2)": "0",
+       "Level": "12",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Sea witch",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Silver; Fire; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain.; Increased activity around dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Shaelmaar",
+       "Skulls (pre-1.2)": "1",
+       "Level": "12",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves, and meadows. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Siren",
+       "Skulls (pre-1.2)": "1",
+       "Level": "9",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Silver; Fire; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Spriggan",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Spriggan Hound",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Succubus",
+       "Skulls (pre-1.2)": "0",
+       "Level": "10",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Steel; Kinetic",
+       "Occurrences": "Can be found near human settlements. Increased activity around dusk."
+      },
+      {
+       "Image": "",
+       "Name": "Swamp Nekker",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Sylvan",
+       "Skulls (pre-1.2)": "1",
+       "Level": "12",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Increased activity around dusk."
+      },
+      {
+       "Image": "",
+       "Name": "Tiger Fiend",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.; Prefers to avoid human settlements.; Increased activity at dusk."
+      },
+      {
+       "Image": "",
+       "Name": "Vodnik",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain.; Increased activity around dawn."
+      },
+      {
+       "Image": "",
+       "Name": "Voiceless",
+       "Skulls (pre-1.2)": "2",
+       "Level": "6",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Water Hag",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Wild Wererat",
+       "Skulls (pre-1.2)": "0",
+       "Level": "6",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows."
+      },
+      {
+       "Image": "",
+       "Name": "Wererat Warrior",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Common in all natural environment types."
+      },
+      {
+       "Image": "",
+       "Name": "Werewolf",
+       "Skulls (pre-1.2)": "1",
+       "Level": "8",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active.; Can only be found during a full moon."
+      },
+      {
+       "Image": "",
+       "Name": "Wight",
+       "Skulls (pre-1.2)": "2",
+       "Level": "8",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Common in all natural environment types."
+      },
+      {
+       "Image": "",
+       "Name": "Wraith",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Common in all natural environment types.; Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Writher",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.; Prefers to avoid human settlements.; Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Wyvern",
+       "Skulls (pre-1.2)": "0",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Common in all natural environment types.; Most commonly found during the day."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Rare Creatures",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Skulls (pre-1.2)",
+      "Level",
+      "Type",
+      "Vulnerabilities",
+      "Occurrences"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Adumbrual Brukolak",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "35",
+       "Type": "Vampires",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Alpha Garkain",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Nocturnally active. Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Beann'shie",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Bloody Fields",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "47",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Special monster - appears only during Lammas."
+      },
+      {
+       "Image": "",
+       "Name": "Blue Forktail",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Bruxa",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Vampires",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Burier",
+       "Skulls (pre-1.2)": "1",
+       "Level": "43/45",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Calidus",
+       "Skulls (pre-1.2)": "2",
+       "Level": "47",
+       "Type": "Specters",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Can be found near human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Cockatrice",
+       "Skulls (pre-1.2)": "1",
+       "Level": "33",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Silver; Kinetic; Fire",
+       "Occurrences": "Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Depth Lurker",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Devourer",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Drowned Dead",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Endrega Charger",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Endrega Warrior",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Silver; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Farbaut",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "No precise data on the occurences."
+      },
+      {
+       "Image": "",
+       "Name": "Fire Elemental",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Elementa",
+       "Vulnerabilities": "Dimeritium",
+       "Occurrences": "Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Gernichora",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Gray Slyzard",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Green Harpy",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Strong; Steel; Kinetic; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Grimnir",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "No precise data on the occurences."
+      },
+      {
+       "Image": "",
+       "Name": "Grottore",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Howler",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Increased activity at dusk."
+      },
+      {
+       "Image": "",
+       "Name": "Headless Nobleman",
+       "Skulls (pre-1.2)": "1",
+       "Level": "35",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Ignis Fatuus",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Liliaceous Archespore",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "",
+       "Type": "Cursed Ones",
+       "Vulnerabilities": "Strong; Silver; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Katakan",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Nocturnally active. Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Kikimore Warrior",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Leshen",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Leshen Hound",
+       "Skulls (pre-1.2)": "1",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Liho",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Lycanthrope",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Nocturnally active. Increased activity during a full moon. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Magma Troll",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Nekker Bonecrusher",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Silver; Kinetic",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Increased activity in fog."
+      },
+      {
+       "Image": "",
+       "Name": "Nekker Shaman",
+       "Skulls (pre-1.2)": "1",
+       "Level": "35",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Silver; Kinetic",
+       "Occurrences": "Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Night Succubus",
+       "Skulls (pre-1.2)": "1",
+       "Level": "35",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Steel; Kinetic",
+       "Occurrences": "Can be found near human settlements. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Nightmare",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Significantly increased activity around midnight."
+      },
+      {
+       "Image": "",
+       "Name": "Putrifier",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "No precise data on the occurences. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Royal Foglet",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Royal Nekker",
+       "Skulls (pre-1.2)": "1",
+       "Level": "46",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Fast; Silver; Kinetic",
+       "Occurrences": "Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Royal Wyvern",
+       "Skulls (pre-1.2)": "1",
+       "Level": "51",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "No precise data on the occurences. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Runic Gargoyle",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "",
+       "Type": "Elementa",
+       "Vulnerabilities": "Strong; Silver; Dimeritium",
+       "Occurrences": "Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Russet Fungoid",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "39",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Russet Shaelmaar",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Scurver",
+       "Skulls (pre-1.2)": "1",
+       "Level": "35",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Shrieker",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Silver; Kinetic; Fire",
+       "Occurrences": "No precise data on the occurences. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Spotted Alghoul",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Stinger",
+       "Skulls (pre-1.2)": "2",
+       "Level": "49/51",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Fire; Kinetic",
+       "Occurrences": "Can be found near human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Stone Golem",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Elementa",
+       "Vulnerabilities": "Dimeritium",
+       "Occurrences": "No precise data on the occurences."
+      },
+      {
+       "Image": "",
+       "Name": "Striga",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Nocturnally active. Increased activity during a full moon."
+      },
+      {
+       "Image": "",
+       "Name": "Sylvan Dearg",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Vizimian Archespore",
+       "Skulls (pre-1.2)": "2",
+       "Level": "39",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Wailwraith",
+       "Skulls (pre-1.2)": "2",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Significantly increased activity when the sun reaches its zenith. No precise data on the occurences."
+      },
+      {
+       "Image": "",
+       "Name": "Wererat Gatherer",
+       "Skulls (pre-1.2)": "2",
+       "Level": "35",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Can be found near human settlements. Increased activity in fog. ; Increased activity around dawn. ; Increased activity around dusk."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Legendary Creatures",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Skulls (pre-1.2)",
+      "Level",
+      "Type",
+      "Vulnerabilities",
+      "Occurrences"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Ancient Leshen",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Archgriffin",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Steel; Kinetic; Fire",
+       "Occurrences": "Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Copper Wyvern",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Silver; Kinetic",
+       "Occurrences": "Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "D'ao",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Elementa",
+       "Vulnerabilities": "Dimeritium",
+       "Occurrences": "Common in all natural environment types. Increased activity in fog."
+      },
+      {
+       "Image": "",
+       "Name": "D'jinni",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Elementa",
+       "Vulnerabilities": "Dimeritium",
+       "Occurrences": "No precise data on the occurences."
+      },
+      {
+       "Image": "",
+       "Name": "Dung Shaelmaar",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Ekhidna",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "53",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Fast; Silver; Fire; Kinetic",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Erynia",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Hybrids",
+       "Vulnerabilities": "Strong; Steel; Kinetic; Fire",
+       "Occurrences": "Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Frightener",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "No precise data on the occurrences."
+      },
+      {
+       "Image": "",
+       "Name": "Golden Katakan",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "59",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Can be found near human settlements. Increased activity in fog. Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Graphite Slyzard",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Steel; Kinetic",
+       "Occurrences": "Nocturnally active. No precise data on the occurrences."
+      },
+      {
+       "Image": "",
+       "Name": "Greater Gernichora",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "55",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Grim Hag",
+       "Skulls (pre-1.2)": "3",
+       "Level": "33",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Harrower",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "59",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Special monster - appears only during Lammas."
+      },
+      {
+       "Image": "",
+       "Name": "Hym",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Nocturnally active. Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Ice Elemental",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Elementa",
+       "Vulnerabilities": "Dimeritium",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain."
+      },
+      {
+       "Image": "",
+       "Name": "Ice Giant",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Ice Troll",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Ogroids",
+       "Vulnerabilities": "Strong; Steel; Fire; Kinetic",
+       "Occurrences": "Significantly increased activity during precipitation, such as rain. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Mottled Garkain",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Vampires",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Can be found near human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Mulcher",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "59",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Special monster - appears only during Lammas."
+      },
+      {
+       "Image": "",
+       "Name": "Penitent",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Nocturnally active."
+      },
+      {
+       "Image": "",
+       "Name": "Plague Maiden",
+       "Skulls (pre-1.2)": "3",
+       "Level": "33",
+       "Type": "Specters",
+       "Vulnerabilities": "Fast; Silver",
+       "Occurrences": "Significantly increased activity when the sun reaches its zenith."
+      },
+      {
+       "Image": "",
+       "Name": "Sandcrab",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Insectoids",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Silver Basilisk",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Draconids",
+       "Vulnerabilities": "Strong; Silver; Kinetic",
+       "Occurrences": "Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Swamp Hag",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "Swarm Mother",
+       "Skulls (pre-1.2)": "n/a",
+       "Level": "59",
+       "Type": "Cursed Ones",
+       "Vulnerabilities": "Strong; Silver; Fire",
+       "Occurrences": "Special monster - appears only during Lammas."
+      },
+      {
+       "Image": "",
+       "Name": "Tarry Chort",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Strong; Steel",
+       "Occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day."
+      },
+      {
+       "Image": "",
+       "Name": "Tormented",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Relicts",
+       "Vulnerabilities": "Fast; Steel; Kinetic",
+       "Occurrences": "No precise data on the occurrences."
+      },
+      {
+       "Image": "",
+       "Name": "Thundster",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Common in all natural environment types. Increased activity in fog."
+      },
+      {
+       "Image": "",
+       "Name": "Ulfhedinn",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "Increased activity during full moon. Prefers to avoid human settlements. No precise data on the occurrences."
+      },
+      {
+       "Image": "",
+       "Name": "Unseen Elder",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Vampires",
+       "Vulnerabilities": "Fast; Silver; Fire",
+       "Occurrences": "No precise data on the occurrences."
+      },
+      {
+       "Image": "",
+       "Name": "Water Devil",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Necrophages",
+       "Vulnerabilities": "Fast; Steel; Fire",
+       "Occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements."
+      },
+      {
+       "Image": "",
+       "Name": "White Striga",
+       "Skulls (pre-1.2)": "3",
+       "Level": "",
+       "Type": "Cursed ones",
+       "Vulnerabilities": "Strong; Silver",
+       "Occurrences": "Nocturnally active. No precise data on the occurrences."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "{{TWMS}} divides the types of creatures one can fight into 3 tiers: common, rare, and legendary. Rewards are obtained after a certain number of wins against each group. Prior to patch v1.2 the rewards were in form of skill points, now they come in coins and crystals.\n\n=== Monster levels and ballpark difficulty ===\nLevels of monsters have been introduced after patch 1.2, which also made all commons 'easy', all rares 'yellow skull' and all legendaries 'red skull'. The monster level depends on your level, so the first number is researched at character level 36 and the latter at level 40, which is the more stable comparison point. It seems that between character levels 36 and 40, monster levels grow by 2 levels, \n\nAs a rule of thumb, after patch v1.2 (looking at it from level 36), \n\n* commons are all trivial to kill (at least with Manticore armor strong/fast vulnerabilities can also be ignored), \n* rare creatures cannot be killed without Thunderbolt (+200% attack damage, brew cost 50 coins including repair cost) and \n* legendary creatures require Thunderbolt and Swift (+50% HP, brew cost another 50 coins).\n\nExceptions exist mostly to the hard direction (such as elementals), and with wolven or potentially manticore swords we have seen reports that killing easy rares is possible without potions as well with ignis and perfectly timed crits which both delay their next attack.\n\n=== Bestiary as a coin and crystal mine ===\nBefore patch 1.2 winning against common creatures granted a skill point after 3 wins, 50, and 150. Winning against rare creatures granted a skill point after 2 wins, 10, and 30. Winning against legendary creatures granted a skill point after 1 win, again after another 2 and after another 6.\n\nAfter patch 1.2, bestiary levels no longer award skill points, instead: \n\n* commons grant coins on average after every 10 kills until (eventually) completed, \n* rares grant 5 crystals after on average 7 kills, and \n* legendaries grant 10 crystals after on average 5 kills.\n\nFirst reward is gained after 1 kills, second after 2, until the 'on average' level is finally reached and stays stable after that. However, as noted above, rare and legendary creatures generally cost potions to kill, which means they cost coins to kill. How does this translate in terms of crystal value?\n\nIf we look at the Bestiary as a conversion system between coins spent for alchemy and gems from rare and legendary skills, and estimate that 1 potion might provide enough time to klil 2 rares or 1 legendary on a lucky day, we can estimate a coin worth of a crystal to be on average (7/2*50/5)= 35 coins per crystal ('2 rares 1 potion') or 5*(2*50)/10 = 50 coins per crystal ('1 legendary needs 2 potions').\n\nYou can make 50 ( ingredients) + minimum 60*3 (daily tasks) = 230 \"free\" coins a day, and can therefore afford to use slightly over 4 potions a day to generate crystals, statistically netting 6 crystals a day if you do not need to save up coins any more. Gaining the ability to kill some rares with e.g. Wolven (or Manticore) sword and Manticore armor using no potions is worth approximately 1/7 crystals or 5 coins every kill. Killing commons grants you 10 coins per 10 kills so you can 'mine' for additional coins until the bestiary is depleted without per day limitations. Oils cost 45 coins each (bear fat and repair costs alone), so they are not particularly great for crystal mining. Both oils and potions can be gained from Witcher Packs shared between players to grant more daily crystal mining opportunities to the frugal post-patch-1.2 Witcher.\n\n=== Lammas Celebration Monsters ===\nIn August 2022 players could collect trophys of 5 seasonal monsters: Bloody Fields, Scareman, Harrower, Mulcher and Swarm Mother. Since the monsters can't be found after the event has ended, completing the entire bestiary is impossible for players who have missed the event or registered after August 2022.\n\n==Common Creatures ==\nAfter patch 1.2 there should be 63 trophys to collect.\n\n{| class=\"fandom-table sortable\" style=\"font-size:small; line-height:20px;\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"10%\" |Name\n! data-sort-type=\"number\" width=\"10%\" |Skulls (pre-1.2)\n!Level\n! width=\"15%\" | Type\n! class=\"unsortable\" width=\"15%\" |Vulnerabilities\n! class=\"unsortable\" width=\"40%\" |Occurrences\n|-\n|[[File:twms trophy alghoul.png|center|100px]]\n|[[Alghoul]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Necrophage]]s\n|Strong<br/>Silver\n| Can be found near human settlements. Increased activity around dusk.\n|-\n|[[File:twms trophy alp.png|center|100px]]\n|[[Alp]]\n| align=\"center\" |0\n| align=\"center\" |8\n|[[Vampire]]s\n|Fast<br/>Silver\n|Can be found near human settlements. Nocturnally active.\n|-\n|[[File:twms trophy arachnomorph.png|center|100px]]\n|[[Arachnomorph]]\n| align=\"center\" |0\n|\n|[[Insectoid]]s\n| Fast<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy echinops.png|center|100px]]\n|[[Archespore]]\n| align=\"center\" |1\n| align=\"center\" |14\n| [[Cursed one]]s\n|Strong<br/>Silver<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy barghest.png|center|100px]]\n|[[Barghest]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Specter]]s\n|Fast<br/>Silver\n| Common in all natural environment types.<br/>Nocturnally active.\n|-\n|[[File:twms trophy basilisk.png|center|100px]]\n|[[Basilisk]]\n| align=\"center\" |1\n| align=\"center\" |13\n|[[Draconid]]s\n|Strong<br/>Silver<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy bloedzuiger.png|center|100px]]\n|[[Bloedzuiger]]\n| align=\"center\" |0\n|\n|[[Necrophage]]s\n|Strong<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy nekkerwarrior lvl2.png|center|100px]]\n| [[Carnage Nekker]]\n| align=\"center\" |2\n| align=\"center\" |8\n|[[Ogroid]]s\n|Strong<br/>Silver\n|Common in all natural environment types.\n|-\n|[[File:twms trophy chort lvl1.png|center|100px]]\n|[[Chort]]\n| align=\"center\" |2\n| align=\"center\" |12\n|[[Relict]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Increased activity around dawn.\n|-\n|[[File:twms trophy arachas.png|center|100px]]\n|Common [[Arachas]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Insectoid]]s\n|Fast<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.\n|-\n|[[File:twms trophy common echinops.png|center|100px]]\n|[[Echinops|Common Echinops]]\n| align=\"center\" |n/a\n| align=\"center\" |6\n|[[Hybrid]]s\n|Fast<br/>Silver<br/>Kinetic\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Increased activity around dusk.\n|-\n|[[File:twms trophy weremole.png|center|100px]]\n|Common [[Weremole]]\n| align=\"center\" |n/a\n| align=\"center\" |6\n|[[Cursed One]]s\n|Fast<br/>Silver<br/>Fire\n|Can be found near human settlements. Nocturnally active.\n|-\n|[[File:twms trophy cyclop.png|center|100px]]\n|[[Cyclops]]\n| align=\"center\" |2\n| align=\"center\" |12\n|[[Ogroid]]s\n|Strong<br/>Steel\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms_Dark_knight_tropy.png|center|100px]]\n| [[Calidus|Dark Knight]]\n| align=\"center\" |1\n| align=\"center\" |10\n|[[Specter]]s\n| Strong<br/>Steel\n|<br/>Can be found near human settlements.<br/> Most commonly found during the day.\n|-\n|[[File:twms trophy drowner.png|center|100px]]\n|[[Drowner]]\n| align=\"center\" |0\n|\n|[[Necrophage]]s\n| Strong<br/>Silver<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy ekima.png|center|100px]]\n|[[Ekimma|Ekimmara]]\n| align=\"center\" |2\n|\n|[[Vampire]]s\n|Strong<br/>Steel<br/>Fire\n| Common in all natural environment types.<br/>Nocturnally active.\n|-\n|[[File:twms trophy endriaga spikey.png|center|100px]]\n|[[Endrega drone|Endrega Drone]]\n| align=\"center\" |0\n|\n|[[Insectoid]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy endriaga worker.png|center|100px]]\n|[[Endrega worker|Endrega Worker]]\n| align=\"center\" |0\n|\n|[[Insectoid]]s\n|Fast<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy bies lvl1.png|center|100px]]\n|[[Fiend]]\n| align=\"center\" |1\n| align=\"center\" |12\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>\n|-\n|[[File:twms trophy fleder.png|center|100px]]\n|[[Fleder]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Vampire]]s\n|Strong<br/>Steel\n|Can be found near human settlements.<br/>Nocturnally active.\n|-\n|[[File:twms trophy fogling lvl1.png|center|100px]]\n|[[Fogler|Foglet]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Necrophage]]s\n|Fast<br/>Silver<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy forktail.png|center|100px]]\n|[[Forktail]]\n| align=\"center\" |1\n|\n|[[Draconid]]s\n|Strong<br/>Steel<br/>Kinetic\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy fungoid.png|center|100px]]\n|[[Fungoid]]\n| align=\"center\" |n/a\n| align=\"center\" |12\n|[[Hybrid]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Nocturnally active.\n|-\n|[[File:twms trophy gargoyle.png|center|100px]]\n|[[Gargoyle]]\n| align=\"center\" |1\n| align=\"center\" |12\n|[[Elementa]]\n|Strong<br/>Steel<br/>Dimeritium\n|Prefers to avoid human settlements.\n|-\n|[[File:twms trophy garkain lvl1.png|center|100px]]\n|[[Garkain]]\n| align=\"center\" |0\n| align=\"center\" |8\n|[[Vampire]]s\n|Strong<br/>Silver\n|Can be found near human settlements.<br/>Nocturnally active.\n|-\n|[[File:twms trophy ghoul.png|center|100px]]\n|[[Ghoul]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Necrophage]]s\n|Fast<br/>Silver\n|Can be found near human settlements.\n|-\n|[[File:twms trophy toad.png|center|100px]]\n|[[The Toad Prince|Giant Toad]]\n| align=\"center\" |2\n|\n|[[Cursed One|Cursed one]]s\n|Strong<br/>Steel\n| Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.\n|-\n|[[File:twms trophy golem lvl1.png|center|100px]]\n|[[Golem]]\n| align=\"center\" |2\n| align=\"center\" |12\n|[[Elementa]]\n|[[Dimeritium]]\n|Usually found in green areas - old-growth forests, woods, groves and meadows.Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy grave hag.png|center|100px]]\n|[[Grave hag]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Necrophage]]s\n|Fast<br/>Silver\n|Can be found near human settlements.\n|-\n|[[File:twms trophy forktail lvl2.png|center|100px]]\n|Green [[Forktail]]\n| align=\"center\" |2\n|\n|[[Draconid]]s\n|Strong<br/>Steel\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy gryphon.png|center|100px]]\n|[[Griffin (creature)|Griffin]]\n| align=\"center\" |1\n| align=\"center\" |12\n|[[Hybrid]]s\n|Fast<br/>Steel<br/>Fire<br/>Kinetic\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy harpy.png|center|100px]]\n|[[Harpy]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Hybrid]]s\n|Fast<br/>Steel<br/>Fire<br/>Kinetic\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy arachas lvl2.png|center|100px]]\n|Hermit [[Arachas]]\n| align=\"center\" |1\n|\n|[[Insectoid]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity at dawn.\n|-\n|[[File:twms trophy hiver.png|center|100px]]\n|[[Stinger|Hiver]]\n| align=\"center\" |n/a\n| align=\"center\" |10\n|[[Cursed One]]s\n|Fast<br/>Silver<br/>Fire\n|Can be found near human settlements.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy kikimore lvl1.png|center|100px]]\n|[[Kikimore worker|Kikimore Worker]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Insectoid]]s\n|Fast<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy bloedzuiger lvl2.png|center|100px]]\n|[[Bloedzuiger|Leecher]]\n| align=\"center\" |2\n|\n|[[Necrophage]]s\n|Strong<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy nekker.png|center|100px]]\n|[[Nekker]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Ogroid]]s\n|Fast<br/>Silver<br/>Kinetic\n|Common in all natural environment types.\n|-\n|[[File:twms trophy nekker warrior.png|center|100px]]\n|[[Nekker warrior|Nekker Warrior]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Ogroid]]s\n|Strong<br/>Silver\n|Common in all natural environment types.\n|-\n|[[File:twms trophy nightwraith.png|center|100px]]\n|[[Nightwraith]]\n| align=\"center\" |1\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Common in all natural environment types.<br/>Nocturnally active.<br/>Significantly increased activity around midnight.\n|-\n|[[File:twms trophy noonwraith.png|center|100px]]\n|[[Noonwraith]]\n| align=\"center\" |1\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Common in all natural environment types.<br/>Most commonly found during the day.<br/>Significantly increased activity when the sun reaches its zenith.\n|-\n|[[File:twms trophy fleder lvl2.png|center|100px]]\n|Pale [[Fleder]]\n| align=\"center\" | 2\n|\n|[[Vampire]]s\n|Strong<br/>Steel\n|Can be found near human settlements.<br/>Nocturnally active.\n|-\n|[[File:twms trophy ghoul lvl2.png|center|100px]]\n|Pale-Faced [[Ghoul]]\n| align=\"center\" |1\n|\n|[[Necrophage]]s\n|Fast<br/>Silver\n|Can be found near human settlements.<br/>Nocturnally active.\n|-\n|[[File:twms trophy pixie.png|center|100px]]\n|[[Pixie]]\n| align=\"center\" |0\n| align=\"center\" |8\n|[[Elementa]]\n|Fast<br/>Silver\n|Can be found near human settlements.<br/>Increased activity at dawn.\n|-\n|[[File:twms trophy scareman.png|center|100px]]\n|Scareman\n| align=\"center\" |n/a\n| align=\"center\" |8\n|[[Elementa]]\n|Fast<br/>Silver<br/>Fire\n|Special monster - appears only during Lammas.\n|-\n|[[File:twms trophy arachas morph.png|center|100px]]\n|Venomous [[Arachas]]\n| align=\"center\" |2\n|\n|[[Insectoid]]s\n|Fast<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy smalldraconid.png|center|100px]]\n|[[Rarasha]]\n| align=\"center\" |0\n| align=\"center\" |10\n|[[Draconid]]s\n|Strong<br/>Steel\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy cavetroll.png|center|100px]]\n|[[Rock troll|Rock Troll]]\n| align=\"center\" |1\n| align=\"center\" |14\n|[[Ogroid]]s\n|Strong<br/>Steel<br/>Kinetic\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|-\n|[[File:twms trophy rotfiend lvl1.png|center|100px]]\n|[[Rotfiend]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Necrophage]]s\n|Fast<br/>Silver<br/>Fire\n|Common in all natural environment types.<br/>Nocturnally active.\n|-\n|[[File:twms trophy arachas lvl4.png|center|100px]]\n|Royal [[Arachas]]\n| align=\"center\" |2\n|\n|[[Insectoid]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.\n|-\n|[[File:twms trophy scolopendromorph lvl1.png|center|100px]]\n|[[giant centipede|Scolopendromorph]]\n| align=\"center\" |0\n| align=\"center\" |12\n|[[Insectoid]]s\n|Strong<br/>Steel\n| Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy sirenmorszczynka.png|center|100px]]\n|[[Sea witch]]\n| align=\"center\" |2\n|\n|[[Hybrid]]s\n| Fast<br/>Silver<br/>Fire<br/>Kinetic\n| Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.\n|-\n|[[File:twms trophy sharley.png|center|100px]]\n|[[Shaelmaar]]\n| align=\"center\" |1\n| align=\"center\" |12\n|[[Relict]]s\n|Strong<br/>Steel<br/>Kinetic\n|Usually found in green areas - old-growth forests, woods, groves, and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Nocturnally active.\n|-\n|[[File:twms trophy sirenlamia.png|center|100px]]\n|[[Siren]]\n| align=\"center\" |1\n| align=\"center\" |9\n|[[Hybrid]]s\n|Fast<br/>Silver<br/>Fire<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy spriggan.png|center|100px]]\n|[[Spriggan]]\n| align=\"center\" | 1\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Nocturnally active.\n|-\n|[[File:twms trophy leshensdog.png|center|100px]]\n|[[Spriggan Hound]]\n| align=\"center\" |0\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy succubus lvl1.png|center|100px]]\n|[[Succubus]]\n| align=\"center\" |0\n| align=\"center\" |10\n|[[Hybrid]]s\n|Fast<br/>Steel<br/>Kinetic\n|Can be found near human settlements.\nIncreased activity around dusk.\n|-\n|[[File:twms trophy nekker lvl2.png|center|100px]]\n|[[Swamp Nekker]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Ogroid]]s\n|Fast<br/>Silver<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy fugas.png|center|100px]]\n|[[Sylvan]]\n| align=\"center\" |1\n| align=\"center\" |12\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Increased activity around dusk.\n|-\n|[[File:twms trophy bies lvl2.png|center|100px]]\n| Tiger [[Fiend]]\n| align=\"center\" |2\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Increased activity at dusk.\n|-\n|[[File:twms trophy vodyanoi.png|center|100px]]\n|[[Water sprite|Vodnik]]\n| align=\"center\" |1\n|\n|[[Ogroid]]s\n|Fast<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.\n|-\n|[[File:twms trophy wraith lvl2.png|center|100px]]\n|Voiceless\n| align=\"center\" |2\n| align=\"center\" |6\n|[[Specter]]s\n|Fast<br/>Silver\n|Common in all natural environment types.<br/>Nocturnally active.\n|-\n|[[File:twms trophy waterhag.png|center|100px]]\n|\n[[Water hag|Water Hag]]\n| align=\"center\" |0\n|\n|[[Necrophage]]s\n|Fast<br/>Silver<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy wererat.png|center|100px]]\n|Wild [[Wererat]]\n| align=\"center\" |0\n| align=\"center\" |6\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Kinetic\n| Usually found in green areas - old-growth forests, woods, groves and meadows.\n|-\n|[[File:twms trophy wererat_warrior.png|center|100px]]\n|[[Wererat]] Warrior\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Kinetic\n| Common in all natural environment types.\n|-\n|[[File:twms trophy werewolf.png|center|100px]]\n|[[Werewolf]]\n| align=\"center\" |1\n| align=\"center\" |8\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Fire\n| Common in all natural environment types.<br/>Nocturnally active.<br/>Can only be found during a full moon.\n|-\n|[[File:twms trophy wicht.png|center|100px]]\n|[[Wight (creature)|Wight]]\n| align=\"center\" |2\n| align=\"center\" |8\n|[[Necrophage]]s\n|Fast<br/>Silver\n|Common in all natural environment types.\n|-\n|[[File:twms trophy wraith.png|center|100px]]\n|[[Wraith]]\n| align=\"center\" |0\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Common in all natural environment types.<br/>Nocturnally active.\n|-\n|[[File:twms trophy scolopendromorph lvl2.png|center|100px]]\n|[[Viy of Maribor|Writher]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Insectoid]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy wyvern lvl1.png|center|100px]]\n|[[Wyvern]]\n| align=\"center\" |0\n|\n|[[Draconid]]s\n|Strong<br/>Steel\n|Common in all natural environment types.<br/>Most commonly found during the day.\n|}\n\n==Rare Creatures==\nAfter patch 1.2 there should be 57 trophys to collect.\n\n{| class=\"fandom-table sortable\" style=\"font-size:small; line-height:20px;\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"10%\" |Name\n! data-sort-type=\"number\" width=\"10%\" |Skulls (pre-1.2)\n!Level\n! width=\"15%\" |Type\n! class=\"unsortable\" width=\"15%\" |Vulnerabilities\n! class=\"unsortable\" width=\"40%\" |Occurrences\n|-\n|[[File:twms trophy adumbrual brukolak.png|center|100px]]\n|Adumbrual [[Brukolak]]\n| align=\"center\" |n/a\n| align=\"center\" |35\n|[[Vampire]]s\n|Fast<br/>Silver<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Nocturnally active.\n|-\n|[[File:twms trophy alpha garkain.png|center|100px]]\n|[[Alpha Garkain]]\n| align=\"center\" |2\n|\n|[[Vampire]]s\n| Strong<br/>Silver\n|Nocturnally active. Can be found near human settlements.\n|-\n|[[File:twms trophy banshee.png|center|100px]]\n|[[Banshee|Beann'shie]]\n| align=\"center\" |2\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Nocturnally active.\n|-\n|[[File:twms trophy bloody fields.png|center|100px]]\n|Bloody Fields\n| align=\"center\" |n/a\n| align=\"center\" |47\n|[[Specter]]s\n|Fast<br/>Silver\n|Special monster - appears only during Lammas.\n|-\n|[[File:twms trophy blue forktail.png|center|100px]]\n|Blue [[Forktail]]\n| align=\"center\" |2\n|\n|[[Draconid]]s\n|Strong<br/>Steel<br/>Kinetic\n|Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy bruxa.png|center|100px]]\n|[[Bruxa]]\n| align=\"center\" |1\n|\n|[[Vampire]]s\n|Fast<br/>Silver<br/>Fire\n| Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy burier.png|center|100px]]\n|Burier\n| align=\"center\" |1\n| align=\"center\" |43/45\n|[[Necrophage]]s\n|Fast<br/>Silver\n|Can be found near human settlements.\n|-\n|[[File:Twms calidus trophy.png|center|100px]]\n|[[Calidus]]\n| align=\"center\" |2\n| align=\"center\" |47\n|[[Specter]]s\n| Strong<br/>Steel\n|Can be found near human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy cockratrice.png|center|100px]]\n|[[Cockatrice]]\n| align=\"center\" |1\n| align=\"center\" |33\n|[[Draconid]]s\n| Strong<br/>Silver<br/>Kinetic<br/>Fire\n|Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy depth lurker.png|center|100px]]\n|Depth Lurker\n| align=\"center\" | 1\n|\n|[[Necrophage]]s\n|Fast<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy devourer.png|center|100px]]\n|[[Devourer]]\n| align=\"center\" |1\n|\n|[[Necrophage]]s\n|Strong<br/>Silver\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Nocturnally active.\n|-\n|[[File:twms trophy drowned dead.png|center|100px]]\n|[[Drowned dead|Drowned Dead]]\n| align=\"center\" |1\n|\n|[[Necrophage]]s\n|Fast<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy endrega charger.png|center|100px]]\n|[[Endrega]] Charger\n| align=\"center\" |1\n|\n|[[Insectoid]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy endrega warrior.png|center|100px]]\n|[[Endrega warrior|Endrega Warrior]]\n| align=\"center\" |1\n|\n|[[Insectoid]]s\n|Strong<br/>Silver<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy farbaut.png|center|100px]]\n|[[Cyclops|Farbaut]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Ogroid]]s\n|Strong<br/>Steel\n|No precise data on the occurences.\n|-\n|[[File:twms trophy fire elemental.png|center|100px]]\n|[[Fire Elemental]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Elementa]]\n|[[Dimeritium]]\n| Prefers to avoid human settlements.\n|-\n|[[File:twms trophy gernichora.png|center|100px]]\n|[[Gernichora]]\n| align=\"center\" |1\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy dracolizard.png|center|100px]]\n|Gray [[Slyzard]]\n| align=\"center\" |2\n| align=\"center\" | 35\n|[[Draconid]]s\n|Strong<br/>Steel<br/>Kinetic\n| Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy green harpy.png|center|100px]]\n|Green [[Harpy]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Hybrid]]s\n|Strong<br/>Steel<br/>Kinetic<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Most commonly found during the day.\n|-\n|[[File:twms trophy grimnir.png|center|100px]]\n|[[Cyclops|Grimnir]]\n| align=\"center\" |2\n|\n|[[Ogroid]]s\n|Strong<br/>Steel\n| No precise data on the occurences.\n|-\n|[[File:twms trophy grottore.png|center|100px]]\n|[[Grottore]]\n| align=\"center\" |1\n|\n|[[Relict]]s\n| Strong<br/>Steel\n| Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Nocturnally active.\n|-\n|[[File:twms trophy howler.png|center|100px]]\n|[[Howler]]\n| align=\"center\" |2\n|\n|[[Relict]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Increased activity at dusk.\n|-\n|[[File:twms_headless_nobleman_trophy.png|center|100px]]\n|[[Headless Nobleman]]\n| align=\"center\" |1\n| align=\"center\" |35\n|[[Specter]]s\n|Fast<br/>Silver\n|Can be found near human settlements. Nocturnally active.\n|-\n|[[File:twms trophy ignis fatuus.png|center|100px]]\n|[[Ignis Fatuus]]\n| align=\"center\" |1\n|\n|[[Necrophage]]s\n|Fast<br/>Silver<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy_liliaceous_archespore.png|center|100px]]\n|Liliaceous [[Archespore]]\n| align=\"center\" |n/a\n|\n|[[Cursed One]]s\n| Strong<br/>Silver<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Nocturnally active.\n|-\n|[[File:twms trophy katakan.png|center|100px]]\n|[[Katakan]]\n| align=\"center\" |2\n| align=\"center\" |35\n|[[Vampire]]s\n|Strong<br/>Steel\n|Nocturnally active. Can be found near human settlements.\n|-\n|[[File:twms trophy kikimore warrior.png|center|100px]]\n|[[Kikimore warrior|Kikimore Warrior]]\n| align=\"center\" |1\n|\n|[[Insectoid]]s\n|Strong<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy leshen.png|center|100px]]\n|[[Leshen]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy leshen hound.png|center|100px]]\n|[[Leshen Hound]]\n| align=\"center\" | 1\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n| Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy liho.png|center|100px]]\n|[[Liho]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Relict]]s\n|Strong<br/>Steel\n|Nocturnally active.\n|-\n|[[File:twms trophy lycanthrope.png|center|100px]]\n|[[Lycanthrope]]\n| align=\"center\" |2\n| align=\"center\" |35\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Fire\n|Nocturnally active. Increased activity during a full moon. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy magma troll.png|center|100px]]\n|Magma [[Troll]]\n| align=\"center\" |2\n|\n|[[Ogroid]]s\n|Strong<br/>Steel<br/>Kinetic\n| Most commonly found during the day.\n|-\n|[[File:twms trophy nekker_bonecrusher.png|center|100px]]\n|[[Nekker Bonecrusher]]\n| align=\"center\" |n/a\n| align=\"center\" |\n|[[Ogroid]]s\n|Strong<br/>Silver<br/>Kinetic\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Increased activity in fog.\n|-\n|[[File:twms trophy nekker shaman.png|center|100px]]\n|[[Nekker Shaman]]\n| align=\"center\" |1\n| align=\"center\" |35\n|[[Ogroid]]s\n|Strong<br/>Silver<br/>Kinetic\n|Most commonly found during the day.\n|-\n|[[File:twms trophy night succubus.png|center|100px]]\n|Night [[Succubus]]\n| align=\"center\" |1\n| align=\"center\" |35\n|[[Hybrid]]s\n| Fast<br/>Steel<br/>Kinetic\n|Can be found near human settlements. Nocturnally active.\n|-\n|[[File:twms trophy nightwraith lvl2.png|center|100px]]\n|Nightmare\n| align=\"center\" |2\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Significantly increased activity around midnight.\n|-\n|[[File:twms trophy putrifier.png|center|100px]]\n|[[Rotfiend|Putrifier]]\n| align=\"center\" |2\n| align=\"center\" |35\n|[[Necrophage]]s\n|Fast<br/>Silver<br/>Fire\n|No precise data on the occurences. Nocturnally active.\n|-\n|[[File:twms trophy royal foglet.png|center|100px]]\n|Royal [[Foglet]]\n| align=\"center\" |2\n|\n|[[Necrophage]]s\n|Fast<br/>Silver<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy royal nekker.png|center|100px]]\n| [[Royal Nekker]]\n| align=\"center\" | 1\n| align=\"center\" |46\n|[[Ogroid]]s\n|Fast<br/>Silver<br/>Kinetic\n|Most commonly found during the day.\n|-\n|[[File:twms trophy royal wyvern.png|center|100px]]\n|[[Royal wyvern|Royal Wyvern]]\n| align=\"center\" |1\n| align=\"center\" |51\n|[[Draconid]]s\n|Strong<br/>Steel<br/>Fire\n|No precise data on the occurences. Most commonly found during the day.\n|-\n|[[File:twms trophy runic gargoyle.png|center|100px]]\n|Runic [[Gargoyle]]\n| align=\"center\" |n/a\n|\n|[[Elementa]]\n|Strong<br/>Silver<br/>Dimeritium\n|Prefers to avoid human settlements.\n|-\n|[[File:twms trophy russet fungoid.png|center|100px]]\n|Russet [[Fungoid]]\n| align=\"center\" |n/a\n| align=\"center\" |39\n|[[Hybrid]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Nocturnally active.\n|-\n|[[File:twms trophy russet shaelmaar.png|center|100px]]\n|Russet [[Shaelmaar]]\n| align=\"center\" |2\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Kinetic\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain. Nocturnally active.\n|-\n|[[File:twms trophy scurver.png|center|100px]]\n|[[Scurver]]\n| align=\"center\" |1\n| align=\"center\" |35\n|[[Necrophage]]s\n| Fast<br/>Steel<br/>Fire\n|Can be found near human settlements.\n|-\n|[[File:twms trophy shrieker.png|center|100px]]\n|[[Shrieker]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Draconid]]s\n|Strong<br/>Silver<br/>Kinetic<br/>Fire\n|No precise data on the occurences. Most commonly found during the day.\n|-\n|[[File:twms trophy spotted alghoul.png|center|100px]]\n|Spotted [[Alghoul]]\n| align=\"center\" |2\n| align=\"center\" |35\n|[[Necrophage]]s\n|Strong<br/>Silver\n| Can be found near human settlements.\n|-\n|[[File:twms trophy stinger.png|center|100px]]\n|[[Stinger]]\n| align=\"center\" |2\n| align=\"center\" |49/51\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Fire<br/>Kinetic\n|Can be found near human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy stone golem.png|center|100px]]\n|Stone [[Golem]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Elementa]]\n|Dimeritium\n|No precise data on the occurences.\n|-\n|[[File:twms trophy striga.png|center|100px]]\n|[[Striga]]\n| align=\"center\" |2\n| align=\"center\" |35\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver\n|Nocturnally active. Increased activity during a full moon.\n|-\n|[[File:twms trophy sylvan dearg.png|center|100px]]\n|[[Sylvan]] Dearg\n| align=\"center\" |2\n|\n|[[Relict]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.\n|-\n|[[File:Twms trophy viz archespor.png|center|100px]]\n|Vizimian [[Archespore]]\n| align=\"center\" |2\n| align=\"center\" |39\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy wailwraith.png|center|100px]]\n|Wailwraith\n| align=\"center\" |2\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Significantly increased activity when the sun reaches its zenith. No precise data on the occurences.\n|-\n|[[File:thms_wererat_gat.png|center|100px]]\n|[[Wererat]] Gatherer\n| align=\"center\" |2\n| align=\"center\" |35\n|[[Cursed One|Cursed one]]s\n|Strong<br/>Silver\n|Can be found near human settlements. Increased activity in fog. <br/>Increased activity around dawn. <br/>Increased activity around dusk.\n|}\n\n==Legendary Creatures==\nAfter patch 1.2 there should be 35 trophys to collect.\n\n{| class=\"fandom-table sortable\" style=\"font-size:small; line-height:20px;\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"10%\" |Name\n! data-sort-type=\"number\" width=\"10%\" |Skulls (pre-1.2)\n!Level\n! width=\"15%\" |Type\n! class=\"unsortable\" width=\"15%\" |Vulnerabilities\n! class=\"unsortable\" width=\"40%\" |Occurrences\n|-\n|[[File:twms trophy ancient leshen.png|center|100px]]\n|Ancient [[Leshen]]\n| align=\"center\" |3\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy archgriffin.png|center|100px]]\n|[[Archgriffin]]\n| align=\"center\" | 3\n|\n|[[Hybrid]]s\n|Fast<br/>Steel<br/>Kinetic<br/>Fire\n|Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy copper wyvern.png|center|100px]]\n|Copper [[Wyvern]]\n| align=\"center\" | 3\n|\n|[[Draconid]]s\n| Strong<br/>Silver<br/>Kinetic\n|Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy dao.png|center|100px]]\n|[[D'ao]]\n| align=\"center\" |3\n|\n|[[Elementa]]\n|Dimeritium\n|Common in all natural environment types. Increased activity in fog.\n|-\n|[[File:twms trophy djinn.png|center|100px]]\n|[[D'jinni]]\n| align=\"center\" |3\n|\n|[[Elementa]]\n|Dimeritium\n|No precise data on the occurences.\n|-\n|[[File:twms trophy dung shaelmaar.png|center|100px]]\n|Dung [[Shaelmaar]]\n| align=\"center\" |3\n|\n|[[Relict]]s\n|Strong<br/>Steel<br/>Kinetic\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain. Nocturnally active.\n|-\n|[[File:twms trophy ekhidna.png|center|100px]]\n|[[Ekhidna]]\n| align=\"center\" |n/a\n| align=\"center\" |53\n|[[Hybrid]]s\n|Fast<br/>Silver<br/>Fire<br/>Kinetic\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy erynia.png|center|100px]]\n|[[Erynia]]\n| align=\"center\" |3\n|\n|[[Hybrid]]s\n|Strong<br/>Steel<br/>Kinetic<br/>Fire\n|Most commonly found during the day.\n|-\n|[[File:twms trophy frightener.png|center|100px]]\n|[[Frightener]]\n| align=\"center\" |3\n|\n|[[Insectoid]]s\n|Strong<br/>Silver\n|No precise data on the occurrences.\n|-\n|[[File:twms trophy golden_katakan.png|center|100px]]\n|Golden [[Katakan]]\n| align=\"center\" |n/a\n| align=\"center\" |59\n|[[Vampire]]s\n|Strong<br/>Silver\n|Can be found near human settlements. Increased activity in fog. Nocturnally active.\n|-\n|[[File:Twms trophy graphite slyzard.png|center|100px]]\n|Graphite [[Slyzard]]\n| align=\"center\" |3\n|\n|[[Draconid]]s\n|Strong<br/>Steel<br/>Kinetic\n|Nocturnally active. No precise data on the occurrences.\n|-\n|[[File:Twms trophy greater_gernichora.png|center|100px]]\n|Greater [[Gernichora]]\n| align=\"center\" |n/a\n| align=\"center\" |55\n|[[Relict]]s\n|Strong<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy grim hag.png|center|100px]]\n|Grim Hag\n| align=\"center\" |3\n| align=\"center\" |33\n|[[Necrophage]]s\n|Fast<br/>Silver\n|Can be found near human settlements.\n|-\n|[[File:twms trophy harrower.png|center|100px]]\n|[[Sylvan|Harrower]]\n| align=\"center\" |n/a\n| align=\"center\" |59\n|[[Relict]]s\n|Strong<br/>Steel\n|Special monster - appears only during Lammas.\n|-\n|[[File:twms trophy hym.png|center|100px]]\n|[[Hym]]\n| align=\"center\" |3\n|\n|[[Specter]]s\n|Fast<br/>Silver<br/>Fire\n|Nocturnally active. Can be found near human settlements.\n|-\n|[[File:twms trophy golem ice.png|center|100px]]\n|[[Ice Elemental]]\n| align=\"center\" |3\n|\n|[[Elementa]]\n|[[Dimeritium]]\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain.\n|-\n|[[File:twms trophy ice giant.png|center|100px]]\n|[[Ice giant|Ice Giant]]\n| align=\"center\" |3\n|\n|[[Ogroid]]s\n|Strong<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy cavetroll lvl2.png|center|100px]]\n|[[Ice troll|Ice Troll]]\n| align=\"center\" |3\n|\n|[[Ogroid]]s\n|Strong<br/>Steel<br/>Fire<br/>Kinetic\n|Significantly increased activity during precipitation, such as rain. Most commonly found during the day.\n|-\n|[[File:twms trophy mottled garkain.png|center|100px]]\n|Mottled [[Garkain]]\n| align=\"center\" |3\n|\n|[[Vampire]]s\n|Strong<br/>Silver\n|Can be found near human settlements.\n|-\n|[[File:twms trophy mulcher.png|center|100px]]\n|[[Sylvan|Mulcher]]\n| align=\"center\" |n/a\n| align=\"center\" |59\n|[[Relict]]s\n|Strong<br/>Steel\n|Special monster - appears only during Lammas.\n|-\n|[[File:twms trophy penitent.png|center|100px]]\n|[[Penitent]]\n| align=\"center\" |3\n|\n|[[Specter]]s\n|Fast<br/>Silver\n|Nocturnally active.\n|-\n|[[File:twms trophy plague maiden.png|center|100px]]\n|[[Plague maiden|Plague Maiden]]\n| align=\"center\" | 3\n| align=\"center\" |33\n|[[Specter]]s\n|Fast<br/>Silver\n|Significantly increased activity when the sun reaches its zenith.\n|-\n|[[File:twms trophy sandcrab.png|center|100px]]\n|[[Sandcrab]]\n| align=\"center\" |3\n|\n|[[Insectoid]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy silver basilisk.png|center|100px]]\n|[[Silver Basilisk]]\n| align=\"center\" |3\n|\n|[[Draconid]]s\n|Strong<br/>Silver<br/>Kinetic\n|Most commonly found during the day.\n|-\n|[[File:twms trophy swamp hag.png|center|100px]]\n|Swamp Hag\n| align=\"center\" |3\n|\n|[[Necrophage]]s\n|Fast<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy swarm mother.png|center|100px]]\n|[[Stinger|Swarm Mother]]\n| align=\"center\" |n/a\n| align=\"center\" |59\n|[[Cursed One]]s\n|Strong<br/>Silver<br/>Fire\n|Special monster - appears only during Lammas.\n|-\n|[[File:twms trophy tarry chort.png|center|100px]]\n|Tarry [[Chort]]\n| align=\"center\" |3\n|\n|[[Relict]]s\n|Strong<br/>Steel\n|Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day.\n|-\n|[[File:twms trophy tormented.png|center|100px]]\n|[[The Caretaker|Tormented]]\n| align=\"center\" |3\n|\n|[[Relict]]s\n|Fast<br/>Steel<br/>Kinetic\n|No precise data on the occurrences.\n|-\n|[[File:Twms trophy thundster.png|center|100px]]\n|Thundster\n| align=\"center\" |3\n|\n|[[Cursed One|Cursed one]]s\n|Strong<br/>Silver\n|Common in all natural environment types. Increased activity in fog.\n|-\n|[[File:twms trophy ulfhedinn.png|center|100px]]\n|[[Ulfhedinn]]\n| align=\"center\" |3\n|\n|[[Cursed One|Cursed one]]s\n|Fast<br/>Silver<br/>Fire\n|Increased activity during full moon. Prefers to avoid human settlements. No precise data on the occurrences.\n|-\n|[[File:twms trophy unseen elder.png|center|100px]]\n|[[Unseen Elder]]\n| align=\"center\" |3\n|\n|[[Vampire]]s\n|Fast<br/>Silver<br/>Fire\n|No precise data on the occurrences.\n|-\n|[[File:twms trophy water devil.png|center|100px]]\n|[[Drowned dead|Water Devil]]\n| align=\"center\" |3\n|\n|[[Necrophage]]s\n|Fast<br/>Steel<br/>Fire\n|Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.\n|-\n|[[File:twms trophy striga albino.png|center|100px]]\n|[[White Striga]]\n| align=\"center\" |3\n|\n|[[Cursed One|Cursed one]]s\n|Strong<br/>Silver\n|Nocturnally active. No precise data on the occurrences.\n|}\n\n[[uk:Бестіарій гри Відьмак: Вбивця чудовиськ]]\n[[pl:Bestiariusz w grze Wiedźmin: Pogromca Potworów]]\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]"
+}

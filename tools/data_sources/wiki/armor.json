@@ -1,0 +1,86 @@
+{
+ "page": "The Witcher Monster Slayer armor",
+ "revid": 579057,
+ "sections": [
+  {
+   "title": "(intro)",
+   "tables": [
+    {
+     "headers": [
+      "Image M",
+      "Image F",
+      "Name",
+      "Effect",
+      "Price"
+     ],
+     "rows": [
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Adept's Armor",
+       "Effect": "A part of the starting inventory.",
+       "Price": "0"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Feline Armor",
+       "Effect": "Damage from UNPARRIED hits is reduced by 15%.",
+       "Price": "3,400"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Griffin Armor",
+       "Effect": "Each successful PARRY reflects 10% of damage back at the opponent.",
+       "Price": "6,800"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Manticore Armor",
+       "Effect": "Actual effect: Both heavy attacks and fast attacks charge the CRITICAL HIT METER. The type of attack the opponent is vulnerable to charges the CRITICAL STRIKE METER at a higher rate. Old effect: Automatically applies White Gull potion before each fight, increasing the effectiveness of other WITCHER POTIONS by 100%.",
+       "Price": "6,800"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Ursine Armor",
+       "Effect": "Decharging the CRITICAL HIT METER from receiving damage is decreased by 80%.",
+       "Price": "3,400"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Wolven Armor",
+       "Effect": "Grants a 50% chance of dropping extra ALCHEMY INGREDIENTS for defeating monsters.",
+       "Price": "6,800"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Kaer Morhen Armor",
+       "Effect": "Increases EXPERIENCE POINTS gain for killing monsters by 25%.",
+       "Price": "12,000"
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Hermit's Armor",
+       "Effect": "Loss of CRITICAL HIT METER charge upon taking damage is lowered by 20%.",
+       "Price": "n/aHermit's Armor is acquired by completing the quest Sins of our Fathers by breaking the striga's curse."
+      },
+      {
+       "Image M": "",
+       "Image F": "",
+       "Name": "Armor of the Nameless",
+       "Effect": "Increases damage dealt by SIGNS by 50%.",
+       "Price": "n/aArmor of the Nameless is acquired by completing timed tasks during the 1st anniversary event."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all '''armor''' currently known for {{TWMS}}. Most are available through [[Thorstein's shop]].\n\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image M\n! class=\"unsortable\" width=\"10%\" |Image F\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"45%\" |Effect\n! data-sort-type=\"number\" width=\"15%\" |Price\n|-\n|[[File:twms_armor_adepts_male.png|center|50px]]\n|[[File:twms_armor_adepts_female.png|center|50px]]\n|Adept's Armor\n|A part of the starting inventory.\n| align=\"center\" |0\n|-\n|[[File:twms_armor_feline_male.png|center|50px]]\n|[[File:twms_armor_feline_female.png|center|50px]]\n|[[Feline armor|Feline Armor]]\n|Damage from UNPARRIED hits is reduced by 15%.\n| align=\"center\" |[[File:twms currency_gold_coin.png|20px]]3,400\n|-\n|[[File:twms_armor_griffin_male.png|center|50px]]\n|[[File:twms_armor_griffin_female.png|center|50px]]\n|[[Griffin armor|Griffin Armor]]\n|Each successful PARRY reflects 10% of damage back at the opponent.\n| align=\"center\" |[[File:twms currency_gold_coin.png|20px]]6,800\n|-\n|[[File:twms_armor_manticore_male.png|center|50px]]\n|[[File:twms_armor_manticore_female.png|center|50px]]\n|[[Manticore armor|Manticore Armor]]\n|Actual effect: Both heavy attacks and fast attacks charge the CRITICAL HIT METER. The type of attack the opponent is vulnerable to charges the CRITICAL STRIKE METER at a higher rate.\nOld effect: Automatically applies ''White Gull'' potion before each fight, increasing the effectiveness of other WITCHER [[The Witcher Monster Slayer potions|POTIONS]] by 100%.\n| align=\"center\" |[[File:twms currency_gold_coin.png|20px]]6,800\n|-\n|[[File:twms_armor_ursine_male.png|center|50px]]\n|[[File:twms_armor_ursine_female.png|center|50px]]\n|[[Ursine armor|Ursine Armor]]\n|Decharging the CRITICAL HIT METER from receiving damage is decreased by 80%.\n| align=\"center\" |[[File:twms currency_gold_coin.png|20px]]3,400\n|-\n|[[File:twms_armor_wolven_male.png|center|50px]]\n|[[File:twms_armor_wolven_female.png|center|50px]]\n|[[Wolven armor|Wolven Armor]]\n|Grants a 50% chance of dropping extra ALCHEMY [[The Witcher Monster Slayer ingredients|INGREDIENTS]] for defeating monsters.\n| align=\"center\" |[[File:twms currency_gold_coin.png|20px]]6,800\n|-\n|[[File:twms_armor_kaer_morhen_male.png|center|50px]]\n|[[File:twms_armor_kaer_morhen_female.png|center|50px]]\n|[[Kaer Morhen armor|Kaer Morhen Armor]]\n|Increases EXPERIENCE POINTS gain for killing monsters by 25%.\n| align=\"center\" |[[File:twms currency_gold_coin.png|20px]]12,000\n|-\n|[[File:TWMS_Hermits_Armor_Male.png|center|50px]]\n|\n|Hermit's Armor\n|Loss of CRITICAL HIT METER charge upon taking damage is lowered by 20%.\n| align=\"center\" |n/a<ref>Hermit's Armor is acquired by completing the quest ''[[Sins of our Fathers]]'' by breaking the striga's curse.</ref>\n|-\n|[[File:twms_armor_of_the_nameless_male.png|center|50px]]\n|[[File:twms_armor_of_the_nameless_female.png|center|50px]]\n|Armor of the Nameless\n|Increases damage dealt by SIGNS by 50%.\n| align=\"center\" |n/a<ref>Armor of the Nameless is acquired by completing timed tasks during the 1st anniversary event.</ref>\n|}\n\n==References==\n<references/>\n\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[Category:Armor| ]]\n[[pl:Zbroje w grze Wiedźmin Pogromca Potworów]]\n[[uk:Обладунки (Відьмак: Вбивця чудовиськ)]]"
+}

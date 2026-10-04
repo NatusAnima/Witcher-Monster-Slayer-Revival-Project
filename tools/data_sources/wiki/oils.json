@@ -1,0 +1,199 @@
+{
+ "page": "The Witcher Monster Slayer oils",
+ "revid": 578309,
+ "sections": [
+  {
+   "title": "PRE-1.2.0",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Ingredients",
+      "Time"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Basic oil",
+       "Effect": "Increases MELEE DAMAGE by 33%.",
+       "Ingredients": "Powdered monster tissue (5); Bundle of herbs (3)",
+       "Time": "20"
+      },
+      {
+       "Image": "",
+       "Name": "Cursed oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Vampire remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Draconid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Necrophage remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Elemental oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Hybrid remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Hybrid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Ogroid remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Insectoid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Specter remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Necrophage oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Cursed remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Ogroid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Draconid remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Relict oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Elemental remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Specter oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Relict remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      },
+      {
+       "Image": "",
+       "Name": "Vampire oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 100%.",
+       "Ingredients": "Insectoid remains (5); Bundle of herbs (3); Root (2)",
+       "Time": "60"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "POST-1.2.0",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Ingredients",
+      "Time",
+      "Durability"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Cursed oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Vampire remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Draconid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Necrophage remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Elemental oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Hybrid remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Hybrid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Ogroid remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Insectoid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Specter remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Necrophage oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Cursed remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Ogroid oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Draconid remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Relict oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Elemental remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Specter oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Relict remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Vampire oil",
+       "Effect": "Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.",
+       "Ingredients": "Insectoid remains (2); Powered monster tissue(2); Bear Fat (1)",
+       "Time": "45",
+       "Durability": "15"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all available '''oils''' in {{TWMS}}.\n\n== PRE-1.2.0 ==\nOils could be crafted using combination of [[The Witcher Monster Slayer ingredients|monster remains]] and [[The Witcher Monster Slayer ingredients|herbs]] gathered from shrubs. [[The Witcher Monster Slayer bestiary|Monsters]] of any level dropped both [[powdered monster tissue]] and [[The Witcher Monster Slayer ingredients|monster remains]]. Aside from crafting, which required time, it was possible to buy all oils at [[Thorstein]]'s shop. Oils were applied right before the fight and their effects lasted till the battle was over.\n\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"35%\" |Effect\n! class=\"unsortable\" width=\"25%\" |Ingredients\n! data-sort-type=\"number\" width=\"10%\" |Time\n|-\n|[[File:twms oil basic.png|center|50px]]\n|Basic oil\n|Increases MELEE DAMAGE by 33%.\n|Powdered monster tissue (5)<br/>Bundle of herbs (3)\n| align=\"center\" |20\n|-\n|[[File:twms oil cursed.png|center|50px]]\n|[[Cursed oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Vampire remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil draconid.png|center|50px]]\n|[[Draconid oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Necrophage remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil elemental.png|center|50px]]\n|[[Elementa oil|Elemental oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Hybrid remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil hybrid.png|center|50px]]\n|[[Hybrid oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Ogroid remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil insectoid.png|center|50px]]\n|[[Insectoid oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Specter remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil necrophage.png|center|50px]]\n|[[Necrophage Oil|Necrophage oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Cursed remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil ogroid.png|center|50px]]\n|[[Ogroid oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Draconid remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil relict.png|center|50px]]\n|[[Relict oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Elemental remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil specter.png|center|50px]]\n|[[Specter Oil|Specter oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Relict remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|-\n|[[File:twms oil vampire.png|center|50px]]\n|[[Vampire Oil|Vampire oil]]\n|Increases MELEE DAMAGE dealt against this class by 100%.\n|Insectoid remains (5)<br/>Bundle of herbs (3)<br/>Root (2)\n| align=\"center\" |60\n|}\n\n== POST-1.2.0 ==\nBesides [[The Witcher Monster Slayer ingredients|monster remains]] and [[The Witcher Monster Slayer ingredients|herbs]], crafting required a store-bought base - [[bear fat]]. Crafting materials were made more difficult to obtain, as common [[The Witcher Monster Slayer bestiary|monsters]] dropped only [[powdered monster tissue]] while rare and legendaries dropped [[The Witcher Monster Slayer ingredients|monster remains]]. Crafting time was reduced. It was possible to buy oils, [[bear fat]] and [[The Witcher Monster Slayer ingredients|a bundle of herbs]] at [[Thorstein]]'s shop. Oils could be applied straight from the inventory tab and their effects lasted for 10 minutes.\n\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"2%\" |Name\n! class=\"unsortable\" width=\"35%\" |Effect\n! class=\"unsortable\" width=\"20%\" |Ingredients\n! data-sort-type=\"number\" width=\"7.5%\" |Time \n! width=\"7.5%\" |Durability\n\n|-\n|[[File:twms oil cursed.png|center|50px]]\n|[[Cursed oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Vampire remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil draconid.png|center|50px]]\n|[[Draconid oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Necrophage remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil elemental.png|center|50px]]\n|[[Elementa oil|Elemental oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Hybrid remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil hybrid.png|center|50px]]\n|[[Hybrid oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Ogroid remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil insectoid.png|center|50px]]\n|[[Insectoid oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Specter remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil necrophage.png|center|50px]]\n|[[Necrophage Oil|Necrophage oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Cursed remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil ogroid.png|center|50px]]\n|[[Ogroid oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Draconid remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil relict.png|center|50px]]\n|[[Relict oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Elemental remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil specter.png|center|50px]]\n|[[Specter Oil|Specter oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Relict remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms oil vampire.png|center|50px]]\n|[[Vampire Oil|Vampire oil]]\n|Increases MELEE DAMAGE dealt against this class by 200% and against other monsters by 50%. The effect lasts for 10 min.\n|Insectoid remains (2)<br/>Powered monster tissue(2)<br/>Bear Fat (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|}\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[Category:Oils| ]]\n[[de:The Witcher Monster Slayer Öle]]\n[[pl:Oleje w grze Wiedźmin Pogromca Potworów]]\n[[uk:Мастила гри Відьмак: Вбивця чудовиськ]]"
+}

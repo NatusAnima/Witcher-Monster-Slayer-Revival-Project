@@ -1,0 +1,109 @@
+{
+ "page": "Thorstein's shop",
+ "revid": 586562,
+ "sections": [
+  {
+   "title": "Gold exchange rate",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Gold coins",
+      "USD"
+     ],
+     "rows": [
+      {
+       "Gold coins": "200",
+       "USD": "$0,99"
+      },
+      {
+       "Gold coins": "1,300",
+       "USD": "$4,99"
+      },
+      {
+       "Gold coins": "3,500",
+       "USD": "$9,99"
+      },
+      {
+       "Gold coins": "8,500",
+       "USD": "$19,99"
+      },
+      {
+       "Gold coins": "26,000",
+       "USD": "$49,99"
+      },
+      {
+       "Gold coins": "70,000",
+       "USD": "$99,99"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Crystal exchange rate",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Crystals",
+      "USD"
+     ],
+     "rows": [
+      {
+       "Crystals": "60",
+       "USD": "$1,59"
+      },
+      {
+       "Crystals": "160",
+       "USD": "$4,99"
+      },
+      {
+       "Crystals": "340",
+       "USD": "$9,99"
+      },
+      {
+       "Crystals": "720",
+       "USD": "$19,99"
+      },
+      {
+       "Crystals": "1900",
+       "USD": "$48,99"
+      },
+      {
+       "Crystals": "4000",
+       "USD": "$99,99"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Gold exchange rate",
+   "level": 3,
+   "tables": [
+    {
+     "headers": [
+      "Gold coins",
+      "Crystals"
+     ],
+     "rows": [
+      {
+       "Gold coins": "1000",
+       "Crystals": "50"
+      },
+      {
+       "Gold coins": "3300",
+       "Crystals": "150"
+      },
+      {
+       "Gold coins": "9500",
+       "Crystals": "380"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "'''Thorstein's shop''' in {{TWMS}} gave the player the ability to purchase items or exchange real life money for in-game currencies.\n\n==Interface==\nAt the very top there was a window in which [[Thorstein]] appeared, sharing various remarks or weather information with the player. Below the window, several store sections followed.\n\n===In version 1.1===\n* Main\n** The starter pack or seasonal packs\n** Daily deals (various \"discounted\" items)\n** [[The Witcher Monster Slayer scrolls|Boosters]]\n** Packs\n** Items\n** Gold coins\n* Alchemy\n**[[The Witcher Monster Slayer potions|Potions]]\n**[[The Witcher Monster Slayer oils|Oils]]\n**[[The Witcher Monster Slayer bombs|Bombs]]\n* Equipment\n**[[The Witcher Monster Slayer swords|Steel swords]]\n**[[The Witcher Monster Slayer swords|Silver swords]]\n**[[The Witcher Monster Slayer armor|Armor]]\n**[[The Witcher Monster Slayer bags|Bags]]\n\n===In version 1.2===\n* The starter pack or seasonal packs\n* Offer of the week\n* Daily deals ([[The Witcher Monster Slayer oils|oils]], [[The Witcher Monster Slayer potions|potions]], [[The Witcher Monster Slayer scrolls|scrolls]])\n* Items\n* [[The Witcher Monster Slayer ingredients|Ingredients]]\n* Crystals\n* Gold coins\n\n==Game economy before update 1.2==\n\nThere was only 1 currency - gold coins ([[File:twms currency_gold_coin.png|20px]]), which were earned my completing [[The Witcher Monster Slayer quests|quests]], [[XP|leveling up]] or slaying [[The Witcher Monster Slayer bestiary|monsters]]. They were used to purchase anything in the game, with [[The Witcher Monster Slayer swords|swords]] and [[The Witcher Monster Slayer armor|armor]] being the most expensive. The most expensive item to purchase were [[The Witcher Monster Slayer swords|A'Báeth]] and [[The Witcher Monster Slayer armor|Kaer Morhen Armor]] for [[File:twms currency_gold_coin.png|20px]]12 000, while the cheapest were weak modifier potions like [[The Witcher Monster Slayer potions|Thunderbolt]] for [[File:twms currency_gold_coin.png|20px]]30.\n\nAside from earning coins, they could be simply bought in the store for money. Real world currency was also used to purchase item packs. The most expensive item for purchase with money was a chest of [[File:twms currency_gold_coin.png|20px]]70 000 for $99,99, while the cheapest was a stack of [[File:twms currency_gold_coin.png|20px]]200 for $0,99.\n\nGold couldn't be transferred between players or directly exchanged for [[XP]].\n\n===Gold exchange rate===\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"50%\" |Gold coins\n! class=\"unsortable\" width=\"50%\" |USD\n|-\n|[[File:twms currency_gold_coin.png|20px]]200\n|$0,99\n|-\n|[[File:twms currency_gold_coin.png|20px]]1,300\n|$4,99\n|-\n|[[File:twms currency_gold_coin.png|20px]]3,500\n|$9,99\n|-\n|[[File:twms currency_gold_coin.png|20px]]8,500\n|$19,99\n|-\n|[[File:twms currency_gold_coin.png|20px]]26,000\n|$49,99\n|-\n|[[File:twms currency_gold_coin.png|20px]]70,000\n|$99,99\n|}\n\n==Game economy after update 1.2==\nAfter the update a premium currency was added - crystals ([[File:twms currency_crystal.png|20px]]), which could be earned by slaying rare or legendary [[The Witcher Monster Slayer bestiary|monsters]] and [[XP|leveling up]]. Most items in the store were set to be bought for crystals, making gold losing its significance almost entirely. The only items available with gold were selected weak modifiers like some [[The Witcher Monster Slayer potions|potions]], 2 [[The Witcher Monster Slayer scrolls|scrolls]] and some [[The Witcher Monster Slayer ingredients|ingredients]]. [[The Witcher Monster Slayer swords|Swords]] and [[The Witcher Monster Slayer armor|armor]] could still be purchased with gold, but their availability was greatly reduced.\n\nAside from earning crystals, they could be simply bought in the store for money. The most expensive item for purchase with money became a chest with [[File:twms currency_crystal.png|20px]]4000 for $99,9, while the cheapest was a set of [[File:twms currency_crystal.png|20px]]60 for $1,59. Gold coins couldn't be purchased with money anymore, but crystals could be exchanged for gold.\n\n===Crystal exchange rate===\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"50%\" |Crystals\n! class=\"unsortable\" width=\"50%\" |USD\n|-\n|[[File:twms currency_crystal.png|20px]]60\n|$1,59\n|-\n|[[File:twms currency_crystal.png|20px]]160\n|$4,99\n|-\n|[[File:twms currency_crystal.png|20px]]340\n|$9,99\n|-\n|[[File:twms currency_crystal.png|20px]]720\n|$19,99\n|-\n|[[File:twms currency_crystal.png|20px]]1900\n|$48,99\n|-\n|[[File:twms currency_crystal.png|20px]]4000\n|$99,99\n|}\n\n===Gold exchange rate===\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"50%\" |Gold coins\n! class=\"unsortable\" width=\"50%\" |Crystals\n|-\n|[[File:twms currency_gold_coin.png|20px]]1000\n|[[File:twms currency_crystal.png|20px]]50\n|-\n|[[File:twms currency_gold_coin.png|20px]]3300\n|[[File:twms currency_crystal.png|20px]]150\n|-\n|[[File:twms currency_gold_coin.png|20px]]9500\n|[[File:twms currency_crystal.png|20px]]380\n|}\n\n==Stock==\nBefore update 1.2, all items available for purchase were displayed in the shop page, along with gold for money exchange at the very end. Seasonal packs and bundles would be displayed at the top and would change along with a certain event or season coming to an end.\n\nAfter update 1.2, only selected items were shown in the shop page. The modifier section would restock after a set amount of hours passed, while the equipment section would take up to a week to reset and display different items. At the very bottom there was a currency exchange section with crystals for gold and money for crystals. It was not possible to exchange gold for crystals or money for gold.\n\nList of available items:\n* [[The Witcher Monster Slayer potions|Potions]]\n* [[The Witcher Monster Slayer oils|Oils]]\n* [[The Witcher Monster Slayer bombs|Bombs]]\n* [[The Witcher Monster Slayer scrolls|Scrolls]]\n* [[The Witcher Monster Slayer baits|Baits]] (v1.2)\n* [[The Witcher Monster Slayer ingredients|Ingredients]] (v1.2)\n* [[The Witcher Monster Slayer armor|Armor]]\n* [[The Witcher Monster Slayer swords|Swords]]\n* [[The Witcher Monster Slayer bags|Bags]]\n\n==Notes==\n* In January 2023, the ability to purchase bundles and crystals with money was removed. Along with it, players lost opportunity to buy armor and swords.\n* In February 2023, store options were updated to display several items previously removed by the final closing update, so that users that remained could resupply.\n\n==Gallery==\n<gallery>\nTWMS_wallpaper_midinvaerne.jpg|A holiday pack available during [[Midinváerne]]\n</gallery>\n\n[[pl:Sklep Thorsteina]]\n[[Category:The Witcher Monster Slayer]]"
+}

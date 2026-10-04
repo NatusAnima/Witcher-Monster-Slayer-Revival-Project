@@ -1,0 +1,199 @@
+{
+ "page": "The Witcher Monster Slayer potions",
+ "revid": 580880,
+ "sections": [
+  {
+   "title": "PRE-1.2.0",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Ingredients",
+      "Time"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Blizzard",
+       "Effect": "Instantly gain some CRITICAL HIT METER charge when entering combat.",
+       "Ingredients": "Powdered monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Cat",
+       "Effect": "Increases damage dealt at night by +75%.",
+       "Ingredients": "Powdered monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Falcon",
+       "Effect": "Identifies nearby monsters in the WITCHER SENSES VIEW.",
+       "Ingredients": "Powdered Monster tissue (3); Bundle of herbs (2)",
+       "Time": "10"
+      },
+      {
+       "Image": "",
+       "Name": "Petri's Philter",
+       "Effect": "Increases SIGN intensity by 100%.",
+       "Ingredients": "Powdered Monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Squall",
+       "Effect": "Increases all damage dealt by SWORDS and SIGNS during precipitation by +75%.",
+       "Ingredients": "Powdered Monster tissue (7); Elemental remains; Bundle of herbs (7)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Swallow",
+       "Effect": "Regenerates 1% of VITALITY per second from the moment of drinking the potion until returning to the map.",
+       "Ingredients": "Powdered Monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Swift",
+       "Effect": "Increases maximum VITALITY by 50%.",
+       "Ingredients": "Powdered Monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Tawny Owl",
+       "Effect": "Reduces COOLDOWN for casting SIGNS by 30%.",
+       "Ingredients": "Powdered monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      },
+      {
+       "Image": "",
+       "Name": "Thunderbolt",
+       "Effect": "Increases MELEE DAMAGE by 33%.",
+       "Ingredients": "Powdered Monster tissue (3); Bundle of herbs (2)",
+       "Time": "10"
+      },
+      {
+       "Image": "",
+       "Name": "White gull",
+       "Effect": "Increases effectiveness of other WITCHER POTIONS by 100%.",
+       "Ingredients": "Automatically applied before each fight if you are wearing Manticore armor",
+       "Time": "n/a"
+      },
+      {
+       "Image": "",
+       "Name": "Wolverine",
+       "Effect": "Increases all damage dealt by SWORDS and SIGNS by 100% when the player's VITALITY reaches 30%.",
+       "Ingredients": "Powdered monster tissue (5); Bundle of herbs (3); Root (1)",
+       "Time": "30"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "POST-1.2.0",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Effect",
+      "Ingredients",
+      "Time",
+      "Durability"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Blizzard",
+       "Effect": "Causes the CRITICAL HIT METER to gain some charge each second. The effect lasts for 5 min.",
+       "Ingredients": "",
+       "Time": "5",
+       "Durability": ""
+      },
+      {
+       "Image": "",
+       "Name": "Cat",
+       "Effect": "Increases damage dealt at night by 150%. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered Monster tissue (10); Root (2)",
+       "Time": "5",
+       "Durability": ""
+      },
+      {
+       "Image": "",
+       "Name": "Falcon",
+       "Effect": "Identifies nearby monsters in the WITCHER SENSES VIEW.",
+       "Ingredients": "White Gull (1); Bundle of herbs (9); Root (1)",
+       "Time": "15",
+       "Durability": "5"
+      },
+      {
+       "Image": "",
+       "Name": "Petri's Philter",
+       "Effect": "Increases SIGN intensity by 275%. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered Monster tissue (6); Root (1)",
+       "Time": "30",
+       "Durability": "10"
+      },
+      {
+       "Image": "",
+       "Name": "Squall",
+       "Effect": "Increases all damage dealt during precipitation by 200%. The effect lasts for 5 min.",
+       "Ingredients": "",
+       "Time": "5",
+       "Durability": ""
+      },
+      {
+       "Image": "",
+       "Name": "Swallow",
+       "Effect": "Regenerates 1% of the maximum number of HEALTH POINTS per second. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered Monster tissue (2); Bundle of herbs (4)",
+       "Time": "10",
+       "Durability": "5"
+      },
+      {
+       "Image": "",
+       "Name": "Swift",
+       "Effect": "Increases maximum HEALTH POINTS by 70%. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered Monster tissue (2); Root (1)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Tawny Owl",
+       "Effect": "Accelerates the COOLDOWN after casting SIGNS by 30%. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered monster tissue (6); Bundle of herbs (4)",
+       "Time": "15",
+       "Durability": "5"
+      },
+      {
+       "Image": "",
+       "Name": "Thunderbolt",
+       "Effect": "Increases MELEE DAMAGE by 200%. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered Monster tissue (8); Root (2)",
+       "Time": "45",
+       "Durability": "15"
+      },
+      {
+       "Image": "",
+       "Name": "Wolverine",
+       "Effect": "Increases all damage by 200% when the player's HEALTH POINTS reach 50%. The effect lasts for 5 min.",
+       "Ingredients": "White Gull (1); Powdered Monster tissue (6); Root (1)",
+       "Time": "5",
+       "Durability": ""
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "This page is a list of all available '''potions''' in {{TWMS}}.\n\n==PRE-1.2.0==\nPotions could be crafted using combination of [[The Witcher Monster Slayer ingredients|monster remains]] and [[The Witcher Monster Slayer ingredients|herbs]] gathered from shrubs. [[The Witcher Monster Slayer bestiary|Monsters]] of any level dropped both [[powdered monster tissue]] and [[The Witcher Monster Slayer ingredients|monster remains]]. Aside from crafting, which required time, it was possible to buy all potions at [[Thorstein]]'s shop. Potions were applied right before the fight and their effects lasted till the battle was over.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"35%\" |Effect \n! class=\"unsortable\" width=\"25%\" |Ingredients\n! data-sort-type=\"number\" width=\"10%\" |Time\n|-\n|[[File:twms potion_blizzard.png|center|50px]]\n|[[Blizzard]]\n|Instantly gain some CRITICAL HIT METER charge when entering combat.\n|Powdered monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|-\n|[[File:twms potion cat.png|center|50px]]\n|[[Cat (potion)|Cat]]\n|Increases damage dealt at night by +75%.\n|Powdered monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|-\n|[[File:twms potion senses falcon.png|center|50px]]\n|Falcon\n|Identifies nearby monsters in the WITCHER SENSES VIEW.\n|Powdered Monster tissue (3)<br/>Bundle of herbs (2)\n| align=\"center\" |10\n|-\n|[[File:twms potion mariborforest.png|center|50px]]\n|[[Petri's Philter]]\n|Increases SIGN intensity by 100%.\n|Powdered Monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|-\n|[[File:twms potion squall.png|center|50px]]\n|Squall\n|Increases all damage dealt by [[The Witcher Monster Slayer swords|SWORDS]] and SIGNS during precipitation by +75%.\n|Powdered Monster tissue (7)<br/>Elemental remains<br/>Bundle of herbs (7)\n| align=\"center\" |30\n|-\n|[[File:twms potion swallow.png|center|50px]]\n|[[Swallow]]\n|Regenerates 1% of VITALITY per second from the moment of drinking the potion until returning to the map.\n| Powdered Monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|-\n|[[File:twms potion swift.png|center|50px]]\n|Swift\n|Increases maximum VITALITY by 50%.\n| Powdered Monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|-\n|[[File:twms potion tawnyowl.png|center|50px]]\n|[[Tawny Owl]]\n|Reduces COOLDOWN for casting SIGNS by 30%.\n| Powdered monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|-\n|[[File:twms potion thunderbolt.png|center|50px]]\n|[[Thunderbolt]]\n|Increases MELEE DAMAGE by 33%.\n| Powdered Monster tissue (3)<br/>Bundle of herbs (2)\n| align=\"center\" |10\n|-\n|[[File:twms potion whitegull.png|center|50px]]\n|[[White Seagull|White gull]]\n|Increases effectiveness of other WITCHER POTIONS by 100%.\n|Automatically applied before each fight if you are wearing Manticore armor\n| align=\"center\" |n/a\n|-\n|[[File:twms potion wolverine.png|center|50px]]\n|Wolverine\n|Increases all damage dealt by [[The Witcher Monster Slayer swords|SWORDS]] and SIGNS by 100% when the player's VITALITY reaches 30%.\n| Powdered monster tissue (5)<br/>Bundle of herbs (3)<br/>Root (1)\n| align=\"center\" |30\n|}\n\n==POST-1.2.0==\nBesides [[powdered monster tissue]] and [[The Witcher Monster Slayer ingredients|herbs]], crafting required a store-bought base - [[White Seagull|White Gull]]. The [[White Seagull|White Gull]] was re-cathegorized as an ingredient and could no longer be brewed. Crafting time was changed. It was possible to buy potions, [[White Seagull|White Gull]] and [[The Witcher Monster Slayer ingredients|a bundle of herbs]] at [[Thorstein]]'s shop. Potions could be applied straight from the inventory tab and their effects lasted for 5 minutes.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"35%\" |Effect\n! class=\"unsortable\" width=\"25%\" |Ingredients\n! data-sort-type=\"number\" width=\"10%\" |Time\n! data-sort-type=\"number\" width=\"10%\" |Durability\n|-\n|[[File:twms potion_blizzard.png|center|50px]]\n|[[Blizzard]]\n|Causes the CRITICAL HIT METER to gain some charge each second. The effect lasts for 5 min.\n| \n| align=\"center\" |5\n| align=\"center\" |\n|-\n|[[File:twms potion cat.png|center|50px]]\n|[[Cat (potion)|Cat]]\n|Increases damage dealt at night by 150%. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered Monster tissue (10)<br/>Root (2)\n| align=\"center\" |5\n| align=\"center\" |\n|-\n|[[File:twms potion senses falcon.png|center|50px]]\n|Falcon\n|Identifies nearby monsters in the WITCHER SENSES VIEW.\n|White Gull (1)<br/>Bundle of herbs (9)<br/>Root (1)\n| align=\"center\" |15\n| align=\"center\" |5\n|-\n|[[File:twms potion mariborforest.png|center|50px]]\n|[[Petri's Philter]]\n|Increases SIGN intensity by 275%. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered Monster tissue (6)<br/>Root (1)\n| align=\"center\" |30\n| align=\"center\" |10\n|-\n|[[File:twms potion squall.png|center|50px]]\n|Squall\n|Increases all damage dealt during precipitation by 200%. The effect lasts for 5 min.\n| \n| align=\"center\" |5\n| align=\"center\" |\n|-\n|[[File:twms potion swallow.png|center|50px]]\n|[[Swallow]]\n|Regenerates 1% of the maximum number of HEALTH POINTS per second. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered Monster tissue (2)<br/>Bundle of herbs (4)\n| align=\"center\" |10\n| align=\"center\" |5\n|-\n|[[File:twms potion swift.png|center|50px]]\n|Swift\n|Increases maximum HEALTH POINTS by 70%. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered Monster tissue (2)<br/>Root (1)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms potion tawnyowl.png|center|50px]]\n|[[Tawny Owl]]\n|Accelerates the COOLDOWN after casting SIGNS by 30%. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered monster tissue (6)<br/>Bundle of herbs (4)\n| align=\"center\" |15\n| align=\"center\" |5\n|-\n|[[File:twms potion thunderbolt.png|center|50px]]\n|[[Thunderbolt]]\n|Increases MELEE DAMAGE by 200%. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered Monster tissue (8)<br/>Root (2)\n| align=\"center\" |45\n| align=\"center\" |15\n|-\n|[[File:twms potion wolverine.png|center|50px]]\n|Wolverine\n|Increases all damage by 200% when the player's HEALTH POINTS reach 50%. The effect lasts for 5 min.\n|White Gull (1)<br/>Powdered Monster tissue (6)<br/>Root (1)\n| align=\"center\" |5\n| align=\"center\" |\n|}\n\n[[Category:The Witcher Monster Slayer]]\n[[Category:Pages with tables]]\n[[Category:Potions| ]]\n\n[[de:The Witcher Monster Slayer Tränke]]\n[[pl:Eliksiry w grze Wiedźmin Pogromca Potworów]]\n[[uk:Еліксири (Відьмак: Вбивця чудовиськ)]]"
+}

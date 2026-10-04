@@ -8,4 +8,8 @@
     <RootNamespace>WitcherRevival.Server</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Update="StaticData\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

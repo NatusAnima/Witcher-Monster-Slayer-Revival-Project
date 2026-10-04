@@ -1,0 +1,1705 @@
+{
+ "page": "The Witcher Monster Slayer timed tasks",
+ "revid": 587816,
+ "sections": [
+  {
+   "title": "Wild wererat",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 WILD WERERATS",
+       "Reward": "Range scroll (3)"
+      },
+      {
+       "Task": "Gather 50 CURSED REMAINS by killing WILD WERERATS.",
+       "Reward": "Swift (5)"
+      },
+      {
+       "Task": "Kill 5 WILD WERERATS in 30 min.",
+       "Reward": "Moon Dust"
+      },
+      {
+       "Task": "Gather 50 CURSED REMAINS by killing WILD WERERATS.",
+       "Reward": "Swift (5)"
+      },
+      {
+       "Task": "Kill a WILD WERERAT without performing MELEE ATTACKS.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill a WILD WERERAT in less than 30 s without dealing KINETIC damage.",
+       "Reward": "Basic bomb (2)"
+      },
+      {
+       "Task": "Kill a WILD WERERAT while performing at least 5 PERFECT PARRIES.",
+       "Reward": "Grapeshot"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Ogroids",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 50 monsters from the OGROID class.",
+       "Reward": "Moon Dust (3)"
+      },
+      {
+       "Task": "Gather 100 OGROID REMAINS.",
+       "Reward": "Relic oil (5)"
+      },
+      {
+       "Task": "Craft 10 OGROID OILS.",
+       "Reward": "Grapeshot"
+      },
+      {
+       "Task": "Kill any 3 NEKKERS after performing at least 5 PERFECT PARRIES.",
+       "Reward": "Swallow (5)"
+      },
+      {
+       "Task": "Kill any CYCLOPS in less than 30 s.",
+       "Reward": "Petri's Philter (3)"
+      },
+      {
+       "Task": "Kill any TROLL using only BOMBS.",
+       "Reward": "Tawny owl (5)"
+      },
+      {
+       "Task": "Kill any monster from the OGROID class while using only SIGNS.",
+       "Reward": "Summoning scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Stinger",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 3 STINGERS.",
+       "Reward": "Dancing Star (3)"
+      },
+      {
+       "Task": "Kill monsters from the CURSED class without dealing any STEEL or FIRE damage.",
+       "Reward": "Blizzard (5)"
+      },
+      {
+       "Task": "Gather 50 VAMPIRE REMAINS.",
+       "Reward": "Petri's Philter (5)"
+      },
+      {
+       "Task": "Craft 10 CURSED OILS.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Kill a STINGER while using a POTION an OIL, a BOMB and a SIGN.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill a STINGER without dealing any KINETIC or FIRE damage.",
+       "Reward": "Summoning scroll (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Leshen",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 3 LESHENS.",
+       "Reward": "Dancing Star (3)"
+      },
+      {
+       "Task": "Kill 3 LESHEN HOUNDS.",
+       "Reward": "Elemental oil (5)"
+      },
+      {
+       "Task": "Gather 50 ELEMENTAL REMAINS.",
+       "Reward": "Swift (5)"
+      },
+      {
+       "Task": "Craft 10 RELICT OILS.",
+       "Reward": "Squall (3)"
+      },
+      {
+       "Task": "Kill a LESHEN without dealing any FIRE damage.",
+       "Reward": "Grapeshot (2)"
+      },
+      {
+       "Task": "Kill a LESHEN HOUND less than 30 without dealing any KINETIC damage.",
+       "Reward": "Experience scroll (2)"
+      },
+      {
+       "Task": "Kill a LESHEN without performing any MELEE ATTACK.",
+       "Reward": "Summoning scroll (1)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Midinváerne event",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 5 ICE ELEMENTA.",
+       "Reward": "Summoning scroll (2)"
+      },
+      {
+       "Task": "Kill 50 monsters of the ELEMENTAL class.",
+       "Reward": "Wolverine (5)"
+      },
+      {
+       "Task": "Gather 50 HYBRID REMAINS.",
+       "Reward": "Elemental oil (7)"
+      },
+      {
+       "Task": "Kill 10 monsters of the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Snowball (5)"
+      },
+      {
+       "Task": "Kill 20 monsters of the ELEMENTAL class while using SNOWBALLS.",
+       "Reward": "Gingerbread"
+      },
+      {
+       "Task": "Kill an ICE ELEMENTAL in less than 30 s without using SIGNS.",
+       "Reward": "Poppy cake"
+      },
+      {
+       "Task": "Kill an ICE ELEMENTAL without performing any MELEE ATTACKS.",
+       "Reward": "Hot chocolate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Ice ogroids",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 5 ICE GIANTS.",
+       "Reward": "Dancing Star (2)"
+      },
+      {
+       "Task": "Kill 5 ICE TROLLS.",
+       "Reward": "Blizzard (5)"
+      },
+      {
+       "Task": "Kill 10 monsters from the OGROID class while using OGROID OIL.",
+       "Reward": "Snowball (5)"
+      },
+      {
+       "Task": "Kill 3 ICE GIANTS or ICE TROLLS while using SNOWBALLS.",
+       "Reward": "Hot chocolate"
+      },
+      {
+       "Task": "Kill an ICE GIANT or an ICE TROLL in less than 30 s using only MELEE ATTACKS.",
+       "Reward": "Poppy cake (2)"
+      },
+      {
+       "Task": "Kill an ICE GIANT using BOMBS.",
+       "Reward": "Gingerbread (2)"
+      },
+      {
+       "Task": "Kill an ICE TROLL without dealing any KINETIC damage.",
+       "Reward": "Summoning scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Wererat warrior",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 WERERAT WARRIORS.",
+       "Reward": "Range scroll (2)"
+      },
+      {
+       "Task": "Gather 30 cursed remains by killing WERERAT WARRRIORS.",
+       "Reward": "Swift (3)"
+      },
+      {
+       "Task": "Kill 30 WERERAT WARRIORS in 30 min.",
+       "Reward": "Moon Dust"
+      },
+      {
+       "Task": "Kill 10 WERERAT WARRIORS using CURSED OIL.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "kill WERERAT WARRIOR in less than 10 s whiteout dealing KINETIC damage.",
+       "Reward": "Basic bomb"
+      },
+      {
+       "Task": "Kill a WERERAT WARRIOR by performing at least 3 PERFECT PARRIES.",
+       "Reward": "Grapeshot"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Kikimore warrior",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 KIKIMORE WARRIORS.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill a KIKIMORE WARRIOR in less than 15 s.",
+       "Reward": "Basic bomb"
+      },
+      {
+       "Task": "Kill a KIKIMORE WARRIOR using only BOMBS.",
+       "Reward": "Relict oil"
+      },
+      {
+       "Task": "Kill 3 KIKIMORE WARRIORS without dealing any KINETIC or FIRE damage.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Range scroll (2)"
+      },
+      {
+       "Task": "Craft 10 INSECTOID OILS.",
+       "Reward": "Basic bomb (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Vizimian archespore",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 VIZIMIAN ARCHESPORES.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill monsters from the CURSED class without dealing any SILVER or FIRE damage.",
+       "Reward": "Cursed oil (3)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Swallow (4)"
+      },
+      {
+       "Task": "Craft 10 CURSED OILS.",
+       "Reward": "Moon Dust"
+      },
+      {
+       "Task": "Kill 3 VIZIMIAN ARCHESPORES after using a POTION, an OIL, a BOMB, and a SIGN.",
+       "Reward": "Lesser summoning scroll"
+      },
+      {
+       "Task": "Kill a VIZIMIAN ARCHESPORE in less than 20 s without dealing any FIRE damage.",
+       "Reward": "Wolverine (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Arachase",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 50 ARACHASAE.",
+       "Reward": "Ingredients scroll (2)"
+      },
+      {
+       "Task": "Kill 10 ARACHASAE while using INSECTOID OIL.",
+       "Reward": "Tawny owl (5)"
+      },
+      {
+       "Task": "Kill 2 COMMON ARACHASAE using only SIGNS.",
+       "Reward": "Dancing Star"
+      },
+      {
+       "Task": "Kill a HERMIT ARACHASAE using only BOMBS.",
+       "Reward": "Blizzard (3)"
+      },
+      {
+       "Task": "Kill 2 ROYAL ARACHASAE without performing any MELEE ATTACKS.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Kill 2 VENOMOUS ARACHASAE without dealing any FIRE damage.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Experience scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Calidus",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 CALIDI.",
+       "Reward": "Range scroll (2)"
+      },
+      {
+       "Task": "Kill 10 monsters from the SPECTER class while using SPECTER OIL.",
+       "Reward": "Swift (3)"
+      },
+      {
+       "Task": "Kill a CALIDUS after performing at least 5 PERFECT PARRIES.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Kill 3 CALIDI without using any BOMBS or SIGNS.",
+       "Reward": "Grapeshot"
+      },
+      {
+       "Task": "Kill a CALIDUS without performing any MELEE ATTACKS.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Specter oil (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Season of love - Succubi",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill any 50 SUCCUBI.",
+       "Reward": "Experience scroll (2)"
+      },
+      {
+       "Task": "Kill 15 NIGHT SUCCUBI.",
+       "Reward": "Perfume (2)"
+      },
+      {
+       "Task": "Kill any 5 SUCCUBI in 30 min.",
+       "Reward": "Chocolates (3)"
+      },
+      {
+       "Task": "Kill any SUCCUBI in less than 15 s without dealing any KINETIC damage.",
+       "Reward": "Love note (2)"
+      },
+      {
+       "Task": "Defeat 3 NIGHT SUCCUBI after performing at least 4 PERFECT CRITICALS.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill a NIGHT SUCCUBUS using only SIGNS.",
+       "Reward": "Grapeshot"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Tawny owl (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "D'ao",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 5 D'AO.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill 20 monsters from the ELEMENTAL class.",
+       "Reward": "Dimeritium bomb (2)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill 10 monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Swift (2)"
+      },
+      {
+       "Task": "Kill a D'AO without using any BOMBS.",
+       "Reward": "Swallow (2)"
+      },
+      {
+       "Task": "Kill a D'AO without performing any MELEE ATTACKS.",
+       "Reward": "Blizzard (2)"
+      },
+      {
+       "Task": "Kill a D'AO after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICALS.",
+       "Reward": "Dimeritium bomb"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Wyvern",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill any 50 WYVENRS.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill 5 COPPER WYVERNS.",
+       "Reward": "Wolverine (5)"
+      },
+      {
+       "Task": "Kill 10 WYVERNS while using DRACONID OIL.",
+       "Reward": "Swift (3)"
+      },
+      {
+       "Task": "Kill a ROYAL WYVERN in less than 30 s without dealing FIRE damage.",
+       "Reward": "Basic bomb (2)"
+      },
+      {
+       "Task": "Kill a ROYLAL WYVERN while using only SIGNS.",
+       "Reward": "Draconid oil (2)"
+      },
+      {
+       "Task": "Kill a ROYLAL WYVERN while using only MELEE ATTACKS.",
+       "Reward": "Petri's Philter (3)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Summoning scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Wererat gatherer",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 WERERAT GATHERERS.",
+       "Reward": "Range scroll (2)"
+      },
+      {
+       "Task": "Gather 50 CURSED REMAINS by killing WERERATS.",
+       "Reward": "Swift (3)"
+      },
+      {
+       "Task": "Kill 3 WERERAT GATHERERS in 30 min.",
+       "Reward": "Moon Dust"
+      },
+      {
+       "Task": "Kill 10 WERERAT GATHERERS while using CURSED OIL.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill a WERERAT GATHERER in less than 30 s without dealing any KINETIC damage.",
+       "Reward": "Basic bomb"
+      },
+      {
+       "Task": "Kill a WERERAT GATHERER after performing at least 5 PERFECT PARRIES.",
+       "Reward": "Grapeshot"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Relicts",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill an ANCIENT LESHEN.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill a TORMENTED.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill a TARRY CHORT.",
+       "Reward": "Range scroll (2)"
+      },
+      {
+       "Task": "Kill a DUNG SHAELMAAR.",
+       "Reward": "Ingredients scroll"
+      },
+      {
+       "Task": "Kill any LEGENDARY monster from the RELICT class without dealing any FIRE or KINETIC damage.",
+       "Reward": "Grapeshot (2)"
+      },
+      {
+       "Task": "Kill any LEGENDARY monster from the RELICT class without dealing any MELEE ATTACKS.",
+       "Reward": "Swallow (5)"
+      },
+      {
+       "Task": "Kill 3 LEGENDARY monsters from the RELICT class after performing at least SPERFECT PARRIES.",
+       "Reward": "Moon Dust (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Dark knight",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 DARK KNIGHTS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill 10 monsters from the SPECTER class while using SPECTER OIL.",
+       "Reward": "Swift (3)"
+      },
+      {
+       "Task": "Kill 5 DARK KNIGHTS after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Kill a DARK KNIGHT in less than 15 s without using any BOMBS or SIGNS.",
+       "Reward": "Grapeshot"
+      },
+      {
+       "Task": "Kill a DARK KNIGHT without performing any MELEE ATTACKS.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Specter oil"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "D'jinn",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 5 D'JINN.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill 20 monsters from the ELEMENTAL class.",
+       "Reward": "Dimeritium bomb (2)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill 10 monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Swift (2)"
+      },
+      {
+       "Task": "Kill a D'JINN without using BOMBS.",
+       "Reward": "Swallow (2)"
+      },
+      {
+       "Task": "Kill a D'JINN without performing any MELEE ATTACKS.",
+       "Reward": "Blizzard (2)"
+      },
+      {
+       "Task": "Kill a D'JINN after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Dimeritium bomb"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Headless Nobleman",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 HEADLESS NOBLEMEN.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill 5 monsters from the SPECTER class without dealing any SILVER damage.",
+       "Reward": "Cat (3)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Lesser summoning scroll (2)"
+      },
+      {
+       "Task": "Craft 10 SPECTER OILS.",
+       "Reward": "Moon Dust"
+      },
+      {
+       "Task": "Kill 3 HEADLESS NOBLEMEN after using a POTION, an OIL, a BOMB, and a SIGN.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Kill a HEADLESS NOBLEMAN without using any BOMBS or SIGNS.",
+       "Reward": "Swallow (3)"
+      },
+      {
+       "Task": "Kill 3 HEADLESS NOBLEMEN after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Specter oil (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Hags",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 50 monsters from the NECROPHAGE class.",
+       "Reward": "Experience scroll"
+      },
+      {
+       "Task": "Kill 30 GRAVE HAGS.",
+       "Reward": "Basic bomb (2)"
+      },
+      {
+       "Task": "Kill 15 BURIERS.",
+       "Reward": "Necrophage oil (2)"
+      },
+      {
+       "Task": "Kill 3 GRAVE HAGS.",
+       "Reward": "Summoning scroll"
+      },
+      {
+       "Task": "Kill 5 GRAVE HAGS in 30 min.",
+       "Reward": "Moon Dust"
+      },
+      {
+       "Task": "Kill a BURIER in less than 30 s without dealing any KINETIC damage.",
+       "Reward": "Wolverine (3)"
+      },
+      {
+       "Task": "Kill a GRAVE HAG without using any SIGNS.",
+       "Reward": "Lesser summoning scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Ekhidna",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 5 EKHIDNAS.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Kill 20 monsters from the HYBRID class.",
+       "Reward": "Hybrid bait (2)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Hybrid oil (2)"
+      },
+      {
+       "Task": "Kill 10 monsters from the HYBRID class while using HYBRID OIL.",
+       "Reward": "Wolverine (2)"
+      },
+      {
+       "Task": "Kill an EKHIDNA without using SIGNS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill an EKHIDNA after performing at least 3 PERFECT PARRIES and at least 3 PERFECT CRITICAL HITS.",
+       "Reward": "Basic bomb (4)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Fungoids",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 RUSSET FUNGOIDS.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Craft 5 HYBRID OILS.",
+       "Reward": "Hybrid bait (2)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Hybrid oil (2)"
+      },
+      {
+       "Task": "Kill a RUSSET FUNGOID without performing MELEE ATTACKS.",
+       "Reward": "Squall (2)"
+      },
+      {
+       "Task": "Kill a RUSSET FUNGOID without dealing any KINETIC or FIRE damage.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill a RUSSET FUNGOID after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICAL HITS.",
+       "Reward": "Dancing Star (4)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Chorts",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill any 50 CHORTS.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Kill a TARRY CHORT without using BOMBS.",
+       "Reward": "Ogroid oil (2)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Tawny owl (2)"
+      },
+      {
+       "Task": "Kill a CHORT without using SIGNS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill a TARRY CHORT after performing at least 3 PERFECT PARRIES and at least 3 PERFECT CRITICAL .HITS",
+       "Reward": "Basic bomb (4)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Runic gargoyle",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 RUNIC GARGOYLES.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Gather 50 BUNDLES OF HERBS.",
+       "Reward": "Elementa bait (2)"
+      },
+      {
+       "Task": "Kill 10 monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Tawny owl (2)"
+      },
+      {
+       "Task": "Kill 3 RUNIC GARGOYLES without using any BOMBS or SIGNS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill a RUNIC GARGOYLE after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Grapeshot (4)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Cursed legendaries",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 3 WHITE STRIGAS.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Cursed one bait (2)"
+      },
+      {
+       "Task": "Kill 3 THUNDSTERS.",
+       "Reward": "Elemental oil (2)"
+      },
+      {
+       "Task": "Kill 3 LEGENDARY monsters from the CURSED class without dealing any FIRE damage.",
+       "Reward": "Petri's Philter (2)"
+      },
+      {
+       "Task": "Kill 2 LEGENDARY monsters from the CURSED class without using SIGNS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill 2 LEGENDARY monsters from the CURSED class after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICAL HITS.",
+       "Reward": "Basic bomb (4)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Brukolak",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 20 ADUMBRAL BRUKOLAKS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 30 monsters from the VAMPIRE class.",
+       "Reward": "Insectoid oil"
+      },
+      {
+       "Task": "Kill 30 monsters from the INSECTOID class.",
+       "Reward": "Dancing Star (3)"
+      },
+      {
+       "Task": "Gather 25 INSECTOID REMAINS.",
+       "Reward": "Vampire oil"
+      },
+      {
+       "Task": "Craft 5 VAMPIRE OILS.",
+       "Reward": "Swift (2)"
+      },
+      {
+       "Task": "Kill 5 VAMPIRES without performing any MELEE ATTACKS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill 3 ADUMBRAL BRUKOLAKS without using SIGNS.",
+       "Reward": "Moon Dust (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Weremole",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 COMMON WEREMOLES.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Hybrid oil"
+      },
+      {
+       "Task": "Kill 35 monsters from the CURSED ONES class while using CURSED OIL.",
+       "Reward": "Blizzard"
+      },
+      {
+       "Task": "Kill 5 COMMON WEREMOLES without using SIGNS.",
+       "Reward": "Basic bomb (3)"
+      },
+      {
+       "Task": "Kill 3 COMMON WEREMOLES without using any BOMBS or SIGNS.",
+       "Reward": "Cat"
+      },
+      {
+       "Task": "Kill 3 COMMON WEREMOLES after performing at least 2 PERFECT PARRIES and 2 PERFECT CRITICAL HITS in each of these fights.",
+       "Reward": "Moon Dust (3)"
+      },
+      {
+       "Task": "It's the full moon. Kill 10 WEREWOLVES.",
+       "Reward": "Range scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Nekker Bonecrusher",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 NEKKER BONECRUSHERS.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Gather 30 OGROID REMAINS by killing NEKKERS.",
+       "Reward": "Tawny owl (7)"
+      },
+      {
+       "Task": "Kill any 2 NEKKERS without using SIGNS.",
+       "Reward": "Dancing Star (3)"
+      },
+      {
+       "Task": "Kill 3 NEKKER BONECRUSHERS without using any BOMBS or SIGNS.",
+       "Reward": "Blizzard (5)"
+      },
+      {
+       "Task": "Kill a NEKKER BONECRUSHER after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Range scroll (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Harpies",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill any 25 HARPIES.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 35 monsters from the HYBRID class.",
+       "Reward": "Swift (2)"
+      },
+      {
+       "Task": "Gather 30 HYBRID REMAINS.",
+       "Reward": "Hybrid oil"
+      },
+      {
+       "Task": "Kill 2 ERYNIAS while using HYBRID OIL.",
+       "Reward": "Grapeshot (3)"
+      },
+      {
+       "Task": "Kill 10 monsters from the HYBRID class without using BOMBS.",
+       "Reward": "Swallow (2)"
+      },
+      {
+       "Task": "Kill 5 GREEN HARPIES without using SIGNS.",
+       "Reward": "Ingredients scroll"
+      },
+      {
+       "Task": "Kill 2 ERYNIAS without performing any MELEE ATTACKS.",
+       "Reward": "Thunderbolt"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "1st Anniversary event",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 RARE monsters from the CURSED ONES class without dealing any SILVER or FIRE damage.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 25 monsters from the DRACONID class without using SIGNS.",
+       "Reward": "Dancing Star (5)"
+      },
+      {
+       "Task": "Kill 5 LEGENDARY monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Moon Dust (5)"
+      },
+      {
+       "Task": "Kill any 25 RARE monsters from the INSECTOID class without dealing any KINETIC or FIRE damage.",
+       "Reward": "Range scroll (2)"
+      },
+      {
+       "Task": "Kill any 50 COMMON monsters from the INSECTOID class without using SIGNS.",
+       "Reward": "Elemental oil (2)"
+      },
+      {
+       "Task": "Kill 5 RARE monsters from the SPECTER class after using a POTION, an OIL, a BOMB and a SIGN.",
+       "Reward": "Petri's Philter (3)"
+      },
+      {
+       "Task": "Kill 15 monsters from the NECROPHAGE class without performing any MELEE ATTACKS.",
+       "Reward": "Thunderbolt (3)"
+      },
+      {
+       "Task": "Kill 8 monsters from the OGROID class in 30 min.",
+       "Reward": "Specter oil (2)"
+      },
+      {
+       "Task": "Gather 35 RELICT REMAINS.",
+       "Reward": "Blizzard (3)"
+      },
+      {
+       "Task": "Kill 3 LEGENDARY VAMPIRES after performing at least 2 PERFECT PARRIES and 1 PERFECT CRITICAL HIT in each of these fights.",
+       "Reward": "Ingredients scroll (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Fungoids",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 50 COMMON FUNGOIDS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 15 RARE monsters from the OGROID class.",
+       "Reward": "Ingredients scroll (2)"
+      },
+      {
+       "Task": "Gather 30 OGROID REMAINS.",
+       "Reward": "Hybrid oil"
+      },
+      {
+       "Task": "Craft 5 HYBRID OILS.",
+       "Reward": "|Dancing Star (3)"
+      },
+      {
+       "Task": "Kill 5 RUSSET FUNGOIDS while using HYBRID OIL.",
+       "Reward": "Swift"
+      },
+      {
+       "Task": "Kill 5 FUNGOIDS without dealing any STEEL or FIRE damage.",
+       "Reward": "Ogroid oil"
+      },
+      {
+       "Task": "Kill 3 RUSSET FUNGOIDS without using SIGNS.",
+       "Reward": "Moon Dust (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Liliaceous Archespore",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 15 LILIACEOUS ARCHESPORES.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 5 monsters from the CURSED class without dealing any SILVER or FIRE damage.",
+       "Reward": "Thunderbolt"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Hybrid oil (2)"
+      },
+      {
+       "Task": "Craft 5 CURSED OILS.",
+       "Reward": "Swallow (2)"
+      },
+      {
+       "Task": "Kill 3 LILIACEOUS ARCHESPORES after using a POTION, an OIL, a BOMB, and a SIGN.",
+       "Reward": "Basic bomb (3)"
+      },
+      {
+       "Task": "Kill a LILIACEOUS ARCHESPORE in less than 20 s without dealing any FIRE damage.",
+       "Reward": "Swift (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "First Lammas Task - Bloody Fields",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 5 BLOODY FIELDS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 10 monsters from the SPECTER class while using SPECTER OIL.",
+       "Reward": "Thunderbolt (3)"
+      },
+      {
+       "Task": "Kill 3 BLOODY FIELDS without performing any MELEE ATTACKS.",
+       "Reward": "Blizzard (3)"
+      },
+      {
+       "Task": "Kill 3 BLOODY FIELDS after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICAL HITS in each of these fights.",
+       "Reward": "Hybrid oil (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Second Lammas Task - Sylvans",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill a HARROWER - a monster that appears during Lammas.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill a MULCHER - a monster that appears during Lammas.",
+       "Reward": "Relict oil (3)"
+      },
+      {
+       "Task": "Kill 3 regular SYLVANS without using any bombs.",
+       "Reward": "Grapeshot (4)"
+      },
+      {
+       "Task": "Kill 3 monsters from the relict class after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Petri's Philter (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Third Lammas Task - Scareman",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 50 SCAREMAN.",
+       "Reward": "?"
+      },
+      {
+       "Task": "Gather 35 POWDERED MONSTER TISSUE from ELEMENTAL class monsters.",
+       "Reward": "Elemental oil (3)"
+      },
+      {
+       "Task": "Kill 10 SCAREMEN without using any SIGNS.",
+       "Reward": "?"
+      },
+      {
+       "Task": "?",
+       "Reward": "?"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Forth Lammas Task - Swarm Mother",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 2 SWARM MOTHERS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 35 monsters from the VAMPIRE class without using SIGNS.",
+       "Reward": "Hybrid oil (3)"
+      },
+      {
+       "Task": "Kill a SWARM MOTHER while using a POTION, an OIL, a BOMB, and a SIGN.",
+       "Reward": "Blizzard (2)"
+      },
+      {
+       "Task": "Kill a SWARM MOTHER after performing at least 5 PERFECT PARRIES.",
+       "Reward": "Dancing Star (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Forktails",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill any 25 FORKTAILS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Gather 50 BUNDLES OF HERBS.",
+       "Reward": "Draconid oil"
+      },
+      {
+       "Task": "Kill any 15 FORKTAILS while using DRACONID OIL.",
+       "Reward": "Dancing Star (3)"
+      },
+      {
+       "Task": "Kill 5 BLUE FORKTAILS in less than 20 s without dealing any KINETIC damage.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill any 5 FORKTAILS without using SIGNS.",
+       "Reward": "Thunderbolt"
+      },
+      {
+       "Task": "Kill 4 BLUE FORKTAILS while using only MELEE ATTACKS.",
+       "Reward": "Ingredients scroll (2)"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Swallow (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Greater Gernichora",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 2 GREATER GERNICHORAS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 50 monsters from the RELICT class.",
+       "Reward": "Relict oil"
+      },
+      {
+       "Task": "Kill 25 monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Squall (2)"
+      },
+      {
+       "Task": "Craft 5 RELICT OILS.",
+       "Reward": "Elemental oil"
+      },
+      {
+       "Task": "Kill 3 GREATER GERNICHORAS after using a POTION, an OIL, a BOMB, and a SIGN.",
+       "Reward": "Moon Dust (3)"
+      },
+      {
+       "Task": "Kill 2 LEGENDARY monsters from the RELICT class without performing any MELEE ATTACKS.",
+       "Reward": "Grapeshot (7)"
+      },
+      {
+       "Task": "Kill a GREATER GERNICHORA after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Range scroll"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Specters",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 monsters from the SPECTER class.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Gather 50 BUNDLES OF HERBS.",
+       "Reward": "Specter oil"
+      },
+      {
+       "Task": "Kill 15 RARE monsters from the SPECTER class while using SPECTER OIL.",
+       "Reward": "Thunderbolt"
+      },
+      {
+       "Task": "Kill 25 COMMON monsters from the SPECTER class without using any SIGNS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Gather 50 units of POWDERED MONSTER TISSUE.",
+       "Reward": "Swift (2)"
+      },
+      {
+       "Task": "Kill 5 VOICELESS without using any MELEE attacks.",
+       "Reward": "Blizzard (2)"
+      },
+      {
+       "Task": "Kill 3 PENITENTS after performing at least 2 PERFECT PARRIES and 2 PERFECT CRITICAL HITS during one fight.",
+       "Reward": "Dancing Star (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Hiver",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 HIVERS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 25 monsters from the VAMPIRE class.",
+       "Reward": "Swallow (2)"
+      },
+      {
+       "Task": "Gather 30 VAMPIRE REMAINS.",
+       "Reward": "Hybrid oil"
+      },
+      {
+       "Task": "Craft 5 CURSED OILS.",
+       "Reward": "Vampire oil"
+      },
+      {
+       "Task": "Kill 5 HIVERS without using SIGNS.",
+       "Reward": "Ingredients scroll (2)"
+      },
+      {
+       "Task": "Kill 5 HIVERS without dealing any STEEL or FIRE damage.",
+       "Reward": "Swift (2)"
+      },
+      {
+       "Task": "Kill 5 HIVERS in 30 min.",
+       "Reward": "Moon Dust (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Liho",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 10 LIHOS.",
+       "Reward": "200"
+      },
+      {
+       "Task": "Kill 25 monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Thunderbolt (2)"
+      },
+      {
+       "Task": "Craft 5 RELICT OILS.",
+       "Reward": "Relict oil"
+      },
+      {
+       "Task": "Gather 50 BUNDLES OF HERBS.",
+       "Reward": "Elemental oil"
+      },
+      {
+       "Task": "Kill 3 LIHOS without using SIGNS.",
+       "Reward": "Ingredients scroll (2)"
+      },
+      {
+       "Task": "Kill a LIHO after performing at least 3 PERFECT PARRIES.",
+       "Reward": "Grapeshot (3)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Echinops",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 35 ECHINOPSAE.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 35 monsters from the HYBRID class.",
+       "Reward": "Swift (3)"
+      },
+      {
+       "Task": "Gather 30 HYBRID REMAINS.",
+       "Reward": "Thunderbolt (3)"
+      },
+      {
+       "Task": "Kill 25 monsters from the ELEMENTAL class while using ELEMENTAL OIL.",
+       "Reward": "Hybrid oil (2)"
+      },
+      {
+       "Task": "Kill 5 monsters from the ELEMENTAL class after using CHESTNUT.",
+       "Reward": "Elemental oil (2)"
+      },
+      {
+       "Task": "Kill 3 ECHINOPSAE without using SIGNS.",
+       "Reward": "Chestnut (4)"
+      },
+      {
+       "Task": "Kill 5 ECHINOPSAE without performing any MELEE ATTACKS.",
+       "Reward": "Ingredients scroll (2)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Endregas",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Task",
+      "Reward"
+     ],
+     "rows": [
+      {
+       "Task": "Kill 30 ENDREGAS.",
+       "Reward": "300"
+      },
+      {
+       "Task": "Kill 25 monsters from the SPECTER class while using SPECTER OIL.",
+       "Reward": "Thunderbolt (2)"
+      },
+      {
+       "Task": "Gather 50 BUNDLES OF HERBS.",
+       "Reward": "Specter oil"
+      },
+      {
+       "Task": "Craft 5 INSECTOID OILS.",
+       "Reward": "Grapeshot (3)"
+      },
+      {
+       "Task": "Kill 5 ENDREGA DRONES without using SIGNS.",
+       "Reward": "Range scroll"
+      },
+      {
+       "Task": "Kill an ENDREGA WARRIOR without dealing any STEEL or FIRE damage.",
+       "Reward": "Blizzard"
+      },
+      {
+       "Task": "Kill 3 ENDREGA CHARGERS after performing at least 3 PERFECT PARRIES and 1 PERFECT CRITICAL HIT in each of these fights.",
+       "Reward": "Ingredients scroll (2)"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "A '''timed task''' in {{TWMS}} is a set of [[The Witcher Monster Slayer contracts|contracts]], which the player must complete within a week in order to obtain the main prize. An inventory of timed tasks is listed below.\n\n==Wild wererat==\n\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (5), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 WILD WERERATS\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (3)\n|-\n|Gather 50 CURSED REMAINS by killing WILD WERERATS.\n|[[The Witcher Monster Slayer potions|Swift]] (5)\n|-\n|Kill 5 WILD WERERATS in 30 min.\n|[[The Witcher Monster Slayer bombs|Moon Dust]]\n|-\n|Gather 50 CURSED REMAINS by killing WILD WERERATS.\n|[[The Witcher Monster Slayer potions|Swift]] (5)\n|-\n|Kill a WILD WERERAT without performing MELEE ATTACKS.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill a WILD WERERAT in less than 30 s without dealing KINETIC damage.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|Kill a WILD WERERAT while performing at least 5 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|}\n \n==Ogroids==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (5), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 50 monsters from the OGROID class.\n |[[The Witcher Monster Slayer bombs|Moon Dust]] (3)\n|-\n|Gather 100 OGROID REMAINS.\n|[[The Witcher Monster Slayer oils|Relic oil]] (5) \n|-\n|Craft 10 OGROID OILS.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|-\n|Kill any 3 NEKKERS after performing at least 5 PERFECT PARRIES.\n|[[The Witcher Monster Slayer potions|Swallow]] (5)\n|-\n|Kill any CYCLOPS in less than 30 s.\n|[[The Witcher Monster Slayer potions|Petri's Philter]] (3)\n|-\n|Kill any TROLL using only BOMBS.\n|[[The Witcher Monster Slayer potions|Tawny owl]] (5)\n|-\n|Kill any monster from the OGROID class while using only SIGNS.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|}\n \n==Stinger==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (5), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 3 STINGERS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|-\n|Kill monsters from the CURSED class without dealing any STEEL or FIRE damage.\n|[[The Witcher Monster Slayer potions|Blizzard]] (5)\n|-\n|Gather 50 VAMPIRE REMAINS.\n|[[The Witcher Monster Slayer potions|Petri's Philter]] (5)\n|-\n|Craft 10 CURSED OILS.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Kill a STINGER while using a POTION an OIL, a BOMB and a SIGN.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill a STINGER without dealing any KINETIC or FIRE damage.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]] (2)\n|}\n \n==Leshen==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (5), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 3 LESHENS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|-\n|Kill 3 LESHEN HOUNDS.\n|[[The Witcher Monster Slayer oils|Elemental oil]] (5)\n|-\n|Gather 50 ELEMENTAL REMAINS.\n|[[The Witcher Monster Slayer potions|Swift]] (5)\n|-\n|Craft 10 RELICT OILS.\n|[[The Witcher Monster Slayer potions|Squall]] (3)\n|-\n|Kill a LESHEN without dealing any FIRE damage.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (2)\n|-\n|Kill a LESHEN HOUND less than 30 without dealing any KINETIC damage.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]] (2)\n|-\n|Kill a LESHEN without performing any MELEE ATTACK.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]] (1)\n|}\n \n==Midinváerne event==\n'''Main reward:''' [[The Witcher Monster Slayer swords|Incandescent Heart]], [[The Witcher Monster Slayer crafting|festive crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 5 ICE ELEMENTA.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]] (2)\n|-\n|Kill 50 monsters of the ELEMENTAL class.\n|[[The Witcher Monster Slayer potions|Wolverine]] (5)\n|-\n|Gather 50 HYBRID REMAINS.\n|[[The Witcher Monster Slayer oils|Elemental oil]] (7)\n|-\n|Kill 10 monsters of the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer gifts|Snowball]] (5)\n|-\n|Kill 20 monsters of the ELEMENTAL class while using SNOWBALLS.\n|[[The Witcher Monster Slayer gifts|Gingerbread]]\n|-\n|Kill an ICE ELEMENTAL in less than 30 s without using SIGNS.\n|[[The Witcher Monster Slayer gifts|Poppy cake]]\n|-\n|Kill an ICE ELEMENTAL without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer gifts|Hot chocolate]]\n|}\n \n==Ice ogroids==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (2), [[The Witcher Monster Slayer crafting|festive crafting station]] (3), [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 5 ICE GIANTS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (2)\n|-\n|Kill 5 ICE TROLLS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (5)\n|-\n|Kill 10 monsters from the OGROID class while using OGROID OIL.\n|[[The Witcher Monster Slayer gifts|Snowball]] (5)\n|-\n|Kill 3 ICE GIANTS or ICE TROLLS while using SNOWBALLS.\n|[[The Witcher Monster Slayer gifts|Hot chocolate]]\n|-\n|Kill an ICE GIANT or an ICE TROLL in less than 30 s using only MELEE ATTACKS.\n|[[The Witcher Monster Slayer gifts|Poppy cake]] (2)\n|-\n|Kill an ICE GIANT using BOMBS.\n|[[The Witcher Monster Slayer gifts|Gingerbread]] (2)\n|-\n|Kill an ICE TROLL without dealing any KINETIC damage.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|}\n \n==Wererat warrior==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 WERERAT WARRIORS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (2)\n|-\n|Gather 30 cursed remains by killing WERERAT WARRRIORS.\n|[[The Witcher Monster Slayer potions|Swift]] (3)\n|-\n|Kill 30 WERERAT WARRIORS in 30 min.\n|[[The Witcher Monster Slayer bombs|Moon Dust]]\n|-\n|Kill 10 WERERAT WARRIORS using CURSED OIL.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|kill WERERAT WARRIOR in less than 10 s whiteout dealing KINETIC damage.\n|[[The Witcher Monster Slayer bombs|Basic bomb]]\n|-\n|Kill a WERERAT WARRIOR by performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|}\n \n==Kikimore warrior==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 KIKIMORE WARRIORS.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill a KIKIMORE WARRIOR in less than 15 s.\n|[[The Witcher Monster Slayer bombs|Basic bomb]]\n|-\n|Kill a KIKIMORE WARRIOR using only BOMBS.\n|[[The Witcher Monster Slayer oils|Relict oil]]\n|-\n|Kill 3 KIKIMORE WARRIORS without dealing any KINETIC or FIRE damage.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (2)\n|-\n|Craft 10 INSECTOID OILS.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|}\n \n==Vizimian archespore==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 VIZIMIAN ARCHESPORES.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]] \n|-\n|Kill monsters from the CURSED class without dealing any SILVER or FIRE damage.\n|[[The Witcher Monster Slayer oils|Cursed oil]] (3)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer potions|Swallow]] (4)\n|-\n|Craft 10 CURSED OILS.\n|[[The Witcher Monster Slayer bombs|Moon Dust]]\n|-\n|Kill 3 VIZIMIAN ARCHESPORES after using a POTION, an OIL, a BOMB, and a SIGN.\n|[[The Witcher Monster Slayer scrolls|Lesser summoning scroll]]\n|-\n|Kill a VIZIMIAN ARCHESPORE in less than 20 s without dealing any FIRE damage.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|}\n \n==Arachase==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 50 ARACHASAE.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|-\n|Kill 10 ARACHASAE while using INSECTOID OIL.\n|[[The Witcher Monster Slayer potions|Tawny owl]] (5)\n|-\n|Kill 2 COMMON ARACHASAE using only SIGNS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]]\n|-\n|Kill a HERMIT ARACHASAE using only BOMBS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (3)\n|-\n|Kill 2 ROYAL ARACHASAE without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Kill 2 VENOMOUS ARACHASAE without dealing any FIRE damage.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|}\n \n==Calidus==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 CALIDI.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (2)\n|-\n|Kill 10 monsters from the SPECTER class while using SPECTER OIL.\n|[[The Witcher Monster Slayer potions|Swift]] (3)\n|-\n|Kill a CALIDUS after performing at least 5 PERFECT PARRIES.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Kill 3 CALIDI without using any BOMBS or SIGNS.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|-\n|Kill a CALIDUS without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer oils|Specter oil]] (3)\n|}\n \n==Season of love - Succubi==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill any 50 SUCCUBI.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]] (2)\n|-\n|Kill 15 NIGHT SUCCUBI.\n|[[The Witcher Monster Slayer gifts|Perfume]] (2)\n|-\n|Kill any 5 SUCCUBI in 30 min.\n|[[The Witcher Monster Slayer gifts|Chocolates]] (3)\n|-\n|Kill any SUCCUBI in less than 15 s without dealing any KINETIC damage.\n|[[The Witcher Monster Slayer gifts|Love note]] (2)\n|-\n|Defeat 3 NIGHT SUCCUBI after performing at least 4 PERFECT CRITICALS.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill a NIGHT SUCCUBUS using only SIGNS.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer potions|Tawny owl]] (3)\n|}\n \n==D'ao==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 5 D'AO.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill 20 monsters from the ELEMENTAL class.\n|[[The Witcher Monster Slayer bombs|Dimeritium bomb]] (2)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill 10 monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|-\n|Kill a D'AO without using any BOMBS.\n|[[The Witcher Monster Slayer potions|Swallow]] (2)\n|-\n|Kill a D'AO without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (2)\n|-\n|Kill a D'AO after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICALS.\n|[[The Witcher Monster Slayer bombs|Dimeritium bomb]]\n|}\n \n==Wyvern==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill any 50 WYVENRS.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill 5 COPPER WYVERNS.\n|[[The Witcher Monster Slayer potions|Wolverine]] (5)\n|-\n|Kill 10 WYVERNS while using DRACONID OIL.\n|[[The Witcher Monster Slayer potions|Swift]] (3)\n|-\n|Kill a ROYAL WYVERN in less than 30 s without dealing FIRE damage.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|Kill a ROYLAL WYVERN while using only SIGNS.\n|[[The Witcher Monster Slayer oils|Draconid oil]] (2)\n|-\n|Kill a ROYLAL WYVERN while using only MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Petri's Philter]] (3)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|}\n \n==Wererat gatherer==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 WERERAT GATHERERS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (2)\n|-\n|Gather 50 CURSED REMAINS by killing WERERATS.\n|[[The Witcher Monster Slayer potions|Swift]] (3)\n|-\n|Kill 3 WERERAT GATHERERS in 30 min.\n|[[The Witcher Monster Slayer bombs|Moon Dust]]\n|-\n|Kill 10 WERERAT GATHERERS while using CURSED OIL.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill a WERERAT GATHERER in less than 30 s without dealing any KINETIC damage.\n|[[The Witcher Monster Slayer bombs|Basic bomb]]\n|-\n|Kill a WERERAT GATHERER after performing at least 5 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|}\n \n==Relicts==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill an ANCIENT LESHEN.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill a TORMENTED.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill a TARRY CHORT.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (2)\n|-\n|Kill a DUNG SHAELMAAR.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]]\n|-\n|Kill any LEGENDARY monster from the RELICT class without dealing any FIRE or KINETIC damage.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (2)\n|-\n|Kill any LEGENDARY monster from the RELICT class without dealing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Swallow]] (5)\n|-\n|Kill 3 LEGENDARY monsters from the RELICT class after performing at least SPERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (2)\n|}\n \n==Dark knight==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 DARK KNIGHTS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill 10 monsters from the SPECTER class while using SPECTER OIL.\n|[[The Witcher Monster Slayer potions|Swift]] (3)\n|-\n|Kill 5 DARK KNIGHTS after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Kill a DARK KNIGHT in less than 15 s without using any BOMBS or SIGNS.\n|[[The Witcher Monster Slayer bombs|Grapeshot]]\n|-\n|Kill a DARK KNIGHT without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer oils|Specter oil]]\n|}\n \n==D'jinn==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 5 D'JINN.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill 20 monsters from the ELEMENTAL class.\n| [[The Witcher Monster Slayer bombs|Dimeritium bomb]] (2)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill 10 monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|-\n|Kill a D'JINN without using BOMBS.\n|[[The Witcher Monster Slayer potions|Swallow]] (2)\n|-\n|Kill a D'JINN without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (2)\n|-\n|Kill a D'JINN after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Dimeritium bomb]]\n|}\n \n==Headless Nobleman==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]500\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 HEADLESS NOBLEMEN.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill 5 monsters from the SPECTER class without dealing any SILVER damage.\n|[[The Witcher Monster Slayer potions|Cat]] (3)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer scrolls|Lesser summoning scroll]] (2)\n|-\n|Craft 10 SPECTER OILS.\n|[[The Witcher Monster Slayer bombs|Moon Dust]]\n|-\n|Kill 3 HEADLESS NOBLEMEN after using a POTION, an OIL, a BOMB, and a SIGN.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Kill a HEADLESS NOBLEMAN without using any BOMBS or SIGNS.\n|[[The Witcher Monster Slayer potions|Swallow]] (3)\n|-\n|Kill 3 HEADLESS NOBLEMEN after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer oils|Specter oil]] (2)\n|}\n \n==Hags==\n'''Main reward:''' [[The Witcher Monster Slayer baits|Bait]] (3), [[The Witcher Monster Slayer crafting|crafting station]], [[File:twms_currency_gold_coin.png|20px]]300\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 50 monsters from the NECROPHAGE class.\n|[[The Witcher Monster Slayer scrolls|Experience scroll]]\n|-\n|Kill 30 GRAVE HAGS.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (2)\n|-\n|Kill 15 BURIERS.\n|[[The Witcher Monster Slayer oils|Necrophage oil]] (2)\n|-\n|Kill 3 GRAVE HAGS.\n|[[The Witcher Monster Slayer scrolls|Summoning scroll]]\n|-\n|Kill 5 GRAVE HAGS in 30 min.\n|[[The Witcher Monster Slayer bombs|Moon Dust]]\n|-\n|Kill a BURIER in less than 30 s without dealing any KINETIC damage.\n|[[The Witcher Monster Slayer potions|Wolverine]] (3)\n|-\n|Kill a GRAVE HAG without using any SIGNS.\n|[[The Witcher Monster Slayer scrolls|Lesser summoning scroll]]\n|}\n \n==Ekhidna==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 5 EKHIDNAS.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Kill 20 monsters from the HYBRID class.\n|[[The Witcher Monster Slayer baits|Hybrid bait]] (2)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer oils|Hybrid oil]] (2)\n|-\n|Kill 10 monsters from the HYBRID class while using HYBRID OIL.\n|[[The Witcher Monster Slayer potions|Wolverine]] (2)\n|-\n|Kill an EKHIDNA without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill an EKHIDNA after performing at least 3 PERFECT PARRIES and at least 3 PERFECT CRITICAL HITS.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (4)\n|}\n \n==Fungoids==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 RUSSET FUNGOIDS.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Craft 5 HYBRID OILS.\n|[[The Witcher Monster Slayer baits|Hybrid bait]] (2)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer oils|Hybrid oil]] (2)\n|-\n|Kill a RUSSET FUNGOID without performing MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Squall]] (2)\n|-\n|Kill a RUSSET FUNGOID without dealing any KINETIC or FIRE damage.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill a RUSSET FUNGOID after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICAL HITS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (4)\n|}\n \n==Chorts==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill any 50 CHORTS.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Kill a TARRY CHORT without using BOMBS.\n|[[The Witcher Monster Slayer oils|Ogroid oil]] (2)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer potions|Tawny owl]] (2)\n|-\n|Kill a CHORT without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] \n|-\n|Kill a TARRY CHORT after performing at least 3 PERFECT PARRIES and at least 3 PERFECT CRITICAL .HITS\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (4)\n|}\n \n==Runic gargoyle==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 RUNIC GARGOYLES.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Gather 50 BUNDLES OF HERBS.\n|[[The Witcher Monster Slayer baits|Elementa bait]] (2)\n|-\n|Kill 10 monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer potions|Tawny owl]] (2)\n|-\n|Kill 3 RUNIC GARGOYLES without using any BOMBS or SIGNS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill a RUNIC GARGOYLE after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (4)\n|}\n \n==Cursed legendaries==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 3 WHITE STRIGAS.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer baits|Cursed one bait]] (2)\n|-\n|Kill 3 THUNDSTERS.\n|[[The Witcher Monster Slayer oils|Elemental oil]] (2)\n|-\n|Kill 3 LEGENDARY monsters from the CURSED class without dealing any FIRE damage.\n|[[The Witcher Monster Slayer potions|Petri's Philter]] (2)\n|-\n|Kill 2 LEGENDARY monsters from the CURSED class without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill 2 LEGENDARY monsters from the CURSED class after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICAL HITS.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (4)\n|}\n \n==Brukolak==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 20 ADUMBRAL BRUKOLAKS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 30 monsters from the VAMPIRE class.\n|[[The Witcher Monster Slayer oils|Insectoid oil]]\n|-\n|Kill 30 monsters from the INSECTOID class.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|-\n|Gather 25 INSECTOID REMAINS.\n|[[The Witcher Monster Slayer oils|Vampire oil]]\n|-\n|Craft 5 VAMPIRE OILS.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|-\n|Kill 5 VAMPIRES without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill 3 ADUMBRAL BRUKOLAKS without using SIGNS.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (3)\n|}\n \n==Weremole==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 COMMON WEREMOLES.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer oils|Hybrid oil]]\n|-\n|Kill 35 monsters from the CURSED ONES class while using CURSED OIL.\n|[[The Witcher Monster Slayer potions|Blizzard]]\n|-\n|Kill 5 COMMON WEREMOLES without using SIGNS.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (3)\n|-\n|Kill 3 COMMON WEREMOLES without using any BOMBS or SIGNS.\n|[[The Witcher Monster Slayer potions|Cat]]\n|-\n|Kill 3 COMMON WEREMOLES after performing at least 2 PERFECT PARRIES and 2 PERFECT CRITICAL HITS in each of these fights.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (3)\n|-\n|It's the full moon. Kill 10 WEREWOLVES.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|}\n \n==Nekker Bonecrusher==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (2), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 NEKKER BONECRUSHERS.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Gather 30 OGROID REMAINS by killing NEKKERS.\n|[[The Witcher Monster Slayer potions|Tawny owl]] (7)\n|-\n|Kill any 2 NEKKERS without using SIGNS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|-\n|Kill 3 NEKKER BONECRUSHERS without using any BOMBS or SIGNS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (5)\n|-\n|Kill a NEKKER BONECRUSHER after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (3)\n|}\n \n==Harpies==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Grapeshot]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]] (1), [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill any 25 HARPIES.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 35 monsters from the HYBRID class.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|-\n|Gather 30 HYBRID REMAINS.\n|[[The Witcher Monster Slayer oils|Hybrid oil]]\n|-\n|Kill 2 ERYNIAS while using HYBRID OIL.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (3)\n|-\n|Kill 10 monsters from the HYBRID class without using BOMBS.\n|[[The Witcher Monster Slayer potions|Swallow]] (2)\n|-\n|Kill 5 GREEN HARPIES without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]]\n|-\n|Kill 2 ERYNIAS without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Thunderbolt]]\n|}\n \n==1st Anniversary event==\n'''Main reward:''' [[The Witcher Monster Slayer scrolls|Experience scroll]] (1), ''[[The Witcher Monster Slayer armor|Armor of the Nameless]]'', [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 RARE monsters from the CURSED ONES class without dealing any SILVER or FIRE damage.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 25 monsters from the DRACONID class without using SIGNS.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (5)\n|-\n|Kill 5 LEGENDARY monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (5)\n|-\n|Kill any 25 RARE monsters from the INSECTOID class without dealing any KINETIC or FIRE damage.\n|[[The Witcher Monster Slayer scrolls|Range scroll]] (2)\n|-\n|Kill any 50 COMMON monsters from the INSECTOID class without using SIGNS.\n|[[The Witcher Monster Slayer oils|Elemental oil]] (2)\n|-\n|Kill 5 RARE monsters from the SPECTER class after using a POTION, an OIL, a BOMB and a SIGN.\n|[[The Witcher Monster Slayer potions|Petri's Philter]] (3)\n|-\n|Kill 15 monsters from the NECROPHAGE class without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Thunderbolt]] (3)\n|-\n|Kill 8 monsters from the OGROID class in 30 min.\n|[[The Witcher Monster Slayer oils|Specter oil]] (2)\n|-\n|Gather 35 RELICT REMAINS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (3)\n|-\n|Kill 3 LEGENDARY VAMPIRES after performing at least 2 PERFECT PARRIES and 1 PERFECT CRITICAL HIT in each of these fights.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|}\n \n==Fungoids==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (8), [[The Witcher Monster Slayer scrolls|Experience scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 50 COMMON FUNGOIDS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 15 RARE monsters from the OGROID class.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|-\n|Gather 30 OGROID REMAINS.\n|[[The Witcher Monster Slayer oils|Hybrid oil]]\n|-\n|Craft 5 HYBRID OILS.\n||[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|-\n|Kill 5 RUSSET FUNGOIDS while using HYBRID OIL.\n|[[The Witcher Monster Slayer potions|Swift]]\n|-\n|Kill 5 FUNGOIDS without dealing any STEEL or FIRE damage.\n|[[The Witcher Monster Slayer oils|Ogroid oil]]\n|-\n|Kill 3 RUSSET FUNGOIDS without using SIGNS.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (3)\n|}\n \n==Liliaceous Archespore==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Grapeshot]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]50\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 15 LILIACEOUS ARCHESPORES.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 5 monsters from the CURSED class without dealing any SILVER or FIRE damage.\n|[[The Witcher Monster Slayer potions|Thunderbolt]]\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer oils|Hybrid oil]] (2)\n|-\n|Craft 5 CURSED OILS.\n|[[The Witcher Monster Slayer potions|Swallow]] (2)\n|-\n|Kill 3 LILIACEOUS ARCHESPORES after using a POTION, an OIL, a BOMB, and a SIGN.\n|[[The Witcher Monster Slayer bombs|Basic bomb]] (3)\n|-\n|Kill a LILIACEOUS ARCHESPORE in less than 20 s without dealing any FIRE damage.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|}\n \n==First Lammas Task - Bloody Fields==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]], [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 5 BLOODY FIELDS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 10 monsters from the SPECTER class while using SPECTER OIL.\n|[[The Witcher Monster Slayer potions|Thunderbolt]] (3)\n|-\n|Kill 3 BLOODY FIELDS without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer potions|Blizzard]] (3)\n|-\n|Kill 3 BLOODY FIELDS after performing at least 3 PERFECT PARRIES and 3 PERFECT CRITICAL HITS in each of these fights.\n|[[The Witcher Monster Slayer oils|Hybrid oil]] (2)\n|}\n \n==Second Lammas Task - Sylvans==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]] (1), [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill a HARROWER - a monster that appears during Lammas.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill a MULCHER - a monster that appears during Lammas.\n|[[The Witcher Monster Slayer oils|Relict oil]] (3)\n|-\n|Kill 3 regular SYLVANS without using any bombs.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (4)\n|-\n|Kill 3 monsters from the relict class after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer potions|Petri's Philter]] (2)\n|}\n \n==Third Lammas Task - Scareman==\n'''Main reward:''' [[The Witcher Monster Slayer scrolls|Experience scroll]], ''[[The Witcher Monster Slayer swords|Khopesh]]'', [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 50 SCAREMAN.\n|?\n|-\n|Gather 35 POWDERED MONSTER TISSUE from ELEMENTAL class monsters.\n|[[The Witcher Monster Slayer oils|Elemental oil]] (3)\n|-\n|Kill 10 SCAREMEN without using any SIGNS.\n|?\n|-\n|?\n|?\n|}\n \n==Forth Lammas Task - Swarm Mother==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (6), [[The Witcher Monster Slayer scrolls|Experience scroll]], [[File:twms_currency_crystal.png|20px]]85\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 2 SWARM MOTHERS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 35 monsters from the VAMPIRE class without using SIGNS.\n|[[The Witcher Monster Slayer oils|Hybrid oil]] (3)\n|-\n|Kill a SWARM MOTHER while using a POTION, an OIL, a BOMB, and a SIGN.\n|[[The Witcher Monster Slayer potions|Blizzard]] (2)\n|-\n|Kill a SWARM MOTHER after performing at least 5 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (5)\n|}\n \n==Forktails==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], 110 crystal\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill any 25 FORKTAILS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Gather 50 BUNDLES OF HERBS.\n|[[The Witcher Monster Slayer oils|Draconid oil]]\n|-\n|Kill any 15 FORKTAILS while using DRACONID OIL.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|-\n|Kill 5 BLUE FORKTAILS in less than 20 s without dealing any KINETIC damage.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill any 5 FORKTAILS without using SIGNS.\n|[[The Witcher Monster Slayer potions|Thunderbolt]]\n|-\n|Kill 4 BLUE FORKTAILS while using only MELEE ATTACKS.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer potions|Swallow]] (3)\n|}\n \n==Greater Gernichora==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moondust]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 2 GREATER GERNICHORAS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 50 monsters from the RELICT class.\n|[[The Witcher Monster Slayer oils|Relict oil]]\n|-\n|Kill 25 monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer potions|Squall]] (2)\n|-\n|Craft 5 RELICT OILS.\n|[[The Witcher Monster Slayer oils|Elemental oil]]\n|-\n|Kill 3 GREATER GERNICHORAS after using a POTION, an OIL, a BOMB, and a SIGN.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (3)\n|-\n|Kill 2 LEGENDARY monsters from the RELICT class without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (7)\n|-\n|Kill a GREATER GERNICHORA after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|}\n \n==Specters==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Grapeshot]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 monsters from the SPECTER class.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Gather 50 BUNDLES OF HERBS.\n|[[The Witcher Monster Slayer oils|Specter oil]] \n|-\n|Kill 15 RARE monsters from the SPECTER class while using SPECTER OIL.\n|[[The Witcher Monster Slayer potions|Thunderbolt]]\n|-\n|Kill 25 COMMON monsters from the SPECTER class without using any SIGNS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Gather 50 units of POWDERED MONSTER TISSUE.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|-\n|Kill 5 VOICELESS without using any MELEE attacks.\n|[[The Witcher Monster Slayer potions|Blizzard]] (2)\n|-\n|Kill 3 PENITENTS after performing at least 2 PERFECT PARRIES and 2 PERFECT CRITICAL HITS during one fight.\n|[[The Witcher Monster Slayer bombs|Dancing Star]] (3)\n|}\n \n==Hiver==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Dancing Star]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 HIVERS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 25 monsters from the VAMPIRE class.\n|[[The Witcher Monster Slayer potions|Swallow]] (2)\n|-\n|Gather 30 VAMPIRE REMAINS.\n|[[The Witcher Monster Slayer oils|Hybrid oil]]\n|-\n|Craft 5 CURSED OILS.\n|[[The Witcher Monster Slayer oils|Vampire oil]]\n|-\n|Kill 5 HIVERS without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|-\n|Kill 5 HIVERS without dealing any STEEL or FIRE damage.\n|[[The Witcher Monster Slayer potions|Swift]] (2)\n|-\n|Kill 5 HIVERS in 30 min.\n|[[The Witcher Monster Slayer bombs|Moon Dust]] (3)\n|}\n \n==Liho==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 10 LIHOS.\n|[[File:twms_currency_gold_coin.png|20px]]200\n|-\n|Kill 25 monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer potions|Thunderbolt]] (2)\n|-\n|Craft 5 RELICT OILS.\n|[[The Witcher Monster Slayer oils|Relict oil]]\n|-\n|Gather 50 BUNDLES OF HERBS.\n|[[The Witcher Monster Slayer oils|Elemental oil]]\n|-\n|Kill 3 LIHOS without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|-\n|Kill a LIHO after performing at least 3 PERFECT PARRIES.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (3)\n|}\n \n==Echinops==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Grapeshot]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 35 ECHINOPSAE.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 35 monsters from the HYBRID class.\n|[[The Witcher Monster Slayer potions|Swift]] (3)\n|-\n|Gather 30 HYBRID REMAINS.\n|[[The Witcher Monster Slayer potions|Thunderbolt]] (3)\n|-\n|Kill 25 monsters from the ELEMENTAL class while using ELEMENTAL OIL.\n|[[The Witcher Monster Slayer oils|Hybrid oil]] (2)\n|-\n|Kill 5 monsters from the ELEMENTAL class after using CHESTNUT.\n|[[The Witcher Monster Slayer oils|Elemental oil]] (2)\n|-\n|Kill 3 ECHINOPSAE without using SIGNS.\n|[[The Witcher Monster Slayer gifts|Chestnut]] (4)\n|-\n|Kill 5 ECHINOPSAE without performing any MELEE ATTACKS.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|}\n \n==Endregas==\n'''Main reward:''' [[The Witcher Monster Slayer bombs|Moon Dust]] (8), [[The Witcher Monster Slayer scrolls|Range scroll]], [[File:twms_currency_crystal.png|20px]]110\n{|class=\"fandom-table sortable\" width=\"100%\"\n|-\n! width=\"70%\" class=\"unsortable\" |'''Task'''\n! width=\"30%\" class=\"unsortable\" |'''Reward'''\n|-\n|Kill 30 ENDREGAS.\n|[[File:twms_currency_gold_coin.png|20px]]300\n|-\n|Kill 25 monsters from the SPECTER class while using SPECTER OIL.\n|[[The Witcher Monster Slayer potions|Thunderbolt]] (2)\n|-\n|Gather 50 BUNDLES OF HERBS.\n|[[The Witcher Monster Slayer oils|Specter oil]]\n|-\n|Craft 5 INSECTOID OILS.\n|[[The Witcher Monster Slayer bombs|Grapeshot]] (3)\n|-\n|Kill 5 ENDREGA DRONES without using SIGNS.\n|[[The Witcher Monster Slayer scrolls|Range scroll]]\n|-\n|Kill an ENDREGA WARRIOR without dealing any STEEL or FIRE damage.\n|[[The Witcher Monster Slayer potions|Blizzard]]\n|-\n|Kill 3 ENDREGA CHARGERS after performing at least 3 PERFECT PARRIES and 1 PERFECT CRITICAL HIT in each of these fights.\n|[[The Witcher Monster Slayer scrolls|Ingredients scroll]] (2)\n|}\n\n[[pl:Zadania czasowe w grze Wiedźmin Pogromca Potworów]]\n[[Category:The Witcher Monster Slayer]]\n[[Category:The Witcher Monster Slayer quests]]"
+}

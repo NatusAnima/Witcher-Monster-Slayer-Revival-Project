@@ -1,0 +1,261 @@
+{
+ "page": "The Witcher Monster Slayer gifts",
+ "revid": 587740,
+ "sections": [
+  {
+   "title": "Modifiers and bombs",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Type",
+      "Event",
+      "Effects"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Apple cake",
+       "Type": "food",
+       "Event": "Velen (holiday)",
+       "Effects": "Taking damage charges the CRITICAL HIT METER.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Candles",
+       "Type": "food",
+       "Event": "Anniversary",
+       "Effects": "Increase the effectiveness of WITCHER POTIONS by 20%.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Candies",
+       "Type": "food",
+       "Event": "Anniversary",
+       "Effects": "Casting SIGNS delays the opponent's next attack by 1 s.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Chestnut",
+       "Type": "bomb",
+       "Event": "Velen (holiday)",
+       "Effects": "Disrupts an opponent's attacks by slightly slowing them and inflicts 500 damage points from FIRE."
+      },
+      {
+       "Image": "",
+       "Name": "Chocolates",
+       "Type": "food",
+       "Event": "[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]",
+       "Effects": "Taking damage charges CRITICAL HIT METER.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Fresh bread",
+       "Type": "food",
+       "Event": "Lammas",
+       "Effects": "Reduces damage from UNPARRIED hits by 20%.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Gingerbread cookies",
+       "Type": "food",
+       "Event": "Midinváerne",
+       "Effects": "Increases the effectiveness of POTIONS by 20%.; The effect lasts 10 minutes."
+      },
+      {
+       "Image": "",
+       "Name": "Grape juice",
+       "Type": "food",
+       "Event": "Velen (holiday)",
+       "Effects": "Perfect CRITICAL HITS regenerate 10% of your HEALTH POINTS.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Honeycomb",
+       "Type": "food",
+       "Event": "Lammas",
+       "Effects": "Accelerates the COOLDOWN after casting SIGNS by 20%.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Hot chocolate",
+       "Type": "food",
+       "Event": "Midinváerne",
+       "Effects": "Increases your maximum HEALTH POINTS by 30%.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Jar of honey",
+       "Type": "food",
+       "Event": "Velen (holiday)",
+       "Effects": "Increases damage dealt by BOMBS by 20%.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Love Note",
+       "Type": "scroll",
+       "Event": "[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]",
+       "Effects": "Perfect CRITICAL HITS regenerate 10% of VITALITY.; The effect lasts for 10 min."
+      },
+      {
+       "Image": "",
+       "Name": "Perfume",
+       "Type": "item",
+       "Event": "[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]",
+       "Effects": "Casting SIGNS delays the opponent's next attack by 1s, but increases the COOLDOWN by 2s."
+      },
+      {
+       "Image": "",
+       "Name": "Piece of cake",
+       "Type": "food",
+       "Event": "Anniversary",
+       "Effects": "Increases MELEE DAMAGE by 50%.; The effect lasts for 5 min.; The effect lasts 10 minutes."
+      },
+      {
+       "Image": "",
+       "Name": "Poppy seed cake",
+       "Type": "food",
+       "Event": "Midinváerne",
+       "Effects": "Reduces damage taken while PARRYING by 10%."
+      },
+      {
+       "Image": "",
+       "Name": "Roasted pear",
+       "Type": "food",
+       "Event": "Lammas",
+       "Effects": "Reduces damage taken while PARRYING by 10%."
+      },
+      {
+       "Image": "",
+       "Name": "Snowball",
+       "Type": "bomb",
+       "Event": "Midinváerne",
+       "Effects": "Disrupts an opponent's attacks by slightly slowing them and inflicts 25 damage points from KINETIC ENERGY."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "Packs",
+   "level": 2,
+   "tables": [
+    {
+     "headers": [
+      "Image",
+      "Name",
+      "Event",
+      "Description"
+     ],
+     "rows": [
+      {
+       "Image": "",
+       "Name": "Alchemist's Pack",
+       "Event": "always available",
+       "Description": "A pack containing a random amount of monster remains or powdered monster tissue."
+      },
+      {
+       "Image": "",
+       "Name": "Herbalist's Pack",
+       "Event": "always available",
+       "Description": "A pack containing a random amount of herbs and roots."
+      },
+      {
+       "Image": "",
+       "Name": "Witcher's Pack",
+       "Event": "always available",
+       "Description": "A pack containing a random amount of potions."
+      },
+      {
+       "Image": "",
+       "Name": "Anniversary Gift",
+       "Event": "Anniversary",
+       "Description": "A package with some anniversary presents."
+      },
+      {
+       "Image": "",
+       "Name": "Anniversary Gift",
+       "Event": "Anniversary",
+       "Description": "A package with some anniversary presents."
+      },
+      {
+       "Image": "",
+       "Name": "Anniversary Gift",
+       "Event": "Anniversary",
+       "Description": "A package with some anniversary presents."
+      },
+      {
+       "Image": "",
+       "Name": "Lammas Basket",
+       "Event": "Lammas",
+       "Description": "A basket of treats for the harvest festival."
+      },
+      {
+       "Image": "",
+       "Name": "Lammas Basket",
+       "Event": "Lammas",
+       "Description": "A basket of treats for the harvest festival."
+      },
+      {
+       "Image": "",
+       "Name": "Present",
+       "Event": "Midinváerne",
+       "Description": "Contains a surprise."
+      },
+      {
+       "Image": "",
+       "Name": "Present",
+       "Event": "Midinváerne",
+       "Description": "Contains a surprise."
+      },
+      {
+       "Image": "",
+       "Name": "Present",
+       "Event": "Midinváerne",
+       "Description": "Contains a surprise."
+      },
+      {
+       "Image": "",
+       "Name": "Present",
+       "Event": "[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]",
+       "Description": "It looks like somebody likes you!"
+      },
+      {
+       "Image": "",
+       "Name": "Present",
+       "Event": "[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]",
+       "Description": "It looks like somebody likes you!"
+      },
+      {
+       "Image": "",
+       "Name": "Present",
+       "Event": "[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]",
+       "Description": "It looks like somebody likes you!"
+      },
+      {
+       "Image": "",
+       "Name": "Velen Pack",
+       "Event": "Velen (holiday)",
+       "Description": "A pack of treats for the equinox festival."
+      },
+      {
+       "Image": "",
+       "Name": "Velen Pack",
+       "Event": "Velen (holiday)",
+       "Description": "A pack of treats for the equinox festival."
+      },
+      {
+       "Image": "",
+       "Name": "Velen Pack",
+       "Event": "Velen (holiday)",
+       "Description": "A pack of treats for the equinox festival."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "The page is a list of all available '''gifts''' in {{TWMS}}. These items cannot be crafted or purchased, however they affect gameplay by modifying statistics or being used in combat. Most often they are related to a seasonal event.\n==Modifiers and bombs==\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"10%\" |Name\n! class=\"unsortable\" width=\"10%\" |Type\n! class=\"unsortable\" width=\"15%\" |Event\n! class=\"unsortable\" width=\"35%\" |Effects\n|-\n|[[File:twms consumable_apple_pie.png|center|50px]]\n|Apple cake\n|food\n|[[Velen (holiday)]]\n|Taking damage charges the CRITICAL HIT METER.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_candles.png|center|50px]]\n|Candles\n|food\n|Anniversary\n|Increase the effectiveness of WITCHER POTIONS by 20%.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_candy.png|center|50px]]\n|Candies\n|food\n|Anniversary\n|Casting SIGNS delays the opponent's next attack by 1 s.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms bomb_chestnut.png|center|50px]]\n|Chestnut\n|[[The Witcher Monster Slayer bombs|bomb]]\n|[[Velen (holiday)]]\n|Disrupts an opponent's attacks by slightly slowing them and inflicts 500 damage points from FIRE.\n|-\n|[[File:twms consumable_chocolates.png|center|50px]]\n|Chocolates\n|food\n|[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]\n|Taking damage charges CRITICAL HIT METER.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_bread.png|center|50px]]\n|Fresh bread\n|food\n|[[Lammas]]\n|Reduces damage from UNPARRIED hits by 20%.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_gingerbread.png|center|50px]]\n|Gingerbread cookies\n|food\n|[[Midinváerne]]\n|Increases the effectiveness of POTIONS by 20%.<br/>The effect lasts 10 minutes.\n|-\n|[[File:twms consumable_grape_juice.png|center|50px]]\n|Grape juice\n|food\n|[[Velen (holiday)]]\n|Perfect CRITICAL HITS regenerate 10% of your HEALTH POINTS.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_honeycomb.png|center|50px]]\n|Honeycomb\n|food\n|[[Lammas]]\n|Accelerates the COOLDOWN after casting SIGNS by 20%.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_hot_chocolate.png|center|50px]]\n|Hot chocolate\n|food\n|[[Midinváerne]]\n|Increases your maximum HEALTH POINTS by 30%.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms consumable_honey_jar.png|center|50px]]\n|Jar of honey\n|food\n|[[Velen (holiday)]]\n|Increases damage dealt by BOMBS by 20%.<br/>The effect lasts for 10 min.\n|-\n|[[File:twms scroll_love_letter.png|center|50px]]\n|Love Note\n|[[Scrolls|scroll]]\n|[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]\n|Perfect CRITICAL HITS regenerate 10% of VITALITY.<br/> The effect lasts for 10 min.\n|-\n|[[File:twms consumable_perfume.png|center|50px]]\n|Perfume\n|item\n|[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]\n|Casting SIGNS delays the opponent's next attack by 1s, but increases the COOLDOWN by 2s.\n|-\n|[[File:twms consumable_cake.png|center|50px]]\n|Piece of cake\n|food\n|Anniversary\n|Increases MELEE DAMAGE by 50%.<br/>The effect lasts for 5 min.<br/>The effect lasts 10 minutes.\n|-\n|[[File:twms consumable_poppy_cake.png|center|50px]]\n|Poppy seed cake\n|food\n|[[Midinváerne]]\n|Reduces damage taken while PARRYING by 10%.\n|-\n|[[File:twms consumable_roasted_pear.png|center|50px]]\n|Roasted pear\n|food\n|[[Lammas]]\n|Reduces damage taken while PARRYING by 10%.\n|-\n|[[File:twms bomb_snowball.png|center|50px]]\n|Snowball\n|[[The Witcher Monster Slayer bombs|bomb]]\n|[[Midinváerne]]\n|Disrupts an opponent's attacks by slightly slowing them and inflicts 25 damage points from KINETIC ENERGY.\n|}\n==Packs==\n'''Packages''' were given to users for leveling up, completing [[The Witcher Monster Slayer contracts|contracts]] or were handed out during seasonal events. A gift could not be opened if received as a prize, it had to be sent to another player who could then unpack it. The sender had no control over what a package contained, which was only suggested by the description.\n{| class=\"fandom-table sortable\" width=\"100%\"\n! class=\"unsortable\" width=\"10%\" |Image\n! width=\"20%\" |Name\n! class=\"unsortable\" width=\"15%\" |Event\n! class=\"unsortable\" width=\"35%\" |Description\n|-\n|[[File:twms pack_alchemist.png|center|50px]]\n|Alchemist's Pack\n|always available\n|A pack containing a random amount of [[The Witcher Monster Slayer ingredients|monster remains]] or [[powdered monster tissue]].\n|-\n|[[File:twms pack_herbalist.png|center|50px]]\n|Herbalist's Pack\n|always available\n|A pack containing a random amount of [[The Witcher Monster Slayer ingredients|herbs and roots]].\n|-\n|[[File:twms pack_witcher.png|center|50px]]\n|Witcher's Pack\n|always available\n|A pack containing a random amount of [[The Witcher Monster Slayer potions|potions]].\n|-\n|[[File:twms pack_anniversary_blue.png|center|50px]]\n|Anniversary Gift\n|Anniversary\n|A package with some anniversary presents.\n|-\n|[[File:twms pack_anniversary_red.png|center|50px]]\n|Anniversary Gift\n|Anniversary\n|A package with some anniversary presents.\n|-\n|[[File:twms pack_anniversary_gold.png|center|50px]]\n|Anniversary Gift\n|Anniversary\n|A package with some anniversary presents.\n|-\n|[[File:twms pack_lammas_sunflower.png|center|50px]]\n|Lammas Basket\n|[[Lammas]]\n|A basket of treats for the [[Lammas|harvest festival]].\n|-\n|[[File:twms pack_lammas_fruit.png|center|50px]]\n|Lammas Basket\n|[[Lammas]]\n|A basket of treats for the [[Lammas|harvest festival]].\n|-\n|[[File:twms pack_midinvaerne_blue.png|center|50px]]\n|Present\n|[[Midinváerne]]\n|Contains a surprise.\n|-\n|[[File:twms pack_midinvaerne_green.png|center|50px]]\n|Present\n|[[Midinváerne]]\n|Contains a surprise.\n|-\n|[[File:twms pack_midinvaerne_gold.png|center|50px]]\n|Present\n|[[Midinváerne]]\n|Contains a surprise.\n|-\n|[[File:twms pack_valentines_heart.png|center|50px]]\n|Present\n|[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]\n|It looks like somebody likes you!\n|-\n|[[File:twms pack_valentines_lock.png|center|50px]]\n|Present\n|[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]\n|It looks like somebody likes you!\n|-\n|[[File:twms pack_valentines_rose.png|center|50px]]\n|Present\n|[https://en.wikipedia.org/wiki/Valentine%27s_Day Valentine's Day]\n|It looks like somebody likes you!\n|-\n|[[File:twms pack_velen_black.png|center|50px]]\n|Velen Pack\n|[[Velen (holiday)]]\n|A pack of treats for the [[Velen (holiday)|equinox festival]].\n|-\n|[[File:twms pack_velen_blue.png|center|50px]]\n|Velen Pack\n|[[Velen (holiday)]]\n|A pack of treats for the [[Velen (holiday)|equinox festival]].\n|-\n|[[File:twms pack_velen_brown.png|center|50px]]\n|Velen Pack\n|[[Velen (holiday)]]\n|A pack of treats for the [[Velen (holiday)|equinox festival]].\n|}\n\n[[pl:Podarunki w grze Wiedźmin Pogromca Potworów]]\n[[Category:The Witcher Monster Slayer]]\n[[Category:Bombs]]"
+}

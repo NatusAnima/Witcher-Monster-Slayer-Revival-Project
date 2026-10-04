@@ -1,0 +1,52 @@
+{
+ "page": "The Witcher Monster Slayer bags",
+ "revid": 579205,
+ "sections": [
+  {
+   "title": "(intro)",
+   "tables": [
+    {
+     "headers": [
+      "Name",
+      "Capacity",
+      "Price v1.1",
+      "Price v1.2"
+     ],
+     "rows": [
+      {
+       "Name": "Bag",
+       "Capacity": "50",
+       "Price v1.1": "500",
+       "Price v1.2": "60"
+      },
+      {
+       "Name": "Small pouch",
+       "Capacity": "50",
+       "Price v1.1": "500",
+       "Price v1.2": "60"
+      },
+      {
+       "Name": "Medium-sized pouch",
+       "Capacity": "100",
+       "Price v1.1": "1000",
+       "Price v1.2": "120"
+      },
+      {
+       "Name": "Spacious pouch",
+       "Capacity": "200",
+       "Price v1.1": "2000",
+       "Price v1.2": "240"
+      },
+      {
+       "Name": "Set of saddlebags",
+       "Capacity": "400",
+       "Price v1.1": "4000",
+       "Price v1.2": "480"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "wikitext": "'''Bags''' in {{TWMS}} provide additional slots for inventory. They do not replace starting inventory but act as its expansion. The maximum inventory load is determined by the total capacity of bags, since each bag can be purchased only once. Starting inventory holds 200 slots, while its maximum capacity is capped at 1000 slots.\n\n{| class=\"fandom-table sortable\" width=\"100%\"\n! width=\"20%\" |Name\n! data-sort-type=\"number\" width=\"10%\" |Capacity\n! data-sort-type=\"number\" width=\"10%\" |Price v1.1\n! data-sort-type=\"number\" width=\"10%\" |Price v1.2\n|-\n|Bag\n|50\n|[[File:twms currency_gold_coin.png|20px]]500\n|[[File:twms currency_crystal.png|20px]]60\n|-\n|Small pouch\n|50\n|[[File:twms currency_gold_coin.png|20px]]500\n|[[File:twms currency_crystal.png|20px]]60\n|-\n|Medium-sized pouch\n|100\n|[[File:twms currency_gold_coin.png|20px]]1000\n|[[File:twms currency_crystal.png|20px]]120\n|-\n|Spacious pouch\n|200\n|[[File:twms currency_gold_coin.png|20px]]2000\n|[[File:twms currency_crystal.png|20px]]240\n|-\n|Set of saddlebags\n|400\n|[[File:twms currency_gold_coin.png|20px]]4000\n|[[File:twms currency_crystal.png|20px]]480\n|}\n\n[[pl:Sakwy w grze Wiedźmin Pogromca Potworów]]\n[[uk:Сакви (Відьмак: Вбивця чудовиськ)]]\n[[Category:The Witcher Monster Slayer]]"
+}
