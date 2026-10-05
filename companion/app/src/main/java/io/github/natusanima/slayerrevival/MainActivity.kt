@@ -37,7 +37,6 @@ class MainActivity : Activity() {
         const val PLAY = "io.github.natusanima.slayerrevival.PLAY"
         const val INSTALL = "io.github.natusanima.slayerrevival.INSTALL"
         const val SITE = "https://github.com/${Updates.REPO}"
-        const val GUIDE = "$SITE#phone-only-play-the-companion-app"
         const val AURORA_SITE = "https://gitlab.com/AuroraOSS/AuroraStore"
         /** SHA-256 of the certificate Google Play signs the game with: Aurora's copy, before the playable client. */
         const val PLAY_CERT = "35bb00ec82bd877bdcf816cdecba2c99566cf307015ca876768606ce258b3785"
@@ -55,15 +54,6 @@ class MainActivity : Activity() {
             "Use the Google account that previously had the game.",
             "Tap the three dots at the top right of the game's page.",
             "Untick Enable auto update. Never tap Update.",
-        )
-        private val CLIENT_STEPS = listOf(
-            "Pull the game's files from the phone.",
-            "Reinstall them with Google Play as the installer. Aurora doesn't do this, and without it the game never " +
-                "downloads its extra 1.3\u00A0GB.",
-            "Open the game and accept the 1.3\u00A0GB download. Don't tap Update in the Play Store.",
-            "Back up the downloaded data from the phone and unpack it on the PC.",
-            "Build the playable client and replace the Play copy of the game with it.",
-            "Copy the game hook to the phone.",
         )
 
         private const val SURFACE = 0xFF1E1E24.toInt()
@@ -265,9 +255,18 @@ class MainActivity : Activity() {
                 "Open in Play Store", items = UPDATE_STEPS) { openInPlay() }
             else -> game.show(true, "1.1.116 (300085) is installed.")
         }
+        val building = ClientBuildService.status
         when {
-            installed == null || !ready || fromPlay -> client.show(false, "This part needs a PC with USB debugging, once, " +
-                "after step 2. The guide has every command:", "Open the guide", items = CLIENT_STEPS) { open(GUIDE) }
+            installed == null || !ready -> client.show(false, "Finish step 2 first: install 1.1.116 (300085).")
+            ClientBuildService.running -> client.show(false, building ?: "Building…", progress = ClientBuildService.progress)
+            ClientBuildService.pairingRequired -> client.show(false, (building?.plus("\n\n") ?: "") +
+                "The app installs the game for you using this phone's own Wireless debugging. Pair it once.",
+                "Pair this phone") { startActivity(Intent(this, PairActivity::class.java)) }
+            fromPlay -> client.show(false, "Build the playable client here — no PC. It backs up the game, builds and " +
+                "signs the client, replaces the Play copy and connects the game to this app." +
+                (building?.let { "\n\n$it" } ?: ""), "Build the client") {
+                startForegroundService(Intent(this, ClientBuildService::class.java))
+            }
             else -> client.show(true, "Installed: the game connects to this app.")
         }
 
