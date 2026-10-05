@@ -1,19 +1,27 @@
 package io.github.natusanima.slayerrevival
 
 import android.content.Context
+import android.os.SystemClock
 import android.util.Base64
 import com.aurora.gplayapi.data.models.AuthData
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.io.SequenceInputStream
 import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
+import java.util.Enumeration
 import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicLong
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipException
@@ -30,9 +38,13 @@ object PlayPacks {
     private class Chunk(val bytes: Long, val sha256: String, val url: String)
     private class Slice(val id: String, val size: Long, val sha256: String, val format: Int, val chunks: List<Chunk>)
 
+    /** A byte range of a chunk, kept in a file of its own so that several can come at once. */
+    private class Piece(val file: File, val chunk: Chunk, val start: Long, val length: Long)
+
     private const val DELIVERY = "https://play-fe.googleapis.com/fdfe/assetModuleDelivery"
     private const val SYNC = "https://play-fe.googleapis.com/fdfe/sync"
     private const val PLAY_CORE = 11000L // what the game's own Play Core library reports
+    private const val PIECE = 8L shl 20
     private const val FINSKY = "Finsky/37.5.24-29%20%5B0%5D%20%5BPR%5D%20565477504"
     private const val TARGETS = "CAESN/qigQYC2AMBFfUbyA7SM5Ij/CvfBoIDgxHqGP8R3xzIBvoQtBKFDZ4HAY4FrwSVMasHBO0O2Q8akgYRAQECAQO7AQEpKZ0CnwECAwRrAQYBr9PPAoK7sQMBAQMCBAkIDAgBAwEDBAICBAUZEgMEBAMLAQEBBQEBAcYBARYED+cBfS8CHQEKkAEMMxcBIQoUDwYHIjd3DQ4MFk0JWGYZEREYAQOLAYEBFDMIEYMBAgICAgICOxkCD18LGQKEAcgDBIQBAgGLARkYCy8oBTJlBCUocxQn0QUBDkkGxgNZQq0BZSbeAmIDgAEBOgGtAaMCDAOQAZ4BBIEBKUtQUYYBQscDDxPSARA1oAEHAWmnAsMB2wFyywGLAxol+wImlwOOA80CtwN26A0WjwJVbQEJPAH+BRDeAfkHK/ABASEBCSAaHQemAzkaRiu2Ad8BdXeiAwEBGBUBBN4LEIABK4gB2AFLfwECAdoENq0CkQGMBsIBiQEtiwGgA1zyAUQ4uwS8AwhsvgPyAcEDF27vApsBHaICGhl3GSKxAR8MC6cBAgItmQYG9QIeywLvAeYBDArLAh8HASI4ELICDVmVBgsY/gHWARtcAsMBpALiAdsBA7QBpAJmIArpByn0AyAKBwHTARIHAX8D+AMBcRIBBbEDmwUBMacCHAciNp0BAQF0OgQLJDuSAh54kwFSP0eeAQQ4M5EBQgMEmwFXywFo0gFyWwMcapQBBugBPUW2AVgBKmy3AR6PAbMBGQxrUJECvQR+8gFoWDsYgQNwRSczBRXQAgtRswEW0ALMAREYAUEBIG6yATYCRE8OxgER8gMBvQEDRkwLc8MBTwHZAUOnAXiiBakDIbYBNNcCIUmuArIBSakBrgFHKs0EgwV/G3AD0wE6LgECtQJ4xQFwFbUCjQPkBS6vAQqEAUZF3QIM9wEhCoYCQhXsBCyZArQDugIziALWAdIBlQHwBdUErQE6qQaSA4EEIvYBHir9AQVLmgMCApsCKAwHuwgrENsBAjNYswEVmgIt7QJnN4wDEnta+wGfAcUBxgEtEFXQAQWdAUAeBcwBAQM7rAEJATJ0LENrdh73A6UBhAE+qwEeASxLZUMhDREuH0CGARbd7K0GlQo"
     private const val PHENOTYPE = "H4sIAAAAAAAAAB3OO3KjMAAA0KRNuWXukBkBQkAJ2MhgAZb5u2GCwQZbCH_EJ77QHmgvtDtbv-Z9_H63zXXU0NVPB1odlyGy7751Q3CitlPDvFd8lxhz3tpNmz7P92CFw73zdHU2Ie0Ad2kmR8lxhiErTFLt3RPGfJQHSDy7Clw10bg8kqf2owLokN4SecJTLoSwBnzQSd652_MOf2d1vKBNVedzg4ciPoLz2mQ8efGAgYeLou-l-PXn_7Sna1MfhHuySxt-4esulEDp8Sbq54CPPKjpANW-lkU2IZ0F92LBI-ukCKSptqeq1eXU96LD9nZfhKHdtjSWwJqUm_2r6pMHOxk01saVanmNopjX3YxQafC4iC6T55aRbC8nTI98AF_kItIQAJb5EQxnKTO7TZDWnr01HVPxelb9A2OWX6poidMWl16K54kcu_jhXw-JSBQkVcD_fPsLSZu6joIBAAA"
@@ -113,22 +125,51 @@ object PlayPacks {
     }
 
     /**
-     * Downloads [pack] into [dir] unless it is already there. [progress] gets the bytes of the pack so far; it may
-     * throw to stop. A cut or failed download resumes where it stopped, from the files kept in the work folder.
+     * Downloads [pack] into [dir] unless it is already there, over [connections] parallel connections (one means a
+     * single stream). [progress] gets the bytes of the pack so far, from any thread; it may throw to stop. A failed
+     * or interrupted download resumes where it stopped, from the pieces kept in the work folder.
      */
-    fun fetch(context: Context, auth: AuthData, pack: Pack, dir: File, progress: (Long) -> Unit) {
+    fun fetch(context: Context, auth: AuthData, pack: Pack, dir: File, connections: Int, progress: (Long) -> Unit) {
         val target = File(dir, pack.name)
         if (target.length() == pack.size) return progress(pack.size)
         dir.mkdirs()
         val slices = deliver(context, auth, pack.name)
         val work = File(context.filesDir, "game/work/${pack.name}").apply { mkdirs() }
-        val total = slices.sumOf { slice -> slice.chunks.sumOf { it.bytes } }.coerceAtLeast(1)
-        var before = 0L
-        for (slice in slices) for ((i, chunk) in slice.chunks.withIndex()) {
-            retry { download(chunk, File(work, "${slice.id}-$i")) { now -> progress((before + now) * pack.size / total) } }
-            before += chunk.bytes
+        work.listFiles()?.filter { !it.name.startsWith("seg-") }?.forEach { it.delete() } // an old layout, or a half-made join
+        val size = if (connections > 1) PIECE else Long.MAX_VALUE
+        // slice -> chunk -> the pieces of that chunk
+        val plan = slices.mapIndexed { s, slice ->
+            slice.chunks.mapIndexed { c, chunk ->
+                generateSequence(0L) { it + size }.takeWhile { it < chunk.bytes }.map { start ->
+                    Piece(File(work, "seg-$s-$c-${start / size}"), chunk, start, minOf(size, chunk.bytes - start))
+                }.toList()
+            }
         }
-        unpack(context, pack, slices, work, target)
+        val pieces = plan.flatten().flatten()
+        val total = pieces.sumOf { it.length }.coerceAtLeast(1)
+        val received = AtomicLong(pieces.sumOf { p ->
+            val have = p.file.length()
+            if (have > p.length) { p.file.delete(); 0L } else have
+        })
+        progress(received.get() * pack.size / total)
+        val started = SystemClock.elapsedRealtime()
+        val pool = Executors.newFixedThreadPool(connections.coerceAtLeast(1))
+        try {
+            pieces.map { p -> pool.submit(Callable { retry { download(p, received) { now -> progress(now * pack.size / total) } } }) }
+                .forEach { future ->
+                    try {
+                        future.get()
+                    } catch (e: ExecutionException) {
+                        throw e.cause ?: e
+                    }
+                }
+        } finally {
+            pool.shutdownNow()
+        }
+        val seconds = (SystemClock.elapsedRealtime() - started).coerceAtLeast(1) / 1000.0
+        PlayLog.write(context, "${pack.name}: ${total / 1_000_000} MB in ${"%.1f".format(Locale.US, seconds)} s, " +
+            "${"%.1f".format(Locale.US, total / 1_000_000 / seconds)} MB/s over ${connections.coerceAtLeast(1)} connection(s)")
+        unpack(context, pack, slices, plan, work, target)
         work.deleteRecursively()
         progress(pack.size)
     }
@@ -177,69 +218,88 @@ object PlayPacks {
         }
     }
 
-    /** Fetches one chunk into [file], resuming a partial file; [progress] gets the bytes of the chunk so far. */
-    private fun download(chunk: Chunk, file: File, progress: (Long) -> Unit) {
-        var have = file.length()
-        if (have > chunk.bytes) {
-            file.delete()
-            have = 0
-        }
-        if (have < chunk.bytes) {
-            val connection = URL(chunk.url).openConnection() as HttpURLConnection
+    /** Fetches one piece into its file, resuming a partial one. [onBytes] gets the pack's running total of bytes. */
+    private fun download(piece: Piece, received: AtomicLong, onBytes: (Long) -> Unit) {
+        var have = piece.file.length()
+        if (have < piece.length) {
+            val whole = piece.start == 0L && piece.length == piece.chunk.bytes
+            val connection = URL(piece.chunk.url).openConnection() as HttpURLConnection
             connection.connectTimeout = 20_000
             connection.readTimeout = 60_000
             connection.setRequestProperty("Accept-Encoding", "identity") // the bytes as stored, not re-compressed on the way
-            if (have > 0) connection.setRequestProperty("Range", "bytes=$have-")
+            if (!(whole && have == 0L)) {
+                connection.setRequestProperty("Range", "bytes=${piece.start + have}-${piece.start + piece.length - 1}")
+            }
             try {
                 val code = connection.responseCode
-                if (code != 200 && code != 206) throw IOException("HTTP $code from ${connection.url.host}")
-                if (code == 200) have = 0 // the server sent the whole chunk, not the rest
-                FileOutputStream(file, have > 0).use { out ->
-                    connection.inputStream.use { input ->
-                        val buffer = ByteArray(1 shl 16)
-                        progress(have)
+                if (code == 200) {
+                    if (!whole) throw IOException("the server does not send parts of a download")
+                    if (have > 0) { // it sent the whole chunk, not the rest
+                        received.addAndGet(-have)
+                        have = 0
+                    }
+                } else if (code != 206) {
+                    throw IOException("HTTP $code from ${connection.url.host}")
+                }
+                FileOutputStream(piece.file, have > 0).use { out ->
+                    connection.inputStream.use { input -> // read to the end and closed, so the connection can be reused
+                        val buffer = ByteArray(1 shl 18)
                         while (true) {
                             val n = input.read(buffer)
                             if (n < 0) break
                             out.write(buffer, 0, n)
-                            have += n
-                            progress(have)
+                            onBytes(received.addAndGet(n.toLong()))
                         }
                     }
                 }
-            } finally {
+            } catch (e: IOException) {
                 connection.disconnect()
+                throw e
             }
-        } else {
-            progress(have)
         }
-        if (file.length() != chunk.bytes) throw IOException("a download was cut short")
+        if (piece.file.length() != piece.length) throw IOException("a download was cut short")
     }
 
-    /** Joins a pack's chunks, takes the pack file out of the archive they make, and keeps it only if it is the original. */
-    private fun unpack(context: Context, pack: Pack, slices: List<Slice>, work: File, target: File) {
+    /** Joins a pack's pieces, takes the pack file out of the archive they make, and keeps it only if it is the original. */
+    private fun unpack(context: Context, pack: Pack, slices: List<Slice>, plan: List<List<List<Piece>>>, work: File, target: File) {
         val part = File(target.path + ".part").apply { delete() }
+        val started = SystemClock.elapsedRealtime()
         try {
-            for (slice in slices) {
-                val whole = File(work, "slice-${slice.id}")
-                whole.outputStream().buffered().use { sink ->
-                    for (i in slice.chunks.indices) {
-                        val source = File(work, "${slice.id}-$i").inputStream().buffered()
-                        (if (slice.format == 1) GZIPInputStream(source) else source).use { it.copyTo(sink) }
+            var hash: ByteArray? = null
+            for ((s, slice) in slices.withIndex()) {
+                val whole = File(work, "slice-$s")
+                whole.outputStream().use { sink ->
+                    for (pieces in plan[s]) {
+                        val source = SequenceInputStream(object : Enumeration<InputStream> {
+                            private val files = pieces.iterator()
+                            override fun hasMoreElements() = files.hasNext()
+                            override fun nextElement(): InputStream = files.next().file.inputStream()
+                        })
+                        (if (slice.format == 1) GZIPInputStream(source, 1 shl 16) else source).use { it.copyTo(sink, 1 shl 20) }
                     }
                 }
                 if (slice.size > 0 && whole.length() != slice.size) {
                     throw IOException("${pack.name}: ${whole.length()} bytes after joining, Google Play said ${slice.size}")
                 }
-                PlayLog.write(context, "${pack.name}: slice ${slice.id} joined, ${whole.length()} bytes, " +
-                    "hash ${if (matches(digest(whole), slice.sha256)) "matches" else "differs from"} Google's (${slice.sha256.length} chars)")
                 try {
                     ZipFile(whole).use { zip ->
                         val entry = zip.getEntry("assets/assetpack/${pack.name}")
                         if (entry == null) {
                             PlayLog.write(context, "${pack.name}: the archive holds " + zip.entries().asSequence().take(8).joinToString { it.name })
                         } else {
-                            zip.getInputStream(entry).use { input -> part.outputStream().use { input.copyTo(it) } }
+                            val sha = MessageDigest.getInstance("SHA-256") // hashed on the way out: no second read of the pack
+                            zip.getInputStream(entry).use { input ->
+                                part.outputStream().use { out ->
+                                    val buffer = ByteArray(1 shl 20)
+                                    while (true) {
+                                        val n = input.read(buffer)
+                                        if (n < 0) break
+                                        sha.update(buffer, 0, n)
+                                        out.write(buffer, 0, n)
+                                    }
+                                }
+                            }
+                            hash = sha.digest()
                         }
                     }
                 } catch (e: ZipException) {
@@ -249,11 +309,11 @@ object PlayPacks {
                 if (part.exists()) break
             }
             if (!part.exists()) throw IOException("${pack.name}: no pack file inside what Google Play sent")
-            if (part.length() != pack.size || !matches(digest(part), pack.sha256)) {
+            if (part.length() != pack.size || !matches(hash ?: digest(part), pack.sha256)) {
                 throw IOException("${pack.name} is not the original (${part.length()} of ${pack.size} bytes, or its checksum differs)")
             }
             if (!part.renameTo(target)) throw IOException("could not move ${pack.name} into place")
-            PlayLog.write(context, "${pack.name}: verified, ${pack.size} bytes")
+            PlayLog.write(context, "${pack.name}: verified, ${pack.size} bytes, unpacked in ${(SystemClock.elapsedRealtime() - started) / 1000} s")
         } catch (e: IOException) {
             part.delete()
             work.deleteRecursively() // what was downloaded is suspect: start this pack afresh next time

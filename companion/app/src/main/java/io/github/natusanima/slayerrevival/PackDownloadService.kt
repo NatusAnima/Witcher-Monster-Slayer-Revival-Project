@@ -8,6 +8,9 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.net.wifi.WifiManager
+import android.os.PowerManager
+import android.os.SystemClock
 import android.text.format.Formatter
 import java.io.File
 import java.io.IOException
@@ -21,6 +24,7 @@ import kotlin.concurrent.thread
 class PackDownloadService : Service() {
     companion object {
         const val CANCEL = "io.github.natusanima.slayerrevival.CANCEL_PACKS"
+        private const val CONNECTIONS = 4
 
         /** The running download's progress, or how the last one ended; null before the first. */
         @Volatile
@@ -42,6 +46,18 @@ class PackDownloadService : Service() {
     }
 
     @Volatile private var cancelled = false
+    @Volatile private var shownAt = 0L
+    @Volatile private var shownBytes = 0L
+    private val cancelIntent by lazy {
+        PendingIntent.getService(this, 0, Intent(this, PackDownloadService::class.java).setAction(CANCEL), PendingIntent.FLAG_IMMUTABLE)
+    }
+    private val openIntent by lazy { PendingIntent.getActivity(this, 0, Intent(this, SetupActivity::class.java), PendingIntent.FLAG_IMMUTABLE) }
+
+    override fun onCreate() {
+        super.onCreate()
+        getSystemService(NotificationManager::class.java)
+            .createNotificationChannel(NotificationChannel("packs", "Extra data download", NotificationManager.IMPORTANCE_LOW))
+    }
 
     override fun onBind(intent: Intent?) = null
 
@@ -56,8 +72,15 @@ class PackDownloadService : Service() {
         running = true
         cancelled = false
         progress = -1
+        shownAt = 0L
+        shownBytes = 0L
         thread(name = "pack-download") {
-            download()
+            val release = keepAwake()
+            try {
+                download()
+            } finally {
+                release()
+            }
             running = false
             stopForeground(STOP_FOREGROUND_DETACH)
             getSystemService(NotificationManager::class.java).notify(5, notification(status.orEmpty(), ongoing = false)) // the outcome stays
@@ -73,6 +96,10 @@ class PackDownloadService : Service() {
             var before = 0L
             var synced = false
             for ((i, pack) in packs.withIndex()) {
+                if (File(dir(this), pack.name).length() == pack.size) { // kept from an earlier run
+                    before += pack.size
+                    continue
+                }
                 var attempt = 1
                 while (true) try {
                     val auth = PlayAccount.session(this) // a fresh access token for each pack: a long download outlives one
@@ -84,11 +111,12 @@ class PackDownloadService : Service() {
                             PlayLog.write(this, "device sync failed: $e") // the download is still tried
                         }
                     }
-                    PlayPacks.fetch(this, auth, pack, dir(this)) { bytes ->
+                    // parallel connections first; if Google refuses those, a single one
+                    PlayPacks.fetch(this, auth, pack, dir(this), if (attempt == 1) CONNECTIONS else 1) { bytes ->
                         if (cancelled) throw CancellationException()
                         val done = before + bytes
                         progress = (done * 100 / total).toInt()
-                        update("Downloading the extra data: ${size(done)} of ${size(total)} (pack ${i + 1} of ${packs.size})")
+                        show(done, total, i, packs.size)
                     }
                     break
                 } catch (e: IOException) {
@@ -108,6 +136,36 @@ class PackDownloadService : Service() {
         }
     }
 
+    /** Keeps the CPU and Wi-Fi from sleeping through a long download, which slows it once the screen is off. */
+    @Suppress("DEPRECATION")
+    private fun keepAwake(): () -> Unit {
+        try {
+            val awake = getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "slayerrevival:packs")
+                .apply { acquire(4 * 60 * 60 * 1000L) }
+            val wifi = try {
+                applicationContext.getSystemService(WifiManager::class.java)
+                    .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "slayerrevival:packs").apply { acquire() }
+            } catch (e: Exception) {
+                null
+            }
+            return { wifi?.release(); awake.release() }
+        } catch (e: Exception) {
+            PlayLog.write(this, "could not hold the wake locks: $e")
+            return {}
+        }
+    }
+
+    /** The progress line, at most once a second: the bytes arrive far faster than a notification can be shown. */
+    private fun show(done: Long, total: Long, index: Int, count: Int) {
+        val now = SystemClock.elapsedRealtime()
+        if (now - shownAt < 1000) return
+        val rate = if (shownAt == 0L) 0 else maxOf(0L, done - shownBytes) * 1000 / (now - shownAt)
+        shownAt = now
+        shownBytes = done
+        update("Downloading the extra data: ${size(done)} of ${size(total)}" + (if (rate > 0) " · ${size(rate)}/s" else "") +
+            " · pack ${index + 1} of $count")
+    }
+
     private fun size(bytes: Long) = Formatter.formatShortFileSize(this, bytes)
 
     private fun update(text: String) {
@@ -116,20 +174,15 @@ class PackDownloadService : Service() {
     }
 
     private fun notification(text: String, ongoing: Boolean = true): Notification {
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(NotificationChannel("packs", "Extra data download", NotificationManager.IMPORTANCE_LOW))
-        val cancel = PendingIntent.getService(this, 0, Intent(this, PackDownloadService::class.java).setAction(CANCEL),
-            PendingIntent.FLAG_IMMUTABLE)
-        val open = PendingIntent.getActivity(this, 0, Intent(this, SetupActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         return Notification.Builder(this, "packs")
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Extra data")
             .setContentText(text)
             .setStyle(Notification.BigTextStyle().bigText(text))
             .setProgress(if (ongoing) 100 else 0, progress.coerceAtLeast(0), ongoing && progress < 0)
-            .setContentIntent(open)
+            .setContentIntent(openIntent)
             .setOngoing(ongoing)
-            .apply { if (ongoing) addAction(Notification.Action.Builder(null, "Cancel", cancel).build()) }
+            .apply { if (ongoing) addAction(Notification.Action.Builder(null, "Cancel", cancelIntent).build()) }
             .build()
     }
 }
