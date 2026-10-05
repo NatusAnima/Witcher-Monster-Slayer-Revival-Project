@@ -19,16 +19,22 @@ The original backend is gone, so the project runs a reconstructed game server an
 - **Phone-only:** the companion app in `companion/` runs the server and the map services on the phone itself. See the next section.
 
 ## Phone-only play: the companion app
-The companion app runs the server and the map on the phone, so no PC has to keep running while you play. It needs an arm64 phone with Android 11 or later.
+The companion app, **Witcher Monster Slayer - Revival**, runs the server and the map on the phone, so no PC has to keep running while you play. It needs an arm64 phone with Android 11 or later.
 
-1. **Install the app.** Download `SlayerRevival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
+1. **Install the app.** Download `Witcher-Monster-Slayer-Revival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
 2. **Follow the Setup list in the app:**
    1. **Aurora Store**, which downloads the game from Google Play.
-   2. **The game, version 1.1.116.** In Aurora, open the game's page, tap ⋮ → **Manual download** and enter **300085**. Then turn off auto-update on the game's Play Store page.
-   3. **The playable client.** This step still needs a PC, once. Follow steps 2–5 of [Setup From a Fresh Clone](#setup-from-a-fresh-clone-windows); its prerequisites apply, except the .NET SDK and Python 3.12. Then copy the game hook to the phone, and unplug it:
-      ```powershell
-      python tools\restart.py --hook-only
-      ```
+   2. **The game, version 1.1.116.** In Aurora, open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
+   3. **The playable client.** This step still needs a PC, once. Its prerequisites are those of [Setup From a Fresh Clone](#setup-from-a-fresh-clone-windows), except the .NET SDK and Python 3.12. With the phone plugged in, do these, using the numbered steps there for the commands:
+      1. Pull the game's installed APKs (step 2).
+      2. Reinstall them with Google Play as the installer (step 3). Aurora doesn't register its installs with Google Play, so without this the game never downloads its extra 1.3 GB.
+      3. Open the game and accept the 1.3 GB download. Don't tap **Update** in the Play Store.
+      4. Back up the downloaded data and extract it (step 4).
+      5. Build the playable client, uninstall the Play copy and install the client (step 5).
+      6. Copy the game hook to the phone, then unplug it:
+         ```powershell
+         python tools\restart.py --hook-only
+         ```
    4. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
 3. **Tap Play.** It starts the server and opens the game when the server is ready.
 

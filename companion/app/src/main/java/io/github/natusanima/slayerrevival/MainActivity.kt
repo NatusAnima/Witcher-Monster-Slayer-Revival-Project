@@ -33,6 +33,7 @@ class MainActivity : Activity() {
         const val GAME = "com.spokko.witchermonsterslayer"
         const val GAME_VERSION = 300085L
         const val AURORA = "com.aurora.store"
+        const val PLAY_STORE = "com.android.vending"
         const val PLAY = "io.github.natusanima.slayerrevival.PLAY"
         const val INSTALL = "io.github.natusanima.slayerrevival.INSTALL"
         const val SITE = "https://github.com/${Updates.REPO}"
@@ -40,6 +41,29 @@ class MainActivity : Activity() {
         const val AURORA_SITE = "https://gitlab.com/AuroraOSS/AuroraStore"
         /** SHA-256 of the certificate Google Play signs the game with: Aurora's copy, before the playable client. */
         const val PLAY_CERT = "35bb00ec82bd877bdcf816cdecba2c99566cf307015ca876768606ce258b3785"
+
+        // The setup steps, one short line each. The commands for the PC part are in the guide (README).
+        private val DOWNLOAD_STEPS = listOf(
+            "Tap Open in Aurora below.",
+            "Tap the three dots at the top right, then Manual download.",
+            "Enter the version code 300085. Not 1.1.116.",
+            "Download and install it.",
+        )
+        private val UPDATE_STEPS = listOf(
+            "Tap Open in Play Store below.",
+            "Use the Google account that previously had the game.",
+            "Tap the three dots at the top right of the game's page.",
+            "Untick Enable auto update. Never tap Update.",
+        )
+        private val CLIENT_STEPS = listOf(
+            "Pull the game's files from the phone.",
+            "Reinstall them with Google Play as the installer. Aurora doesn't do this, and without it the game never " +
+                "downloads its extra 1.3\u00A0GB.",
+            "Open the game and accept the 1.3\u00A0GB download. Don't tap Update in the Play Store.",
+            "Back up the downloaded data from the phone and unpack it on the PC.",
+            "Build the playable client and replace the Play copy of the game with it.",
+            "Copy the game hook to the phone.",
+        )
 
         private const val SURFACE = 0xFF1E1E24.toInt()
         private const val TEXT = 0xFFEDEAE4.toInt()
@@ -82,13 +106,18 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(px(16), px(20), px(16), px(16))
         }
-        page.addView(text(28f).apply {
-            text = "Slayer Revival"
+        // The app's name, "Witcher Monster Slayer - Revival", set as two lines: it doesn't fit on one.
+        page.addView(text(26f).apply {
+            text = "Witcher Monster Slayer"
+            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+        })
+        page.addView(text(26f, GOLD).apply {
+            text = "Revival"
             typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
         })
         page.addView(text(14f, MUTED).apply {
-            text = "Your own server for The Witcher: Monster Slayer 1.1.116, running on this phone."
-            setPadding(0, px(2), 0, px(16))
+            text = "Your own game server for version 1.1.116, running on this phone."
+            setPadding(0, px(6), 0, px(16))
         })
 
         updateCard = card(page, "Update")
@@ -135,8 +164,12 @@ class MainActivity : Activity() {
             text = "Map data © OpenStreetMap contributors"
             gravity = Gravity.CENTER_HORIZONTAL
         })
+        page.addView(text(12f, MUTED).apply {
+            text = "Not affiliated with CD PROJEKT RED or Spokko."
+            gravity = Gravity.CENTER_HORIZONTAL
+        })
         val version = packageManager.getPackageInfo(packageName, 0).versionName
-        page.addView(button("Slayer Revival $version · Source code and credits") { open(SITE) }.apply { textSize = 12f },
+        page.addView(button("Version $version · Source code and credits") { open(SITE) }.apply { textSize = 12f },
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
 
         setContentView(ScrollView(this).apply {
@@ -211,7 +244,7 @@ class MainActivity : Activity() {
         val release = Updates.latest
         updateCard.visibility = if (release == null) View.GONE else View.VISIBLE
         if (release != null) {
-            updateText.text = "Slayer Revival ${release.version} is available. Updating keeps your progress." +
+            updateText.text = "Version ${release.version} is available. Updating keeps your progress." +
                 (Updates.status?.let { "\n$it" } ?: "")
             updateButton.isEnabled = !Updates.busy
         }
@@ -221,21 +254,19 @@ class MainActivity : Activity() {
         else aurora.show(false, "$why Get it from its official page.", "Get Aurora Store") { open(AURORA_SITE) }
 
         val installed = installed(GAME)
-        val how = "In Aurora, open the game's page, tap ⋮ → Manual download and enter 300085 (the version code, " +
-            "not 1.1.116). In the Play Store, select the Google account that previously had the game. Then turn off " +
-            "auto-update on the game's Play Store page (⋮ → Enable auto update), or Play replaces it with 1.3.102."
         val ready = installed?.longVersionCode == GAME_VERSION
+        val fromPlay = installed != null && playSigned(installed) // Play can still update it, until the playable client replaces it
         when {
-            installed == null -> game.show(false, how, "Open in Aurora") { openInAurora() }
-            !ready -> game.show(false, "Version ${installed.versionName} is installed, but this needs 1.1.116 " +
-                "(300085). Uninstall it first. $how", "Open in Aurora") { openInAurora() }
+            installed == null -> game.show(false, "Download this exact version with Aurora:", "Open in Aurora", items = DOWNLOAD_STEPS) { openInAurora() }
+            !ready -> game.show(false, "Version ${installed.versionName} is installed, but this needs 1.1.116 (300085). " +
+                "Uninstall it, then download the right version with Aurora:", "Open in Aurora", items = DOWNLOAD_STEPS) { openInAurora() }
+            fromPlay -> game.show(true, "1.1.116 (300085) is installed. Now stop Google Play from updating it to 1.3.102:",
+                "Open in Play Store", items = UPDATE_STEPS) { openInPlay() }
             else -> game.show(true, "1.1.116 (300085) is installed.")
         }
         when {
-            installed == null || !ready -> client.show(false, "Next, the playable client is built from your installed " +
-                "game, once, on a PC. It replaces the Play copy and connects the game to this app.", "Open the guide") { open(GUIDE) }
-            playSigned(installed) -> client.show(false, "The installed game is the original from Google Play. Build " +
-                "the playable client from it once on a PC, as the guide shows, and install it in its place.", "Open the guide") { open(GUIDE) }
+            installed == null || !ready || fromPlay -> client.show(false, "This part needs a PC with USB debugging, once, " +
+                "after step 2. The guide has every command:", "Open the guide", items = CLIENT_STEPS) { open(GUIDE) }
             else -> client.show(true, "Installed: the game connects to this app.")
         }
 
@@ -269,6 +300,12 @@ class MainActivity : Activity() {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$GAME")).setPackage(AURORA))
     } catch (_: ActivityNotFoundException) {
         open(AURORA_SITE)
+    }
+
+    private fun openInPlay() = try {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$GAME")).setPackage(PLAY_STORE))
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(this, "Google Play isn't installed on this phone.", Toast.LENGTH_LONG).show()
     }
 
     private fun open(url: String) = try {
@@ -317,10 +354,12 @@ class MainActivity : Activity() {
         page.addView(this, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { bottomMargin = px(12) })
     }
 
-    /** One setup step: a numbered mark (a tick once done), what to do, and the button that does it. */
+    /** One setup step: a numbered mark (a tick once done), what to do, any sub-steps, and the button that does it. */
     private inner class Step(parent: LinearLayout, private val number: Int, title: String) {
         private val mark = text(13f, bold = true).apply { gravity = Gravity.CENTER }
         private val body = text(14f, MUTED)
+        private val list = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
+        private var listed = emptyList<String>()
         private val bar = ProgressBar(this@MainActivity, null, 0, android.R.style.Widget_Material_ProgressBar_Horizontal)
             .apply { max = 100 }
         private val action = button("") {}.apply { setPadding(0, paddingTop, paddingRight, paddingBottom) }
@@ -329,6 +368,7 @@ class MainActivity : Activity() {
             val column = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
             column.addView(text(16f, bold = true).apply { text = title })
             column.addView(body)
+            column.addView(list)
             column.addView(bar)
             column.addView(action, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
             val row = LinearLayout(this@MainActivity).apply { setPadding(0, px(12), 0, 0) }
@@ -337,7 +377,18 @@ class MainActivity : Activity() {
             parent.addView(row)
         }
 
-        fun show(done: Boolean, message: String, label: String? = null, progress: Int? = null, onClick: () -> Unit = {}) {
+        fun show(done: Boolean, message: String, label: String? = null, progress: Int? = null,
+                 items: List<String> = emptyList(), onClick: () -> Unit = {}) {
+            if (items != listed) { // the screen refreshes every second: rebuild the rows only when they change
+                listed = items
+                list.removeAllViews()
+                items.forEachIndexed { i, item ->
+                    val row = LinearLayout(this@MainActivity).apply { setPadding(0, px(6), 0, 0) }
+                    row.addView(text(14f, GOLD, bold = true).apply { text = "${i + 1}." }, LayoutParams(px(24), LayoutParams.WRAP_CONTENT))
+                    row.addView(text(14f).apply { text = item }, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
+                    list.addView(row)
+                }
+            }
             mark.text = if (done) "✓" else "$number"
             mark.setTextColor(if (done) SURFACE else GOLD)
             mark.background = GradientDrawable().apply {

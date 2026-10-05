@@ -7,7 +7,7 @@
 ## Current Goal
 Two tracks:
 1. **Playtest 1.1.116 end to end over USB** and fix what breaks.
-2. **Stage B: a phone-only companion app** published on GitHub: `companion/`, designed in `docs/phone-only-companion.md`.
+2. **Stage B: a phone-only companion app**, named "Witcher Monster Slayer - Revival", published on GitHub: `companion/`, designed in `docs/phone-only-companion.md`.
    - **Done:** the app runs the server, the tile and placement services and the map index builder on the phone, with no PC.
      - The server is self-contained .NET (CoreCLR, not NativeAOT) for linux-musl-arm64. Python is Alpine's, with pyosmium.
      - `companion/runtime/seccomp_shim.c` answers the NUMA syscalls that Android's app seccomp filter would otherwise kill .NET for.

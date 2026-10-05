@@ -16,7 +16,7 @@
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Slayer Revival"
+        android:label="Witcher Monster Slayer - Revival"
         android:networkSecurityConfig="@xml/network"
         android:theme="@style/Theme.Revival">
 
