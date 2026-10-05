@@ -2,6 +2,7 @@ package io.github.natusanima.slayerrevival
 
 import android.content.Context
 import android.os.Build
+import android.provider.Settings
 import android.sun.security.x509.AlgorithmId
 import android.sun.security.x509.CertificateAlgorithmId
 import android.sun.security.x509.CertificateExtensions
@@ -18,9 +19,11 @@ import android.sun.security.x509.X500Name
 import android.sun.security.x509.X509CertImpl
 import android.sun.security.x509.X509CertInfo
 import io.github.muntashirakon.adb.AbsAdbConnectionManager
+import io.github.muntashirakon.adb.AdbPairingRequiredException
 import io.github.muntashirakon.adb.AdbStream
 import org.conscrypt.Conscrypt
 import java.io.File
+import java.io.IOException
 import java.io.OutputStream
 import java.security.KeyFactory
 import java.security.KeyPairGenerator
@@ -33,6 +36,9 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Date
 import java.util.Random
 import java.util.concurrent.TimeUnit
+
+/** Wireless debugging is switched off, so there is no daemon to find: the player turns it on, and pairs the first time. */
+class WirelessDebuggingOff : AdbPairingRequiredException("Wireless debugging is off")
 
 /**
  * Drives this phone's own adb daemon (Wireless debugging) with no PC. Used only by the client build: to
@@ -51,10 +57,30 @@ object Adb {
         manager(context).pair(host, port, code)
     }
 
-    /** Connect to the daemon, discovering its TLS port over mDNS. Throws AdbPairingRequiredException if unpaired. */
+    /** Whether the Wireless debugging switch is on. Android 11+ keeps it in the global settings. */
+    private fun wirelessDebuggingOn(context: Context) = try {
+        Settings.Global.getInt(context.contentResolver, "adb_wifi_enabled") == 1
+    } catch (_: Settings.SettingNotFoundException) {
+        true // not readable on this phone: let discovery decide
+    }
+
+    /**
+     * Connect to the daemon, discovering its TLS port over mDNS. Throws AdbPairingRequiredException if unpaired, and
+     * its subclass WirelessDebuggingOff if the switch is off, which is how every phone starts (Android also turns it
+     * off by itself when the Wi-Fi network changes). Without that check, discovery just times out.
+     */
     fun connect(context: Context) {
         val m = manager(context)
-        if (!m.isConnected) m.connectTls(context, TimeUnit.SECONDS.toMillis(30))
+        if (m.isConnected) return
+        if (!wirelessDebuggingOn(context)) throw WirelessDebuggingOff()
+        try {
+            check(m.connectTls(context, TimeUnit.SECONDS.toMillis(30))) { "not connected" }
+        } catch (e: AdbPairingRequiredException) {
+            throw e
+        } catch (e: Exception) {
+            throw IOException("Couldn't reach this phone's Wireless debugging (${e.message}). Check that it is on and " +
+                "that the phone is on Wi-Fi, then try again.", e)
+        }
     }
 
     fun disconnect() {

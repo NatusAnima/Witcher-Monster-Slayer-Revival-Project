@@ -65,9 +65,10 @@ class ClientBuildService : Service() {
             val rt = Runtime.prepare(this)
             try {
                 Adb.connect(this)
-            } catch (_: AdbPairingRequiredException) {
+            } catch (e: AdbPairingRequiredException) {
                 pairingRequired = true
-                return finish("Pair this phone with Wireless debugging, then build again.")
+                return finish(if (e is WirelessDebuggingOff) "Wireless debugging is off. Turn it on and pair this phone, then build again."
+                else "Pair this phone with Wireless debugging, then build again.")
             }
 
             if (!signed.isFile) {
