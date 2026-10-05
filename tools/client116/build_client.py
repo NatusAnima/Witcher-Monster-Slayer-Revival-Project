@@ -115,6 +115,8 @@ def assemble(apks, packs, out_path, gadget, config):
     split_packs = sorted(f[6:-4] for f in os.listdir(apks)
                          if f.startswith("split_") and f.endswith(".apk") and f != "split_config.arm64_v8a.apk")
     recovered = sorted(os.listdir(packs))
+    # ponytail: assumes the install carries exactly the Aurora 300085 split set (21 asset packs). A device
+    # with extra config splits (language/density) would trip this; handle those splits when one turns up.
     if len(split_packs) != INSTALL_TIME_PACKS:
         sys.exit(f"expected {INSTALL_TIME_PACKS} asset-pack splits in {apks}, found {len(split_packs)}")
     if len(recovered) != PACKS or sum(os.path.getsize(os.path.join(packs, p)) for p in recovered) != PACK_BYTES:

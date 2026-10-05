@@ -1,6 +1,8 @@
 # Phone-only play: the companion app (design)
 
-Status: design, decided 2026-10-05. Nothing in this document is implemented yet.
+Status: design, decided 2026-10-05. Much of it is now built — the companion app runs the server and maps on
+the phone, and Setup step 3 builds and installs the playable client on the phone (sections 3–4 below), with
+no PC. See `HANDOFF.md` for the current state and what still needs a device test.
 
 ## Goal
 A player with only a phone downloads one app from this project's GitHub Releases. The app:

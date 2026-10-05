@@ -25,16 +25,7 @@ The companion app, **Witcher Monster Slayer - Revival**, runs the server and the
 2. **Follow the Setup list in the app:**
    1. **Aurora Store**, which downloads the game from Google Play.
    2. **The game, version 1.1.116.** Google removed the game from Play in January 2023, so only a Google account that had it before can still download it. In Aurora, sign in with that account (anonymous sign-in can't download it), open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
-   3. **The playable client.** This step still needs a PC, once. Its prerequisites are those of [Setup From a Fresh Clone](#setup-from-a-fresh-clone-windows), except the .NET SDK and Python 3.12. With the phone plugged in, do these, using the numbered steps there for the commands:
-      1. Pull the game's installed APKs (step 2).
-      2. Reinstall them with Google Play as the installer (step 3). Aurora doesn't register its installs with Google Play, so without this the game never downloads its extra 1.3 GB.
-      3. Open the game and accept the 1.3 GB download. Don't tap **Update** in the Play Store.
-      4. Back up the downloaded data and extract it (step 4).
-      5. Build the playable client, uninstall the Play copy and install the client (step 5).
-      6. Copy the game hook to the phone, then unplug it:
-         ```powershell
-         python tools\restart.py --hook-only
-         ```
+   3. **The playable client.** Tap **Build the client**. The app builds the playable client on the phone and installs it, with no PC. The first time, it asks you to turn on **Wireless debugging** (Developer options) and pair once — it uses the phone's own debugging to back up the game (the only way to reach its downloaded data), replace the Play copy and set up the game hook. It needs about 6–7 GB of free space and a few minutes. The game's own files never leave the phone.
    4. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
 3. **Tap Play.** It starts the server and opens the game when the server is ready.
 
@@ -43,12 +34,12 @@ While the server runs, **Dashboard** opens the operator panel (players, map, new
 The app checks Releases for a newer version and offers to update itself. Updates keep your progress, but uninstalling the app deletes it.
 
 ### Building the companion app
-**Prerequisites:** WSL with Ubuntu, the .NET 10 SDK, Python 3.10+, JDK 21, and the Android SDK, with its path in `companion\local.properties` (`sdk.dir=...`).
+**Prerequisites:** WSL with Ubuntu, the .NET 10 SDK, Python 3.10+, JDK 21, Node.js (to bundle the game hook), and the Android SDK, with its path in `companion\local.properties` (`sdk.dir=...`).
 1. Build pyosmium and the seccomp shim for arm64 Alpine. It runs without root or Docker, and the first build takes a few minutes:
    ```powershell
    wsl -d Ubuntu -- sh companion/runtime/build_natives.sh
    ```
-2. Assemble the phone runtime (musl, the server, Python and the map services) into `local\companion\`:
+2. Assemble the phone runtime (musl, the server, Python, the map services, and the on-phone client builder) into `local\companion\`:
    ```powershell
    python companion\runtime\build_runtime.py
    ```

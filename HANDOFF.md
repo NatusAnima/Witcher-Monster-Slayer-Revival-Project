@@ -11,10 +11,10 @@ Two tracks:
    - **Done:** the app runs the server, the tile and placement services and the map index builder on the phone, with no PC.
      - The server is self-contained .NET (CoreCLR, not NativeAOT) for linux-musl-arm64. Python is Alpine's, with pyosmium.
      - `companion/runtime/seccomp_shim.c` answers the NUMA syscalls that Android's app seccomp filter would otherwise kill .NET for.
-   - **Built, not yet tested on the device:** the setup checklist (Aurora, the game at 300085, Play copy or playable client), the region picker (Geofabrik), the in-app dashboard (the panel accepts its key as a cookie), self-update from GitHub Releases, and release signing.
+   - **Built, not yet tested on the device:** the setup checklist (Aurora, the game at 300085, Play copy or playable client), the region picker (Geofabrik), the in-app dashboard (the panel accepts its key as a cookie), self-update from GitHub Releases, release signing, and **the on-phone client build (no PC — see below)**.
      - The release key is in `local/keys/`. Without a backup of it, installed copies can never update.
-   - **Next:** the user tests the release APK on the device from scratch. Then push and publish release v0.1.0.
-   - **Still needs a PC once:** building the playable client (`build_client.py`) and copying the hook (`restart.py --hook-only`).
+   - **No PC needed any more:** Setup step 3 builds and installs the playable client on the phone, and pushes the hook. The Kotlin compiles (`gradlew :app:compileReleaseKotlin`), pending a device test.
+   - **Next:** the user tests the release APK on the device from scratch (including the on-phone build). Then push and publish release v0.1.0.
    - It never distributes the game itself.
 
 ## Current State (2026-10-05)
@@ -22,6 +22,27 @@ Two tracks:
 - The phone runs our built client: `local/client/witcher116.apk`, made by `tools/client116/build_client.py` from the clean Play export (`~/witcher_1.1.116_300085`) and the extracted packs (`~/witcher_1.1.116_packs`).
 - Gadget runs in script mode and loads `/sdcard/Android/data/com.spokko.witchermonsterslayer/files/hook.js`. `restart.py` pushes it; pushing a new copy reloads it into the running game.
 - Hook output goes to logcat under the tag `Frida`, and is copied into `scratch/game.log`.
+
+**On-phone client build (new, 2026-10-05 — compiles, device test pending):**
+- Setup step 3 in the app builds the client on the phone instead of on a PC. Flow in `ClientBuildService`:
+  back up the game over on-device adb → extract the 26 packs (`extract_packs.py`) → assemble the APK
+  (`phone_build.py`, reusing `build_client.assemble()` with `lief` on the phone) → sign with apksig
+  (`ClientSigner`, AndroidKeyStore key) → uninstall the Play copy → install via `PackageInstaller` → push the
+  hook. The reversible work runs first; the destructive uninstall/install is last. Resumes at the install if
+  `cacheDir/client/signed.apk` already exists.
+- **On-device adb** (`Adb.kt`, libadb-android): the player enables Wireless debugging and pairs once in
+  `PairActivity` (IP:port + 6-digit code from the pairing dialog). adb is used only for `bu backup`, the hook
+  push (sync) and the Play-copy uninstall. The adb key lives in `files/adb`.
+- The runtime now ships `lief`, the four builder scripts, Frida Gadget and the compiled hook under
+  `runtime.zip` → `client/` (see `build_runtime.py`). Game-derived transforms (manifest, `libmain.so`) are
+  computed on the phone from the user's own copy — never shipped — so no game files are distributed.
+- **Device test watch-items** (can't be verified off-device):
+  - `connectTls` relies on mDNS to find the TLS connect port; if it doesn't resolve, connect fails without the
+    pairing prompt. Pairing uses the IP:port the dialog shows (the phone's own Wi-Fi IP).
+  - MIUI may still gate the `PackageInstaller` confirm; the player taps Install.
+  - Needs ~6–7 GB free transiently (backup + packs + unsigned + signed APK, cleaned as it goes).
+  - `phone_build` expects exactly the Aurora 300085 split set; a device with extra config splits trips the
+    count check (`ponytail:` note in `build_client.assemble`).
 
 **The server:**
 - `server/` is the 1.1.116 reconstruction, vendored in from the privately shared repo. That copy stays untouched and git-ignored; never commit or publish it.
