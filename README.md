@@ -164,6 +164,8 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
   - libadb-android (dual-licensed GPL-3.0-or-later or Apache-2.0);
   - sun-security-android (GPL-2.0 with the Classpath exception);
   - Conscrypt (Apache-2.0).
+  - gplayapi 3.6.4 by Aurora OSS (GPL-3.0-or-later; https://gitlab.com/AuroraOSS/gplayapi), with OkHttp, Gson, kotlinx.serialization and kotlinx.coroutines (Apache-2.0) and Protocol Buffers Lite (BSD-3-Clause).
+- Signing in to Google and downloading the game's extra data follow the open source of Aurora Store (the sign-in flow, GPL-3.0-or-later) and microG (the asset-delivery request and its headers, Apache-2.0). The app only asks Google Play for data your own account may download.
 - The companion app bundles third-party software, each under its own licence:
   - from Alpine Linux 3.22: musl (MIT), CPython 3.12 (PSF-2.0), OpenSSL 3.5 (Apache-2.0), SQLite (public domain), libstdc++ and libgcc (GPL with the GCC Runtime Library Exception), zlib (Zlib), libffi and expat (MIT), bzip2 (bzip2), xz/liblzma (0BSD), mpdecimal and lz4 (BSD-2-Clause). Their sources are in Alpine's `aports` repository;
   - the .NET runtime and ASP.NET Core (MIT), compiled into the server;
