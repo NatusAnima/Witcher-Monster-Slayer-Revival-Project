@@ -19,7 +19,17 @@ Two tracks:
      - The on-phone client build itself has not been run on the device yet.
      - Fixed on the way: `build_runtime.py`'s closure check now skips `client/` (it failed on `client/libgadget.config.so`, a config that only has a library's name), and the manifest drops three legacy permissions (READ_PHONE_STATE and storage) that the manifest merger added because libadb-android declares no SDK version.
      - To rebuild: `python companion/runtime/build_runtime.py`, then `cd companion; ./gradlew assembleRelease`, then copy the APK to `local/release/`. A failed runtime build deletes `local/companion/`.
-   - **Next:** the user tests it on the device from scratch (including the on-phone build). Then push and publish release v0.1.0.
+   - **New (2026-10-06): the 26 packs come straight from Google Play, inside the app** (`PlayAccount`, `GoogleLoginActivity`, `PlayPacks`, `PackDownloadService`, and the guided `SetupActivity`, opened from the main screen's Setup card). It compiles; **the device test is pending** and needs a Google account that had the game.
+     - Sign-in: Google's own EmbeddedSetup page in a WebView, then the AC2DM exchange, then gplayapi (`AuthHelper.build`, Pixel 9a profile). The account is forgotten when the download ends.
+     - Packs: `POST https://play-fe.googleapis.com/fdfe/assetModuleDelivery` (protocol and headers from microG), smallest pack first. Each pack is verified against `assets/packs.txt` (size and SHA-256 of the originals) and lands in `files/game/packs/<pack>`: the same files `extract_packs.py` writes, so `phone_build.py --packs <that dir>` takes them as they are.
+     - A refused or odd answer goes to `files/logs/play.log` (no tokens). The guided setup has a **Copy debug info** button.
+   - **Still to do, for the session that owns `ClientBuildService` and `phone_build.py`: take Wireless debugging out of the build.**
+     1. Take the packs from `PackDownloadService.dir(this)` (check `PackDownloadService.complete(this)`) instead of `Adb.backup` and `extract_packs.py`. Delete them after a successful install.
+     2. Replace `Adb.uninstall` with the system uninstall dialog (`REQUEST_DELETE_PACKAGES`, then `PackageInstaller.uninstall` or `ACTION_DELETE`), and carry on with the install afterwards (`resumable()` already resumes there).
+     3. Replace the hook push over adb (`Adb.push` into `Android/data/.../hook.js`, which an app cannot write on Android 11) with a hook shipped inside the client APK.
+     4. After that `PairActivity`, `PairingService`, `Adb.kt` and the libadb-android and Conscrypt dependencies can go.
+     - `SetupActivity` step 5 reads `ClientBuildService.running/status/progress/pairingRequired/resumable`: keep those, or update that step.
+   - **Next:** the user tests the Google Play download on the device (sign in, then the extra data). Then the builder change above, a from-scratch test, and release v0.1.0.
    - It never distributes the game itself.
 
 ## Current State (2026-10-05)
