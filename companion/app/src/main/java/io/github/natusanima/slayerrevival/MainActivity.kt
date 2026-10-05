@@ -44,14 +44,13 @@ class MainActivity : Activity() {
 
         // The setup steps, one short line each. The commands for the PC part are in the guide (README).
         private val DOWNLOAD_STEPS = listOf(
-            "Tap Open in Aurora below.",
+            "Tap Open in Aurora below. If it asks how to sign in, Anonymous is enough.",
             "Tap the three dots at the top right, then Manual download.",
             "Enter the version code 300085. Not 1.1.116.",
             "Download and install it.",
         )
         private val UPDATE_STEPS = listOf(
-            "Tap Open in Play Store below.",
-            "Use the Google account that previously had the game.",
+            "Tap Open in Play Store below. If Play can't find the game, skip this step: nothing can update it.",
             "Tap the three dots at the top right of the game's page.",
             "Untick Enable auto update. Never tap Update.",
         )

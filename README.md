@@ -24,7 +24,7 @@ The companion app, **Witcher Monster Slayer - Revival**, runs the server and the
 1. **Install the app.** Download `Witcher-Monster-Slayer-Revival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
 2. **Follow the Setup list in the app:**
    1. **Aurora Store**, which downloads the game from Google Play.
-   2. **The game, version 1.1.116.** In Aurora, open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
+   2. **The game, version 1.1.116.** In Aurora, open the game's page, tap the three dots → **Manual download** and enter **300085**. Aurora's anonymous sign-in is enough. Then, in the Play Store, untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
    3. **The playable client.** This step still needs a PC, once. Its prerequisites are those of [Setup From a Fresh Clone](#setup-from-a-fresh-clone-windows), except the .NET SDK and Python 3.12. With the phone plugged in, do these, using the numbered steps there for the commands:
       1. Pull the game's installed APKs (step 2).
       2. Reinstall them with Google Play as the installer (step 3). Aurora doesn't register its installs with Google Play, so without this the game never downloads its extra 1.3 GB.
@@ -71,14 +71,13 @@ The app checks Releases for a newer version and offers to update itself. Updates
 Commands are PowerShell, run from the repository root, with `$adb = "tools\platform-tools\adb.exe"`.
 
 1. **Install 1.1.116 from Google Play through the Aurora Store.**
-   1. Install Aurora Store from its official source (https://gitlab.com/AuroraOSS/AuroraStore) and finish its setup.
+   1. Install Aurora Store from its official source (https://gitlab.com/AuroraOSS/AuroraStore) and finish its setup. Its anonymous sign-in is enough.
    2. Open the game's listing in Aurora:
       ```powershell
       & $adb shell am start -a android.intent.action.VIEW -d "market://details?id=com.spokko.witchermonsterslayer" -p com.aurora.store
       ```
    3. Choose **Manual download** and enter the version code **300085** (not `1.1.116`), then install.
-   4. In the Play Store, select the Google account that previously had the game.
-   5. Turn off auto-update for the game: game page → ⋮ → untick **Enable auto update**. Otherwise Play replaces it with 1.3.102.
+   4. Turn off auto-update for the game: game page → ⋮ → untick **Enable auto update**. Otherwise Play replaces it with 1.3.102.
 2. **Pull the installed APKs** (23 files, about 615 MB):
    ```powershell
    $out = "$HOME\witcher_1.1.116_300085"; mkdir $out
