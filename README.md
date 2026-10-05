@@ -5,6 +5,8 @@ This project resurrects the discontinued augmented reality game **The Witcher: M
 
 The original backend is gone, so the project runs a reconstructed game server and modifies your own installation of the game to talk to it. The game's files are not distributed here: you install the game yourself from Google Play (through the Aurora Store) and the tools build a playable client from that installation.
 
+> **Thank you, Villainser.** This project is built on Villainser's 1.1.116 reconstruction. The game server, the operator panel, the OpenStreetMap map services, the story and protocol tools, the backend tests and the in-game client fixes all started there, and Villainser's contribution to this project is immense. Without it, this project would not exist in its present form. See [Credits and Licensing](#credits-and-licensing).
+
 ## How it works
 - **Client:** `tools/client116/build_client.py` merges your installed APK splits and the 26 asset packs Google Play downloads after install into one APK. It patches the manifest, adds Frida Gadget, and re-signs it. Gadget runs `tools/client116/hook.js` inside the game, which:
   - redirects the original server hosts to your server;
@@ -16,10 +18,10 @@ The original backend is gone, so the project runs a reconstructed game server an
   - an operator panel (players, map, news, tasks, weather).
 - **Maps:** the map comes from OpenStreetMap. `server/connection/map-road-fixture-01/` holds a tile service (`18082`) and a monster-placement service (`18093`), both reading a regional SQLite index built from an OSM extract.
 - **Running it:** `tools/restart.py` starts all of it and connects the phone over USB (`adb reverse`).
-- **Phone-only:** the companion app in `companion/` runs the server and the map services on the phone itself. See the next section.
+- **Phone-only:** the companion app in `companion/` runs the server and the map services on the phone, and builds the playable client there, so no PC is needed. See the next section.
 
 ## Phone-only play: the companion app
-The companion app, **Witcher Monster Slayer - Revival**, runs the server and the map on the phone, so no PC has to keep running while you play. It needs an arm64 phone with Android 11 or later.
+The companion app, **Witcher Monster Slayer - Revival**, runs the server and the map on the phone and builds the playable client there, so no PC is needed, for setup or for playing. It needs an arm64 phone with Android 11 or later.
 
 1. **Install the app.** Download `Witcher-Monster-Slayer-Revival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
 2. **Follow the Setup list in the app:**
@@ -113,6 +115,8 @@ Commands are PowerShell, run from the repository root, with `$adb = "tools\platf
    - Everything machine-specific (build output, profiles, map data, the built APK) lives in the git-ignored `local/` folder.
 
 ## Repository Structure
+The code under `server/` originates from Villainser's 1.1.116 reconstruction (see [Credits and Licensing](#credits-and-licensing)).
+
 - `server/WitcherRevival.Server/`: the game server.
   - `Net/`: protocol handlers, player state, world, story, tasks.
   - `Admin/`: the operator panel.
@@ -141,7 +145,15 @@ Commands are PowerShell, run from the repository root, with `$adb = "tools\platf
 
 ## Credits and Licensing
 - This project is licensed under GPLv3 (`LICENSE`).
-- **Villainser** did a large part of the work in this project. The 1.1.116 server, map services, story and contract tools, and the ported client fixes all come from Villainser's 1.1.116 reconstruction. It was forked from this project's commit `3cb353b`, is GPL-3.0-only, and is used with permission; see `server/LICENSE` and `server/upstream-provenance.json`. Some copied documents link to that project's own docs, which are not included here.
+- **Villainser's contribution to this project is immense.** This project is built on Villainser's 1.1.116 reconstruction, which is the source of:
+  - the game server and its operator panel (`server/WitcherRevival.Server/`): the protocol, player state, world, story, tasks and weather;
+  - the OpenStreetMap map services and the index builder (`server/connection/`);
+  - the story and bestiary generators (`server/story-1.1.116/`);
+  - the protocol coverage documentation and the wire contract (`server/contract-1.1.116/`, `server/CONTRACT.md`);
+  - the backend integration tests (`server/tests/`);
+  - the ported client fixes in the game hook (`tools/client116/`): the missing reward-popup asset, the coin-preview crash, and the GPS collector.
+
+  The reconstruction was forked from this project's commit `3cb353b`, is GPL-3.0-only, and is used with permission; see `server/LICENSE` and `server/upstream-provenance.json`. Some copied documents link to that project's own docs, which are not included here.
 - The Earcut triangulation port is under the ISC licence; its notice is kept in `server/connection/map-road-fixture-01/osm_area_geometry.py`.
 - Map data is © OpenStreetMap contributors (ODbL 1.0). Indexes and tiles generated from it are derived from OpenStreetMap.
 - The PC tools download Frida Gadget and uber-apk-signer at build time; neither is in this repository.
