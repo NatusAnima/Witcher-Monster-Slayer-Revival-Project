@@ -7,6 +7,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.PowerManager
+import android.os.SystemClock
 import android.text.format.Formatter
 import java.io.File
 import java.io.IOException
@@ -56,7 +58,14 @@ class MapService : Service() {
         val name = intent.getStringExtra("name")!!
         val url = intent.getStringExtra("url")!!
         thread(name = "map-build") {
-            build(id, name, url)
+            // the CPU would stall with the screen off, and the index builder runs for minutes
+            val lock = getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "slayerrevival:map")
+                .apply { acquire(2 * 60 * 60 * 1000L) }
+            try {
+                build(id, name, url)
+            } finally {
+                lock.release()
+            }
             running = false
             stopSelf()
         }
@@ -83,9 +92,16 @@ class MapService : Service() {
             val rt = Runtime.prepare(this)
             val log = File(filesDir, "logs/map-build.log").apply { delete() }
             val process = Runtime.start(this, "libpython.so", listOf("$rt/maps/map-road-fixture-01/osm_extract_index.py",
-                "--input", "$pbf", "--output", "$index"), log, mapOf("PYTHONHOME" to "$rt/python"))
+                "--input", "$pbf", "--output", "$index"), log, mapOf("PYTHONHOME" to "$rt/python", "PYTHONUNBUFFERED" to "1"))
             builder = process
-            val code = process.waitFor()
+            // the builder prints nothing until it is done: show that it is alive, with the index growing beside it
+            val started = SystemClock.elapsedRealtime()
+            while (!process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                val minutes = (SystemClock.elapsedRealtime() - started) / 60_000
+                val part = File(dir, "${index.name}.partial").length()
+                update("Building the map of $name: $minutes min so far" + (if (part > 0) ", ${size(part)} written" else "") + ". This takes a few minutes.")
+            }
+            val code = process.exitValue()
             if (cancelled) throw IOException("cancelled")
             if (code != 0) throw IOException("the map builder stopped with code $code: see its log")
             Maps.select(this, index, name)

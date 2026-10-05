@@ -251,7 +251,8 @@ class SetupActivity : Activity() {
             append("Game: " + (game?.let { "${it.versionName} (${it.longVersionCode}), ${it.splitNames?.size ?: 0} splits, " +
                 "${if (playSigned(it)) "Play" else "other"} signature" } ?: "not installed") + "\n")
             append("Signed in to Google: ${PlayAccount.signedIn(this@SetupActivity)}\n")
-            for (log in listOf("play", "client-build")) append("\n-- $log.log --\n${tail(File(filesDir, "logs/$log.log"))}\n")
+            append("Map: ${MapService.status ?: "not started"}\n")
+            for (log in listOf("play", "client-build", "map-build")) append("\n-- $log.log --\n${tail(File(filesDir, "logs/$log.log"))}\n")
         }
         getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Debug info", info))
         Toast.makeText(this, "Copied. Paste it where you report the problem.", Toast.LENGTH_LONG).show()
