@@ -48,7 +48,7 @@ class SetupActivity : Activity() {
         )
         val SIGN_IN_STEPS = listOf(
             "Tap Sign in with Google below.",
-            "Use the account that had the game before.",
+            "Sign in with the account you play with. Refused? Use one that had the game before.",
             "Follow Google's prompts. The page closes by itself.",
         )
 
@@ -159,11 +159,11 @@ class SetupActivity : Activity() {
             email != null -> steps[2].show(true, at(2), "Signed in as $email. The app signs you out as soon as the " +
                 "download is finished.", "Sign out") { PlayAccount.signOut(this) }
             packsDone -> steps[2].show(true, at(2), "Not needed any more: the extra data is on this phone.")
-            else -> steps[2].show(false, at(2), "The game was removed from Google Play in 2023, so only an account that " +
-                "had it can download its extra data. The app asks Google Play for that data the way the Play Store does. " +
-                "Your Google account stays on this phone, private to this app, and the app signs out when the download " +
-                "ends. This phone then shows up as a Pixel 9a in your Google account's device list: you can remove it " +
-                "there afterwards. This is not an official Google method: use an account you are comfortable with.",
+            else -> steps[2].show(false, at(2), "The extra data comes from Google Play, which removed the game in 2023: " +
+                "it may only offer it to an account that had the game before. The app asks Google Play the way the Play " +
+                "Store does. Your Google account stays on this phone, private to this app, and the app signs out when " +
+                "the download ends. This phone then shows up as a Pixel 9a in your Google account's device list: you can " +
+                "remove it there afterwards. This is not an official Google method: use an account you are comfortable with.",
                 "Sign in with Google", items = SIGN_IN_STEPS) { startActivity(Intent(this, GoogleLoginActivity::class.java)) }
         }
 

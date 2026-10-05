@@ -7,9 +7,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
+import java.util.Locale
+import java.util.TimeZone
 import java.util.UUID
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
@@ -28,6 +31,7 @@ object PlayPacks {
     private class Slice(val id: String, val size: Long, val sha256: String, val format: Int, val chunks: List<Chunk>)
 
     private const val DELIVERY = "https://play-fe.googleapis.com/fdfe/assetModuleDelivery"
+    private const val SYNC = "https://play-fe.googleapis.com/fdfe/sync"
     private const val PLAY_CORE = 11000L // what the game's own Play Core library reports
     private const val FINSKY = "Finsky/37.5.24-29%20%5B0%5D%20%5BPR%5D%20565477504"
     private const val TARGETS = "CAESN/qigQYC2AMBFfUbyA7SM5Ij/CvfBoIDgxHqGP8R3xzIBvoQtBKFDZ4HAY4FrwSVMasHBO0O2Q8akgYRAQECAQO7AQEpKZ0CnwECAwRrAQYBr9PPAoK7sQMBAQMCBAkIDAgBAwEDBAICBAUZEgMEBAMLAQEBBQEBAcYBARYED+cBfS8CHQEKkAEMMxcBIQoUDwYHIjd3DQ4MFk0JWGYZEREYAQOLAYEBFDMIEYMBAgICAgICOxkCD18LGQKEAcgDBIQBAgGLARkYCy8oBTJlBCUocxQn0QUBDkkGxgNZQq0BZSbeAmIDgAEBOgGtAaMCDAOQAZ4BBIEBKUtQUYYBQscDDxPSARA1oAEHAWmnAsMB2wFyywGLAxol+wImlwOOA80CtwN26A0WjwJVbQEJPAH+BRDeAfkHK/ABASEBCSAaHQemAzkaRiu2Ad8BdXeiAwEBGBUBBN4LEIABK4gB2AFLfwECAdoENq0CkQGMBsIBiQEtiwGgA1zyAUQ4uwS8AwhsvgPyAcEDF27vApsBHaICGhl3GSKxAR8MC6cBAgItmQYG9QIeywLvAeYBDArLAh8HASI4ELICDVmVBgsY/gHWARtcAsMBpALiAdsBA7QBpAJmIArpByn0AyAKBwHTARIHAX8D+AMBcRIBBbEDmwUBMacCHAciNp0BAQF0OgQLJDuSAh54kwFSP0eeAQQ4M5EBQgMEmwFXywFo0gFyWwMcapQBBugBPUW2AVgBKmy3AR6PAbMBGQxrUJECvQR+8gFoWDsYgQNwRSczBRXQAgtRswEW0ALMAREYAUEBIG6yATYCRE8OxgER8gMBvQEDRkwLc8MBTwHZAUOnAXiiBakDIbYBNNcCIUmuArIBSakBrgFHKs0EgwV/G3AD0wE6LgECtQJ4xQFwFbUCjQPkBS6vAQqEAUZF3QIM9wEhCoYCQhXsBCyZArQDugIziALWAdIBlQHwBdUErQE6qQaSA4EEIvYBHir9AQVLmgMCApsCKAwHuwgrENsBAjNYswEVmgIt7QJnN4wDEnta+wGfAcUBxgEtEFXQAQWdAUAeBcwBAQM7rAEJATJ0LENrdh73A6UBhAE+qwEeASxLZUMhDREuH0CGARbd7K0GlQo"
@@ -37,6 +41,76 @@ object PlayPacks {
     fun expected(context: Context): List<Pack> = context.assets.open("packs.txt").bufferedReader().readLines()
         .filter { it.isNotBlank() }.map { line -> line.split(' ', limit = 3).let { Pack(it[2], it[0].toLong(), it[1]) } }
         .sortedBy { it.size }
+
+    /**
+     * Tells Google Play what this phone is, as the Play Store does once a day (microG calls it the device sync).
+     * Without it a delivery can come back with no pack data. Built from the profile the phone was registered with.
+     */
+    fun sync(context: Context, auth: AuthData) {
+        val p = auth.deviceInfoProvider!!.properties
+        fun text(key: String) = p.getProperty(key).orEmpty()
+        fun number(key: String, default: Long = 0) = p.getProperty(key)?.toLongOrNull() ?: default
+        fun list(key: String) = text(key).split(',').filter { it.isNotEmpty() }
+        val id = BigInteger(auth.gsfId, 16).toLong()
+        val account = encode(MessageDigest.getInstance("SHA-256").digest("$id-${auth.email}".toByteArray()))
+        val zone = TimeZone.getDefault().rawOffset
+        val width = number("Screen.Width")
+        val height = number("Screen.Height")
+        val density = number("Screen.Density", 420)
+        val body = Pb()
+            .msg(1) { msg(7) { msg(1) { str(1, account) } } } // this account on this device
+            .msg(1) { msg(8) { msg(1) { str(1, account) } } }
+            .msg(1) {
+                msg(10) { // what the device can do
+                    list("Features").forEach { msg(1) { str(1, it).int(2, 0) } }
+                    list("SharedLibraries").forEach { str(2, it) }
+                    list("Locales").forEach { str(3, it.replace('_', '-')) }
+                    list("GL.Extensions").forEach { str(4, it) }
+                    int(5, 0)
+                }
+            }
+            .msg(1) { msg(11) { int(1, number("Keyboard")).int(2, 0).int(3, number("Navigation")) } }
+            .msg(1) {
+                msg(12) {
+                    str(1, text("Build.MANUFACTURER")).str(2, text("Build.MODEL")).str(3, text("Build.DEVICE"))
+                        .str(4, text("Build.PRODUCT")).str(5, text("Build.BRAND"))
+                }
+            }
+            .msg(1) { msg(13) {} }
+            .msg(1) {
+                msg(15) {
+                    int(1, 0).int(2, number("TotalMemoryBytes", 8589935000L)).int(3, number("MaxNumOfCPUCores", 8))
+                    list("Platforms").forEach { str(4, it) }
+                }
+            }
+            .msg(1) { msg(16) { str(1, "GMT%+d:%02d".format(Locale.US, zone / 3_600_000, Math.abs(zone / 60_000 % 60))) } }
+            .msg(1) { msg(18) { str(1, "am-google").str(2, "play-ms-android-google").str(3, "play-ad-ms-android-google") } }
+            .msg(1) { msg(19) { int(2, number("Vending.version")) } }
+            .msg(1) {
+                msg(20) {
+                    int(1, number("TouchScreen")).int(2, width).int(3, height)
+                        .int(4, stablePoint(width.toInt(), height.toInt(), density.toInt()).toLong()).int(5, density)
+                }
+            }
+            .msg(1) {
+                msg(21) {
+                    str(1, text("Build.FINGERPRINT")).int(2, number("Build.VERSION.SDK_INT")).str(4, "REL").int(6, number("GL.Version"))
+                }
+            }
+            .toBytes()
+        val reply = post(SYNC, headers(auth), body)
+        PlayLog.write(context, "device sync: HTTP ${reply.code}, ${reply.body.size} bytes")
+    }
+
+    /** The Play Store's size class for a screen, as microG works it out. */
+    private fun stablePoint(x: Int, y: Int, density: Int): Int {
+        val long = (y * (160f / density)).toInt()
+        if (long < 470) return 17
+        val short = (x * (160f / density)).toInt()
+        if (long >= 960 && short >= 720) return if (long * 3 / 5 < short - 1) 20 else 4
+        val size = if (long < 640 || short < 480) 2 else 3
+        return if (long * 3 / 5 < short - 1) size or 16 else size
+    }
 
     /**
      * Downloads [pack] into [dir] unless it is already there. [progress] gets the bytes of the pack so far; it may
@@ -75,10 +149,14 @@ object PlayPacks {
         } catch (e: RuntimeException) {
             PlayLog.write(context, "unreadable delivery answer: ${Base64.encodeToString(reply.body.copyOf(minOf(reply.body.size, 300)), Base64.NO_WRAP)}")
             throw IOException("Google Play's answer wasn't understood")
-        } ?: throw IOException("Google Play's answer held no delivery information")
-        info.one(4)?.let { throw IOException("Google Play refused the download (status ${it.value}). Is this the account that had the game?") }
-        val module = info.many(3).map { it.fields() }.firstOrNull { it.one(1)?.text() == pack }
-            ?: throw IOException("Google Play offered nothing for $pack. Is this the account that had the game?")
+        }
+        val module = info?.takeIf { it.one(4) == null }?.many(3)?.map { it.fields() }?.firstOrNull { it.one(1)?.text() == pack }
+        if (module == null) { // there is nothing to download in it, so nothing secret: its shape tells what Google meant
+            PlayLog.write(context, "delivery answer for $pack: ${dump(reply.body)}")
+            val status = info?.one(4)?.let { " (status ${it.value})" }.orEmpty()
+            throw IOException("Google Play returned no data for $pack$status. If this account never had the game, " +
+                "Google may not offer it the extra data.")
+        }
         return module.many(3).map { slice ->
             val fields = slice.fields()
             val full = fields.one(2)?.fields() ?: throw IOException("Google Play gave no full download for $pack")
@@ -218,7 +296,7 @@ object PlayPacks {
     private fun headers(auth: AuthData): Map<String, String> {
         val device = auth.deviceInfoProvider!!
         return mapOf(
-            "X-PS-RH" to requestHeader(java.lang.Long.parseUnsignedLong(auth.gsfId, 16), device.properties),
+            "X-PS-RH" to requestHeader(BigInteger(auth.gsfId, 16).toLong(), device.properties),
             "User-Agent" to device.userAgentString,
             "Accept-Language" to "en-US",
             "Connection" to "Keep-Alive",
@@ -228,6 +306,10 @@ object PlayPacks {
             "X-DFE-Phenotype" to PHENOTYPE,
             "Authorization" to "Bearer ${auth.authToken}",
             "Content-Type" to "application/x-protobuf",
+        ) + listOfNotNull(
+            // the registration Play made of this phone: not in the Play Store's own requests to this endpoint, but in Aurora's
+            auth.deviceConfigToken.takeIf { it.isNotBlank() }?.let { "X-DFE-Device-Config-Token" to it },
+            auth.deviceCheckInConsistencyToken.takeIf { it.isNotBlank() }?.let { "X-DFE-Device-Checkin-Consistency-Token" to it },
         )
     }
 
@@ -296,6 +378,21 @@ object PlayPacks {
 
     private fun List<Field>.one(number: Int) = firstOrNull { it.number == number }
     private fun List<Field>.many(number: Int) = filter { it.number == number }
+
+    /** A message's fields as text for the log: numbers, values, short strings, nested messages. */
+    private fun dump(data: ByteArray, depth: Int = 0): String = try {
+        read(data).joinToString(" ") { f ->
+            val b = f.bytes
+            when {
+                b == null -> "${f.number}=${f.value}"
+                b.isNotEmpty() && b.all { it.toInt() in 32..126 } -> "${f.number}=\"${String(b).take(60)}\""
+                depth < 5 -> try { "${f.number}{${dump(b, depth + 1)}}" } catch (e: RuntimeException) { "${f.number}=<${b.size} bytes>" }
+                else -> "${f.number}=<${b.size} bytes>"
+            }
+        }.take(1500)
+    } catch (e: RuntimeException) {
+        "<${data.size} bytes, not a message>"
+    }
 
     private fun read(data: ByteArray): List<Field> {
         val fields = ArrayList<Field>()

@@ -71,10 +71,19 @@ class PackDownloadService : Service() {
             val packs = PlayPacks.expected(this)
             val total = packs.sumOf { it.size }
             var before = 0L
+            var synced = false
             for ((i, pack) in packs.withIndex()) {
                 var attempt = 1
                 while (true) try {
                     val auth = PlayAccount.session(this) // a fresh access token for each pack: a long download outlives one
+                    if (!synced) {
+                        synced = true
+                        try {
+                            PlayPacks.sync(this, auth)
+                        } catch (e: IOException) {
+                            PlayLog.write(this, "device sync failed: $e") // the download is still tried
+                        }
+                    }
                     PlayPacks.fetch(this, auth, pack, dir(this)) { bytes ->
                         if (cancelled) throw CancellationException()
                         val done = before + bytes
