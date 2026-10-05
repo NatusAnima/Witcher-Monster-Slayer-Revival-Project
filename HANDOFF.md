@@ -7,12 +7,15 @@
 ## Current Goal
 Two tracks:
 1. **Playtest 1.1.116 end to end over USB** and fix what breaks.
-2. **Stage B: a phone-only companion app** published on GitHub. The design is in `docs/phone-only-companion.md`.
-   - The companion hosts the server as a foreground service, so the game APK never changes after install.
-   - It walks players through the Aurora install, gets the Play-delivered packs via on-device adb (Wireless debugging), and builds, signs and installs the client on the phone.
-   - It offers a region picker with projected storage, and an optional shared server for multiplayer.
+2. **Stage B: a phone-only companion app** published on GitHub: `companion/`, designed in `docs/phone-only-companion.md`.
+   - **Done:** the app runs the server, the tile and placement services and the map index builder on the phone, with no PC.
+     - The server is self-contained .NET (CoreCLR, not NativeAOT) for linux-musl-arm64. Python is Alpine's, with pyosmium.
+     - `companion/runtime/seccomp_shim.c` answers the NUMA syscalls that Android's app seccomp filter would otherwise kill .NET for.
+   - **Built, not yet tested on the device:** the setup checklist (Aurora, the game at 300085, Play copy or playable client), the region picker (Geofabrik), the in-app dashboard (the panel accepts its key as a cookie), self-update from GitHub Releases, and release signing.
+     - The release key is in `local/keys/`. Without a backup of it, installed copies can never update.
+   - **Next:** the user tests the release APK on the device from scratch. Then push and publish release v0.1.0.
+   - **Still needs a PC once:** building the playable client (`build_client.py`) and copying the hook (`restart.py --hook-only`).
    - It never distributes the game itself.
-   - Next step: **spike S1**. Does a static linux-musl-arm64 NativeAOT build of the server run under Android 11's app sandbox (seccomp and SELinux) and serve on loopback?
 
 ## Current State (2026-10-05)
 **The client:**
@@ -42,7 +45,7 @@ Two tracks:
   - The server keeps the newest position for 120 s. Story goals and relocation are placed around it; without a position they fall back to the area estimate.
   - Distance policy stays observation (`shadow`) unless changed in the panel.
   - Look for `gps …` lines in `scratch/game.log` (`capture-ready`, `native-ready`, `shadow-ready`, `counts …`).
-- **The phone must stay plugged in.** All traffic goes through `adb reverse`, and the server binds only to loopback.
+- **With `restart.py`, the phone must stay plugged in.** All traffic goes through `adb reverse`, and the server binds only to loopback. The companion app runs everything on the phone instead.
 
 ## Device and Tooling Notes
 - **Xiaomi phone (2201116SG, Android 11):** `adb install` shows an on-screen "Install via USB" prompt. If nobody taps it within about a minute, the install fails with `INSTALL_FAILED_USER_RESTRICTED`.

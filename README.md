@@ -16,6 +16,41 @@ The original backend is gone, so the project runs a reconstructed game server an
   - an operator panel (players, map, news, tasks, weather).
 - **Maps:** the map comes from OpenStreetMap. `server/connection/map-road-fixture-01/` holds a tile service (`18082`) and a monster-placement service (`18093`), both reading a regional SQLite index built from an OSM extract.
 - **Running it:** `tools/restart.py` starts all of it and connects the phone over USB (`adb reverse`).
+- **Phone-only:** the companion app in `companion/` runs the server and the map services on the phone itself. See the next section.
+
+## Phone-only play: the companion app
+The companion app runs the server and the map on the phone, so no PC has to keep running while you play. It needs an arm64 phone with Android 11 or later.
+
+1. **Install the app.** Download `SlayerRevival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
+2. **Follow the Setup list in the app:**
+   1. **Aurora Store**, which downloads the game from Google Play.
+   2. **The game, version 1.1.116.** In Aurora, open the game's page, tap ⋮ → **Manual download** and enter **300085**. Then turn off auto-update on the game's Play Store page.
+   3. **The playable client.** This step still needs a PC, once. Follow steps 2–5 of [Setup From a Fresh Clone](#setup-from-a-fresh-clone-windows); its prerequisites apply, except the .NET SDK and Python 3.12. Then copy the game hook to the phone, and unplug it:
+      ```powershell
+      python tools\restart.py --hook-only
+      ```
+   4. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
+3. **Tap Play.** It starts the server and opens the game when the server is ready.
+
+While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather) inside the app.
+
+The app checks Releases for a newer version and offers to update itself. Updates keep your progress, but uninstalling the app deletes it.
+
+### Building the companion app
+**Prerequisites:** WSL with Ubuntu, the .NET 10 SDK, Python 3.10+, JDK 21, and the Android SDK, with its path in `companion\local.properties` (`sdk.dir=...`).
+1. Build pyosmium and the seccomp shim for arm64 Alpine. It runs without root or Docker, and the first build takes a few minutes:
+   ```powershell
+   wsl -d Ubuntu -- sh companion/runtime/build_natives.sh
+   ```
+2. Assemble the phone runtime (musl, the server, Python and the map services) into `local\companion\`:
+   ```powershell
+   python companion\runtime\build_runtime.py
+   ```
+3. Build the APK, which lands in `companion\app\build\outputs\apk\release\`:
+   ```powershell
+   cd companion; .\gradlew assembleRelease
+   ```
+   Release builds are signed with the key that `local\keys\companion.properties` names. Without it the APK is unsigned. Self-updates only install over a copy signed with the same key, so keep a backup of `local\keys\`.
 
 ## Setup From a Fresh Clone (Windows)
 **Prerequisites:**
@@ -24,6 +59,7 @@ The original backend is gone, so the project runs a reconstructed game server an
 - Python 3.10+ with `pip install -r tools/requirements.txt`;
 - Python 3.12+ (for the map tools venv);
 - JDK 21 on `PATH`;
+- Node.js, whose `npm` installs what the game hook is bundled with;
 - Android platform-tools unzipped into `tools/platform-tools/`.
 
 Commands are PowerShell, run from the repository root, with `$adb = "tools\platform-tools\adb.exe"`.
@@ -91,6 +127,7 @@ Commands are PowerShell, run from the repository root, with `$adb = "tools\platf
 - `server/tests/`: backend integration tests. `server/dev.py` expects the Linux toolchain layout.
 - `tools/client116/`: the client builder (`build_client.py`), manifest editor (`axml.py`), pack extractor (`extract_packs.py`) and in-game hook (`hook.js`).
 - `tools/restart.py`: one-command start/restart of everything, including the operator panel.
+- `companion/`: the Android companion app (`app/`) and the scripts that build its phone runtime (`runtime/`).
 - `HANDOFF.md`: the active session tracker. **Start here when resuming development.**
 - **Legacy (client 1.0.43, kept for reference):**
   - `tools/patch/` (`patch_apk.py` still supplies the Gadget and signer downloads);
@@ -111,4 +148,8 @@ Commands are PowerShell, run from the repository root, with `$adb = "tools\platf
 - The Earcut triangulation port is under the ISC licence; its notice is kept in `server/connection/map-road-fixture-01/osm_area_geometry.py`.
 - Map data is © OpenStreetMap contributors (ODbL 1.0). Indexes and tiles generated from it are derived from OpenStreetMap.
 - Frida Gadget and uber-apk-signer are downloaded at build time and are not included.
+- The companion app bundles third-party software, each under its own licence:
+  - from Alpine Linux 3.22: musl (MIT), CPython 3.12 (PSF-2.0), OpenSSL 3.5 (Apache-2.0), SQLite (public domain), libstdc++ and libgcc (GPL with the GCC Runtime Library Exception), zlib (Zlib), libffi and expat (MIT), bzip2 (bzip2), xz/liblzma (0BSD), mpdecimal and lz4 (BSD-2-Clause). Their sources are in Alpine's `aports` repository;
+  - the .NET runtime and ASP.NET Core (MIT), compiled into the server;
+  - pyosmium 4.3.1 (BSD-2-Clause), with libosmium (Boost Software License 1.0) and protozero (BSD-2-Clause).
 - This project is not affiliated with CD PROJEKT RED or Spokko. No original game files are included; you provide your own installation.
