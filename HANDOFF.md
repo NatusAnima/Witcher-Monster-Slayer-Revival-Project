@@ -14,11 +14,12 @@ Two tracks:
    - **Built, not yet tested on the device:** the setup checklist (Aurora, the game at 300085, Play copy or playable client), the region picker (Geofabrik), the in-app dashboard (the panel accepts its key as a cookie), self-update from GitHub Releases, release signing, and **the on-phone client build (no PC — see below)**.
      - The release key is in `local/keys/`. Without a backup of it, installed copies can never update.
    - **No PC needed any more:** Setup step 3 builds and installs the playable client on the phone, and pushes the hook. The Kotlin compiles (`gradlew :app:compileReleaseKotlin`), pending a device test.
-   - **Blocker (2026-10-05):** no APK with the on-phone build exists yet. `companion/runtime/build_runtime.py` had never run to completion since it began packaging the client builder: its closure check failed on `client/libgadget.config.so`, a config that only has a library's name.
-     - The fix (the check skips `client/`) is in the working tree, uncommitted.
-     - A failed run deletes `local/companion/`, so it is incomplete until `python companion\runtime\build_runtime.py` succeeds. Then `cd companion; .\gradlew assembleRelease`, and stage the APK in `local/release/`.
-     - The phone still has the 20:19 build, without the on-phone client build.
-   - **Next:** build that APK, then the user tests it on the device from scratch (including the on-phone build). Then push and publish release v0.1.0.
+   - **Built and installed (2026-10-05 23:08):** `local/release/Witcher-Monster-Slayer-Revival-0.1.0.apk` is the release APK with the on-phone client build (arm64 only, signed with the release key).
+     - Smoke-tested on the Xiaomi: it launches, shows the new Step 3, and the server starts and stops from the new runtime.
+     - The on-phone client build itself has not been run on the device yet.
+     - Fixed on the way: `build_runtime.py`'s closure check now skips `client/` (it failed on `client/libgadget.config.so`, a config that only has a library's name), and the manifest drops three legacy permissions (READ_PHONE_STATE and storage) that the manifest merger added because libadb-android declares no SDK version.
+     - To rebuild: `python companion/runtime/build_runtime.py`, then `cd companion; ./gradlew assembleRelease`, then copy the APK to `local/release/`. A failed runtime build deletes `local/companion/`.
+   - **Next:** the user tests it on the device from scratch (including the on-phone build). Then push and publish release v0.1.0.
    - It never distributes the game itself.
 
 ## Current State (2026-10-05)

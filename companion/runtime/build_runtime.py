@@ -118,7 +118,9 @@ def build_hook():
 def check_closure(rt):
     """Every DT_NEEDED of every shipped ELF must be shipped too (or be musl itself)."""
     elves = glob.glob(os.path.join(OUT, "jniLibs", "*", "*.so"))
-    elves += [p for p in glob.glob(os.path.join(rt, "**", "*.so*"), recursive=True) if os.path.isfile(p)]
+    elves += [p for p in glob.glob(os.path.join(rt, "**", "*.so*"), recursive=True)
+              # client/ is data for the game (Android libraries, a config named like one), never loaded by this runtime
+              if os.path.isfile(p) and os.path.relpath(p, rt).split(os.sep)[0] != "client"]
     have = set(LIBS) | MUSL
     missing = {}
     for path in elves:
