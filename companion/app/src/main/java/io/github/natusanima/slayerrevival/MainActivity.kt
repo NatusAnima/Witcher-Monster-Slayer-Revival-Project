@@ -4,29 +4,24 @@ import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageInstaller
-import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.format.Formatter
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
-import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import java.io.File
 import java.io.RandomAccessFile
-import java.security.MessageDigest
 
 class MainActivity : Activity() {
     companion object {
@@ -40,21 +35,6 @@ class MainActivity : Activity() {
         const val AURORA_SITE = "https://gitlab.com/AuroraOSS/AuroraStore"
         /** SHA-256 of the certificate Google Play signs the game with: Aurora's copy, before the playable client. */
         const val PLAY_CERT = "35bb00ec82bd877bdcf816cdecba2c99566cf307015ca876768606ce258b3785"
-
-        // The setup steps, one short line each. The commands for the PC part are in the guide (README).
-        private val DOWNLOAD_STEPS = listOf(
-            "Tap Open in Aurora below.",
-            "Sign in with Google, not Anonymous, using an account that had the game before. Signed in anonymously? Log out first.",
-            "Tap the three dots at the top right, then Manual download.",
-            "Enter the version code 300085. Not 1.1.116.",
-            "Download and install it.",
-        )
-        private val UPDATE_STEPS = listOf(
-            "Tap Open in Play Store below.",
-            "Use the Google account that previously had the game.",
-            "Tap the three dots at the top right of the game's page.",
-            "Untick Enable auto update. Never tap Update.",
-        )
 
         private const val SURFACE = 0xFF1E1E24.toInt()
         private const val TEXT = 0xFFEDEAE4.toInt()
@@ -83,10 +63,6 @@ class MainActivity : Activity() {
     private lateinit var mapText: TextView
     private lateinit var toggle: Button
     private lateinit var dashboard: Button
-    private lateinit var aurora: Step
-    private lateinit var game: Step
-    private lateinit var client: Step
-    private lateinit var region: Step
     private lateinit var logTabs: List<Button>
     private lateinit var log: TextView
 
@@ -139,11 +115,11 @@ class MainActivity : Activity() {
         play.addView(buttons)
 
         val setup = card(page, "Setup")
+        setup.addView(text(14f, MUTED).apply {
+            text = "Every step from installing the game to choosing your map, one at a time."
+            setPadding(0, px(6), 0, px(6))
+        })
         setup.addView(button("Open the guided setup", primary = true) { startActivity(Intent(this, SetupActivity::class.java)) })
-        aurora = Step(setup, 1, "Aurora Store")
-        game = Step(setup, 2, "The game, version 1.1.116")
-        client = Step(setup, 3, "The playable client")
-        region = Step(setup, 4, "Your map region")
 
         val logs = card(page, "Logs")
         val tabs = LinearLayout(this)
@@ -227,7 +203,7 @@ class MainActivity : Activity() {
         toggle.text = if (server == "Stopped") "Start server" else "Stop server"
         dashboard.isEnabled = server.startsWith("Running")
         val index = Maps.selected(this)
-        mapText.text = "Map: " + (index?.let { Maps.name(this, it) } ?: "none yet, choose your region below")
+        mapText.text = "Map: " + (index?.let { Maps.name(this, it) } ?: "none yet, choose it in the guided setup")
         if (playing && server == "Running") {
             playing = false
             packageManager.getLaunchIntentForPackage(GAME)?.let(::startActivity)
@@ -241,76 +217,8 @@ class MainActivity : Activity() {
             updateButton.isEnabled = !Updates.busy
         }
 
-        val why = "Aurora downloads apps from Google Play, including older versions, which the Play Store can't."
-        if (installed(AURORA) != null) aurora.show(true, "Installed. $why")
-        else aurora.show(false, "$why Get it from its official page.", "Get Aurora Store") { open(AURORA_SITE) }
-
-        val installed = installed(GAME)
-        val ready = installed?.longVersionCode == GAME_VERSION
-        val fromPlay = installed != null && playSigned(installed) // Play can still update it, until the playable client replaces it
-        when {
-            installed == null -> game.show(false, "Download this exact version with Aurora:", "Open in Aurora", items = DOWNLOAD_STEPS) { openInAurora() }
-            !ready -> game.show(false, "Version ${installed.versionName} is installed, but this needs 1.1.116 (300085). " +
-                "Uninstall it, then download the right version with Aurora:", "Open in Aurora", items = DOWNLOAD_STEPS) { openInAurora() }
-            fromPlay -> game.show(true, "1.1.116 (300085) is installed. Now stop Google Play from updating it to 1.3.102:",
-                "Open in Play Store", items = UPDATE_STEPS) { openInPlay() }
-            else -> game.show(true, "1.1.116 (300085) is installed.")
-        }
-        val building = ClientBuildService.status
-        when {
-            ClientBuildService.running -> client.show(false, building ?: "Building…", progress = ClientBuildService.progress)
-            installed == null && ClientBuildService.resumable(this) -> client.show(false,
-                "The client is built. Install it to finish." + (building?.let { "\n\n$it" } ?: ""), "Install the client") {
-                startForegroundService(Intent(this, ClientBuildService::class.java))
-            }
-            installed == null || !ready -> client.show(false, "Finish step 2 first: install 1.1.116 (300085).")
-            ClientBuildService.pairingRequired -> client.show(false, (building?.plus("\n\n") ?: "") +
-                "The app installs the game for you using this phone's own Wireless debugging. Pair it once.",
-                "Pair this phone") { startActivity(Intent(this, PairActivity::class.java)) }
-            fromPlay -> client.show(false, "Build the playable client here — no PC. It backs up the game, builds and " +
-                "signs the client, replaces the Play copy and connects the game to this app." +
-                (building?.let { "\n\n$it" } ?: ""), "Build the client") {
-                startForegroundService(Intent(this, ClientBuildService::class.java))
-            }
-            else -> client.show(true, "Installed: the game connects to this app.")
-        }
-
-        val outcome = MapService.status?.let { "\n\n$it" } ?: ""
-        val choose = { startActivity(Intent(this, RegionActivity::class.java)) }
-        when {
-            MapService.running -> region.show(false, MapService.status ?: "Starting", "Cancel", MapService.progress) {
-                startService(Intent(this, MapService::class.java).setAction(MapService.CANCEL))
-            }
-            index != null -> region.show(true, "${Maps.name(this, index)}, ${Formatter.formatShortFileSize(this, index.length())} " +
-                "on this phone.$outcome", "Change region", onClick = choose)
-            else -> region.show(false, "The map comes from OpenStreetMap. Pick the region you play in: the app downloads " +
-                "it from Geofabrik and builds the map on this phone.$outcome", "Choose region", onClick = choose)
-        }
-
         logTabs.forEachIndexed { i, tab -> tab.setTextColor(if (LOGS[i].first == logName) GOLD else MUTED) }
         log.text = tail(File(filesDir, "logs/$logName.log"))
-    }
-
-    private fun installed(name: String): PackageInfo? = try {
-        packageManager.getPackageInfo(name, PackageManager.GET_SIGNING_CERTIFICATES)
-    } catch (_: PackageManager.NameNotFoundException) {
-        null
-    }
-
-    private fun playSigned(info: PackageInfo) = info.signingInfo?.apkContentsSigners.orEmpty().any { signer ->
-        MessageDigest.getInstance("SHA-256").digest(signer.toByteArray()).joinToString("") { "%02x".format(it) } == PLAY_CERT
-    }
-
-    private fun openInAurora() = try {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$GAME")).setPackage(AURORA))
-    } catch (_: ActivityNotFoundException) {
-        open(AURORA_SITE)
-    }
-
-    private fun openInPlay() = try {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$GAME")).setPackage(PLAY_STORE))
-    } catch (_: ActivityNotFoundException) {
-        Toast.makeText(this, "Google Play isn't installed on this phone.", Toast.LENGTH_LONG).show()
     }
 
     private fun open(url: String) = try {
@@ -357,58 +265,5 @@ class MainActivity : Activity() {
             letterSpacing = 0.1f
         })
         page.addView(this, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { bottomMargin = px(12) })
-    }
-
-    /** One setup step: a numbered mark (a tick once done), what to do, any sub-steps, and the button that does it. */
-    private inner class Step(parent: LinearLayout, private val number: Int, title: String) {
-        private val mark = text(13f, bold = true).apply { gravity = Gravity.CENTER }
-        private val body = text(14f, MUTED)
-        private val list = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
-        private var listed = emptyList<String>()
-        private val bar = ProgressBar(this@MainActivity, null, 0, android.R.style.Widget_Material_ProgressBar_Horizontal)
-            .apply { max = 100 }
-        private val action = button("") {}.apply { setPadding(0, paddingTop, paddingRight, paddingBottom) }
-
-        init {
-            val column = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.VERTICAL }
-            column.addView(text(16f, bold = true).apply { text = title })
-            column.addView(body)
-            column.addView(list)
-            column.addView(bar)
-            column.addView(action, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
-            val row = LinearLayout(this@MainActivity).apply { setPadding(0, px(12), 0, 0) }
-            row.addView(mark, LayoutParams(px(24), px(24)).apply { marginEnd = px(12) })
-            row.addView(column, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
-            parent.addView(row)
-        }
-
-        fun show(done: Boolean, message: String, label: String? = null, progress: Int? = null,
-                 items: List<String> = emptyList(), onClick: () -> Unit = {}) {
-            if (items != listed) { // the screen refreshes every second: rebuild the rows only when they change
-                listed = items
-                list.removeAllViews()
-                items.forEachIndexed { i, item ->
-                    val row = LinearLayout(this@MainActivity).apply { setPadding(0, px(6), 0, 0) }
-                    row.addView(text(14f, GOLD, bold = true).apply { text = "${i + 1}." }, LayoutParams(px(24), LayoutParams.WRAP_CONTENT))
-                    row.addView(text(14f).apply { text = item }, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
-                    list.addView(row)
-                }
-            }
-            mark.text = if (done) "✓" else "$number"
-            mark.setTextColor(if (done) SURFACE else GOLD)
-            mark.background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                if (done) setColor(GREEN) else setStroke(px(1).coerceAtLeast(2), GOLD)
-            }
-            body.text = message
-            bar.visibility = if (progress == null) View.GONE else View.VISIBLE
-            if (progress != null) {
-                bar.isIndeterminate = progress < 0
-                bar.progress = progress.coerceAtLeast(0)
-            }
-            action.visibility = if (label == null) View.GONE else View.VISIBLE
-            action.text = label
-            action.setOnClickListener { onClick() }
-        }
     }
 }
