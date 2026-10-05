@@ -3,6 +3,7 @@ package io.github.natusanima.slayerrevival
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import com.android.apksig.ApkSigner
+import com.android.apksig.KeyConfig
 import java.io.File
 import java.security.KeyPairGenerator
 import java.security.KeyStore
@@ -22,7 +23,7 @@ object ClientSigner {
 
     fun sign(unsigned: File, signed: File) {
         val cert = key()
-        val config = ApkSigner.SignerConfig.Builder("CERT", cert.first, listOf(cert.second)).build()
+        val config = ApkSigner.SignerConfig.Builder("CERT", KeyConfig.Jca(cert.first), listOf(cert.second)).build()
         ApkSigner.Builder(listOf(config))
             .setInputApk(unsigned)
             .setOutputApk(signed)
