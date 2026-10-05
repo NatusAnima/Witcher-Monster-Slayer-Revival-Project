@@ -139,6 +139,7 @@ class MainActivity : Activity() {
         play.addView(buttons)
 
         val setup = card(page, "Setup")
+        setup.addView(button("Open the guided setup", primary = true) { startActivity(Intent(this, SetupActivity::class.java)) })
         aurora = Step(setup, 1, "Aurora Store")
         game = Step(setup, 2, "The game, version 1.1.116")
         client = Step(setup, 3, "The playable client")

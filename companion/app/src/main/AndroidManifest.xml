@@ -39,6 +39,8 @@
         <activity android:name=".RegionActivity" />
         <activity android:name=".DashboardActivity" />
         <activity android:name=".PairActivity" />
+        <activity android:name=".SetupActivity" />
+        <activity android:name=".GoogleLoginActivity" />
 
         <service
             android:name=".ServerService"
@@ -50,6 +52,10 @@
         </service>
         <service
             android:name=".MapService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+        <service
+            android:name=".PackDownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service
