@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }  // libadb-android and its sun-security helper
     }
 }
 rootProject.name = "companion"
