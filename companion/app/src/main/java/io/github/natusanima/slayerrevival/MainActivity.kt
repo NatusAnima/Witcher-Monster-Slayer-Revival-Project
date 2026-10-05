@@ -257,8 +257,12 @@ class MainActivity : Activity() {
         }
         val building = ClientBuildService.status
         when {
-            installed == null || !ready -> client.show(false, "Finish step 2 first: install 1.1.116 (300085).")
             ClientBuildService.running -> client.show(false, building ?: "Building…", progress = ClientBuildService.progress)
+            installed == null && ClientBuildService.resumable(this) -> client.show(false,
+                "The client is built. Install it to finish." + (building?.let { "\n\n$it" } ?: ""), "Install the client") {
+                startForegroundService(Intent(this, ClientBuildService::class.java))
+            }
+            installed == null || !ready -> client.show(false, "Finish step 2 first: install 1.1.116 (300085).")
             ClientBuildService.pairingRequired -> client.show(false, (building?.plus("\n\n") ?: "") +
                 "The app installs the game for you using this phone's own Wireless debugging. Pair it once.",
                 "Pair this phone") { startActivity(Intent(this, PairActivity::class.java)) }

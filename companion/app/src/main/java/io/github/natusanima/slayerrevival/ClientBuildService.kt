@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
@@ -31,6 +32,9 @@ class ClientBuildService : Service() {
         @Volatile var running = false; private set
         /** Set when the build can't start because Wireless debugging isn't paired yet; the UI offers to pair. */
         @Volatile var pairingRequired = false; private set
+
+        /** A signed client is built but not installed yet (e.g. the install was cancelled): the build resumes there. */
+        fun resumable(context: Context) = File(context.cacheDir, "client/signed.apk").isFile
     }
 
     private val work by lazy { File(cacheDir, "client").apply { mkdirs() } }
