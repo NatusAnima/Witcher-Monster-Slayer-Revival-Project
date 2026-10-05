@@ -9,16 +9,14 @@ folder (tools/restart.py pushes it there), so the game starts normally from its 
 --apks   the 23 APKs pulled from a Play/Aurora install of 1.1.116 (versionCode 300085)
 --packs  the 26 Play-delivered asset packs, extracted with extract_packs.py
 """
-import argparse, hashlib, json, lzma, os, shutil, struct, subprocess, sys, zipfile
+import argparse, hashlib, json, lzma, os, shutil, struct, subprocess, sys, tempfile, zipfile
 
 import lief
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-sys.path.insert(0, os.path.join(ROOT, "tools", "patch"))
 from axml import BOOL, STRING, TRUE, Manifest
 from extract_packs import PACK_BYTES, PACKS
-from patch_apk import GADGET_URL, SIGNER_URL, fetch  # same Gadget/signer downloads as the 1.0.43 client
 
 LIB = "lib/arm64-v8a/"
 LIBIL2CPP_SHA256 = "c8a5556b1d37e86bb9427ce5b3d70389ac9b39fd9abcb81f31651d904c5b4aa3"  # original 1.1.116
@@ -54,16 +52,18 @@ def patch_manifest(data, modules):
 
 
 def gadget_libmain(data):
-    tmp = os.path.join(ROOT, "local", "client", "libmain.tmp.so")
-    with open(tmp, "wb") as f:
-        f.write(data)
-    elf = lief.parse(tmp)
-    elf.add_library("libgadget.so")  # loads Gadget before the game's own code
-    elf.write(tmp)
-    with open(tmp, "rb") as f:
-        out = f.read()
-    os.remove(tmp)
-    return out
+    fd, tmp = tempfile.mkstemp(suffix=".so")
+    os.close(fd)
+    try:
+        with open(tmp, "wb") as f:
+            f.write(data)
+        elf = lief.parse(tmp)
+        elf.add_library("libgadget.so")  # loads Gadget before the game's own code
+        elf.write(tmp)
+        with open(tmp, "rb") as f:
+            return f.read()
+    finally:
+        os.remove(tmp)
 
 
 class Writer:
@@ -108,58 +108,68 @@ def check_alignment(path):
                 assert (i.header_offset + 30 + n + e) % need == 0, "misaligned after signing: " + i.filename
 
 
+def assemble(apks, packs, out_path, gadget, config):
+    """Build the unsigned, zip-aligned client APK from the install's splits and the recovered packs.
+    `gadget`/`config` are the libgadget.so and its config bytes (fetched on a PC, shipped on the phone).
+    Returns the entry count. The caller signs the result (uber-apk-signer on a PC, apksig on the phone)."""
+    split_packs = sorted(f[6:-4] for f in os.listdir(apks)
+                         if f.startswith("split_") and f.endswith(".apk") and f != "split_config.arm64_v8a.apk")
+    recovered = sorted(os.listdir(packs))
+    if len(split_packs) != INSTALL_TIME_PACKS:
+        sys.exit(f"expected {INSTALL_TIME_PACKS} asset-pack splits in {apks}, found {len(split_packs)}")
+    if len(recovered) != PACKS or sum(os.path.getsize(os.path.join(packs, p)) for p in recovered) != PACK_BYTES:
+        sys.exit(f"{packs} must hold the {PACKS} packs written by extract_packs.py")
+    config_apk = zipfile.ZipFile(os.path.join(apks, "split_config.arm64_v8a.apk"))
+    if hashlib.sha256(config_apk.read(LIB + "libil2cpp.so")).hexdigest() != LIBIL2CPP_SHA256:
+        sys.exit("these APKs are not the original 1.1.116 (300085) build")
+
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    out = Writer(out_path)
+    with zipfile.ZipFile(os.path.join(apks, "base.apk")) as base:
+        for info in base.infolist():
+            if info.filename.startswith("META-INF/") and info.filename.endswith(SIGNATURE_FILES):
+                continue  # the old signature; re-signed by the caller
+            if info.filename == "AndroidManifest.xml":
+                manifest = patch_manifest(base.read(info), sorted(["base"] + split_packs + recovered))
+                out.bytes(info.filename, manifest, info.compress_type, info.date_time)
+            else:
+                out.entry(base, info)
+    for info in config_apk.infolist():
+        if info.filename.startswith(LIB):
+            if info.filename == LIB + "libmain.so":
+                out.bytes(info.filename, gadget_libmain(config_apk.read(info)))
+            else:
+                out.entry(config_apk, info)
+    out.bytes(LIB + "libgadget.so", gadget)
+    out.bytes(LIB + "libgadget.config.so", config)
+    for pack in split_packs:
+        with zipfile.ZipFile(os.path.join(apks, f"split_{pack}.apk")) as split:
+            for info in split.infolist():
+                if info.filename.startswith("assets/"):
+                    out.entry(split, info)
+    for pack in recovered:
+        path = os.path.join(packs, pack)
+        with open(path, "rb") as src:
+            out.stream("assets/assetpack/" + pack, src, os.path.getsize(path))
+    out.zip.close()
+    return len(out.names)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--apks", required=True)
     ap.add_argument("--packs", required=True)
     ap.add_argument("--out", default=os.path.join(ROOT, "local", "client", "witcher116.apk"))
     args = ap.parse_args()
+    sys.path.insert(0, os.path.join(ROOT, "tools", "patch"))
+    from patch_apk import GADGET_URL, SIGNER_URL, fetch  # same Gadget/signer downloads as the 1.0.43 client
 
-    split_packs = sorted(f[6:-4] for f in os.listdir(args.apks)
-                         if f.startswith("split_") and f.endswith(".apk") and f != "split_config.arm64_v8a.apk")
-    recovered = sorted(os.listdir(args.packs))
-    if len(split_packs) != INSTALL_TIME_PACKS:
-        sys.exit(f"expected {INSTALL_TIME_PACKS} asset-pack splits in {args.apks}, found {len(split_packs)}")
-    if len(recovered) != PACKS or sum(os.path.getsize(os.path.join(args.packs, p)) for p in recovered) != PACK_BYTES:
-        sys.exit(f"{args.packs} must hold the {PACKS} packs written by extract_packs.py")
-    config = zipfile.ZipFile(os.path.join(args.apks, "split_config.arm64_v8a.apk"))
-    if hashlib.sha256(config.read(LIB + "libil2cpp.so")).hexdigest() != LIBIL2CPP_SHA256:
-        sys.exit("these APKs are not the original 1.1.116 (300085) build")
-
-    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
-    out = Writer(args.out)
-    with zipfile.ZipFile(os.path.join(args.apks, "base.apk")) as base:
-        for info in base.infolist():
-            if info.filename.startswith("META-INF/") and info.filename.endswith(SIGNATURE_FILES):
-                continue  # the old signature; re-signed below
-            if info.filename == "AndroidManifest.xml":
-                manifest = patch_manifest(base.read(info), sorted(["base"] + split_packs + recovered))
-                out.bytes(info.filename, manifest, info.compress_type, info.date_time)
-            else:
-                out.entry(base, info)
-    for info in config.infolist():
-        if info.filename.startswith(LIB):
-            if info.filename == LIB + "libmain.so":
-                out.bytes(info.filename, gadget_libmain(config.read(info)))
-            else:
-                out.entry(config, info)
-    out.bytes(LIB + "libgadget.so", lzma.decompress(open(fetch(GADGET_URL), "rb").read()))
-    out.bytes(LIB + "libgadget.config.so", GADGET_CONFIG)
-    for pack in split_packs:
-        with zipfile.ZipFile(os.path.join(args.apks, f"split_{pack}.apk")) as split:
-            for info in split.infolist():
-                if info.filename.startswith("assets/"):
-                    out.entry(split, info)
-    for pack in recovered:
-        path = os.path.join(args.packs, pack)
-        with open(path, "rb") as src:
-            out.stream("assets/assetpack/" + pack, src, os.path.getsize(path))
-    out.zip.close()
-
+    count = assemble(args.apks, args.packs, args.out,
+                     lzma.decompress(open(fetch(GADGET_URL), "rb").read()), GADGET_CONFIG)
     subprocess.run(["java", "-jar", fetch(SIGNER_URL), "--apks", args.out, "--overwrite", "--skipZipAlign"],
                    check=True, stdout=subprocess.DEVNULL)
     check_alignment(args.out)
-    print(f"done: {args.out} ({os.path.getsize(args.out) / 2**30:.2f} GiB, {len(out.names)} entries)")
+    print(f"done: {args.out} ({os.path.getsize(args.out) / 2**30:.2f} GiB, {count} entries)")
 
 
 if __name__ == "__main__":
