@@ -47,7 +47,7 @@ class RegionActivity : Activity() {
             setPadding(0, pad / 2, 0, pad / 2)
         })
         val search = EditText(this).apply {
-            hint = "Search, for example Israel or Bavaria"
+            hint = "Search, for example Poland or United Kingdom"
             isSingleLine = true
         }
         root.addView(search)

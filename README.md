@@ -5,7 +5,7 @@ This project resurrects the discontinued augmented reality game **The Witcher: M
 
 The original backend is gone, so the project runs a reconstructed game server and modifies your own installation of the game to talk to it. The game's files are not distributed here: you install the game yourself from Google Play (through the Aurora Store) and the tools build a playable client from that installation.
 
-> **Thank you, Villainser.** This project is built on Villainser's 1.1.116 reconstruction. The game server, the operator panel, the OpenStreetMap map services, the story and protocol tools, the backend tests and the in-game client fixes all started there, and Villainser's contribution to this project is immense. Without it, this project would not exist in its present form. See [Credits and Licensing](#credits-and-licensing).
+> **Thank you, Villainser.** This project is using Villainser's fork of this project that contributed immense amounts of code to this project. The game server, the operator panel, the OpenStreetMap map services, the majority of the story and protocol tools, the backend tests and the in-game client fixes all started there. Without it, this project would not exist in its present form. See [Credits and Licensing](#credits-and-licensing).
 
 ## How it works
 - **Client:** `tools/client116/build_client.py` merges your installed APK splits and the 26 asset packs Google Play downloads after install into one APK. It patches the manifest, adds Frida Gadget, and re-signs it. Gadget runs `tools/client116/hook.js` inside the game, which:
