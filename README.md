@@ -24,11 +24,13 @@ The original backend is gone, so the project runs a reconstructed game server an
 The companion app, **Witcher Monster Slayer - Revival**, runs the server and the map on the phone and builds the playable client there, so no PC is needed, for setup or for playing. It needs an arm64 phone with Android 11 or later.
 
 1. **Install the app.** Download `Witcher-Monster-Slayer-Revival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
-2. **Follow the Setup list in the app:**
-   1. **Aurora Store**, which downloads the game from Google Play.
-   2. **The game, version 1.1.116.** Google removed the game from Play in January 2023, so only a Google account that had it before can still download it. In Aurora, sign in with that account (anonymous sign-in can't download it), open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
-   3. **The playable client.** Tap **Build the client**. The app builds the playable client on the phone and installs it, with no PC. The first time, it asks you to turn on **Wireless debugging** (Developer options) and pair once — it uses the phone's own debugging to back up the game (the only way to reach its downloaded data), replace the Play copy and set up the game hook. It needs about 6–7 GB of free space and a few minutes. The game's own files never leave the phone.
-   4. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
+2. **Follow the guided setup**, which opens from the app's main screen. It ticks each step off by itself and opens the next:
+   1. **Check the phone.** It shows your free space and what the setup needs.
+   2. **The game, version 1.1.116.** The Aurora Store downloads it from Google Play. Google removed the game from Play in January 2023, so only a Google account that had it before can still download it. In Aurora, sign in with that account (anonymous sign-in can't download it), open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
+   3. **Sign in to Google.** The game's 26 extra data packs (1.3 GB) exist only on Google's servers, and the app asks Google Play for them the way the Play Store does. Google removed the game in 2023, so it may only offer them to an account that had the game before. The account stays on the phone, private to the app, and the app signs out when the download ends. Your Google account's device list will show this phone as a Pixel 9a: remove it there afterwards if you like. This is not an official Google method, so use an account you are comfortable with.
+   4. **Download the extra data.** It carries on in the background, even with the screen off.
+   5. **Build the playable client.** The app builds it on the phone from your copy of the game and the extra data, with no PC and no Wireless debugging. Android then asks you twice: to uninstall the game, which the client replaces, and to install the client. Confirm both. It needs about 6–7 GB of free space and a few minutes. The game's own files never leave the phone.
+   6. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
 3. **Tap Play.** It starts the server and opens the game when the server is ready.
 
 While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather) inside the app.
@@ -126,7 +128,7 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
 - `server/story-1.1.116/`: the generators for the story and bestiary JSON. They need the original game assets.
 - `server/contract-1.1.116/`: per-RPC protocol coverage and the static-data catalogue for 1.1.116.
 - `server/tests/`: backend integration tests. `server/dev.py` expects the Linux toolchain layout.
-- `tools/client116/`: the client builder (`build_client.py`), manifest editor (`axml.py`), pack extractor (`extract_packs.py`) and in-game hook (`hook.js`).
+- `tools/client116/`: the client builder (`build_client.py`, and `phone_build.py` for the app), manifest editor (`axml.py`), pack extractor (`extract_packs.py`) and in-game hook (`hook.js`).
 - `tools/restart.py`: one-command start/restart of everything, including the operator panel.
 - `companion/`: the Android companion app (`app/`) and the scripts that build its phone runtime (`runtime/`).
 - `HANDOFF.md`: the active session tracker. **Start here when resuming development.**
@@ -161,9 +163,6 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
   - Frida Gadget 17.15.3 (wxWindows Library Licence 3.1, an LGPL variant; source: https://github.com/frida/frida);
   - LIEF 0.17.6 (Apache-2.0);
   - apksig (Apache-2.0);
-  - libadb-android (dual-licensed GPL-3.0-or-later or Apache-2.0);
-  - sun-security-android (GPL-2.0 with the Classpath exception);
-  - Conscrypt (Apache-2.0).
   - gplayapi 3.6.4 by Aurora OSS (GPL-3.0-or-later; https://gitlab.com/AuroraOSS/gplayapi), with OkHttp, Gson, kotlinx.serialization and kotlinx.coroutines (Apache-2.0) and Protocol Buffers Lite (BSD-3-Clause).
 - Signing in to Google and downloading the game's extra data follow the open source of Aurora Store (the sign-in flow, GPL-3.0-or-later) and microG (the asset-delivery request and its headers, Apache-2.0). The app only asks Google Play for data your own account may download.
 - The companion app bundles third-party software, each under its own licence:

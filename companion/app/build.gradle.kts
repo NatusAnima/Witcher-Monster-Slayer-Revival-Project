@@ -52,9 +52,6 @@ android {
 }
 
 dependencies {
-    implementation("com.github.MuntashirAkon:libadb-android:3.1.1") // drive the phone's own adb over Wireless debugging
-    implementation("com.github.MuntashirAkon:sun-security-android:1.1") // X.509 cert for the adb key
-    implementation("org.conscrypt:conscrypt-android:2.5.3") // TLS for adb pairing/connect on this device
     implementation("com.android.tools.build:apksig:8.13.2") // sign the built client APK (no JVM needed on the phone)
     implementation("com.auroraoss:gplayapi:3.6.4") // Google Play sign-in and device registration, to fetch the game's extra data
 }

@@ -51,6 +51,11 @@ class SetupActivity : Activity() {
             "Sign in with the account you play with. Refused? Use one that had the game before.",
             "Follow Google's prompts. The page closes by itself.",
         )
+        val BUILD_STEPS = listOf(
+            "Tap Build the client. It takes a few minutes.",
+            "When Android asks to uninstall the game, confirm. The client built from it replaces it.",
+            "When Android asks to install the client, confirm. Told this app can't install apps? Tap Settings and allow it.",
+        )
 
         const val SURFACE = 0xFF1E1E24.toInt()
         const val TEXT = 0xFFEDEAE4.toInt()
@@ -126,10 +131,11 @@ class SetupActivity : Activity() {
         val wifi = getSystemService(ConnectivityManager::class.java).let {
             it.getNetworkCapabilities(it.activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
         }
-        val roomy = free >= NEEDED || packs || ours
-        val gameDone = ours || (game != null && game.longVersionCode == MainActivity.GAME_VERSION && parts >= GAME_SPLITS)
+        val built = ClientBuildService.resumable(this) // the client is built, so what it was built from may go
+        val roomy = free >= NEEDED || packs || ours || built
+        val gameDone = ours || built || (game != null && game.longVersionCode == MainActivity.GAME_VERSION && parts >= GAME_SPLITS)
         val signedIn = PlayAccount.signedIn(this)
-        val packsDone = packs || ours
+        val packsDone = packs || ours || built
         val done = listOf(roomy, gameDone, signedIn || packsDone, packsDone, ours, region != null)
         val current = done.indexOfFirst { !it }.let { if (it < 0) 6 else it }
         fun at(i: Int) = i == current
@@ -141,6 +147,7 @@ class SetupActivity : Activity() {
         val auroraButton = if (aurora) "Open in Aurora" else "Get Aurora Store"
         val auroraClick = { if (aurora) openInAurora() else open(MainActivity.AURORA_SITE) }
         when {
+            game == null && built -> steps[1].show(true, at(1), "Removed: the client built from it replaces it.")
             game == null -> steps[1].show(false, at(1), "The game is not installed. Any source works, as long as it is exactly " +
                 "version 1.1.116 (code 300085) with all its parts. Aurora Store is one way:", auroraButton, items = GAME_STEPS, onClick = auroraClick)
             ours -> steps[1].show(true, at(1), "Replaced by the playable client.")
@@ -172,7 +179,7 @@ class SetupActivity : Activity() {
             PackDownloadService.running -> steps[3].show(false, at(3), last ?: "Starting", "Cancel", PackDownloadService.progress) {
                 startService(Intent(this, PackDownloadService::class.java).setAction(PackDownloadService.CANCEL))
             }
-            packsDone -> steps[3].show(true, at(3), "All 26 packs are on this phone.")
+            packsDone -> steps[3].show(true, at(3), if (packs) "All 26 packs are on this phone." else "All 26 packs are built into the client.")
             !signedIn -> steps[3].show(false, at(3), "Sign in first.")
             else -> steps[3].show(false, at(3), "1.3 GB from Google Play." + (if (wifi) "" else " You are not on Wi-Fi.") +
                 " You can leave the app: the download carries on in the background." + (last?.let { "\n\n$it" } ?: ""),
@@ -185,14 +192,11 @@ class SetupActivity : Activity() {
             ours -> steps[4].show(true, at(4), "Installed: the game connects to this app.")
             ClientBuildService.running -> steps[4].show(false, at(4), building ?: "Building…", progress = ClientBuildService.progress)
             !packsDone || !gameDone -> steps[4].show(false, at(4), "Finish the steps above first.")
-            ClientBuildService.pairingRequired -> steps[4].show(false, at(4), (building?.plus("\n\n") ?: "") +
-                "The app installs the game for you using this phone's own Wireless debugging. Pair it once.",
-                "Pair this phone") { startActivity(Intent(this, PairActivity::class.java)) }
-            ClientBuildService.resumable(this) -> steps[4].show(false, at(4), "The client is built. Install it to finish." +
-                (building?.let { "\n\n$it" } ?: ""), "Install the client", onClick = build)
-            else -> steps[4].show(false, at(4), "The app builds and signs the client on this phone, replaces the Play copy " +
-                "and connects the game to this app. It takes a few minutes." + (building?.let { "\n\n$it" } ?: ""),
-                "Build the client", onClick = build)
+            built -> steps[4].show(false, at(4), "The client is built. Install it to finish." + (building?.let { "\n\n$it" } ?: ""),
+                "Install the client", items = BUILD_STEPS.drop(1), onClick = build)
+            else -> steps[4].show(false, at(4), "The app builds the playable client on this phone from your copy of the game and " +
+                "the extra data, then replaces the game with it. No computer needed." + (building?.let { "\n\n$it" } ?: ""),
+                "Build the client", items = BUILD_STEPS, onClick = build)
         }
 
         val choose = { startActivity(Intent(this, RegionActivity::class.java)) }

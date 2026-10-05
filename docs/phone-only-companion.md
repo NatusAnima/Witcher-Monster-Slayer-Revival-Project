@@ -20,14 +20,12 @@ Players who want multiplayer can switch to a shared server. Server fixes and bal
    - Install the Aurora Store from its official source, then deep-link to the game.
    - The player picks *Manual download → 300085*.
    - The app checks the installed version and that it carries the Play signature.
-2. **On-device adb.** The app pairs with the phone's own *Wireless debugging* (Kadb or libadb-android), with no PC:
-   - `pm install -i com.android.vending` with the installed splits, so Google Play delivers the additional data. The player then opens the game once.
-   - `bu backup -noapk com.spokko.witchermonsterslayer`, confirmed on screen, then stream-extract the 26 asset packs. This is a port of `tools/client116/extract_packs.py`.
+2. **The extra data, from Google Play.** The game's 26 asset packs exist only on Google's servers. The app signs in with the player's Google account (Aurora Store's flow) and asks Google Play for them the way the Play Store does (microG's asset-delivery request), then checks each against known hashes. There is no Wireless debugging and no PC. The first design read the packs out of an on-device `bu backup` after a Play-attributed install; it needed Wireless debugging and was dropped.
 3. **Client build on the phone.**
    - Ports of `tools/client116/build_client.py` and `axml.py`: merged APK, manifest patch, Gadget, hook.
    - Signing with apksig and a persistent key the app generates. Losing the key means an uninstall, which wipes game data.
-   - Uninstall the Play copy, then install through PackageInstaller.
-   - The inputs are cached, so the app can rebuild when a client fix ships.
+   - The player confirms Android's own uninstall dialog for the Play copy, then the install, which goes through PackageInstaller. No adb.
+   - The hook ships inside the APK beside Gadget (Android 11 keeps apps out of each other's `Android/data`, so it can't be pushed). A client fix therefore means a rebuilt client, and the packs are fetched again: they are deleted once the client is signed.
 4. **Server as a foreground service.**
    - A "Play" button starts the service, then launches the game. The hook always connects to `127.0.0.1`.
    - The server is the same project, published as a fully static `linux-musl-arm64` NativeAOT executable. No ASP.NET Core runtime pack exists for Android's bionic libc. It ships as `lib*.so` inside the app and is started by the service.
@@ -59,7 +57,7 @@ Players who want multiplayer can switch to a shared server. Server fixes and bal
     - it exits on force-stop.
   - Fallback: a bionic NativeAOT build with a rewritten HTTP host.
 - **S1b:** count the server's NativeAOT warnings.
-- **S1c:** with an on-device adb app, prove `bu backup` and `pm install-create -i com.android.vending` work without a PC.
+- **S1c:** dropped. It would have proved `bu backup` and a Play-attributed install work with an on-device adb app; the packs now come from Google Play directly.
 - **M1:** make the server NativeAOT-clean (source-generated JSON, named records); verify with `server/tests` against a native build.
 - **M2:** a companion skeleton. The service runs the server and the map services; "Play" launches the game.
 - **M3:** the setup wizard, from the Aurora walkthrough to installing the client.
@@ -72,7 +70,7 @@ Players who want multiplayer can switch to a shared server. Server fixes and bal
 - Bundle licences and notices for:
   - Frida Gadget (LGPL-2.0 with the wxWindows exception), plus its version and source;
   - apksig (Apache-2.0);
-  - Kadb (Apache-2.0) or libadb-android (GPL option);
+  - gplayapi (GPL-3.0-or-later);
   - .NET, musl and OpenSSL, which are statically linked;
   - Python (PSF).
 - OpenStreetMap: show "© OpenStreetMap contributors" visibly. Generated indexes are ODbL derivative databases.

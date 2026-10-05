@@ -23,6 +23,10 @@ LIBIL2CPP_SHA256 = "c8a5556b1d37e86bb9427ce5b3d70389ac9b39fd9abcb81f31651d904c5b
 INSTALL_TIME_PACKS = 21
 HOOK_PATH = "/sdcard/Android/data/com.spokko.witchermonsterslayer/files/hook.js"  # reloaded when it changes
 GADGET_CONFIG = json.dumps({"interaction": {"type": "script", "path": HOOK_PATH, "on_change": "reload"}}).encode()
+# A phone build has no adb to push the hook with (Android 11 keeps other apps out of Android/data), so it ships the hook
+# inside the APK instead. Android unpacks lib*.so files, and Gadget resolves a relative script path against its own folder.
+HOOK_FILE = "libhook.js.so"
+EMBEDDED_CONFIG = json.dumps({"interaction": {"type": "script", "path": HOOK_FILE}}).encode()
 SIGNATURE_FILES = (".SF", ".RSA", ".DSA", ".EC", "MANIFEST.MF")
 zipfile.ZIP64_LIMIT = (1 << 32) - 1  # APK tooling rejects ZIP64; the APK stays below 4 GiB
 
@@ -108,9 +112,11 @@ def check_alignment(path):
                 assert (i.header_offset + 30 + n + e) % need == 0, "misaligned after signing: " + i.filename
 
 
-def assemble(apks, packs, out_path, gadget, config):
+def assemble(apks, packs, out_path, gadget, config, hook=None):
     """Build the unsigned, zip-aligned client APK from the install's splits and the recovered packs.
     `gadget`/`config` are the libgadget.so and its config bytes (fetched on a PC, shipped on the phone).
+    `hook` is the compiled hook for the APK to carry (phone builds, with EMBEDDED_CONFIG); without it the config
+    points at HOOK_PATH, where restart.py pushes the hook (PC builds).
     Returns the entry count. The caller signs the result (uber-apk-signer on a PC, apksig on the phone)."""
     split_packs = sorted(f[6:-4] for f in os.listdir(apks)
                          if f.startswith("split_") and f.endswith(".apk") and f != "split_config.arm64_v8a.apk")
@@ -119,8 +125,9 @@ def assemble(apks, packs, out_path, gadget, config):
     # with extra config splits (language/density) would trip this; handle those splits when one turns up.
     if len(split_packs) != INSTALL_TIME_PACKS:
         sys.exit(f"expected {INSTALL_TIME_PACKS} asset-pack splits in {apks}, found {len(split_packs)}")
-    if len(recovered) != PACKS or sum(os.path.getsize(os.path.join(packs, p)) for p in recovered) != PACK_BYTES:
-        sys.exit(f"{packs} must hold the {PACKS} packs written by extract_packs.py")
+    total = sum(os.path.getsize(os.path.join(packs, p)) for p in recovered)
+    if len(recovered) != PACKS or total != PACK_BYTES:
+        sys.exit(f"{packs} must hold exactly the {PACKS} packs ({PACK_BYTES} bytes), one file each; found {len(recovered)} files, {total} bytes")
     config_apk = zipfile.ZipFile(os.path.join(apks, "split_config.arm64_v8a.apk"))
     if hashlib.sha256(config_apk.read(LIB + "libil2cpp.so")).hexdigest() != LIBIL2CPP_SHA256:
         sys.exit("these APKs are not the original 1.1.116 (300085) build")
@@ -144,6 +151,8 @@ def assemble(apks, packs, out_path, gadget, config):
                 out.entry(config_apk, info)
     out.bytes(LIB + "libgadget.so", gadget)
     out.bytes(LIB + "libgadget.config.so", config)
+    if hook is not None:
+        out.bytes(LIB + HOOK_FILE, hook)
     for pack in split_packs:
         with zipfile.ZipFile(os.path.join(apks, f"split_{pack}.apk")) as split:
             for info in split.infolist():

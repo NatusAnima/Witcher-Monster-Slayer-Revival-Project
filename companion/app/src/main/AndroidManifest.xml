@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- libadb-android declares no SDK version, so the manifest merger implies these legacy permissions for it. -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,6 +9,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <queries>
         <package android:name="com.spokko.witchermonsterslayer" />
@@ -39,7 +34,6 @@
         </activity>
         <activity android:name=".RegionActivity" />
         <activity android:name=".DashboardActivity" />
-        <activity android:name=".PairActivity" />
         <activity android:name=".SetupActivity" />
         <activity android:name=".GoogleLoginActivity" />
 
@@ -57,10 +51,6 @@
             android:foregroundServiceType="dataSync" />
         <service
             android:name=".PackDownloadService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
-        <service
-            android:name=".PairingService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
         <service

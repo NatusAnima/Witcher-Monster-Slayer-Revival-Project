@@ -100,17 +100,15 @@ def lief_wheel(dest):
 
 
 def build_hook():
-    """Frida Gadget, its config and the compiled hook — the non-game pieces the client build injects.
+    """Frida Gadget and the compiled hook — the non-game pieces the client build injects.
     Reuses the PC tooling: the Gadget download (patch_apk) and the hook bundler (restart)."""
     for path in (os.path.join(ROOT, "tools"), os.path.join(ROOT, "tools", "patch"), CLIENT):
         if path not in sys.path:
             sys.path.insert(0, path)
     import lzma
     import patch_apk, restart
-    from build_client import GADGET_CONFIG
     return {
         "libgadget.so": lzma.decompress(open(patch_apk.fetch(patch_apk.GADGET_URL), "rb").read()),
-        "libgadget.config.so": GADGET_CONFIG,
         "hook.bundle.js": open(restart.bundle_hook(), "rb").read(),
     }
 
@@ -119,7 +117,7 @@ def check_closure(rt):
     """Every DT_NEEDED of every shipped ELF must be shipped too (or be musl itself)."""
     elves = glob.glob(os.path.join(OUT, "jniLibs", "*", "*.so"))
     elves += [p for p in glob.glob(os.path.join(rt, "**", "*.so*"), recursive=True)
-              # client/ is data for the game (Android libraries, a config named like one), never loaded by this runtime
+              # client/ is data for the game (Android libraries), never loaded by this runtime
               if os.path.isfile(p) and os.path.relpath(p, rt).split(os.sep)[0] != "client"]
     have = set(LIBS) | MUSL
     missing = {}
