@@ -14,7 +14,11 @@ Two tracks:
    - **Built, not yet tested on the device:** the setup checklist (Aurora, the game at 300085, Play copy or playable client), the region picker (Geofabrik), the in-app dashboard (the panel accepts its key as a cookie), self-update from GitHub Releases, release signing, and **the on-phone client build (no PC — see below)**.
      - The release key is in `local/keys/`. Without a backup of it, installed copies can never update.
    - **No PC needed any more:** Setup step 3 builds and installs the playable client on the phone, and pushes the hook. The Kotlin compiles (`gradlew :app:compileReleaseKotlin`), pending a device test.
-   - **Next:** the user tests the release APK on the device from scratch (including the on-phone build). Then push and publish release v0.1.0.
+   - **Blocker (2026-10-05):** no APK with the on-phone build exists yet. `companion/runtime/build_runtime.py` had never run to completion since it began packaging the client builder: its closure check failed on `client/libgadget.config.so`, a config that only has a library's name.
+     - The fix (the check skips `client/`) is in the working tree, uncommitted.
+     - A failed run deletes `local/companion/`, so it is incomplete until `python companion\runtime\build_runtime.py` succeeds. Then `cd companion; .\gradlew assembleRelease`, and stage the APK in `local/release/`.
+     - The phone still has the 20:19 build, without the on-phone client build.
+   - **Next:** build that APK, then the user tests it on the device from scratch (including the on-phone build). Then push and publish release v0.1.0.
    - It never distributes the game itself.
 
 ## Current State (2026-10-05)

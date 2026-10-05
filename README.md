@@ -144,7 +144,14 @@ Commands are PowerShell, run from the repository root, with `$adb = "tools\platf
 - **Villainser** did a large part of the work in this project. The 1.1.116 server, map services, story and contract tools, and the ported client fixes all come from Villainser's 1.1.116 reconstruction. It was forked from this project's commit `3cb353b`, is GPL-3.0-only, and is used with permission; see `server/LICENSE` and `server/upstream-provenance.json`. Some copied documents link to that project's own docs, which are not included here.
 - The Earcut triangulation port is under the ISC licence; its notice is kept in `server/connection/map-road-fixture-01/osm_area_geometry.py`.
 - Map data is © OpenStreetMap contributors (ODbL 1.0). Indexes and tiles generated from it are derived from OpenStreetMap.
-- Frida Gadget and uber-apk-signer are downloaded at build time and are not included.
+- The PC tools download Frida Gadget and uber-apk-signer at build time; neither is in this repository.
+- The companion app's APK also bundles what its on-phone client build uses:
+  - Frida Gadget 17.15.3 (wxWindows Library Licence 3.1, an LGPL variant; source: https://github.com/frida/frida);
+  - LIEF 0.17.6 (Apache-2.0);
+  - apksig (Apache-2.0);
+  - libadb-android (dual-licensed GPL-3.0-or-later or Apache-2.0);
+  - sun-security-android (GPL-2.0 with the Classpath exception);
+  - Conscrypt (Apache-2.0).
 - The companion app bundles third-party software, each under its own licence:
   - from Alpine Linux 3.22: musl (MIT), CPython 3.12 (PSF-2.0), OpenSSL 3.5 (Apache-2.0), SQLite (public domain), libstdc++ and libgcc (GPL with the GCC Runtime Library Exception), zlib (Zlib), libffi and expat (MIT), bzip2 (bzip2), xz/liblzma (0BSD), mpdecimal and lz4 (BSD-2-Clause). Their sources are in Alpine's `aports` repository;
   - the .NET runtime and ASP.NET Core (MIT), compiled into the server;
