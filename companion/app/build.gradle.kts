@@ -1,6 +1,12 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
 }
+
+// The release key stays in local/keys/ (never committed). companion.properties names the keystore, its alias
+// and its password. Lose it and installed copies can no longer update: keep a backup.
+val releaseKey = rootDir.resolve("../local/keys/companion.properties")
 
 android {
     namespace = "io.github.natusanima.slayerrevival"
@@ -8,10 +14,26 @@ android {
 
     defaultConfig {
         applicationId = "io.github.natusanima.slayerrevival"
-        minSdk = 30 // Wireless debugging (used by setup) arrived in Android 11
+        minSdk = 30 // Android 11: the oldest the phone runtime has been tried on
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+    }
+
+    signingConfigs {
+        if (releaseKey.isFile) create("release") {
+            val key = Properties().apply { releaseKey.inputStream().use { load(it) } }
+            storeFile = releaseKey.resolveSibling(key.getProperty("storeFile"))
+            storePassword = key.getProperty("password")
+            keyAlias = key.getProperty("alias")
+            keyPassword = key.getProperty("password")
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.findByName("release")
+        }
     }
 
     // The phone runtime (musl loader, .NET server, Python and the map services) is assembled into local/

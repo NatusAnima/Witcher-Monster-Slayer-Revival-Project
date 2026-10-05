@@ -3,6 +3,7 @@ OSM map helpers, set up the adb tunnels, push hook.js to the phone and relaunch 
 Rerun it to restart everything; Ctrl+C stops the server side.
 
   python tools/restart.py [--index local/maps/israel-features.sqlite]
+  python tools/restart.py --hook-only   # only copy hook.js to the phone, for the companion app
 
 While it runs you can also start the game from its icon: the client loads hook.js by itself.
 The operator panel (players, map, news, tasks, weather) is at http://127.0.0.1:18090/ while it runs.
@@ -111,7 +112,15 @@ def wait_for_port(port, log, timeout=60):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--index", default=os.path.join(LOCAL, "maps", "israel-features.sqlite"))
-    index = ap.parse_args().index
+    ap.add_argument("--hook-only", action="store_true", help="only copy hook.js to the phone, then exit")
+    args = ap.parse_args()
+    index = args.index
+    if args.hook_only:  # phone-only play: the companion app runs the server, the client only needs its hook
+        hook = bundle_hook()
+        adb("wait-for-device")
+        adb("shell", "mkdir", "-p", HOOK_DIR)
+        adb("push", hook, HOOK_DIR + "/hook.js")
+        return
     os.makedirs(SCRATCH, exist_ok=True)
     stop_previous()
     for data in ("news", "tasks"):  # working copies, so panel edits never touch the tracked defaults

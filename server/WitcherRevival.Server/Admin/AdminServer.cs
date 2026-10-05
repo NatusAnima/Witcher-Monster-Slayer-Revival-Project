@@ -61,7 +61,9 @@ public sealed partial class AdminServer(IConfiguration cfg, ProfileRegistry regi
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
             context.Response.Headers["Referrer-Policy"] = "no-referrer";
             context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'";
-            byte[] supplied = Encoding.UTF8.GetBytes(context.Request.Headers["X-Monster-Admin-Key"].ToString());
+            // A proxy injects the header; the phone companion's in-app browser holds the key as a cookie instead.
+            string presented = context.Request.Headers["X-Monster-Admin-Key"].ToString();
+            byte[] supplied = Encoding.UTF8.GetBytes(presented.Length > 0 ? presented : context.Request.Cookies["monster-admin-key"] ?? "");
             if (!CryptographicOperations.FixedTimeEquals(key, supplied))
             { context.Response.StatusCode = 403; await context.Response.WriteAsJsonAsync(new { error = "Operator access is required." }); return; }
             if (context.Request.Method is not ("GET" or "HEAD") &&

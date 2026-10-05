@@ -41,7 +41,7 @@ class ServerService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-        startForeground(1, notification("Starting"), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        startForeground(1, notification(status.takeUnless { it == "Stopped" } ?: "Starting"), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
         synchronized(processes) {
             if (processes.isEmpty()) thread(name = "server-launch") { launch() }
         }
@@ -90,7 +90,7 @@ class ServerService : Service() {
                 "--LocalProfile:DataDirectory", "$state/profiles", "--LocalProfile:NewProfileMode", "reconstructed",
                 "--News:Directory", "$state/news", "--Tasks:Directory", "$state/tasks", "--World:Directory", "$world",
                 "--Playable:Url", "http://127.0.0.1:$PLACEMENT_PORT",
-                "--Admin:Port", "$ADMIN_PORT", "--Admin:Origin", "http://127.0.0.1:18090",
+                "--Admin:Port", "$ADMIN_PORT", "--Admin:Origin", "http://127.0.0.1:$ADMIN_PORT", // DashboardActivity
                 "--Admin:KeyFile", "$key", "--Admin:DataDirectory", "$state/admin/data",
             ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0"))
             update(when {

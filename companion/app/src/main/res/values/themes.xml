@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#FF141418</color>
+    <color name="accent">#FFD9A441</color>
+
+    <style name="Theme.Revival" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">@color/background</item>
+        <item name="android:colorPrimaryDark">@color/background</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+    </style>
+</resources>
