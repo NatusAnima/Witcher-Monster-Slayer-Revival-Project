@@ -23,7 +23,7 @@ class PlacementPolicyTests(unittest.TestCase):
         class Index:
             meta = {'source_timestamp': '2026-01-01T00:00:00Z'}
             def covers(self, *args): return True
-            def document(self, *args): return owner.doc
+            def document(self, *args, clip=None): return owner.doc
         self.index = Index()
         self.service = pl.PlayableLocations(self.index, self.path)
 

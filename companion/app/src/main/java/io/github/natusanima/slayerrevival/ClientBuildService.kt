@@ -24,6 +24,8 @@ class ClientBuildService : Service() {
     companion object {
         const val INSTALL_RESULT = "io.github.natusanima.slayerrevival.CLIENT_INSTALL_RESULT"
         const val UNINSTALL_RESULT = "io.github.natusanima.slayerrevival.CLIENT_UNINSTALL_RESULT"
+        /** Swaps the hook inside the installed client for the one this app ships, and installs that as an update. */
+        const val REHOOK = "io.github.natusanima.slayerrevival.CLIENT_REHOOK"
 
         @Volatile var status: String? = null; private set
         @Volatile var progress = -1; private set
@@ -45,6 +47,10 @@ class ClientBuildService : Service() {
         when (intent?.action) {
             UNINSTALL_RESULT -> handleUninstall(intent)
             INSTALL_RESULT -> handleInstall(intent)
+            REHOOK -> if (!running) {
+                running = true
+                thread(name = "client-rehook") { awake { rehook() } }
+            }
             else -> if (!running) {
                 running = true
                 thread(name = "client-build") { awake { build() } }
@@ -96,6 +102,43 @@ class ClientBuildService : Service() {
         check(part.renameTo(signed)) { "could not keep the signed client" }
         PackDownloadService.dir(this).deleteRecursively() // the packs are inside the client now: free their 1.4 GB
         return true
+    }
+
+    /**
+     * Puts this app's hook into the installed client without the extra data or a rebuild: phone_rehook.py copies
+     * the installed APK with only the hook swapped, and it is signed with the same key, so it installs as an update
+     * and the game keeps its data. Needs room for two copies of the client while it works.
+     */
+    private fun rehook() {
+        try {
+            if (signed.isFile) return install() // a finished build or update that wasn't installed yet
+            val game = try {
+                packageManager.getApplicationInfo(MainActivity.GAME, 0)
+            } catch (_: PackageManager.NameNotFoundException) {
+                return finish("The game isn't installed: build the client first (Setup step 5).")
+            }
+            if (foreignCopy()) return finish("This copy of the game wasn't built by this app, so its hook can't be " +
+                "updated here. Build the client again instead.")
+            val apk = File(game.sourceDir)
+            val needed = apk.length() * 2 + (200L shl 20)
+            if (filesDir.usableSpace < needed) return finish("Updating the hook needs ${needed shr 30} GB free while it " +
+                "works; this phone has ${filesDir.usableSpace shr 30} GB.")
+            update("Preparing", -1)
+            val rt = Runtime.prepare(this)
+            update("Updating the game's hook (a few minutes)…", -1)
+            val unsigned = File(work, "unsigned.apk")
+            python(rt, "phone_rehook.py", listOf("--apk", apk.path, "--hook", "$rt/client/hook.bundle.js", "--out", unsigned.path))
+            if (!unsigned.isFile) return finish("The game already has this app's hook. Nothing to update.")
+            update("Signing the client…", -1)
+            val part = File(work, "signed.apk.part")
+            ClientSigner.sign(unsigned, part)
+            unsigned.delete()
+            check(part.renameTo(signed)) { "could not keep the signed client" }
+            install()
+        } catch (e: Exception) {
+            work.listFiles()?.filter { it != signed }?.forEach { it.delete() }
+            finish("The hook update failed: ${e.message}")
+        }
     }
 
     /** Runs one of the bundled builder scripts on the phone's Python; throws if it exits non-zero. */

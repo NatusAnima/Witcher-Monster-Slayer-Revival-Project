@@ -9,6 +9,8 @@ from osm_extract_index import (
     SCHEMA_VERSION,
     FeatureIndex,
     classify_area,
+    clip_ring,
+    clip_rings,
     create_schema,
     pack_coordinates,
     pack_rings,
@@ -61,6 +63,24 @@ class ExtractIndexTests(unittest.TestCase):
         for (lat, lon), (lat2, lon2) in zip(points, unpack_coordinates(pack_coordinates(points))):
             self.assertAlmostEqual(lat, lat2, places=6)
             self.assertAlmostEqual(lon, lon2, places=6)
+
+    def test_clip_keeps_inside_vertices_and_cuts_on_the_box(self):
+        square = [(0.0, 0.0), (0.0, 4.0), (4.0, 4.0), (4.0, 0.0)]
+        box = (1.0, -1.0, 3.0, 5.0)  # south, west, north, east: cuts the top and bottom off
+        clipped = clip_ring(square, box)
+        self.assertEqual(sorted(clipped), [(1.0, 0.0), (1.0, 4.0), (3.0, 0.0), (3.0, 4.0)])
+        self.assertIsNone(clip_rings([[(9.0, 9.0), (9.0, 9.5), (9.5, 9.5)]], box))
+        # a hole outside the box goes, the outer ring stays
+        self.assertEqual(len(clip_rings([square, [(3.5, 1.0), (3.5, 2.0), (3.8, 2.0)]], box)), 1)
+
+    def test_clipped_query_cuts_only_areas_reaching_outside(self):
+        south, west, north, east = 52.4021, 16.9021, 52.4031, 16.9031
+        whole = self.index.document(south, west, north, east)
+        cut = self.index.document(south, west, north, east, clip=(52.4026, 16.9020, 52.4040, 16.9040))
+        self.assertEqual([e["id"] for e in whole["elements"]], [e["id"] for e in cut["elements"]])
+        rings = [e for e in cut["elements"] if e["type"] == "area"][0]["rings"]
+        self.assertTrue(all(lat >= 52.4026 for lat, _ in rings[0]))
+        self.assertEqual(self.index.document(south, west, north, east, clip=(50, 16, 54, 18)), whole)
 
     def test_rings_round_trip(self):
         rings = [[(1.0, 2.0), (3.0, 4.0), (5.0, 6.5)], [(1.5, 2.5), (2.5, 3.5), (3.5, 2.5)]]

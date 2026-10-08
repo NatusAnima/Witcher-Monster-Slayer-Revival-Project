@@ -35,7 +35,7 @@ PYTHON = "python3.12"
 LIEF_VERSION = "0.17.6"
 LIEF_WHEEL = f"lief-{LIEF_VERSION}-cp312-cp312-musllinux_1_2_aarch64.whl"  # matches the bundled CPython 3.12
 # The client builder scripts run on the phone's Python (lief + axml); phone_build.py assembles the APK.
-CLIENT_SCRIPTS = ["axml.py", "build_client.py", "phone_build.py", "extract_packs.py"]
+CLIENT_SCRIPTS = ["axml.py", "build_client.py", "phone_build.py", "phone_rehook.py", "extract_packs.py"]
 
 PACKAGES = ["musl", "libgcc", "libstdc++", "libssl3", "libcrypto3", "zlib",
             "python3", "sqlite-libs", "libffi", "libbz2", "xz-libs", "libexpat", "mpdecimal", "lz4-libs"]

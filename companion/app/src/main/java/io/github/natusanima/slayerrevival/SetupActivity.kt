@@ -189,7 +189,12 @@ class SetupActivity : Activity() {
         val building = ClientBuildService.status
         val build: () -> Unit = { startForegroundService(Intent(this, ClientBuildService::class.java)) }
         when {
-            ours -> steps[4].show(true, at(4), "Installed: the game connects to this app.")
+            ours && ClientBuildService.running -> steps[4].show(true, at(4), building ?: "Updating…", progress = ClientBuildService.progress)
+            ours -> steps[4].show(true, at(4), "Installed: the game connects to this app. After an app update, update the " +
+                "game's hook too: it keeps your game data and needs no download." + (building?.let { "\n\n$it" } ?: ""),
+                "Update the game's hook") {
+                startForegroundService(Intent(this, ClientBuildService::class.java).setAction(ClientBuildService.REHOOK))
+            }
             ClientBuildService.running -> steps[4].show(false, at(4), building ?: "Building…", progress = ClientBuildService.progress)
             !packsDone || !gameDone -> steps[4].show(false, at(4), "Finish the steps above first.")
             built -> steps[4].show(false, at(4), "The client is built. Install it to finish." + (building?.let { "\n\n$it" } ?: ""),

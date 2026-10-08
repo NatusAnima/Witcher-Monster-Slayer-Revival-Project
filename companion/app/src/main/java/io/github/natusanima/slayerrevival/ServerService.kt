@@ -26,6 +26,20 @@ class ServerService : Service() {
         const val ADMIN_PORT = 18092
         const val PLACEMENT_PORT = 18093
 
+        /**
+         * The server shares the phone with the game, so its .NET heap is kept small: workstation GC
+         * without the background GC thread, compacting eagerly, and a hard ceiling on the managed
+         * heap (the server's data is a few MB; the ceiling only stops the GC from letting garbage
+         * pile up because the phone has free RAM at that moment). Values are hex, as .NET reads them.
+         */
+        private val SERVER_MEMORY = mapOf(
+            "DOTNET_gcServer" to "0",
+            "DOTNET_gcConcurrent" to "0",
+            "DOTNET_GCConserveMemory" to "7",
+            "DOTNET_GCHeapHardLimit" to "0x10000000", // 256 MB
+            "DOTNET_TieredPGO" to "0", // no profiling instrumentation kept per method
+        )
+
         @Volatile
         var status = "Stopped"
             private set
@@ -92,7 +106,7 @@ class ServerService : Service() {
                 "--Playable:Url", "http://127.0.0.1:$PLACEMENT_PORT",
                 "--Admin:Port", "$ADMIN_PORT", "--Admin:Origin", "http://127.0.0.1:$ADMIN_PORT", // DashboardActivity
                 "--Admin:KeyFile", "$key", "--Admin:DataDirectory", "$state/admin/data",
-            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0"))
+            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0") + SERVER_MEMORY)
             update(when {
                 !healthy("http://127.0.0.1:$HTTP_PORT/health") -> "Server did not answer: see its log"
                 index == null -> "Running without a map: choose a region"

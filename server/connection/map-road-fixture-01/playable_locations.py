@@ -52,6 +52,7 @@ MIN_SPACING_M = 50.0
 MAX_PER_CELL = 24
 CELL_LEVEL = 14
 NEST_SPACING_M = 300.0  # below the minimum width of a level-14 S2 cell (~366 m)
+CLIP_MARGIN_M = 150.0   # beyond the cell; must exceed every clearance and "near" radius above
 PLACEMENT_VERSION = 2
 
 FOREST, SHRUBLAND, GRASSLAND, URBAN, BARREN, WATER = 1, 2, 4, 7, 9, 10
@@ -345,17 +346,30 @@ class PlayableLocations:
     def __init__(self, index: FeatureIndex, policy_path=None):
         self.index = index
         self.policy = placement_policy.PolicyStore(policy_path)
-        self._raw = _BoundedMemo(entries=256, points=100_000)
-        self._sampled = _BoundedMemo(entries=1024, points=64 * 1024)
+        # Placement is CPU-bound Python under the GIL: two computations at a time keep the
+        # pace and bound the cell geometry alive at once (this runs on the phone with the game).
+        self._raw = _BoundedMemo(entries=256, points=100_000, inflight=2)
+        self._sampled = _BoundedMemo(entries=1024, points=64 * 1024, inflight=2)
 
-    def document(self, cell_id):
+    def document(self, cell_id, clip=True):
         if s2cells.level(cell_id) != CELL_LEVEL:
             raise ValueError("unsupported cell level")
         corners = s2cells.corners(cell_id)
         margin = 0.0005
         box = (min(a for a, _ in corners)-margin, min(b for _, b in corners)-margin,
                max(a for a, _ in corners)+margin, max(b for _, b in corners)+margin)
-        return self.index.document(*box) if self.index.covers(*box) else None
+        if not self.index.covers(*box):
+            return None
+        if not clip:
+            return self.index.document(*box)
+        # Huge forests and lakes are cut to the cell plus CLIP_MARGIN_M: every point tested lies
+        # in the cell and looks at most WATER_NEAR_M / URBAN_NEAR_M away, so the cut edges are
+        # never seen and the placements stay the same.
+        lat = (box[0] + box[2]) / 2
+        dlat = CLIP_MARGIN_M / 110_540.0
+        dlng = CLIP_MARGIN_M / (111_320.0 * max(0.01, math.cos(math.radians(lat))))
+        clip_box = (box[0] - dlat, box[1] - dlng, box[2] + dlat, box[3] + dlng)
+        return self.index.document(*box, clip=clip_box)
 
     def cell(self, cell_id: int, epoch: int) -> list[dict]:
         if s2cells.level(cell_id) != CELL_LEVEL:
@@ -391,7 +405,7 @@ class PlayableLocations:
         rows, features, seen = [], [], set()
         vertices, truncated = 0, False
         for cell_id in ids:
-            document = self.document(cell_id)
+            document = self.document(cell_id, clip=False)  # the operator map draws whole features
             stats = {}
             points = candidates(document, cell_id, active, stats) if document is not None else []
             chosen = sample(points, cell_id, epoch, active)

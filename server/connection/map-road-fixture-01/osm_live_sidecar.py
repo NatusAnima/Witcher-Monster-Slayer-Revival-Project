@@ -44,7 +44,17 @@ IDENTITY = "osm-live-overpass-sidecar-v1"
 MIN_SERVED_ZOOM = 12
 MAX_SERVED_ZOOM = 20
 MAX_DOCUMENT_BYTES = 64 * 1024 * 1024
+# Memory budget (the phone runs this next to the game). Encoded tiles are small, so the tile
+# cache is bounded by bytes; decoded documents are large Python object graphs, so few are kept
+# and few are built at once. Tile building is CPU-bound Python under the GIL, so building more
+# than two at a time gains no speed and only multiplies the documents alive together.
 TILE_MEMORY_LIMIT = 2048
+TILE_MEMORY_BYTES = 24 * 1024 * 1024
+DOCUMENT_MEMORY_LIMIT = 8
+CONCURRENT_BUILDS = 2
+# Area rings are cut to the tile plus this fraction of it on each side; the codec then clips
+# to the tile exactly as before, so the cut edges never reach a tile.
+CLIP_MARGIN = 0.125
 QUERY_TEMPLATE = (
     "[out:json][timeout:60];"
     "way[\"highway\"]({south:.7f},{west:.7f},{north:.7f},{east:.7f});"
@@ -142,7 +152,7 @@ class OverpassSource:
                 temporary.replace(path)
                 self.stats["network_fetches"] += 1
             self.documents[key] = document
-            while len(self.documents) > 64:
+            while len(self.documents) > DOCUMENT_MEMORY_LIMIT:
                 self.documents.popitem(last=False)
             return document
 
@@ -199,8 +209,6 @@ class LocalIndexSource:
         self.index = index
         self.fallback = fallback
         self.offline = fallback is None or fallback.offline
-        self.documents: collections.OrderedDict = collections.OrderedDict()
-        self.lock = threading.Lock()
         self.local_stats = collections.Counter()
 
     @property
@@ -227,19 +235,11 @@ class LocalIndexSource:
             if self.fallback is None:
                 raise LookupError("area outside the local extract")
             return self.fallback.document(key)
-        with self.lock:
-            cached = self.documents.get(key)
-            if cached is not None:
-                self.documents.move_to_end(key)
-                self.local_stats["index_memory_hits"] += 1
-                return cached
-        document = self.index.document(*tile_bounds(*key))
+        # Not cached: an indexed key is one exact tile, and the server caches the encoded tile.
+        south, west, north, east = bounds = tile_bounds(*key)
+        dy, dx = (north - south) * CLIP_MARGIN, (east - west) * CLIP_MARGIN
         self.local_stats["index_queries"] += 1
-        with self.lock:
-            self.documents[key] = document
-            while len(self.documents) > 64:
-                self.documents.popitem(last=False)
-        return document
+        return self.index.document(*bounds, clip=(south - dy, west - dx, north + dy, east + dx))
 
 
 class GridCanarySource:
@@ -294,7 +294,10 @@ class LiveTileServer(ThreadingHTTPServer):
         self.emit = emit
         self.terrain = terrain
         self.tiles: collections.OrderedDict = collections.OrderedDict()
+        self.tile_bytes = 0
         self.tiles_lock = threading.Lock()
+        self.builds = threading.BoundedSemaphore(CONCURRENT_BUILDS)
+        self.building: dict[tuple[int, int, int], threading.Lock] = {}
         self.request_number = 0
         self.counter_lock = threading.Lock()
         self.stats = collections.Counter()
@@ -330,15 +333,39 @@ class LiveTileServer(ThreadingHTTPServer):
             "client_rendering": "unverified",
         }
 
-    def feature_tile(self, z: int, x: int, y: int) -> tuple[bytes, int]:
-        address = (z, x, y)
+    def _cached_tile(self, address):
         with self.tiles_lock:
             cached = self.tiles.get(address)
             if cached is not None:
                 self.tiles.move_to_end(address)
-                return cached
+            return cached
+
+    def feature_tile(self, z: int, x: int, y: int) -> tuple[bytes, int]:
+        address = (z, x, y)
+        cached = self._cached_tile(address)
+        if cached is not None:
+            return cached
         if isinstance(self.source, GridCanarySource):
             return self.source.build(z, x, y)
+        # The client opens ~100 connections at once, often several for one tile. Each address is
+        # built once (later askers wait and take the cached bytes), and only CONCURRENT_BUILDS
+        # documents are alive at a time, however many connections are waiting.
+        with self.tiles_lock:
+            gate = self.building.setdefault(address, threading.Lock())
+        try:
+            with gate:
+                cached = self._cached_tile(address)
+                if cached is not None:
+                    return cached
+                with self.builds:
+                    return self._build_tile(z, x, y)
+        finally:
+            with self.tiles_lock:
+                if self.building.get(address) is gate and not gate.locked():
+                    del self.building[address]
+
+    def _build_tile(self, z: int, x: int, y: int) -> tuple[bytes, int]:
+        address = (z, x, y)
         key = fetch_key(z, x, y, self.fetch_zoom)
         if getattr(self.source, "per_tile", False) and self.source.covers((z, x, y)):
             key = (z, x, y)  # The local index answers exact tile bounds quickly.
@@ -352,11 +379,15 @@ class LiveTileServer(ThreadingHTTPServer):
                 if (e.get("kind") if e.get("type") == "area" else
                     ("road" if "highway" in (e.get("tags") or {}) else "water_line")) in self.only_kinds]}
         raw, summary = build_live_tile(document, z, x, y)
+        del document
         result = (raw, summary["feature_count"])
         with self.tiles_lock:
-            self.tiles[address] = result
-            while len(self.tiles) > TILE_MEMORY_LIMIT:
-                self.tiles.popitem(last=False)
+            if address not in self.tiles:
+                self.tiles[address] = result
+                self.tile_bytes += len(raw)
+            while self.tiles and (len(self.tiles) > TILE_MEMORY_LIMIT or self.tile_bytes > TILE_MEMORY_BYTES):
+                _, (old, _) = self.tiles.popitem(last=False)
+                self.tile_bytes -= len(old)
         return result
 
     def handle_error(self, _request, _client_address):
