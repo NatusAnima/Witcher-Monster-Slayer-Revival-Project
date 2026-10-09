@@ -252,7 +252,7 @@ public sealed class SocialService : IDisposable
                 int id = intent.Method == 106 ? intent.Gift.Pack : 101;
                 var items = p.Items.GetValueOrDefault(kind) ?? new Dictionary<int, int>(); int before = items.GetValueOrDefault(id);
                 if (intent.Method == 106 && before < 1 || intent.Method == 107 &&
-                    (before > int.MaxValue - intent.Gift.Amount || SocialPolicy.Occupied(p) + intent.Gift.Amount > SocialPolicy.BagCapacity)) return null;
+                    (before > int.MaxValue - intent.Gift.Amount || SocialPolicy.Occupied(p) + intent.Gift.Amount > Economy.BagSize(p))) return null;
                 int after = intent.Method == 106 ? before - 1 : before + intent.Gift.Amount; p.Items[kind] = items;
                 if (after == 0) items.Remove(id); else items[id] = after;
                 p.Granted.Add(receipt); ok = true; return p;

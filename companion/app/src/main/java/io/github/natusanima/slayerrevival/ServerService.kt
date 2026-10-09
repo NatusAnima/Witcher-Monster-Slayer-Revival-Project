@@ -122,6 +122,8 @@ class ServerService : Service() {
                 val dir = File(state, name)
                 if (!dir.isDirectory) File(rt, "defaults/$name").copyRecursively(dir)
             }
+            // the update's own notes for What's new, replaced every time (NewsFeed shows them before the owner's news)
+            File(rt, "defaults/news/release.json").copyTo(File(state, "news/release.json"), overwrite = true)
             val world = File(state, "world").apply { mkdirs() }
             File(world, "world.json").takeUnless { it.exists() }
                 ?.writeText("{\n  \"schemaVersion\": 1,\n  \"monsterSlotsPerCell\": 18\n}\n")
@@ -138,12 +140,15 @@ class ServerService : Service() {
                 "--LocalProfile:DataDirectory", "$state/profiles", "--LocalProfile:NewProfileMode", "reconstructed",
                 "--News:Directory", "$state/news", "--Tasks:Directory", "$state/tasks", "--World:Directory", "$world",
                 "--Playable:Url", "http://127.0.0.1:$PLACEMENT_PORT",
+                // real weather: free, no key; the server sends only the position rounded to 0.1° (about 11 km)
+                "--Weather:Url", "https://api.open-meteo.com/v1/forecast",
                 "--Admin:Port", "$ADMIN_PORT", "--Admin:Origin", "http://127.0.0.1:$ADMIN_PORT", // DashboardActivity
                 "--Admin:KeyFile", "$key", "--Admin:DataDirectory", "$state/admin/data",
                 // one timestamped line per entry: the log is read by people and by the bug report
                 "--Logging:Console:FormatterOptions:SingleLine", "true",
                 "--Logging:Console:FormatterOptions:TimestampFormat", "HH:mm:ss.fff ",
-            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0") + SERVER_MEMORY)
+            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0",
+                "SSL_CERT_FILE" to "$rt/etc/ca-certificates.crt") + SERVER_MEMORY)
             thread(name = "recorder") { // what the phone was doing around a crash: memory, the server's processes, heat
                 while (!stopping) {
                     EventLog.sample(this)

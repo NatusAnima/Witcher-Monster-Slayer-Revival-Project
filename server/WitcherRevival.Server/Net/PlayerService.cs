@@ -805,9 +805,11 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                     .ToDictionary(r => r.Key, r => r.Value);
                 if (respawns.ContainsKey(id)) return null;
                 long period = WorldHerbs.Respawn;
+                var gathered = Fit(player, WorldHerbs.Loot(id, (now + period) / period));
+                if (gathered.Count == 0) return null;   // a full bag leaves the herb for later, as the client does
                 respawn = now + period;
                 respawns[id] = respawn;
-                loot = WorldHerbs.Loot(id, respawn / period);
+                loot = gathered;
                 AddItems(player, loot.GroupBy(i => i).Select(g => (ItemKinds.Ingredients, g.Key, g.Count())));
                 return player with { HerbRespawns = respawns };
             }, new TaskEngine.Action(19));
@@ -859,7 +861,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         b.WriteInt(monsters.Length);
         foreach (int monster in monsters) b.WriteInt(monster);
         b.WriteByte((byte)state);
-        b.WriteInt(WorldNests.BountyGold);
+        b.WriteInt(WorldNests.Bounty);
         b.WriteInt(WorldNests.ClearingExp);
         b.WriteInt(progress?.Clears ?? 0);
         return b.ToArray();
@@ -988,13 +990,13 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                     kills[monster] = kills.GetValueOrDefault(monster) + 1;
                     loot.AddRange(Economy.FightLoot(monster, species?.Difficulty ?? 1));
                 }
-                loot = Looted(loot);
+                loot = Fit(player, Looted(loot));
                 attackExp = Exp(Reconstruction.CriticalHitExp * Sum(Reconstruction.DetailPerfectAttacks));
                 parryExp = Exp(Reconstruction.PerfectParryExp * Sum(Reconstruction.DetailPerfectParries));
                 oilExp = Exp(Reconstruction.ProperOilExp * Count(Reconstruction.DetailUsedProperOil));
                 clearingExp = Exp(WorldNests.ClearingExp);
                 boostedExp = rarityExp * Reconstruction.ExperienceBonus(Worn(player)) / 100;   // equipment (effect 65)
-                gold = today.Wins < WorldNests.DailyLimit ? WorldNests.BountyGold : 0;
+                gold = today.Wins < WorldNests.DailyLimit ? WorldNests.Bounty : 0;
                 AddItems(player, loot.Select(item => (ItemKinds.Ingredients, item, 1)));
                 var nests = new Dictionary<long, LocalProfileStore.NestProgress>(today.Nests)
                 {
@@ -1618,6 +1620,11 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         return scaled;
     }
 
+    /// <summary>As much of [loot] as the player's bag still holds; the rest is left behind (the client lists what the
+    /// reply lists, so it stays in step).</summary>
+    private static List<int> Fit(LocalProfileStore.PlayerState player, List<int> loot) =>
+        loot.Take((int)Math.Max(0, Economy.BagSize(player) - SocialPolicy.Occupied(player))).ToList();
+
     /// <summary>Grants the fight experience of a won fight (see Reconstruction.BaseExp) and records the kill;
     /// <paramref name="record"/> may add more to the same saved revision. Response layout of CombatEnd (8,
     /// Factory 0x247E50C) and CombatEndSummonedMonster (114, 0x247EC60): [int lootCount][int × loot]
@@ -1648,6 +1655,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                     var worn = Worn(player);
                     boostedExp = baseExp * Reconstruction.ExperienceBonus(worn) / 100;
                     if (Random.Shared.Next(100) < Reconstruction.ExtraIngredientChance(worn)) loot.AddRange(loot.Skip(2).DefaultIfEmpty(Economy.Tissue));
+                    loot = Fit(player, loot);
                     AddItems(player, loot.Select(id => (ItemKinds.Ingredients, id, 1)));
                     var after = Reconstruction.WithExp(player, baseExp + comboExp + oilExp + parryExp + firstExp + boostedExp);
                     return social is null ? after : SocialPolicy.AwardCombatPack(cfg, before, after, out packType);
@@ -1680,7 +1688,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // 1.1.116 GetInventoryResponse.Factory.ReadMap (0x1e7b1f8): [int pairCount] then [int id][int count];
         // counts below 1 are skipped. Order: ingredients, bombs, potions, oils, lures, senses potions,
         // consumables, friends packs, summoning scrolls, then BagSize.
-        var items = profiles.Snapshot().Player?.Items;
+        var player = profiles.Snapshot().Player;
+        var items = player?.Items;
         var b = new ByteBuffer();
         WriteItemMap(b, items?.GetValueOrDefault(ItemKinds.Ingredients));
         WriteItemMap(b, items?.GetValueOrDefault(ItemKinds.Bombs));
@@ -1691,7 +1700,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         WriteItemMap(b, null); // consumables
         WriteItemMap(b, items?.GetValueOrDefault(SocialService.PackItems));
         WriteItemMap(b, tasks.Catalog is null ? null : items?.GetValueOrDefault("summoning_scrolls"));
-        b.WriteInt(200);                                         // BagSize
+        b.WriteInt(Economy.BagSize(player));                     // BagSize
         return b.ToArray();
     }
 
@@ -2089,7 +2098,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             int cost = wanted.Sum(w => prices[w]);
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
             {
-                if (player.Gold < cost || !Economy.ValidPotionSelection(player, potions)) return null;
+                if (player.Gold < cost || !Economy.ValidPotionSelection(player, potions) ||
+                    SocialPolicy.Occupied(player) + wanted.Count > Economy.BagSize(player)) return null;
                 AddItems(player, wanted.Select(w => (Economy.KindOf(w.Type)!, w.Item, 1)));
                 bought = true;
                 return player with { Gold = player.Gold - cost };
@@ -2113,7 +2123,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     /// <summary>BuyShopBundle (75): request [int bundleId][long nonce] (OrenTransactionProcessor sends a random
     /// long); response [byte Result][int BundleId][int OrensAmount] (Factory 0x247CA18). The client checks
     /// Result and BundleId and then refreshes the player's data. Reconstructed profiles pay the bundle's gold
-    /// price (daily deals discounted) and get its items and stations; OrensAmount is the gold left.</summary>
+    /// price (daily deals discounted) and get its items, stations and bags (Economy.BagSize), or nothing when its
+    /// items do not fit in the bag; OrensAmount is the gold left.</summary>
     private byte[] HandleBuyShopBundle(ApiProtocol.ApiRequest req)
     {
         if (req.Data.Length != 12) throw new InvalidDataException("Invalid BuyShopBundle payload.");
@@ -2141,6 +2152,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 }
                 LocalProfileStore.PlayerState Declined() => player with { Transactions = Record(player, transaction, bundleId, false, now) };
                 if (player.Gold < price || (bundle.OneTime && (player.OneTimeBundles ?? []).Contains(bundleId))) return Declined();
+                // what fits in the bag, counted as the client's CanBuyThisShopItem counts it
+                int space = bundle.Items.Where(i => Economy.KindOf(i.Type) is not null).Sum(i => i.Amount);
+                if (space > 0 && SocialPolicy.Occupied(player) + space > Economy.BagSize(player)) return Declined();
                 var brewers = EnsureBrewers(player).ToList();
                 var gear = EquipmentOf(player);
                 if (bundle.Items.Any(i => (i.Type == Economy.TypeArmor && gear.Armors.Contains(i.Item)) ||
@@ -2260,10 +2274,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         return BuildIntResponse(true, done ? 3 : 1);
     }
 
-    /// <summary>The player's stations, with the unlimited basic station always first.</summary>
+    /// <summary>The player's stations, with the unlimited basic station always first. Stations saved with the old
+    /// type ids 1201-1203 come back as the client's 1-3.</summary>
     private static List<LocalProfileStore.BrewerState> EnsureBrewers(LocalProfileStore.PlayerState player)
     {
-        var brewers = player.Brewers?.ToList() ?? new List<LocalProfileStore.BrewerState>();
+        var brewers = player.Brewers?.Select(b => b.Type > 1200 ? b with { Type = b.Type - 1200 } : b).ToList()
+            ?? new List<LocalProfileStore.BrewerState>();
         if (!brewers.Any(b => b.InstanceId == Economy.BasicBrewerInstance))
             brewers.Insert(0, new LocalProfileStore.BrewerState(Economy.BasicBrewerInstance, Economy.BasicBrewer.Id, -1, Idle, 0));
         return brewers;

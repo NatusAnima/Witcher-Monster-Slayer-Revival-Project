@@ -6,7 +6,7 @@ namespace WitcherRevival.Server.Net;
 /// at every player level; each player fights them for themselves: a kill hides the monster for that player only
 /// (KilledInstances of their profile). Places come from the playable-locations service
 /// per level-14 cell (fixed for a UTC day). Each cell has <see cref="MonstersPerCell"/> original slots with their own
-/// share of the day's places (those the cell's herbs and nemeton leave free); policy permits up to two additional
+/// share of the day's places (those the cell's herbs and nemeton leave free); policy permits up to five additional
 /// monsters in each share, while preserving the original monster. A slot's monsters live
 /// <see cref="LifetimeSeconds"/> and is followed at once by the next one on a place drawn from the slot's share.
 /// The slots of a cell are evenly spread over a lifetime and cells start at different phases, so small groups come
@@ -38,6 +38,8 @@ public static class WorldSpawns
     // Keep this partition count fixed: changing it would move existing monsters and reuse their generations.
     public const int MonstersPerCell = 6;
     public const int DefaultMonsterSlotsPerCell = 18;
+    // Up to five more monsters in each share; a cell needs the places for them (the dashboard's places per cell).
+    public const int MaxMonsterSlotsPerCell = 36;
     // Four partitions prefer easy common draws; legacy generations restrict all their draws to zero skulls.
     public const int BeginnerSlotsPerCell = 4;
     public const int CommonWeight = 88, RareWeight = 18, LegendaryWeight = 3;
@@ -135,7 +137,7 @@ public static class WorldSpawns
         int monsterSlotsPerCell = DefaultMonsterSlotsPerCell, long balanceFromUnixSeconds = 0,
         Func<long, WorldBalance.Rules>? balanceAt = null)
     {
-        if (monsterSlotsPerCell is < 6 or > 18) throw new ArgumentOutOfRangeException(nameof(monsterSlotsPerCell));
+        if (monsterSlotsPerCell is < MonstersPerCell or > MaxMonsterSlotsPerCell) throw new ArgumentOutOfRangeException(nameof(monsterSlotsPerCell));
         if (balanceFromUnixSeconds < 0) throw new ArgumentOutOfRangeException(nameof(balanceFromUnixSeconds));
         long dealSeed = StableHash($"{cell.Id}:places");
         var dealRng = new Random((int)(dealSeed ^ (dealSeed >> 32)));

@@ -95,6 +95,61 @@ in-place update, never run on a device; there is no rollback, a z bump never re-
   (also with the screen off, notifications denied, and on a Samsung phone). Tests: `python tools/client116/test_assemble.py`,
   `python tools/client116/test_patch_client.py`, map tests with `local/venv` (`test_osm_extract_index`, one old test errors on Windows at temp cleanup).
 
+## 0.2.0, third batch (2026-10-09): PR #3, weather, bags, What's new, place mix
+Plan: `C:\Users\iyave\.claude\plans\there-have-been-quite-eager-pebble.md` (Phase 1 done here; Phase 2 = debug tools and the quest audit/runner,
+Phase 3 = central-server and later-content research).
+- **PR #3 (MasterpiecePL, memory + Android 12+ hook):** merged locally as `6c1d73f` (their squash, author kept, no Claude lines) plus `f8c6546` (ours: tiles
+  are clipped in Mercator, the test fakes take `clip`, one in-place game update: the PR's REHOOK and `phone_rehook.py` dropped, its "hook changed"
+  check kept as `ClientBuildService.hookChanged`). Pushed to `main` 2026-10-09 (with the 0.2.0 commit `a494f3c` before them). GitHub cannot mark
+  the PR merged (different SHA): close it by hand with a link to `6c1d73f`. Everything below is in the working tree, uncommitted.
+- **Weather:** the app and `restart.py` pass `--Weather:Url https://api.open-meteo.com/v1/forecast`. The runtime ships Alpine's `ca-certificates-bundle`
+  as `etc/ca-certificates.crt`, and the server gets `SSL_CERT_FILE`. Tuning `weather.real` turns it off. Checked under qemu with the phone build: with only
+  the bundled roots Open-Meteo answered (rain); with no roots, Clear.
+- **Alchemy "Add Station":** the client offers brewer ids 2 and 3 (`AlchemyBrewingPanel`: 1 infinite, 2 small, 3 big); ours were 1201-1203. Now 1/2/3;
+  saves with 1201-1203 come back as 1-3 (`EnsureBrewers`); the bundles keep ids 2202/2203.
+- **Bags:** bundles 95-99, one-time, in Equipment → Items (the client has no bag group). The client texts give the names and sizes (Bag 50, Small pouch 50,
+  Medium-sized pouch 100, Spacious pouch 200, Set of saddlebags 400); the wiki gives the prices (500/500/1000/2000/4000). A bag item (type 11) adds its
+  amount to the inventory size (`PlayerInventory.TryAddItem`). `Economy.BagSize` = Tuning `inventory.startSize` (200) + bags bought, at most 1000; RPC 5
+  sends it. `inventoryIncrement` 50 is the shop's amount label for every bag. Space is counted as the client counts it: all stacks, stations and crafts
+  (`SocialPolicy.Occupied`). A full bag refuses shop items (as `CanBuyThisShopItem`) and the pre-fight purchase, cuts fight and nest loot to the free
+  space, refuses herbs when nothing fits and gifts that do not fit. Story, task, level-up and crafting rewards are always given. A profile that is
+  already over 200 (nothing was limited before) gets no loot until it buys bags or uses items.
+- **What's new:** `GatekeeperNewsLoader.Fetch` uses System.Net `WebRequest.CreateHttp(string)` (RVA 0x20A4A28), not UnityWebRequest, on
+  `https://gatekeeper.test.dev.spokko.com/news/<lang>`, and the hook refuses port 443. hook.js stage "news requests" rewrites `https://gatekeeper.*/news/`
+  to `http://127.0.0.1:18080/news/`. It reaches players with 0.2.0's in-place game update. **Not run on a device yet.**
+- **Patch notes in What's new:** `server/WitcherRevival.Server/news/release.json` (the feed format) holds the update's own notes. The app copies it over
+  `state/news/release.json` at every start (`restart.py` too). `NewsFeed` puts its items first in every language and features its item unless the
+  owner's feed features a newer one. **Each release:** a new id, `group_id`, date and text.
+- **Place mix (Tuning → Places, replaces `woods.maxPlaces`):** every candidate has a ground (woods, then water within 60 m, then parks, then urban within
+  60 m of a building, then paths). The default draw takes places by smooth weighted round-robin over the shares (paths 40, parks 25, woods 15, water 10,
+  urban 40). A ground with no point left at the spacing gives its share to the rest. Also: places per cell (24, 4-48), spacing (50 m, 30-200) and street
+  clearance (12 m, 10-30). Below 13 m, places line both sides of streets, 13 m from the middle: residential, living-street and service streets
+  everywhere, tertiary and unclassified ones only within 60 m of a building (a country road often has no pavement). A scheduled placement policy keeps
+  its own rules (20 m, no street places). `PLACEMENT_VERSION` 5, golden changed on purpose. The Python `Tuning.SETTINGS` and C# `WorldTuning` hold the
+  same keys (`test_place_settings_match_the_placement_service`).
+- **Why streets:** the maintainer's report (2026-10-09): in towns monsters spawn mainly in parks and must also spawn in plenty on ordinary streets.
+  Towns have few path candidates (sidewalks are rarely mapped, and a 20 m clearance removed everything along a street), so before this they ran out
+  of everything but parks; the first try (the mix with the 20 m clearance, urban 10) hardly changed them. Measured with `tools/place_mix.py` (Israel
+  index, a spot's cell and its 8 neighbours; places per cell and the biggest shares):
+
+  | Spot | Before | Mix only (20 m, urban 10) | Now (12 m, town streets, urban 40) |
+  |---|---|---|---|
+  | Tel Aviv centre | 6.7: parks 50%, urban 42% | 7.1: parks 52% | 18.6: urban 68%, parks 25% |
+  | Jerusalem centre | 9.6: parks 42%, woods 23% | 10.9: parks 35%, woods 30% | 23.3: urban 61%, parks 18% |
+  | Kfar Saba (suburb) | 13.7: urban 61%, parks 26% | 13.8: urban 56%, parks 30% | 23.2: urban 69%, parks 19% |
+  | Ein Kerem (forest edge) | 17.8: woods 68% | 23.2: woods 74% | 23.6: urban 43%, woods 38% |
+  | Haifa (coast) | 18.6: parks 60% | 19.8: parks 53% | 21.7: parks 41%, urban 41% |
+- **Monsters per cell 6-36** (was 6-18): `WorldPolicy`, `WorldSpawns`, the World page (input, hint in 10 languages), and the Tuning page, which saves it
+  through `/api/world`. A cell needs the places for them (`test_world_density_reaches_its_maximum_where_a_cell_has_the_places`, 48 places).
+- **Nest gold** (Tuning `nests.gold`, 50): the nest window and the payment both use it.
+- Not on the Tuning page, on purpose: the friend-gift numbers (they only matter between players on one server), and the nest minimum level, the nest
+  daily limit and task gold (the client reads these from static data, so a change would need a static-data rebuild).
+- Tests (Windows): the full server suite (290) has only the known Windows-only failures; the map tests, `tools/client116` tests and the hook bundle pass.
+- Built 2026-10-09 22:54 (with the street places): runtime rebuilt, `local/release/Witcher-Monster-Slayer-Revival-0.2.0.apk` (same release key,
+  `apksigner verify` ok), **installed on the Xiaomi 22:55** at the maintainer's request (`adb install -r`, data kept). The previous build is kept as
+  `...-0.2.0-second.apk`. The maintainer tests it; after that: commit this batch, then Phase 2. Device checks: "Update the game" offered (the hook
+  changed), What's new, Add Station, a bag purchase and the bigger inventory, real weather, monsters on town streets.
+
 ## Current State (2026-10-05)
 **The client:**
 - The phone runs our built client: `local/client/witcher116.apk`, made by `tools/client116/build_client.py` from the clean Play export (`~/witcher_1.1.116_300085`) and the extracted packs (`~/witcher_1.1.116_packs`).

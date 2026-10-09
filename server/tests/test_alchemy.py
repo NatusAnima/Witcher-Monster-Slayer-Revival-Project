@@ -29,8 +29,9 @@ class AlchemyTests(base.PrototypeTests):
         player['SkillPoints'] = 100
         player['Gold'] = 1000
         player['Exp'] = 780000
-        player['Items'] = {'ingredients': {str(i): 100 for i in range(101, 114)},
+        player['Items'] = {'ingredients': {str(i): 50 for i in range(101, 114)},
                            'potions': {'201': 5, '202': 5, '205': 5}, 'oils': {'301': 5}, 'bombs': {'401': 5}}
+        player['OneTimeBundles'] = [95, 96, 97, 98, 99]   # every bag: 1000 slots, so the stock above fits
         if brewer is not None:
             player['Brewers'] = [brewer]
         path.write_text(json.dumps(saved))
@@ -101,6 +102,21 @@ class AlchemyTests(base.PrototypeTests):
         for item, cost in [(101, 3), (102, 1), (103, 5)]:
             self.assertEqual(after['ingredients'][item], inventory['ingredients'][item] - cost)
         self.assertEqual(after['potions'], inventory['potions'])
+
+    def test_add_station_uses_the_clients_brewer_ids(self):
+        # The Alchemy tab's "Add Station" asks the brewers table for ids 2 and 3 (AlchemyBrewingPanel) and buys each
+        # through a one-item bundle; an empty list there meant the ids did not match.
+        old = {'InstanceId': 7, 'Type': 1202, 'UsesLeft': 20, 'WorkingRecipe': -1, 'FinishTime': 0}
+        server, c, _ = self.seed_alchemy(brewer=old)
+        with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata', timeout=2) as response:
+            data = json.loads(gzip.decompress(response.read()))
+        self.assertEqual({r['id']: r['slug'] for r in data['brewers']}, {1: 'brewer_basic', 2: 'brewer_small', 3: 'brewer_big'})
+        def stations():
+            r = Reader(c.rpc(69)); self.assertEqual(r.byte(), 1)
+            return [(r.long(), r.integer(), r.integer(), r.integer(), r.integer())[:2] for _ in range(r.integer())]
+        self.assertEqual(stations(), [(1, 1), (7, 2)])       # a station saved as 1202 comes back as the client's 2
+        self.assertEqual(c.rpc(75, I(2203) + Q(5))[:1], b'\1')
+        self.assertIn(3, [kind for _, kind in stations()])
 
     def test_alchemy_basic_skill_gate_preserves_preexisting_items_and_work(self):
         # Legacy saved work remains claimable even if the current skill set lacks its prerequisite.
@@ -186,7 +202,7 @@ class AlchemyTests(base.PrototypeTests):
             self.assertEqual(effects[skill]['power'], power, skill)
         self.assertEqual(c.rpc(4, Q(1) + I(2107) + I(3))[:1], b'\1')
         inventory = self.inventory(c)['ingredients']
-        self.assertEqual((inventory[108], inventory[101], inventory[103]), (96, 93, 93))
+        self.assertEqual((inventory[108], inventory[101], inventory[103]), (46, 43, 43))
 
     def test_alchemy_skill_event_rows_match_reviewed_native_dispatch(self):
         server, _, _ = self.seed_alchemy()

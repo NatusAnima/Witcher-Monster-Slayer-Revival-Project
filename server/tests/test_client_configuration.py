@@ -10,10 +10,11 @@ from pathlib import Path
 from test_prototype import Client, I, Reader, Server
 
 
-NEST_DEFAULTS = [
+DEFAULT_ROWS = [
     {'id': 1, 'param_name': 'nestClearingExp', 'param_value': '500'},
     {'id': 2, 'param_name': 'nestDailyLimit', 'param_value': '3'},
     {'id': 3, 'param_name': 'nestPlayerMinimalLevel', 'param_value': '10'},
+    {'id': 4, 'param_name': 'inventoryIncrement', 'param_value': '50'},
 ]
 DRIVING_PARAMETERS = {'drivingWarningCooldown', 'drivingWarningMinSamples', 'drivingWarningMinSpeed'}
 
@@ -45,7 +46,7 @@ class ClientConfigurationTests(unittest.TestCase):
 
     def test_unconfigured_defaults_add_no_driving_rows(self):
         data = self.containers(self.start())
-        self.assertEqual(data['game_configuration'], NEST_DEFAULTS)
+        self.assertEqual(data['game_configuration'], DEFAULT_ROWS)
         self.assertFalse(DRIVING_PARAMETERS.intersection(row['param_name'] for row in data['game_configuration']))
 
     def test_overrides_match_between_http_and_tcp_and_preserve_other_tables(self):
@@ -56,18 +57,18 @@ class ClientConfigurationTests(unittest.TestCase):
             'Client__DrivingWarningMinSpeedKmh': '40',
         }))
         rows = configured['game_configuration']
-        self.assertEqual(rows[:len(NEST_DEFAULTS)], NEST_DEFAULTS)
-        self.assertEqual({row['param_name']: row['param_value'] for row in rows[len(NEST_DEFAULTS):]}, {
+        self.assertEqual(rows[:len(DEFAULT_ROWS)], DEFAULT_ROWS)
+        self.assertEqual({row['param_name']: row['param_value'] for row in rows[len(DEFAULT_ROWS):]}, {
             'drivingWarningCooldown': '120', 'drivingWarningMinSamples': '12', 'drivingWarningMinSpeed': '40',
         })
         self.assertEqual(len({row['id'] for row in rows}), len(rows))
-        configured['game_configuration'] = rows[:len(NEST_DEFAULTS)]
+        configured['game_configuration'] = rows[:len(DEFAULT_ROWS)]
         self.assertEqual(configured, baseline)
 
     def test_partial_configuration_leaves_unspecified_native_values_absent(self):
         data = self.containers(self.start({'Client__DrivingWarningMinSamples': '2'}))
-        self.assertEqual(data['game_configuration'][:len(NEST_DEFAULTS)], NEST_DEFAULTS)
-        self.assertEqual(data['game_configuration'][len(NEST_DEFAULTS):], [
+        self.assertEqual(data['game_configuration'][:len(DEFAULT_ROWS)], DEFAULT_ROWS)
+        self.assertEqual(data['game_configuration'][len(DEFAULT_ROWS):], [
             {'id': 1002, 'param_name': 'drivingWarningMinSamples', 'param_value': '2'},
         ])
 

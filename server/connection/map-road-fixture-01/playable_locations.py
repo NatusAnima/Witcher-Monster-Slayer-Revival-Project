@@ -9,12 +9,13 @@ This service is the OSM stand-in used by the game server:
   GET /cells?ids=<id>,<id>&epoch=<n>
       -> {"<id>": {"center": [lat, lng], "places": [{"id", "lat", "lng", "biomes", "kind"}, ...]}}
 
-Points lie on footways, paths, tracks, cycleways and pedestrian streets, or inside parks and
-forests; never within CARRIAGEWAY_CLEARANCE_M of a road for cars (MAJOR_ROAD_CLEARANCE_M for main
+Points lie on footways, paths, tracks, cycleways and pedestrian streets, beside streets (bigger ones only among houses), or
+inside parks and forests; never within the street clearance of a road for cars (MAJOR_ROAD_CLEARANCE_M for main
 roads), inside or next to a building, in water or on its shoreline. Biome ids follow the client's
 BiomeType (1 Forest, 4 Grassland, 7 Urban, 9 Barren, 10 Water). The selection is random per
-(cell, epoch), so each epoch gives new spots; woods hold at most FOREST_MAX_PER_CELL of a cell's places (the player can
-change that in the dashboard: --tuning names the file that holds it).
+(cell, epoch), so each epoch gives new spots, and follows the place mix: each ground (paths, parks, woods, water-side,
+urban) gets its share of a cell's places, so no ground crowds out the rest. The mix, the number of places, their spacing
+and the street clearance are the player's dashboard settings (--tuning names the file that holds them).
 Coordinates are never logged. Standard library only.
 """
 from __future__ import annotations
@@ -38,12 +39,16 @@ from osm_extract_index import FeatureIndex
 import s2cells
 
 WALK_CLASSES = {"footway", "path", "pedestrian", "cycleway", "bridleway", "track"}
+STREET_CLASSES = {"residential", "living_street", "service"}  # quiet streets: places beside them when the clearance allows
+TOWN_STREET_CLASSES = {"tertiary", "unclassified"}  # the same, but only where houses stand (rural ones often have no pavement)
 MAJOR_ROAD_CLASSES = {"motorway", "motorway_link", "trunk", "trunk_link", "primary", "primary_link",
                       "secondary", "secondary_link"}
 CARRIAGEWAY_CLASSES = MAJOR_ROAD_CLASSES | {"tertiary", "tertiary_link", "unclassified", "residential",
                                             "living_street", "service", "road"}
-CARRIAGEWAY_CLEARANCE_M = 20.0     # from the centre line of a street
+CARRIAGEWAY_CLEARANCE_M = 20.0     # from the centre line of a street, under a scheduled placement policy (its days keep it)
+STREET_CLEARANCE_M = 12.0          # the default draw's, which the dashboard changes: below STREET_SIDE_M, places line the streets
 MAJOR_ROAD_CLEARANCE_M = 30.0      # wide multi-lane roads
+STREET_SIDE_M = 13.0               # places beside streets, used only when the street clearance is below this
 BUILDING_CLEARANCE_M = 8.0
 SHORE_CLEARANCE_M = 3.0            # off the shoreline and river centre lines (bridges)
 WATER_NEAR_M = 60.0
@@ -52,13 +57,16 @@ PATH_STEP_M = 25.0
 AREA_STEP_M = 35.0
 MIN_SPACING_M = 50.0
 MAX_PER_CELL = 24
-# Woods are a grid over the whole polygon, so without a limit they fill every cell they touch (93-99% of the places around a big
-# forest, measured on the Israel extract) and the paths and parks beside them get none. Half a cell is the most they may hold.
-FOREST_MAX_PER_CELL = MAX_PER_CELL // 2  # the default; the dashboard's tuning file overrides it
+# The place mix, in shares of a cell's places. Parks and woods are a grid over their whole area and paths only a line of points,
+# so a draw evenly from every candidate filled each cell with whichever area it touched (93-99% woods around a big forest on the
+# Israel extract, parks in towns). The defaults are the maintainer's (2026-10-09): paths first, and town streets ("urban": within
+# 60 m of a building) as many as paths, so the streets of a town get monsters in plenty, not just its parks. The dashboard
+# changes them.
+MIX = {"paths": 40, "parks": 25, "woods": 15, "water": 10, "urban": 40}
 CELL_LEVEL = 14
 NEST_SPACING_M = 300.0  # below the minimum width of a level-14 S2 cell (~366 m)
 CLIP_MARGIN_M = 150.0   # beyond the cell; must exceed every clearance and "near" radius above
-PLACEMENT_VERSION = 4   # ids carry it, so places chosen under an older rule never share an id with these
+PLACEMENT_VERSION = 5   # ids carry it, so places chosen under an older rule never share an id with these
 
 FOREST, SHRUBLAND, GRASSLAND, URBAN, BARREN, WATER = 1, 2, 4, 7, 9, 10
 
@@ -193,17 +201,29 @@ class _Shapes:
                 return True
         return False
 
+    def unique_segments(self):
+        """Each segment once (a long one sits in several buckets), in bucket order."""
+        seen = set()
+        for bucket in self.segments.values():
+            for ax, ay, bx, by in bucket:
+                segment = min((ax, ay, bx, by), (bx, by, ax, ay))
+                if segment not in seen:
+                    seen.add(segment)
+                    yield ax, ay, bx, by
+
 
 def _cell_polygon(cell_id: int, proj: Projection):
     return [proj.xy(lat, lng) for lat, lng in s2cells.corners(cell_id)]
 
 
-def candidates(document: dict, cell_id: int, policy=None, diagnostics=None) -> list[dict]:
-    """Every safe point in the cell with its biomes (deterministic, unsampled)."""
+def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
+               clearance: float = CARRIAGEWAY_CLEARANCE_M) -> list[dict]:
+    """Every safe point in the cell with its biomes and ground (deterministic, unsampled). [clearance] is kept from
+    ordinary streets; below STREET_SIDE_M, quiet streets get points beside them too."""
     lat0, lng0 = s2cells.center(cell_id)
     proj = Projection(lat0, lng0)
     cell = _cell_polygon(cell_id, proj)
-    walk, roads, major, buildings, water, parks, forests, beaches = (_Shapes() for _ in range(8))
+    walk, roads, streets, town_streets, major, buildings, water, parks, forests, beaches = (_Shapes() for _ in range(10))
     for element in document["elements"]:
         if element["type"] == "way":
             points = [proj.xy(p["lat"], p["lon"]) for p in element["geometry"]]
@@ -214,6 +234,10 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None) -> l
                 major.add_line(points)
             elif tags.get("highway") in CARRIAGEWAY_CLASSES:
                 roads.add_line(points)
+                if tags.get("highway") in STREET_CLASSES:
+                    streets.add_line(points)
+                elif tags.get("highway") in TOWN_STREET_CLASSES:
+                    town_streets.add_line(points)
             elif "waterway" in tags:
                 water.add_line(points)
         else:
@@ -229,7 +253,7 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None) -> l
     def reason(x, y):
         if not _inside_ring(x, y, cell): return "outside-cell"
         if major.near(x, y, MAJOR_ROAD_CLEARANCE_M): return "major-road"
-        if roads.near(x, y, CARRIAGEWAY_CLEARANCE_M): return "road"
+        if roads.near(x, y, clearance): return "road"
         if buildings.contains(x, y) or buildings.near(x, y, BUILDING_CLEARANCE_M): return "building"
         if water.contains(x, y) or water.near(x, y, SHORE_CLEARANCE_M): return "water"
         if any(math.hypot(x-a, y-b) <= radius for (a, b), radius in excluded): return "excluded"
@@ -246,28 +270,36 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None) -> l
             stats["rejected"]["unmapped-preferred"] = stats["rejected"].get("unmapped-preferred", 0) + 1
             continue
         raw.append(((x, y), "preferred"))
-    visited_segments = set()
-    for key_segments in walk.segments.values():
-        for ax, ay, bx, by in key_segments:
-            segment = min((ax, ay, bx, by), (bx, by, ax, ay))
-            if segment in visited_segments:
-                continue
-            visited_segments.add(segment)
-            steps = max(1, int(math.hypot(bx - ax, by - ay) // PATH_STEP_M))
-            length = math.hypot(bx - ax, by - ay)
-            for k in range(steps):
-                x, y = ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps
-                # Only move a safe path anchor into mapped open ground. Unknown verges retain
-                # their path anchor; a blind offset could land inside a garden or carriageway.
-                if length and safe(x, y):
-                    distance = 6.0 if k % 2 == 0 else 9.0
-                    dx, dy = -(by - ay) / length * distance, (bx - ax) / length * distance
-                    for sign in ((1, -1) if k % 2 == 0 else (-1, 1)):
-                        ox, oy = x + sign * dx, y + sign * dy
-                        if (parks.contains(ox, oy) or forests.contains(ox, oy)) and safe(ox, oy):
-                            x, y = ox, oy
-                            break
-                raw.append(((x, y), "path"))
+    for ax, ay, bx, by in walk.unique_segments():
+        steps = max(1, int(math.hypot(bx - ax, by - ay) // PATH_STEP_M))
+        length = math.hypot(bx - ax, by - ay)
+        for k in range(steps):
+            x, y = ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps
+            # Only move a safe path anchor into mapped open ground. Unknown verges retain
+            # their path anchor; a blind offset could land inside a garden or carriageway.
+            if length and safe(x, y):
+                distance = 6.0 if k % 2 == 0 else 9.0
+                dx, dy = -(by - ay) / length * distance, (bx - ax) / length * distance
+                for sign in ((1, -1) if k % 2 == 0 else (-1, 1)):
+                    ox, oy = x + sign * dx, y + sign * dy
+                    if (parks.contains(ox, oy) or forests.contains(ox, oy)) and safe(ox, oy):
+                        x, y = ox, oy
+                        break
+            raw.append(((x, y), "path"))
+    # Towns often map no footways of their own, only streets: with a small enough clearance, both sides of a street get
+    # points (still kept from buildings and water like any other); bigger streets only where houses stand.
+    if clearance < STREET_SIDE_M:
+        for shapes, town_only in ((streets, False), (town_streets, True)):
+            for ax, ay, bx, by in shapes.unique_segments():
+                length = math.hypot(bx - ax, by - ay)
+                if not length:
+                    continue
+                steps = max(1, int(length // PATH_STEP_M))
+                dx, dy = -(by - ay) / length * STREET_SIDE_M, (bx - ax) / length * STREET_SIDE_M
+                for k in range(steps):
+                    x, y = ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps
+                    raw += [(side, "street") for side in ((x + dx, y + dy), (x - dx, y - dy))
+                            if not town_only or buildings.near(*side, URBAN_NEAR_M)]
     xs, ys = [p[0] for p in cell], [p[1] for p in cell]
     for shapes, kind in ((parks, "park"), (forests, "forest")):
         if not shapes.polygons:
@@ -304,25 +336,40 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None) -> l
             biomes.append(GRASSLAND)
         if water.near(x, y, WATER_NEAR_M):
             biomes.append(WATER)
+        # the share of the place mix the point counts toward
+        ground = ("woods" if biomes[0] == FOREST else "water" if WATER in biomes else
+                  "parks" if parks.contains(x, y) else "urban" if biomes[0] == URBAN else "paths")
         lat, lng = proj.latlng(x, y)
-        points.append({"lat": round(lat, 6), "lng": round(lng, 6), "biomes": biomes, "kind": kind})
+        points.append({"lat": round(lat, 6), "lng": round(lng, 6), "biomes": biomes, "kind": kind, "ground": ground})
     stats["safe"] = len(points)
     return points
 
 
-def sample(points: list[dict], cell_id: int, epoch: int, policy=None, woods: int = FOREST_MAX_PER_CELL) -> list[dict]:
-    """Up to MAX_PER_CELL points at least MIN_SPACING_M apart, random per (cell, epoch), of which at most [woods]
-    lie in woods (the default draw; a scheduled policy has its own spread)."""
+def sample(points: list[dict], cell_id: int, epoch: int, policy=None, tuning=None) -> list[dict]:
+    """The cell's places, random per (cell, epoch), at least the spacing apart. The default draw follows the place mix of
+    [tuning] (Tuning.values()): each place comes from the ground furthest behind its share among the grounds that still
+    have a point at the spacing, so a ground with none left gives its share to the others. A scheduled policy keeps its
+    own count, spacing and spread (its past days must stay reproducible)."""
     rng = random.Random(f"{cell_id}:{epoch}")
     order = points[:]
     rng.shuffle(order)
     proj = Projection(*s2cells.center(cell_id))
     chosen, xy = [], []
-    spacing = policy["spacingMeters"] if policy else MIN_SPACING_M
-    maximum = policy["maxPoints"] if policy else MAX_PER_CELL
-    # New schedules spread anchors across all reachable ground, instead of filling a
-    # random cluster first. Preferred anchors have priority but retain the same spacing.
+    tuning = tuning or Tuning.defaults()
+    spacing = policy["spacingMeters"] if policy else tuning["places.spacing"]
+    maximum = policy["maxPoints"] if policy else int(tuning["places.perCell"])
+
+    def take(point):
+        x, y = proj.xy(point["lat"], point["lng"])
+        if any(math.hypot(x - cx, y - cy) < spacing for cx, cy in xy):
+            return False
+        chosen.append(dict(point, id=f"lab-{cell_id:016x}-{epoch}-{(3 if policy else PLACEMENT_VERSION) * 1000 + len(chosen)}"))
+        xy.append((x, y))
+        return True
+
     if policy:
+        # New schedules spread anchors across all reachable ground, instead of filling a
+        # random cluster first. Preferred anchors have priority but retain the same spacing.
         remaining = [(p, proj.xy(p["lat"], p["lng"])) for p in order]
         preferred = [p for p in remaining if p[0]["kind"] == "preferred"]
         order = []
@@ -338,48 +385,66 @@ def sample(points: list[dict], cell_id: int, epoch: int, policy=None, woods: int
             if all(math.dist(position, v) >= spacing for v in selected_xy):
                 order.append(point); selected_xy.append(position)
             remaining = [(p, v) for p, v in remaining if p is not point and math.dist(position, v) >= spacing]
-    # A scheduled policy keeps its own spread (its past days must stay reproducible); only the default draw limits the woods.
-    woods_left = maximum if policy else woods
-    for point in order:
-        wood = point["biomes"][0] == FOREST
-        if wood and not woods_left:
-            continue
-        x, y = proj.xy(point["lat"], point["lng"])
-        if all(math.hypot(x - cx, y - cy) >= spacing for cx, cy in xy):
-            chosen.append(dict(point, id=f"lab-{cell_id:016x}-{epoch}-{(3 if policy else PLACEMENT_VERSION) * 1000 + len(chosen)}"))
-            xy.append((x, y))
-            woods_left -= wood
-            if len(chosen) == maximum:
+        for point in order:
+            if take(point) and len(chosen) == maximum:
                 break
+        return chosen
+    shares = {ground: tuning["places." + ground] for ground in MIX}
+    if not any(shares.values()):
+        shares = dict(MIX)  # all zero would leave the map empty
+    pools = {ground: [p for p in order if p["ground"] == ground] for ground in MIX}
+    credit = dict.fromkeys(MIX, 0.0)  # smooth weighted round-robin: the counts track the shares as places are taken
+    while len(chosen) < maximum:
+        open_grounds = [ground for ground in MIX if pools[ground] and shares[ground] > 0]
+        if not open_grounds:
+            break
+        for ground in open_grounds:
+            credit[ground] += shares[ground]
+        ground = max(open_grounds, key=credit.get)
+        credit[ground] -= sum(shares[g] for g in open_grounds)
+        pool = pools[ground]
+        while pool and not take(pool.pop()):
+            pass  # a point too close to a chosen one stays too close: drop it
     return chosen
 
 
 class Tuning:
     """The player's numbers from the dashboard (the game server writes world/tuning.json), looked at about once a second.
-    A file that is missing, damaged or has an impossible number means the default."""
+    A missing file means the defaults, a damaged one keeps the last good numbers, an impossible number its default. The
+    game server's WorldTuning holds the same keys and refuses bad values when they are saved."""
 
-    KEY = "woods.maxPlaces"
+    SETTINGS = {  # key: (default, lowest, highest)
+        "places.perCell": (MAX_PER_CELL, 4, 48), "places.spacing": (MIN_SPACING_M, 30, 200),
+        "places.streetClearance": (STREET_CLEARANCE_M, 10, 30),
+        **{"places." + ground: (share, 0, 100) for ground, share in MIX.items()},
+    }
 
     def __init__(self, path=None):
-        self.path, self._woods, self._checked, self._seen = path, FOREST_MAX_PER_CELL, 0.0, None
+        self.path, self._values, self._checked, self._seen = path, self.defaults(), 0.0, None
 
-    def woods(self) -> int:
+    @classmethod
+    def defaults(cls) -> dict:
+        return {key: default for key, (default, _, _) in cls.SETTINGS.items()}
+
+    def values(self) -> dict:
         if self.path is None:
-            return FOREST_MAX_PER_CELL
+            return self._values
         now = time.monotonic()
         if now - self._checked >= 1.0:
             self._checked = now
             try:
                 stat = self.path.stat()
                 if (stat.st_mtime_ns, stat.st_size) != self._seen:
-                    value = json.loads(self.path.read_bytes())["values"][self.KEY]
-                    ok = type(value) in (int, float) and value == int(value) and 0 <= value <= MAX_PER_CELL
-                    self._woods, self._seen = (int(value) if ok else FOREST_MAX_PER_CELL), (stat.st_mtime_ns, stat.st_size)
+                    saved = json.loads(self.path.read_bytes())["values"]
+                    self._values = {key: value if type(value) in (int, float) and low <= value <= high else default
+                                    for key, (default, low, high) in self.SETTINGS.items()
+                                    for value in [saved.get(key, default)]}
+                    self._seen = (stat.st_mtime_ns, stat.st_size)
             except FileNotFoundError:
-                self._woods, self._seen = FOREST_MAX_PER_CELL, None
-            except (OSError, ValueError, KeyError, TypeError):
-                pass  # a half-written file settles on the next look: keep the last value
-        return self._woods
+                self._values, self._seen = self.defaults(), None
+            except (OSError, ValueError, KeyError, TypeError, AttributeError):
+                pass  # a half-written file settles on the next look: keep the last values
+        return self._values
 
 
 class PlayableLocations:
@@ -420,12 +485,18 @@ class PlayableLocations:
         from_epoch, policy = self.policy.at(int(time.time() // 86400) if epoch == 0 else epoch)
         active = policy if from_epoch else None
         key = json.dumps(active, sort_keys=True, separators=(",", ":"))
+        tuning = self.tuning.values()
+        clearance = self.clearance(active, tuning)
         def geometry():
             document = self.document(cell_id)
-            return candidates(document, cell_id, active) if document is not None else []
-        woods = self.tuning.woods()
-        return self._sampled.get((key, woods, cell_id, epoch),
-            lambda: sample(self._raw.get((key, cell_id), geometry), cell_id, epoch, active, woods))
+            return candidates(document, cell_id, active, clearance=clearance) if document is not None else []
+        return self._sampled.get((key, tuple(sorted(tuning.items())), cell_id, epoch),
+            lambda: sample(self._raw.get((key, clearance, cell_id), geometry), cell_id, epoch, active, tuning))
+
+    @staticmethod
+    def clearance(active, tuning):
+        """The street clearance: the player's, except under a scheduled policy, whose days keep the rules they were drawn with."""
+        return CARRIAGEWAY_CLEARANCE_M if active else tuning["places.streetClearance"]
 
     def validate(self, value):
         policy = placement_policy.policy(value)
@@ -449,9 +520,10 @@ class PlayableLocations:
         for cell_id in ids:
             document = self.document(cell_id, clip=False)  # the operator map draws whole features
             stats = {}
-            points = candidates(document, cell_id, active, stats) if document is not None else []
-            chosen = sample(points, cell_id, epoch, active, self.tuning.woods())
-            spacing = (active or placement_policy.DEFAULT)["spacingMeters"]
+            tuning = self.tuning.values()
+            points = candidates(document, cell_id, active, stats, self.clearance(active, tuning)) if document is not None else []
+            chosen = sample(points, cell_id, epoch, active, tuning)
+            spacing = active["spacingMeters"] if active else tuning["places.spacing"]
             blocked = sum(not any(p["lat"] == q["lat"] and p["lng"] == q["lng"] for q in chosen)
                           and any(_distance_m(p, q) < spacing for q in chosen) for p in points)
             rows.append(dict(id=str(cell_id), corners=s2cells.corners(cell_id), covered=document is not None,
@@ -572,7 +644,7 @@ def main():
     parser.add_argument("--index", type=Path, required=True)
     parser.add_argument("--port", type=int, default=18093)
     parser.add_argument("--policy", type=Path, help="Shared world/placement-policy.json schedule")
-    parser.add_argument("--tuning", type=Path, help="The dashboard's world/tuning.json (the woods limit per cell)")
+    parser.add_argument("--tuning", type=Path, help="The dashboard's world/tuning.json (place mix, places per cell, spacing, street clearance)")
     args = parser.parse_args()
     service = PlayableLocations(FeatureIndex(args.index), args.policy, args.tuning)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service))

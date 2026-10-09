@@ -971,7 +971,7 @@ class PrototypeTests(unittest.TestCase):
                  3: {r['id'] for r in data['potions']}, 4: {r['id'] for r in data['oils']},
                  5: {r['id'] for r in data['lures']}, 6: {r['id'] for r in data['senses_potions']},
                  8: {r['id'] for r in data['armors']}, 9: {r['id'] for r in data['swords']},
-                 12: {r['id'] for r in data['brewers']}, 10: {1}}                  # 10: gold (ItemTypeIds.GOLD)
+                 12: {r['id'] for r in data['brewers']}, 10: {1}, 11: {1}}         # 10: gold, 11: a bag (ItemTypeIds)
         self.assertEqual((len(items[1]), len(items[12])), (13, 3))
         # Client ints only: time_coefficient is a percentage (AlchemyRecipeSlot.GetCraftingTimeText).
         self.assertEqual({r['slug']: r['time_coefficient'] for r in data['brewers']},
@@ -1063,7 +1063,7 @@ class PrototypeTests(unittest.TestCase):
         brewers = Reader(c.rpc(69)); self.assertEqual(brewers.byte(), 1)
         listed = [(brewers.long(), brewers.integer(), brewers.integer(), brewers.integer(), brewers.integer())
                   for _ in range(brewers.integer())]
-        self.assertEqual(listed[0], (1, 1201, -1, -1, 0))                   # idle: WorkingRecipe -1
+        self.assertEqual(listed[0], (1, 1, -1, -1, 0))                      # idle: WorkingRecipe -1
         known = Reader(c.rpc(6))
         recipes = {known.integer(): set(known.ints()) for _ in range(known.integer())}
         self.assertEqual(set(recipes), {2, 3, 4, 6})
@@ -1108,6 +1108,49 @@ class PrototypeTests(unittest.TestCase):
         objective = 'QUESTS/OBJECTIVE/TEST'.encode()
         self.assertEqual(c.rpc(62, I(len(objective)) + objective), b'\1' + I(len(objective)) + objective)
         self.assertEqual(c.rpc(61), b'\1' + I(len(objective)) + objective)
+
+    def test_bags_grow_the_inventory_and_a_full_one_leaves_loot_behind(self):
+        # The client's bag bundles 95-99 (Bag, Small pouch, Medium-sized pouch, Spacious pouch, Set of saddlebags): bought
+        # once, their bag item (type 11) adds its amount to the inventory size; the client counts every stack and station.
+        server, c = self.reconstructed()
+        with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata', timeout=1) as response:
+            data = json.loads(gzip.decompress(response.read()))
+        bundles = {r['id']: r for r in data['shop_bundles']}
+        bags = {r['shop_bundle_id']: r['amount'] for r in data['shop_bundle_items'] if r['item_type_id'] == 11}
+        self.assertEqual(bags, {95: 50, 96: 50, 97: 100, 98: 200, 99: 400})
+        self.assertEqual([(bundles[b]['gold_price'], bundles[b]['one_time']) for b in sorted(bags)],
+                         [(500, 1), (500, 1), (1000, 1), (2000, 1), (4000, 1)])
+        self.assertIn(('inventoryIncrement', '50'), [(r['param_name'], r['param_value']) for r in data['game_configuration']])
+        self.assertEqual(self.inventory(c)['bag'], 200)
+        def used(): return sum(sum(m.values()) for k, m in self.inventory(c).items() if k != 'bag') + 1   # + the basic station
+        free = 200 - used()
+        self.assertEqual(c.rpc(78, I(0)), b'\1')
+        server.stop()
+        path = self.profile_file('test-fresh')
+        saved = json.loads(path.read_text())
+        saved['Player']['Gold'] = 1000
+        saved['Player']['Items'].setdefault('ingredients', {})['101'] = free - 3
+        path.write_text(json.dumps(saved))
+        server, c = self.reconstructed()
+        self.assertEqual(used(), 197)
+        # The summoned ghoul's three ingredients just fit; the drowner's are left behind, its experience is not.
+        r = Reader(c.rpc(111, I(16) + I(1) + I(16925168) + I(52406374))); r.byte()
+        group, = self.summoned_groups(r)
+        ghoul, drowner = group['monsters'][0][1], group['monsters'][1][1]
+        body = bytes([1]) + I(13) + I(0) * 13 + bytes([0])
+        self.assertEqual(c.rpc(113, Q(ghoul)), b'\1')
+        self.assertEqual(self.combat_end(Reader(c.rpc(114, body)))['loot'], [103, 103, 104])
+        self.assertEqual(c.rpc(113, Q(drowner)), b'\1')
+        full = self.combat_end(Reader(c.rpc(114, body)))
+        self.assertEqual((full['loot'], full['base']), ([], 100))
+        self.assertEqual(used(), 200)
+        # Shop items that do not fit are refused unpaid; a bag makes room, once.
+        self.assertEqual(c.rpc(75, I(1205) + Q(1)), b'\0' + I(1205) + I(1000))
+        self.assertEqual(c.rpc(75, I(95) + Q(2)), b'\1' + I(95) + I(500))
+        self.assertEqual(self.inventory(c)['bag'], 250)
+        self.assertEqual(c.rpc(83), b'\1' + I(1) + I(95))
+        self.assertEqual(c.rpc(75, I(95) + Q(3)), b'\0' + I(95) + I(500))
+        self.assertEqual(c.rpc(75, I(1205) + Q(4))[:1], b'\1')
 
     def test_joint_venture_catches_up_a_missed_map_output_from_the_facts(self):
         # The map dialog's "map" output reached a server that did not know it; only its facts were saved.
@@ -1457,7 +1500,8 @@ class PrototypeTests(unittest.TestCase):
         sold = [501, 503, 507, 508, 510]
         self.assertEqual(data['shop_lures'], [{'item_id': i, 'price': 200} for i in sold])
         self.assertEqual({row['param_name']: row['param_value'] for row in data['game_configuration']},
-                         {'nestClearingExp': '500', 'nestDailyLimit': '3', 'nestPlayerMinimalLevel': '10'})
+                         {'nestClearingExp': '500', 'nestDailyLimit': '3', 'nestPlayerMinimalLevel': '10',
+                          'inventoryIncrement': '50'})
         baits = [row['shop_bundle_id'] for row in data['shop_bundles_layout_group_name_categories']
                  if row['layout_group_name_sub_category'] == 'Baits']
         self.assertEqual(baits, [1000 + i for i in sold])

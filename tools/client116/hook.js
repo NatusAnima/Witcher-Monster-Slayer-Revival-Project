@@ -14,6 +14,9 @@ const CONFIG = {
     ['https://gatekeeper.cloud.thewitchermonsterslayer.com', 'http://127.0.0.1:18080'],  // news
     ['https://vectortile.googleapis.com', 'http://127.0.0.1:18082'],                     // OSM map tiles
   ],
+  // What's new reads its feed through System.Net (GatekeeperNewsLoader.Fetch), from the build's own environment
+  // (gatekeeper.test.dev.spokko.com on 1.1.116); that HTTPS request is refused at connect(), so send it to the server.
+  news: [/^https:\/\/gatekeeper\.[^/]+\/news\//, 'http://127.0.0.1:18080/news/'],
   logPort: 18094,  // the companion app's log sink (ServerService.LOG_PORT)
   crashMarker: '/sdcard/Android/data/com.spokko.witchermonsterslayer/files/crash-test',  // test only, see startDiagnostics
 };
@@ -126,6 +129,7 @@ const RVA = {
   image_get_name: 0x16d17fc, class_from_name: 0x16d0c64, class_get_method_from_name: 0x16d0c8c,
   string_new: 0x16d15f4, string_chars: 0x16d15f0, string_length: 0x16d15ec, resolve_icall: 0x16d0c08,
   object_get_class: 0x16d1558,
+  create_http: 0x20a4a28,  // System.Net.WebRequest.CreateHttp(string); the overload with Uri has the same name and arity
 };
 
 // Asset paths the client asks for that 1.1.116 ships elsewhere. The reward popup is only under
@@ -245,6 +249,16 @@ function install(m) {
             seen.add(origin);
             log('url', url.split('?')[0], rule ? '-> ' + rule[1] : '(unchanged)');
           }
+        },
+      });
+    });
+    stage('news requests', () => {
+      Interceptor.attach(m.base.add(RVA.create_http), {
+        onEnter(args) {
+          const url = read(args[0]);
+          if (!url || !CONFIG.news[0].test(url)) return;
+          args[0] = str(url.replace(CONFIG.news[0], CONFIG.news[1]));
+          log('news', url, '->', CONFIG.news[1]);
         },
       });
     });

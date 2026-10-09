@@ -1,3 +1,4 @@
+import collections
 import json
 import math
 import os
@@ -94,7 +95,7 @@ class CandidateTests(unittest.TestCase):
         found = pl.candidates({"elements": [self.area("forest", -200, -200, 200, 200)]}, self.cell)
         self.assertTrue(found and all(p["biomes"] == [pl.FOREST] and p["kind"] == "forest" for p in found))
         first, second = pl.sample(found, self.cell, 0), pl.sample(found, self.cell, 1)
-        self.assertEqual(len(first), pl.FOREST_MAX_PER_CELL)  # a cell of nothing but wood still has its woods' share
+        self.assertEqual(len(first), pl.MAX_PER_CELL)  # a cell of nothing but wood: the other grounds' shares go to it
         xy = [self.proj.xy(p["lat"], p["lng"]) for p in first]
         self.assertTrue(all(math.dist(a, b) >= pl.MIN_SPACING_M for i, a in enumerate(xy) for b in xy[i + 1:]))
         self.assertNotEqual({(p["lat"], p["lng"]) for p in first}, {(p["lat"], p["lng"]) for p in second})
@@ -102,20 +103,51 @@ class CandidateTests(unittest.TestCase):
 
     def test_a_big_wood_does_not_crowd_out_the_paths_and_parks_beside_it(self):
         # A wood over most of the cell is a grid of hundreds of points; a park and a footway give far fewer. Drawn evenly from
-        # all of them, the wood took two thirds of the places and the paths around it were left nearly empty.
+        # all of them, the wood took two thirds of the places and the paths around it were left nearly empty. The place mix
+        # gives each ground its share instead (paths 40, parks 25, woods 15 by default); a ground that runs out of points at
+        # the spacing (one footway across the cell holds about seven) leaves the rest of its share to the others.
         found = pl.candidates({"elements": [
             self.area("forest", -300, -300, 300, 100), self.area("park", -300, 150, 300, 300),
             self.way("footway", [(-300, 125), (300, 125)])]}, self.cell)
-        wood = lambda points: sum(p["biomes"][0] == pl.FOREST for p in points)
-        self.assertGreater(wood(found), len(found) / 2)  # the wood is most of the points, far more than its half of a cell
+        grounds = lambda points: collections.Counter(p["ground"] for p in points)
+        self.assertGreater(grounds(found)["woods"], len(found) / 2)  # the wood is most of the points
         for epoch in range(5):
             places = pl.sample(found, self.cell, epoch)
-            self.assertEqual((wood(places), len(places)), (pl.FOREST_MAX_PER_CELL, pl.MAX_PER_CELL))
+            mix = grounds(places)
+            self.assertEqual(len(places), pl.MAX_PER_CELL)
+            self.assertLess(mix["woods"], mix["parks"])   # 15 against 25
+            self.assertGreaterEqual(mix["paths"], 6)       # every place the footway can hold
             self.assertTrue(all(p["id"].startswith(f"lab-{self.cell:016x}-{epoch}-{pl.PLACEMENT_VERSION}") for p in places))
-        # with no limit at all (the old draw) the wood took most of the places
-        self.assertGreater(sum(wood(pl.sample(found, self.cell, e, woods=pl.MAX_PER_CELL)) for e in range(5)), 5 * pl.FOREST_MAX_PER_CELL)
-        for limit in (0, 5, 24):  # and the player can set the limit anywhere in between
-            self.assertLessEqual(wood(pl.sample(found, self.cell, 0, woods=limit)), limit)
+        # the player's numbers: no woods, nothing but woods, more and closer places
+        tuning = lambda **values: dict(pl.Tuning.defaults(), **{"places." + k: v for k, v in values.items()})
+        self.assertEqual(grounds(pl.sample(found, self.cell, 0, tuning=tuning(woods=0)))["woods"], 0)
+        self.assertEqual(set(grounds(pl.sample(found, self.cell, 0, tuning=tuning(paths=0, parks=0)))), {"woods"})
+        dense = pl.sample(found, self.cell, 0, tuning=tuning(perCell=40, spacing=30))
+        xy = [self.proj.xy(p["lat"], p["lng"]) for p in dense]
+        self.assertEqual(len(dense), 40)
+        self.assertTrue(all(math.dist(a, b) >= 30 for i, a in enumerate(xy) for b in xy[i + 1:]))
+
+    def test_quiet_streets_get_places_beside_them_when_the_clearance_allows(self):
+        # Towns often map only their streets, and the maintainer wants monsters on them (2026-10-09): the default draw's
+        # clearance is below STREET_SIDE_M. At a scheduled policy's 20 m nothing lies near a street; below STREET_SIDE_M both
+        # sides of a residential street get points, still clear of buildings, and a main road keeps its own clearance.
+        self.assertLess(pl.Tuning.defaults()["places.streetClearance"], pl.STREET_SIDE_M)
+        street, house = self.way("residential", [(-300, 0), (300, 0)]), self.area("building", -50, 10, 50, 40)
+        self.assertEqual(self.points(street, house), [])
+        found = [(p, *self.proj.xy(p["lat"], p["lng"]))
+                 for p in pl.candidates({"elements": [street, house]}, self.cell, clearance=12)]
+        self.assertTrue(found)
+        self.assertTrue(all(p["kind"] == "street" and abs(abs(y) - pl.STREET_SIDE_M) < 0.5 for p, x, y in found))
+        self.assertEqual({y > 0 for _, _, y in found}, {True, False})
+        self.assertFalse(any(abs(x) <= 50 + pl.BUILDING_CLEARANCE_M and y > 0 for _, x, y in found))
+        self.assertEqual(pl.candidates({"elements": [self.way("primary", [(-300, 0), (300, 0)])]}, self.cell, clearance=10), [])
+        # a bigger street gets them only where houses stand (a country road often has no pavement)
+        road = self.way("tertiary", [(-300, -150), (300, -150)])
+        self.assertEqual(pl.candidates({"elements": [road]}, self.cell, clearance=12), [])
+        housed = [self.proj.xy(p["lat"], p["lng"]) for p in
+                  pl.candidates({"elements": [road, self.area("building", -20, -200, 20, -180)]}, self.cell, clearance=12)]
+        self.assertTrue(housed)
+        self.assertTrue(all(abs(x) <= 20 + pl.URBAN_NEAR_M and abs(abs(y + 150) - pl.STREET_SIDE_M) < 0.5 for x, y in housed))
 
     def test_path_offsets_stay_in_open_ground_and_avoid_obstacles(self):
         path = self.way('path', [(-180, 0), (180, 0)])
@@ -153,35 +185,33 @@ class CandidateTests(unittest.TestCase):
 
 
 class TuningTests(unittest.TestCase):
-    """The woods limit comes from the dashboard's file, looked at about once a second."""
+    """The place settings come from the dashboard's file, looked at about once a second."""
 
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.path = Path(self.directory.name) / "tuning.json"
 
-    def woods(self, tuning):
+    def values(self, tuning):
         tuning._checked = 0  # skip the one-second pause between looks
-        return tuning.woods()
+        return tuning.values()
 
     def save(self, text):
         self.path.write_text(text)
         os.utime(self.path, ns=(time.time_ns() + self.path.stat().st_size, time.time_ns() + self.path.stat().st_size))
 
     def test_missing_damaged_and_impossible_values_mean_the_default_or_the_last_good_one(self):
-        tuning = pl.Tuning(self.path)
-        self.assertEqual(self.woods(tuning), pl.FOREST_MAX_PER_CELL)               # no file yet
-        self.save(json.dumps({"schemaVersion": 1, "values": {"woods.maxPlaces": 5}}))
-        self.assertEqual(self.woods(tuning), 5)
-        self.save('{"schemaVersion": 1, "values": {"woods.')                        # half written: the last good value stays
-        self.assertEqual(self.woods(tuning), 5)
-        self.save(json.dumps({"schemaVersion": 1, "values": {"woods.maxPlaces": 99}}))  # impossible: the default
-        self.assertEqual(self.woods(tuning), pl.FOREST_MAX_PER_CELL)
-        self.save(json.dumps({"schemaVersion": 1, "values": {"woods.maxPlaces": 0}}))
-        self.assertEqual(self.woods(tuning), 0)
-        self.path.unlink()                                                          # removed: back to the default
-        self.assertEqual(self.woods(tuning), pl.FOREST_MAX_PER_CELL)
-        self.assertEqual(pl.Tuning(None).woods(), pl.FOREST_MAX_PER_CELL)
+        tuning, defaults = pl.Tuning(self.path), pl.Tuning.defaults()
+        self.assertEqual(self.values(tuning), defaults)                                     # no file yet
+        self.save(json.dumps({"schemaVersion": 1, "values": {"places.woods": 5, "places.perCell": 30}}))
+        self.assertEqual(self.values(tuning), dict(defaults, **{"places.woods": 5, "places.perCell": 30}))
+        self.save('{"schemaVersion": 1, "values": {"places.')                              # half written: the last good values stay
+        self.assertEqual(self.values(tuning)["places.woods"], 5)
+        self.save(json.dumps({"schemaVersion": 1, "values": {"places.woods": 101, "places.spacing": True, "places.perCell": 30}}))
+        self.assertEqual(self.values(tuning), dict(defaults, **{"places.perCell": 30}))     # impossible: that one's default
+        self.path.unlink()                                                                 # removed: back to the defaults
+        self.assertEqual(self.values(tuning), defaults)
+        self.assertEqual(pl.Tuning(None).values(), defaults)
 
     def test_the_places_follow_the_file_without_a_restart(self):
         cell = s2cells.cell_of(10, 20, pl.CELL_LEVEL)
@@ -195,12 +225,12 @@ class TuningTests(unittest.TestCase):
                 return {"elements": [dict(type="area", kind="forest", rings=[wood]), dict(type="area", kind="park", rings=[park])]}
 
         service = pl.PlayableLocations(Index(), None, self.path)
-        count = lambda: sum(p["biomes"][0] == pl.FOREST for p in service.cell(cell, 123))
-        self.assertEqual(count(), pl.FOREST_MAX_PER_CELL)
-        for limit in (3, 20, 0):
-            self.save(json.dumps({"schemaVersion": 1, "values": {"woods.maxPlaces": limit}}))
+        count = lambda: sum(p["ground"] == "woods" for p in service.cell(cell, 123))
+        self.assertTrue(0 < count() < pl.MAX_PER_CELL)  # woods and parks both (the park fills up at the spacing first)
+        for woods, parks, expected in ((0, 25, 0), (15, 0, pl.MAX_PER_CELL)):
+            self.save(json.dumps({"schemaVersion": 1, "values": {"places.woods": woods, "places.parks": parks}}))
             service.tuning._checked = 0
-            self.assertEqual(count(), limit)
+            self.assertEqual(count(), expected)
 
 
 class CacheTests(unittest.TestCase):

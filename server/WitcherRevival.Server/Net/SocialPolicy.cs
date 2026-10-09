@@ -4,7 +4,8 @@ namespace WitcherRevival.Server.Net;
 /// Pack type 15 and the herbalist slug are observed in the original client. Numeric id 1 is reconstructed.</summary>
 public static class SocialPolicy
 {
-    public const int BagCapacity = 200; // Current server inventory contract; centralized until bag upgrades exist.
+    /// <summary>The inventory space the client counts as used (PlayerInventory.GetAllItemsInEquipmentQuantity); the
+    /// capacity is Economy.BagSize.</summary>
     public static long Occupied(LocalProfileStore.PlayerState player)
     {
         var brewers = player.Brewers ?? [];
@@ -25,7 +26,7 @@ public static class SocialPolicy
         if (every == 0) return after;
         long previous = before.Kills?.Values.Sum(n => (long)Math.Max(0, n)) ?? 0;
         long current = after.Kills?.Values.Sum(n => (long)Math.Max(0, n)) ?? 0;
-        if (current <= previous || current / every <= previous / every || Occupied(after) >= BagCapacity) return after;
+        if (current <= previous || current / every <= previous / every || Occupied(after) >= Economy.BagSize(after)) return after;
         var items = after.Items.ToDictionary(e => e.Key, e => new Dictionary<int, int>(e.Value));
         if (!items.TryGetValue(SocialService.PackItems, out var packs)) items[SocialService.PackItems] = packs = new();
         packs[SocialService.PackId] = checked(packs.GetValueOrDefault(SocialService.PackId) + 1);

@@ -37,9 +37,11 @@ class PlacementPolicyTests(unittest.TestCase):
             f.way('residential', [(-300,-100),(300,-100)]), f.area('building',30,20,70,60)]
         old = self.service.cell(self.cell, 20729)
         self.assertEqual(hashlib.sha256(json.dumps(old,sort_keys=True).encode()).hexdigest(),
-            # was 1752b331... until woods were limited to half a cell and the ids took PLACEMENT_VERSION 4 (2026-10-07):
-            # a deliberate change of the default draw; days drawn under a scheduled policy keep their own rule
-            'e92e9ce4fc4100f06d7ba09fd98863e58d07c86060be7514198ed834f83d5715')
+            # was 1752b331... until woods were limited to half a cell and the ids took PLACEMENT_VERSION 4 (2026-10-07), then
+            # e92e9ce4... until the place mix replaced that limit, places lined the streets and the ids took
+            # PLACEMENT_VERSION 5 (2026-10-09): deliberate changes of the default draw; days drawn under a scheduled policy
+            # keep their own rule
+            'af79fd23bdd20e318654d4289beaf2ff6e48aa8e478b9fdf48e9cdd4140d5e77')
         self.save(dict(policy.DEFAULT, maxPoints=8, spacingMeters=100))
         self.assertEqual(self.service.cell(self.cell,20729),old)
         self.assertEqual(pl.PlayableLocations(self.index,self.path).cell(self.cell,20729),old)

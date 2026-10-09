@@ -751,12 +751,13 @@ class AdminTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(result['receipt']['outcome'], 'applied')
         self.assertEqual((self.admin/'backups'/(result['receipt']['id']+'.bin')).read_bytes(), before)
-        self.assertEqual(self.server.get('/news/pl')['news_list'][0]['title'], 'Synthetic operator update')
+        # the game's feed starts with the app's own release notes (news/release.json), then the owner's items
+        self.assertEqual(self.server.get('/news/pl')['news_list'][-1]['title'], 'Synthetic operator update')
         self.assertEqual(self.request('news/pl', 'PUT', document)[0], 409)
         document = self.request('news/pl')[1]
         document['document']['news_list'][0]['date'] = '31/02/2026'
         self.assertEqual(self.request('news/pl', 'PUT', document)[0], 400)
-        self.assertEqual(self.server.get('/news/pl')['news_list'][0]['title'], 'Synthetic operator update')
+        self.assertEqual(self.server.get('/news/pl')['news_list'][-1]['title'], 'Synthetic operator update')
         receipt = self.request('receipts')[1][0]
         self.assertNotIn('Synthetic operator update', json.dumps(receipt))
 
@@ -778,7 +779,7 @@ class AdminTests(unittest.TestCase):
         self.assertEqual(self.request('world')[1]['effective']['monsterSlotsPerCell'], 18)
         self.assertEqual(self.request('world', 'PUT', document)[0], 409)
         document = self.request('world')[1]['saved']
-        document['document']['monsterSlotsPerCell'] = 19
+        document['document']['monsterSlotsPerCell'] = 37
         self.assertEqual(self.request('world', 'PUT', document)[0], 400)
         self.assertEqual(self.request('world')[1]['effective']['monsterSlotsPerCell'], 18)
 

@@ -15,9 +15,14 @@ namespace WitcherRevival.Server.Net;
 // absolute HTTP(S) URL, or a file name in <News:Directory>/images served here at /news/images/<name>; an empty
 // image_url becomes default.png, generated when the directory does not provide one. File names are resolved
 // against the request's own scheme and host, which are the address the client used.
+//
+// <News:Directory>/release.json, in the same format, holds the app's own patch notes: the companion app replaces it at
+// every start, so it never touches the owner's feeds. Its items come first in every language, and its featured item is
+// the featured one unless the owner's feed features a newer item.
 public sealed class NewsFeed
 {
     private const int MaxBytes = 1024 * 1024;
+    private const string ReleaseNotes = "release";
     private const int MaxImageBytes = 2 * 1024 * 1024;
     public const string DefaultImage = "default.png";
     private static readonly Regex Language = new("^[a-z]{2,3}(?:-[a-z]{2,4})?$", RegexOptions.CultureInvariant);
@@ -59,6 +64,7 @@ public sealed class NewsFeed
             {
                 NewsContainer? container = Read(candidate);
                 if (container is null) continue;
+                if (Read(ReleaseNotes) is { } notes) container = WithReleaseNotes(container, notes);
                 context.Response.Headers.CacheControl = "no-store";
                 context.Response.Headers.ContentLanguage = candidate;
                 string images = $"{context.Request.Scheme}://{context.Request.Host}/news/images/";
@@ -90,6 +96,17 @@ public sealed class NewsFeed
             logger.LogWarning("News image rejected; error_type={ErrorType}", exception.GetType().Name);
         }
         return name == DefaultImage ? Results.Bytes(GeneratedDefault.Value, "image/png") : Results.NotFound();
+    }
+
+    private static NewsContainer WithReleaseNotes(NewsContainer feed, NewsContainer notes)
+    {
+        DateTime FeaturedDate(NewsContainer c) => c.NewsList.FirstOrDefault(item => item.Id == c.HighlightedId) is { } item
+            ? DateTime.ParseExact(item.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) : DateTime.MinValue;
+        return new NewsContainer
+        {
+            NewsList = [.. notes.NewsList, .. feed.NewsList.Where(item => notes.NewsList.All(note => note.Id != item.Id))],
+            HighlightedId = FeaturedDate(feed) > FeaturedDate(notes) ? feed.HighlightedId : notes.HighlightedId,
+        };
     }
 
     private static string ImageUrlFor(string imageUrl, string images) =>

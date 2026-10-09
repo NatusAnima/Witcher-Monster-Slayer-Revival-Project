@@ -5,7 +5,8 @@ namespace WitcherRevival.Server.Net;
 /// <summary>
 /// Simple numbers a player can change in the dashboard to suit how they play, saved in the world folder (tuning.json) and read
 /// again about once a second, so a change needs no restart. A missing or damaged file means every default; a bad value is
-/// refused when it is saved. The placement service (a separate process) reads the same file for the woods limit.
+/// refused when it is saved. The placement service (a separate process) reads the same file for the places.* settings
+/// (playable_locations.Tuning, with the same keys, defaults and limits).
 /// </summary>
 public sealed class WorldTuning
 {
@@ -13,27 +14,57 @@ public sealed class WorldTuning
     public sealed record Setting(string Key, string Group, string Label, string Help, string Applies, double Default, double Min,
         double Max, double Step, string Unit);
 
-    public const string WoodsPlaces = "woods.maxPlaces", ExpPercent = "exp.percent", LootPercent = "loot.percent",
-        HerbRespawnMinutes = "herbs.respawnMinutes", HerbsPerCell = "herbs.perCell";
+    public const string ExpPercent = "exp.percent", LootPercent = "loot.percent",
+        HerbRespawnMinutes = "herbs.respawnMinutes", HerbsPerCell = "herbs.perCell", RealWeather = "weather.real",
+        StartingBag = "inventory.startSize", NestGold = "nests.gold";
+
+    private const string PlacesApply = "Places drawn from now on. Monsters already out stay for up to 30 minutes.";
+
+    private static Setting Share(string ground, string label, string where, double share) => new("places." + ground, "Places",
+        label, $"How much of a map cell's places lie {where}. The five shares count against each other, so only their sizes " +
+        "matter; a cell without that kind of ground gives its share to the others, and 0 leaves it out.",
+        PlacesApply, share, 0, 100, 5, "share");
 
     public static readonly IReadOnlyList<Setting> Settings = new Setting[]
     {
-        new(WoodsPlaces, "Monsters", "Woods limit per map cell",
-            "The most places woodland can hold in one map cell (a cell holds 24 in all). Lower it to see fewer monsters in forests and more " +
-            "on paths and in parks. A cell of nothing but woods keeps this many.",
-            "Places drawn from now on. Monsters already out stay for up to 30 minutes.", 12, 0, 24, 1, "places"),
+        new("places.perCell", "Places", "Places per map cell",
+            "How many spots a map cell (about half a kilometre across) offers for monsters, herbs, nests and quests. How many monsters " +
+            "stand on them is the World page's monsters per cell.", PlacesApply, 24, 4, 48, 1, "places"),
+        new("places.spacing", "Places", "Distance between places",
+            "The least distance between two places. Smaller lets a cell hold more of them.", PlacesApply, 50, 30, 200, 5, "m"),
+        Share("paths", "On paths", "on footpaths and tracks away from houses", 40),
+        Share("parks", "In parks", "in parks and on their paths", 25),
+        Share("woods", "In woods", "in woods and forests", 15),
+        Share("water", "By water", "within 60 m of a river, lake or the sea", 10),
+        Share("urban", "Near houses", "within 60 m of a building: the streets and footpaths of a town", 40),
+        new("places.streetClearance", "Places", "Distance from streets",
+            "How far places keep from the middle of ordinary streets (main roads always keep 30 m). Below 13 m, places line " +
+            "both sides of the streets (bigger streets only among houses), so towns get monsters on their streets and not " +
+            "only in their parks; 13 m or more keeps them to footpaths, parks and woods.",
+            PlacesApply, 12, 10, 30, 1, "m"),
         new(ExpPercent, "Rewards", "Experience from fights",
             "How much experience a won fight gives, as a share of the normal amount: 200 doubles it, 50 halves it.",
             "The next fight.", 100, 10, 1000, 5, "%"),
         new(LootPercent, "Rewards", "Ingredients from fights",
             "How many ingredients a won fight drops, as a share of the normal amount: 200 doubles them, 0 drops none.",
             "The next fight.", 100, 0, 1000, 10, "%"),
+        new(NestGold, "Rewards", "Gold for clearing a nest",
+            "The orens a cleared nest pays, for the first three clears of a day.",
+            "The next nest you open.", WorldNests.BountyGold, 0, 1000, 10, "orens"),
         new(HerbRespawnMinutes, "Herbs", "Herb respawn time",
             "How long a herb you picked stays gone before it grows back.",
             "Herbs picked from now on.", 60, 1, 1440, 1, "minutes"),
         new(HerbsPerCell, "Herbs", "Herbs per map cell",
-            "How many herb bushes a map cell can hold (at most a third of its places, so a small cell keeps room for monsters).",
+            "How many herb bushes a map cell can hold (at most a third of its places, so a cell keeps room for monsters).",
             "Map cells the game loads from now on.", 4, 0, 12, 1, "bushes"),
+        new(RealWeather, "Weather", "Real weather",
+            "1 shows the real weather where you play, from Open-Meteo (only your position rounded to about 11 km is sent); " +
+            "0 keeps it always clear. The weather decides which monsters appear and which potions help.",
+            "The next weather the game asks for (about every five minutes).", 1, 0, 1, 1, "on/off"),
+        new(StartingBag, "Inventory", "Starting bag size",
+            "How many items the inventory holds before any bag is bought. The five bags in Thorstein's shop add 50 to 400 " +
+            "each, up to 1000 in all. A full bag leaves fight loot behind and refuses herbs and shop items.",
+            "The next game start.", 200, 50, 1000, 10, "items"),
     };
 
     /// <summary>The running server's settings, for code that has no access to the service (the herb rules are static). All defaults

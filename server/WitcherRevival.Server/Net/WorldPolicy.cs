@@ -47,8 +47,9 @@ public sealed class WorldPolicy
 
     public static void Validate(Settings settings)
     {
-        if (settings.SchemaVersion != 1 || settings.MonsterSlotsPerCell is < 6 or > 18)
-            throw new InvalidDataException("World policy requires schemaVersion 1 and monsterSlotsPerCell from 6 to 18.");
+        if (settings.SchemaVersion != 1 || settings.MonsterSlotsPerCell is < WorldSpawns.MonstersPerCell or > WorldSpawns.MaxMonsterSlotsPerCell)
+            throw new InvalidDataException($"World policy requires schemaVersion 1 and monsterSlotsPerCell from " +
+                $"{WorldSpawns.MonstersPerCell} to {WorldSpawns.MaxMonsterSlotsPerCell}.");
     }
 
     private Settings Load()

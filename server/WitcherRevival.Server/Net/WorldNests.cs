@@ -35,8 +35,10 @@ public static class WorldNests
     // Client GameConfigData defaults; sent as game_configuration rows too.
     public const int PlayerMinimalLevel = 10, DailyLimit = 3, ClearingExp = 500;
 
-    // Community: 50 gold per clear, the first three clears of a day.
+    // Community: 50 gold per clear, the first three clears of a day. The dashboard's Tuning page changes it (the nest
+    // window shows the server's number, so the two never disagree).
     public const int BountyGold = 50;
+    public static int Bounty => (int)WorldTuning.Current.Get(WorldTuning.NestGold);
 
     // Authored: experience for each monster by rarity; three common monsters and the clearing give 575.
     public static int RarityExp(int rarity) => rarity switch { <= 1 => 25, 2 => 50, _ => 100 };

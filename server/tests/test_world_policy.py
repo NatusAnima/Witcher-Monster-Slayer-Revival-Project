@@ -62,8 +62,22 @@ class WorldPolicyTests(base.PrototypeTests):
             if old['spawn_ms']//1000 + old['ttl'] > time.time()+1:
                 self.assertIn(old, maximum['monsters'])
 
+    def test_world_density_reaches_its_maximum_where_a_cell_has_the_places(self):
+        # 36 per cell needs more than the default 24 places (the dashboard's places per cell goes up to 48).
+        root = self.policy(dict(schemaVersion=1, monsterSlotsPerCell=36))
+        dense = lambda ids, epoch: {i: dict(center=[10.0, 20.0], places=[
+            dict(id=f'lab-{int(i):016x}-{epoch}-{n}', lat=10.0+n/1000, lng=20.0, biomes=[10], kind='path')
+            for n in range(48)]) for i in ids}
+        url, _ = self.playable_service(dense)
+        client = self.client(self.start('dense', dict(self.RECONSTRUCTED, Playable__Url=url, World__Directory=str(root))))
+        world = self.map(client)
+        self.assertEqual(len(world['monsters']), 3 * 36)
+        places = [m['place'] for m in world['monsters']]
+        self.assertEqual(len(places), len(set(places)))
+        self.assertFalse(set(places) & {m['place'] for m in world['herbs'] + world['nests']})
+
     def test_world_rejects_invalid_initial_policy_and_retains_last_valid_reload(self):
-        root = self.policy(dict(schemaVersion=1, monsterSlotsPerCell=19))
+        root = self.policy(dict(schemaVersion=1, monsterSlotsPerCell=37))
         with self.assertRaisesRegex(RuntimeError, 'World policy'):
             base.Server(self.directory, 'invalid-world', dict(World__Directory=str(root)))
         self.policy(dict(schemaVersion=1, monsterSlotsPerCell=12))

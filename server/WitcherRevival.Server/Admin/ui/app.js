@@ -1217,7 +1217,7 @@
       renderWeather();
     },
     tuning: async () => {
-      tuningData = await api("tuning");
+      [tuningData, worldData] = await Promise.all([api("tuning"), api("world")]);
       renderTuning();
     },
     catalogue: async () => {
@@ -2108,6 +2108,15 @@
     const d = tuningData, box = $("tuning-fields"), groups = new Map();
     for (const s of d.definitions) groups.set(s.group, [...(groups.get(s.group) || []), s]);
     box.replaceChildren();
+    // Monsters per map cell lives in world.json (the World page too) and is saved through that page's endpoint.
+    const density = el("input"), densityLabel = el("label", L.m("Monsters per map cell"));
+    Object.assign(density, { type: "number", id: "tuning-world-density", min: 6, max: 36, step: 1, required: true,
+      value: worldData.saved.document.monsterSlotsPerCell });
+    densityLabel.append(density);
+    box.append(el("h3", L.m("Monsters")), densityLabel, el("p", L.m("How many monsters stand in a map cell at once (the " +
+      "same setting as on the World page). Each needs a free place, and herbs and a nest take some, so keep places per cell " +
+      "(below) well above it. Default: 18. Range: 6–36. Takes effect: about a second after saving; monsters already out " +
+      "stay for up to 30 minutes."), "hint"));
     for (const [group, settings] of groups) {
       box.append(el("h3", L.m(group)));
       for (const s of settings) {
@@ -3291,8 +3300,14 @@
   submit(
     "tuning-form",
     async () => {
+      const density = Number($("tuning-world-density").value);
+      if (density !== worldData.saved.document.monsterSlotsPerCell) {
+        const next = { ...worldData.saved, document: { ...worldData.saved.document, monsterSlotsPerCell: density } };
+        const saved = await api("world", { method: "PUT", body: JSON.stringify(next) });
+        worldData.saved = { ...next, revision: saved.revision };
+      }
       const values = {};
-      for (const input of $("tuning-fields").querySelectorAll("input")) values[input.dataset.key] = Number(input.value);
+      for (const input of $("tuning-fields").querySelectorAll("input[data-key]")) values[input.dataset.key] = Number(input.value);
       const result = await api("tuning", {
         method: "PUT",
         body: JSON.stringify({ revision: tuningData.revision, document: { schemaVersion: 1, values } }),
@@ -3305,6 +3320,7 @@
   );
   $("tuning-defaults").addEventListener("click", () => {
     for (const s of tuningData?.definitions || []) $("tuning-" + s.key).value = s.default;
+    if (tuningData) $("tuning-world-density").value = 18;  // WorldSpawns.DefaultMonsterSlotsPerCell
     markDirty("tuning-form");
   });
   submit(

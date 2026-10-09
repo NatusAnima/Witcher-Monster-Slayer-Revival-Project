@@ -126,6 +126,7 @@ def main():
     for data in ("news", "tasks"):  # working copies, so panel edits never touch the tracked defaults
         if not os.path.isdir(os.path.join(STATE, data)):
             shutil.copytree(os.path.join(SERVER, "WitcherRevival.Server", data), os.path.join(STATE, data))
+    shutil.copy(os.path.join(SERVER, "WitcherRevival.Server", "news", "release.json"), os.path.join(STATE, "news"))  # What's new
     os.makedirs(WORLD, exist_ok=True)
     if not os.path.exists(os.path.join(WORLD, "world.json")):  # the server's defaults, editable in the panel
         with open(os.path.join(WORLD, "world.json"), "w") as f:
@@ -158,6 +159,7 @@ def main():
                          "--LocalProfile:NewProfileMode", "reconstructed",
                          "--News:Directory", os.path.join(STATE, "news"), "--Tasks:Directory", os.path.join(STATE, "tasks"),
                          "--World:Directory", WORLD, "--Playable:Url", f"http://127.0.0.1:{PLACEMENT}",
+                         "--Weather:Url", "https://api.open-meteo.com/v1/forecast",
                          "--Admin:Port", str(ADMIN), "--Admin:Origin", f"http://127.0.0.1:{PANEL}",
                          "--Admin:KeyFile", key_file, "--Admin:DataDirectory", os.path.join(STATE, "admin", "data")],
               cwd=STATE, env=dict(os.environ, ASPNETCORE_ENVIRONMENT="Production")),

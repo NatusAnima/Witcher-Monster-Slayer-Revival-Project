@@ -11,6 +11,7 @@ Output:
   assets/runtime.zip              lib/ (shared libraries), python/ (standard library, pyosmium and lief),
                                   maps/ (the map services, laid out as in server/connection/),
                                   defaults/ (the server's default news and tasks),
+                                  etc/ca-certificates.crt (trusted roots for the server's HTTPS calls),
                                   client/ (the client builder: scripts, Frida Gadget and the compiled hook)
 
 Android only lets an app execute files from its native library folder, and has no musl. So the programs
@@ -37,7 +38,7 @@ LIEF_WHEEL = f"lief-{LIEF_VERSION}-cp312-cp312-musllinux_1_2_aarch64.whl"  # mat
 # The client builder scripts run on the phone's Python (lief + axml); phone_build.py assembles the APK.
 CLIENT_SCRIPTS = ["axml.py", "build_client.py", "phone_build.py", "extract_packs.py"]
 
-PACKAGES = ["musl", "libgcc", "libstdc++", "libssl3", "libcrypto3", "zlib",
+PACKAGES = ["musl", "libgcc", "libstdc++", "libssl3", "libcrypto3", "ca-certificates-bundle", "zlib",
             "python3", "sqlite-libs", "libffi", "libbz2", "xz-libs", "libexpat", "mpdecimal", "lz4-libs"]
 # Shared libraries the programs need. .NET loads OpenSSL (libssl/libcrypto) itself when it first uses crypto.
 LIBS = ["libgcc_s.so.1", "libstdc++.so.6", "libssl.so.3", "libcrypto.so.3", "libz.so.1",
@@ -157,6 +158,9 @@ def main():
     os.makedirs(os.path.join(rt, "lib"))
     for name in LIBS:
         shutil.copyfile(os.path.join(alpine_root, "usr", "lib", name), os.path.join(rt, "lib", name))
+    # The server's HTTPS calls (Open-Meteo weather) need trusted roots; Android's own store is not in OpenSSL's format.
+    os.makedirs(os.path.join(rt, "etc"))
+    shutil.copyfile(os.path.join(alpine_root, "etc", "ssl", "certs", "ca-certificates.crt"), os.path.join(rt, "etc", "ca-certificates.crt"))
 
     print("adding Python and the map services ...")
     python = os.path.join(jni, "libpython.so")

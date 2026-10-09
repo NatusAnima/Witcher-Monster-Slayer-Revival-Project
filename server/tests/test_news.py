@@ -178,9 +178,31 @@ class NewsTests(unittest.TestCase):
         self.assertEqual(len(zlib.decompress(chunks[b'IDAT'])), height * (1 + width * 3))
         self.assertIn(b'IEND', chunks)
 
+    def test_release_notes_come_first_in_every_language(self):
+        # release.json is the app's own (replaced at every start): first in every feed, featured unless the owner's
+        # feed features something newer, and never served as a language of its own.
+        notes = feed('Revival 9.9.9', 900); notes['news_list'][0]['date'] = '09/10/2026'
+        self.write('release', notes)
+        self.write('en', feed('English'))
+        for language in ('pl', 'en', 'de'):
+            with self.subTest(language=language):
+                document = self.get('/news/' + language)[0]
+                self.assertEqual(([item['id'] for item in document['news_list']], document['featured']), ([900, 1], 900))
+        newer = feed('Owner news'); newer['news_list'][0]['date'] = '10/10/2026'
+        self.write('pl', newer)
+        self.assertEqual(self.get('/news/pl')[0]['featured'], 1)
+        (self.news / 'release.json').write_text('{"news_list":', encoding='utf-8')   # damaged: the last good notes stay
+        self.assertEqual([item['id'] for item in self.get('/news/pl')[0]['news_list']], [900, 1])
+        with self.assertRaises(urllib.error.HTTPError) as caught:
+            self.get('/news/release')
+        self.assertEqual(caught.exception.code, 400)
+        caught.exception.close()
+
     def test_default_packaged_feed_is_available(self):
         other = Server(self.directory, 'synthetic-packaged-news')
         self.addCleanup(other.stop)
         document = other.get('/news/pl')
-        self.assertEqual(document['news_list'][0]['group_id'], 'revival-news-preview-20260930')
+        groups = [item['group_id'] for item in document['news_list']]
+        self.assertTrue(groups[0].startswith('revival-release-'))   # the update's notes, then the welcome item
+        self.assertEqual(groups[1:], ['revival-news-preview-20260930'])
         self.assertEqual(document['featured'], document['news_list'][0]['id'])

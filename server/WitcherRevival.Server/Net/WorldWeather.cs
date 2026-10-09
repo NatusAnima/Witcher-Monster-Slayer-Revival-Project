@@ -114,7 +114,7 @@ public sealed class WorldWeather
     {
         lock (_gate)
             if (ActiveOverride() is { Code: { } code }) return Remember(code, "manual", "override", null);
-        if (_url is null || !double.IsFinite(lat) || !double.IsFinite(lng) || Math.Abs(lat) > 90 || Math.Abs(lng) > 180)
+        if (_url is null || WorldTuning.Current.Get(WorldTuning.RealWeather) == 0 || !double.IsFinite(lat) || !double.IsFinite(lng) || Math.Abs(lat) > 90 || Math.Abs(lng) > 180)
             return Remember(Clear, "clear-fallback", "fallback", null);
         var cell = ((int)Math.Round(lat * 10), (int)Math.Round(lng * 10));
         CachedWeather? known;

@@ -12,7 +12,7 @@ The original backend is gone, so the project runs a reconstructed game server an
 ## How it works
 - **Client:** `tools/client116/build_client.py` merges your installed APK splits and the 26 asset packs Google Play downloads after install into one APK. It patches the manifest, adds Frida Gadget, and re-signs it. Gadget runs `tools/client116/hook.js` inside the game, which:
   - redirects the original server hosts to your server;
-  - rewrites the news and map-tile URLs;
+  - rewrites the news (What's new) and map-tile URLs;
   - applies client fixes: a missing reward-popup asset, and the coin-preview crash when opening contracts.
 - **Server:** `server/WitcherRevival.Server` (ASP.NET Core, .NET 10) serves:
   - the game's binary protocol on TCP `4253`;
@@ -37,7 +37,7 @@ The companion app, **Witcher Monster Slayer - Revival**, runs the server and the
    6. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
 3. **Tap Play.** It starts the server and opens the game when the server is ready.
 
-While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather, and a Tuning page for simple values such as the forest limit, experience and herb rates) inside the app.
+While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather, and a Tuning page for simple values: monsters and places per map cell, where places lie (paths, parks, woods, water, near houses), experience, loot, herbs, nest gold, the starting bag size and real weather) inside the app.
 
 The app checks Releases for a newer version and offers to update itself (Android asks you to confirm the install). Updates keep your progress, but uninstalling the app deletes it.
 
@@ -180,6 +180,8 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
   The reconstruction was forked from this project's commit `3cb353b`, is GPL-3.0-only, and is used with permission; see `server/LICENSE` and `server/upstream-provenance.json`. Some copied documents link to that project's own docs, which are not included here.
 - The Earcut triangulation port is under the ISC licence; its notice is kept in `server/connection/map-road-fixture-01/osm_area_geometry.py`.
 - Map data is © OpenStreetMap contributors (ODbL 1.0). Indexes and tiles generated from it are derived from OpenStreetMap.
+- [Weather data by Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0). The server asks it for the weather of your position rounded to 0.1° (about 11 km); the dashboard's Tuning page can turn it off.
+- The memory work on the map services and the Android 12+ location fix in the game hook are by MasterpiecePL (pull request #3).
 - The PC tools download Frida Gadget and uber-apk-signer at build time; neither is in this repository.
 - The companion app's APK also bundles what its on-phone client build uses:
   - Frida Gadget 17.15.3 (wxWindows Library Licence 3.1, an LGPL variant; source: https://github.com/frida/frida);
@@ -188,7 +190,7 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
   - gplayapi 3.6.4 by Aurora OSS (GPL-3.0-or-later; https://gitlab.com/AuroraOSS/gplayapi), with OkHttp, Gson, kotlinx.serialization and kotlinx.coroutines (Apache-2.0) and Protocol Buffers Lite (BSD-3-Clause).
 - Signing in to Google and downloading the game's extra data follow the open source of Aurora Store (the sign-in flow, GPL-3.0-or-later) and microG (the asset-delivery request and its headers, Apache-2.0). The app only asks Google Play for data your own account may download.
 - The companion app bundles third-party software, each under its own licence:
-  - from Alpine Linux 3.22: musl (MIT), CPython 3.12 (PSF-2.0), OpenSSL 3.5 (Apache-2.0), SQLite (public domain), libstdc++ and libgcc (GPL with the GCC Runtime Library Exception), zlib (Zlib), libffi and expat (MIT), bzip2 (bzip2), xz/liblzma (0BSD), mpdecimal and lz4 (BSD-2-Clause). Their sources are in Alpine's `aports` repository;
+  - from Alpine Linux 3.22: musl (MIT), CPython 3.12 (PSF-2.0), OpenSSL 3.5 (Apache-2.0), the Mozilla CA certificate bundle (MPL-2.0), SQLite (public domain), libstdc++ and libgcc (GPL with the GCC Runtime Library Exception), zlib (Zlib), libffi and expat (MIT), bzip2 (bzip2), xz/liblzma (0BSD), mpdecimal and lz4 (BSD-2-Clause). Their sources are in Alpine's `aports` repository;
   - the .NET runtime and ASP.NET Core (MIT), compiled into the server;
   - pyosmium 4.3.1 (BSD-2-Clause), with libosmium (Boost Software License 1.0) and protozero (BSD-2-Clause).
 - This project is not affiliated with CD PROJEKT RED or Spokko. No original game files are included; you provide your own installation.

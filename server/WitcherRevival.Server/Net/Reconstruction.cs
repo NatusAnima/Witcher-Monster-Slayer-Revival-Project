@@ -994,6 +994,8 @@ public static class ReconstructionRows
         {
             ("nestClearingExp", WorldNests.ClearingExp), ("nestDailyLimit", WorldNests.DailyLimit),
             ("nestPlayerMinimalLevel", WorldNests.PlayerMinimalLevel),
+            // the shop's amount for every bag (ShopItemDataSource.GetQuantityForItem); each bag's own text gives its size
+            ("inventoryIncrement", Economy.Bags[0].Slots),
         }.Select((row, n) => J(new Dictionary<string, object>
             { ["id"] = n + 1, ["param_name"] = row.Name, ["param_value"] = row.Value.ToString() })).ToArray();
         // Equipment rows in the inherited format (rows 1-6 unchanged); the client builds prefab paths from the slug.

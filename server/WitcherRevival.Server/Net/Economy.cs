@@ -11,7 +11,7 @@ public static class Economy
 {
     // Client ItemTypeIds.
     public const int TypeIngredient = 1, TypeBomb = 2, TypePotion = 3, TypeOil = 4, TypeLure = 5, TypeSensesPotion = 6,
-        TypeArmor = 8, TypeSword = 9, TypeBrewer = 12, TypeFriendPack = 15;
+        TypeArmor = 8, TypeSword = 9, TypeBag = 11, TypeBrewer = 12, TypeFriendPack = 15;
 
     public static string? KindOf(int itemType) => itemType switch
     {
@@ -67,16 +67,34 @@ public static class Economy
     // counter for a negative UsesLeft; time_coefficient is an int percentage of the formula's time
     // (AlchemyRecipeSlot.GetCraftingTimeText: crafting_time / 60 * coefficient / 100 minutes). Community: a basic
     // station from the start, a faster 20-use and 100-use station. Uses 0 marks the unlimited basic station;
-    // half the time on the faster stations is Authored.
+    // half the time on the faster stations is Authored. The ids are the client's own (AlchemyBrewingPanel:
+    // INFINITE_BREWER 1, SMALL_BREWER 2, BIG_BREWER 3): its "Add Station" list asks the table for ids 2 and 3 only.
+    // Saves from before used 1201-1203 (PlayerService.EnsureBrewers moves them).
     public sealed record Brewer(int Id, string Slug, int Uses, int TimeCoefficient);
 
-    public static readonly Brewer BasicBrewer = new(1201, "brewer_basic", 0, 100);
+    public static readonly Brewer BasicBrewer = new(1, "brewer_basic", 0, 100);
     public static readonly IReadOnlyList<Brewer> Brewers = new[]
     {
-        BasicBrewer, new Brewer(1202, "brewer_small", 20, 50), new Brewer(1203, "brewer_big", 100, 50),
+        BasicBrewer, new Brewer(2, "brewer_small", 20, 50), new Brewer(3, "brewer_big", 100, 50),
     };
 
     public const long BasicBrewerInstance = 1;
+
+    // ── Bags ────────────────────────────────────────────────────────────────────────────────
+    // Client: ITEMS/NAMES/BUNDLES/BUNDLE_95..99 (Bag, Small pouch, Medium-sized pouch, Spacious pouch, Set of
+    // saddlebags) with descriptions "Adds 50/50/100/200/400 inventory slots. One-time purchase."; a bag item adds
+    // its amount to the inventory size (PlayerInventory.TryAddItem) and the client stops at 1000
+    // (CanExpandInventory). Community (wiki, v1.1): 200 slots at the start, the five bags sold once each in the
+    // Equipment tab for 500/500/1000/2000/4000 orens. The client has no bag group (GroupType), so they sit in Items.
+    public static readonly IReadOnlyList<(int Bundle, int Slots, int Price)> Bags =
+        new[] { (95, 50, 500), (96, 50, 500), (97, 100, 1000), (98, 200, 2000), (99, 400, 4000) };
+
+    public const int MaxBagSize = 1000;
+
+    /// <summary>How many items the player's inventory holds: the dashboard's starting size plus the bags bought.</summary>
+    public static int BagSize(LocalProfileStore.PlayerState? player) => Math.Min(MaxBagSize,
+        (int)WorldTuning.Current.Get(WorldTuning.StartingBag) +
+        Bags.Where(bag => player?.OneTimeBundles?.Contains(bag.Bundle) == true).Sum(bag => bag.Slots));
 
     // ── Formulae ────────────────────────────────────────────────────────────────────────────
     // Community (TheGamer 2021): times and ingredients. Family oils take other families' remains as listed;
@@ -217,8 +235,9 @@ public static class Economy
             bundles.Add(Single(1000 + remains.Id, 60, "Alchemy", "Items", TypeIngredient, remains.Id, 5, priority++));
         bundles.Add(new Bundle(129, 80, "Alchemy", "Items", "TwoByOne",
             new[] { (TypeIngredient, Herba, 10), (TypeIngredient, Radix, 5) }, priority++));
-        bundles.Add(Single(1000 + 1202, 300, "Alchemy", "Items", TypeBrewer, 1202, 1, priority++) with { DailyDiscount = 0 });
-        bundles.Add(Single(1000 + 1203, 1000, "Alchemy", "Items", TypeBrewer, 1203, 1, priority++) with { DailyDiscount = 0 });
+        // bundle ids stay 2202/2203 (one-time purchases already recorded under them)
+        bundles.Add(Single(2202, 300, "Alchemy", "Items", TypeBrewer, 2, 1, priority++) with { DailyDiscount = 0 });
+        bundles.Add(Single(2203, 1000, "Alchemy", "Items", TypeBrewer, 3, 1, priority++) with { DailyDiscount = 0 });
         // Equipment, bought once (Community prices, see Reconstruction.Swords and Armors).
         foreach (var armor in Reconstruction.Armors.Where(a => a.Price is not null))
             bundles.Add(Single(3000 + armor.Id, armor.Price!.Value, "Equipment", "Armors", TypeArmor, armor.Id, 1, priority++)
@@ -226,6 +245,9 @@ public static class Economy
         foreach (var sword in Reconstruction.Swords.Where(s => s.Price is not null))
             bundles.Add(Single(4000 + sword.Id, sword.Price!.Value, "Equipment",
                 sword.SwordType == Reconstruction.SteelSword ? "Steel_Swords" : "Silver_Swords", TypeSword, sword.Id, 1, priority++)
+                with { OneTime = true, DailyDiscount = 0 });
+        foreach (var bag in Bags)
+            bundles.Add(Single(bag.Bundle, bag.Price, "Equipment", "Items", TypeBag, 1, bag.Slots, priority++)
                 with { OneTime = true, DailyDiscount = 0 });
         foreach (var pack in OrenPacks)
             bundles.Add(new Bundle(pack.Bundle, 0, "Basic", "Gold", "OneByOne", new[] { (TypeGold, 1, pack.Orens) }, priority++,

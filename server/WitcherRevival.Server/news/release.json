@@ -1,0 +1,14 @@
+{
+  "news_list": [
+    {
+      "id": 2026100900,
+      "group_id": "revival-release-0.2.0",
+      "title": "Revival 0.2.0",
+      "short_description": "Bags, real weather, a working What's new and a lighter server.",
+      "date": "09/10/2026",
+      "image_url": "",
+      "content": "What changed in this update:\n- Bags are back: Thorstein sells five (Equipment tab), from 50 to 400 more inventory slots. A full bag leaves fight loot behind.\n- Real weather where you play, from Open-Meteo.\n- Add Station in the Alchemy tab lists the stations again.\n- This What's new page loads, and shows each update's notes.\n- The game server and the map use far less memory, so reloading a big region no longer closes the game.\n- Monsters line the streets of towns, not just their parks, and are spread over paths, parks, woods and water instead of filling whichever park or wood is nearest. A map cell can hold more places and up to 36 monsters.\n- Walking dailies pay when you claim them.\n- Wolven armor shows its real bonus.\n- The companion's dashboard has a Tuning page: monsters, places, experience, loot, herbs, nest gold, bag size and weather.\n- Send a report in the companion app makes one zip with every log, for bug reports."
+    }
+  ],
+  "featured": 2026100900
+}
