@@ -133,7 +133,7 @@ public static class Reconstruction
         new(21, "lab_low_hp_threshold", Combat), new(26, "lab_improve_signs", Combat),
         new(40, "lab_improve_health", Combat), new(56, "lab_adrenaline_generation", Combat),
         new(59, "lab_minimum_adrenaline", Combat), new(61, "lab_improve_potion_effects", Combat),
-        new(65, "lab_increase_experience", Combat), new(66, "lab_extra_ingredient_chance", Combat),
+        new(65, "lab_increase_experience", Combat), new(ExtraIngredientEffect, "lab_extra_ingredient_chance", Combat),
         new(80, "lab_impair_adrenaline_loss", Combat), new(82, "lab_improve_deflect", Combat),
         // Numeric skill contracts recovered from 1.1.116 native effect classes.
         new(3, "lab_improve_defense", Combat), new(5, "lab_improve_first_attack", Combat),
@@ -292,17 +292,23 @@ public static class Reconstruction
     // at night (Game Rant, 27 Nov 2021; the Sword in the Stone reward, Witcher Wiki); Hermit's Armor is the reward
     // for lifting the striga's curse in "The Sins of Our Fathers" (Witcher Wiki). Authored: ids 7+, the Hermit's
     // Armor power, the gold price of the Witcher's silver sword (a real-money bundle in 2021), and the Kaer Morhen
-    // steel sword as a starting gift (a launch-week reward). Experience (65) and extra ingredients (66) are Dummy
-    // classes in the client: the server applies them (GameSocketService).
+    // steel sword as a starting gift (a launch-week reward). Experience (65) and extra ingredients are Dummy
+    // classes in the client: the server applies them (PlayerService, the kill's reward).
     public sealed record Gear(int Id, string Slug, int SwordType, int? Price, (int Effect, int Power)[] Effects);
 
     public const int SteelSword = 0, SilverSword = 1, NotSword = -1;
+
+    // The client names effect 66 ExtraIngredientChance (EffectBehaviourType), but Effects.GetEffect (0x194E178) builds a Dummy with
+    // power 0 for it, and for 0, 42-55, 60, 62, 63, 68, 73, 77-79 and 81: Wolven armor's description read "Grants a 0% chance of
+    // defeated monsters dropping extra alchemy ingredients". Only 70 and 71 build a Dummy that keeps the row's power (the
+    // description's #0), and nothing in the client reads them, so the effect rides on 71 (IncreaseIngredientsGathering).
+    public const int ExtraIngredientEffect = 71;
 
     public static readonly IReadOnlyList<Gear> Armors = new Gear[]
     {
         new(1, "armor_ursine", NotSword, 3400, new[] { (80, 80) }),   // critical meter loss on damage -80 %
         new(2, "armor_griffin", NotSword, 6800, new[] { (82, 10) }),  // a parried hit reflects 10 % (ImproveDeflect)
-        new(3, "armor_wolven", NotSword, 6800, new[] { (66, 50) }),   // 50 % chance of extra alchemy ingredients
+        new(3, "armor_wolven", NotSword, 6800, new[] { (ExtraIngredientEffect, 50) }), // 50 % chance of extra alchemy ingredients
         new(4, "armor_feline", NotSword, 3400, new[] { (9, 15) }),    // unparried hits -15 % (GainArmor)
         new(5, "armor_manticore", NotSword, 6800, new[] { (61, 100) }), // White Gull: potion effects +100 %
         new(6, "armor_kaer_morhen", NotSword, 12000, new[] { (65, 25) }), // +25 % experience from monsters
@@ -347,9 +353,9 @@ public static class Reconstruction
     public static int ExperienceBonus(IEnumerable<Gear?> gear) =>
         gear.OfType<Gear>().SelectMany(g => g.Effects).Where(e => e.Effect == 65).Sum(e => e.Power);
 
-    /// <summary>Chance in percent of extra alchemy ingredients (effect 66) of the given equipment.</summary>
+    /// <summary>Chance in percent of extra alchemy ingredients (<see cref="ExtraIngredientEffect"/>) of the given equipment.</summary>
     public static int ExtraIngredientChance(IEnumerable<Gear?> gear) =>
-        gear.OfType<Gear>().SelectMany(g => g.Effects).Where(e => e.Effect == 66).Sum(e => e.Power);
+        gear.OfType<Gear>().SelectMany(g => g.Effects).Where(e => e.Effect == ExtraIngredientEffect).Sum(e => e.Power);
 
     public static readonly IReadOnlyList<(int Id, string Slug)> Potions = new[]
     {

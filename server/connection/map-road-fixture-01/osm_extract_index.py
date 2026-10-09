@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 from pathlib import Path
 import sqlite3
 import struct
@@ -145,7 +146,88 @@ def _bbox(points):
     return min(lons), max(lons), min(lats), max(lats)
 
 
-def build_index(input_path: Path, output_path: Path) -> dict:
+def parse_status(text: str) -> dict:
+    """Memory figures in MB from /proc/self/status: resident (VmRSS), its anonymous and file-backed parts, and the peak."""
+    wanted = {"VmRSS": "rss_mb", "RssAnon": "rss_anon_mb", "RssFile": "rss_file_mb", "VmHWM": "peak_mb"}
+    found = {}
+    for line in text.splitlines():
+        key, _, value = line.partition(":")
+        if key in wanted:
+            found[wanted[key]] = int(value.split()[0]) // 1024
+    return found
+
+
+def eta_seconds(pos0: int, pos: int, size: int, elapsed: float):
+    """Seconds left in the features phase, from the share of the file read since it began; None until 5% of it is done.
+    The node phase is 65% of the file but ~1% of the time, so only the part after it is timed."""
+    total, done = size - pos0, pos - pos0
+    if total <= 0 or done <= 0 or done / total < 0.05:
+        return None
+    return round(elapsed * (total - done) / done)
+
+
+class FeatureProgress:
+    """Prints a PROGRESS line every few seconds once the features phase starts (the first way() call). pyosmium holds the
+    GIL through the node phase, so no thread can report from there: the caller says "reading the map" until this starts."""
+
+    def __init__(self, path: Path, stats: dict, partial: Path, every: float = 2.0):
+        # resolved, because /proc/self/fd/N names the real path (on Android /data/user/0 is a link to /data/data)
+        self.path, self.stats, self.partial, self.every = os.path.realpath(path), stats, partial, every
+        self.size = os.path.getsize(path)
+        self.thread = None
+        self.pos0 = 0
+        self.began = 0.0
+
+    def position(self):
+        """The reader's offset in the file: `pos` of the open descriptor of the PBF (the second pass opens its own). None where
+        /proc is not there."""
+        best = None
+        try:
+            for fd in os.listdir("/proc/self/fd"):
+                try:
+                    if os.readlink(f"/proc/self/fd/{fd}") != self.path:
+                        continue
+                    with open(f"/proc/self/fdinfo/{fd}") as info:
+                        for line in info:
+                            if line.startswith("pos:"):
+                                best = max(best or 0, int(line.split()[1]))
+                except OSError:
+                    continue
+        except OSError:
+            return None
+        return best
+
+    def start(self):
+        self.began = time.monotonic()
+        self.pos0 = self.position() or 0
+        self.thread = threading.Thread(target=self.run, daemon=True)
+        self.thread.start()
+
+    def run(self):
+        while True:
+            time.sleep(self.every)
+            self.report()
+
+    def report(self):
+        pos = self.position()
+        line = {"phase": "features", "roads": self.stats["roads"], "areas": self.stats["areas"]}
+        if pos is not None and self.size > self.pos0:
+            line["percent"] = round(100 * max(0, pos - self.pos0) / (self.size - self.pos0), 1)
+            eta = eta_seconds(self.pos0, pos, self.size, time.monotonic() - self.began)
+            if eta is not None:
+                line["eta"] = eta
+        try:
+            line["index_mb"] = os.path.getsize(self.partial) // 2**20
+            with open("/proc/self/status") as status:
+                line.update(parse_status(status.read()))
+        except OSError:
+            pass
+        print("PROGRESS " + json.dumps(line), flush=True)
+
+
+def build_index(input_path: Path, output_path: Path, low_memory: bool = False) -> dict:
+    """low_memory keeps the node locations in a file next to the output (about twice the extract) instead of in RAM, where they
+    take 16 bytes a node: a country-size extract needs several GB there, more than most phones have."""
     import osmium  # Imported here so the reader side stays dependency-free.
 
     if output_path.exists():
@@ -154,10 +236,14 @@ def build_index(input_path: Path, output_path: Path) -> dict:
     temporary = output_path.with_suffix(output_path.suffix + ".partial")
     if temporary.exists():
         temporary.unlink()
+    node_index = output_path.with_suffix(output_path.suffix + ".nodes")
+    if node_index.exists():
+        node_index.unlink()
     db = sqlite3.connect(temporary)
     create_schema(db)
     stats = {"roads": 0, "skipped_roads": 0, "water_lines": 0, "areas": 0, "skipped_small_areas": 0,
              "skipped_invalid": 0}
+    progress = FeatureProgress(input_path, stats, temporary)
     area_kinds: dict[str, int] = {}
     ways, way_boxes, areas, area_boxes = [], [], [], []
     next_area_row = [1]
@@ -175,6 +261,8 @@ def build_index(input_path: Path, output_path: Path) -> dict:
 
     class Handler(osmium.SimpleHandler):
         def way(self, way):
+            if progress.thread is None:
+                progress.start()  # the first way means the node phase is over
             highway = way.tags.get("highway")
             waterway = way.tags.get("waterway")
             if highway in HIGHWAY_FEATURE_TYPES:
@@ -230,7 +318,15 @@ def build_index(input_path: Path, output_path: Path) -> dict:
                 flush()
 
     started = time.monotonic()
-    Handler().apply_file(str(input_path), locations=True, idx="flex_mem")
+    print("PHASE reading the map", flush=True)
+    try:
+        Handler().apply_file(str(input_path), locations=True,
+                             idx=f"sparse_file_array,{node_index}" if low_memory else "flex_mem")
+    finally:
+        try:
+            node_index.unlink(missing_ok=True)
+        except OSError:
+            pass  # Windows keeps the mapping until the process ends; the next build removes the file first
     flush()
     header = osmium.io.Reader(str(input_path), osmium.osm.osm_entity_bits.NOTHING).header()
     timestamp = header.get("osmosis_replication_timestamp") or header.get("timestamp") or ""
@@ -253,7 +349,12 @@ def build_index(input_path: Path, output_path: Path) -> dict:
     db.close()
     temporary.replace(output_path)
     stats.update(seconds=round(time.monotonic() - started, 1), output=str(output_path.name),
-                 source_timestamp=timestamp, area_kinds=area_kinds)
+                 source_timestamp=timestamp, area_kinds=area_kinds, low_memory=low_memory)
+    try:
+        import resource  # not on Windows
+        stats["peak_mb"] = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024  # kB on Linux
+    except ImportError:
+        pass
     return stats
 
 
@@ -316,8 +417,20 @@ def main():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--input", type=Path, required=True, help="Local .osm.pbf extract")
     parser.add_argument("--output", type=Path, required=True, help="New SQLite index path")
+    parser.add_argument("--low-memory", action="store_true",
+                        help="Keep node locations in a file beside the output instead of in RAM (for extracts too big for it)")
     args = parser.parse_args()
-    print(json.dumps(build_index(args.input, args.output), indent=2, ensure_ascii=False))
+    try:
+        stats = build_index(args.input, args.output, args.low_memory)
+    except MemoryError:  # libosmium's bad_alloc: the caller tells the player to pick a smaller region
+        print("OUT_OF_MEMORY the extract needs more memory than this phone has", flush=True)
+        raise SystemExit(3)
+    except sqlite3.OperationalError as e:
+        if "full" in str(e):
+            print("DISK_FULL there is not enough free space to build the map", flush=True)
+            raise SystemExit(4)
+        raise
+    print(json.dumps(stats, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

@@ -82,6 +82,25 @@ class DistanceTaskTests(base.PrototypeTests):
     NOW=taskbase.TaskTests.NOW
     task_server=taskbase.TaskTests.task_server
     daily=taskbase.TaskTests.daily
+    claim=taskbase.TaskTests.claim
+
+    def test_distance_claim_is_paid_ahead_of_the_reports_unless_protected(self):
+        # The client counts a walk done as it happens but reports it in steps of 100 m, so its claim can come while the server is behind.
+        definitions=[dict(id=10100+i,slug='on_the_path',type=3,target=300,gold=50) for i in range(4)]
+        server,c=self.task_server(daily=definitions)
+        first,second=list(self.daily(c)[0])[:2]
+        c.rpc(27,I(120))
+        wallet=self.player_info(c)['gold']
+        self.assertEqual(self.claim(c,first),(0,first,wallet+50,1))
+        self.assertNotIn(first,self.daily(c)[0])
+        # a protected profile counts only the server's own fixes
+        world=self.directory/'world';world.mkdir()
+        (world/'world.json').write_text('{"schemaVersion":1,"monsterSlotsPerCell":12}')
+        (world/'distance-policy.json').write_text('{"mode":"protected"}')
+        server.stop();server,c=self.task_server(daily=definitions,extra={'World__Directory':str(world)})
+        self.assertEqual(movement_ack(c.rpc(2001,movement_hello()))['mode'],1)
+        self.assertEqual(self.claim(c,second),(1,second,wallet+50,1))
+        self.assertEqual(self.player_info(c)['gold'],wallet+50)
 
     def test_distance_daily_is_since_issue_and_lifetime_trinket_uses_total(self):
         definitions=[dict(id=10100+i,slug='on_the_path',type=3,target=300,gold=50) for i in range(4)]

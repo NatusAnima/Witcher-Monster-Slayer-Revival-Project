@@ -251,7 +251,7 @@ public sealed partial class AdminServer
         var receiptPath = Path.Combine(root, "receipts", id + ".json");
         if (!File.Exists(receiptPath)) throw new Refusal(404, "This receipt does not exist.");
         var receipt = JsonSerializer.Deserialize<Receipt>(File.ReadAllBytes(receiptPath), Json) ?? throw new InvalidDataException();
-        if (receipt.Outcome != "applied" || receipt.Action is not ("news" or "world" or "weather" or "spawn-balance" or "distance-policy" or "placement-policy" or "profile-label" or "daily-rotation" or "hunt-policy"))
+        if (receipt.Outcome != "applied" || receipt.Action is not ("news" or "world" or "weather" or "spawn-balance" or "distance-policy" or "placement-policy" or "profile-label" or "daily-rotation" or "hunt-policy" or "tuning"))
             throw new Refusal(409, "This operation has no restorable configuration document.");
         string backup = Path.Combine(root, "backups", id + ".bin");
         if (!File.Exists(backup)) throw new Refusal(404, "This operation created a new document; no previous document exists.");

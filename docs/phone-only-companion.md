@@ -19,7 +19,8 @@ Players who want multiplayer can switch to a shared server. Server fixes and bal
 1. **Guided legal install.**
    - Install the Aurora Store from its official source, then deep-link to the game.
    - The player picks *Manual download → 300085*.
-   - The app checks the installed version and that it carries the Play signature.
+   - Or the player installs APKMirror's 1.1.116 (a single ~700 MB APK, or a ~500 MB bundle with its installer app): no Google account for this step.
+   - The app checks the installed version, that it carries the game's libraries (in an arm64 split or inside a single APK), and builds from whichever shape is there (`build_client.assemble` sorts the APKs by content).
 2. **The extra data, from Google Play.** The game's 26 asset packs exist only on Google's servers. The app signs in with the player's Google account (Aurora Store's flow) and asks Google Play for them the way the Play Store does (microG's asset-delivery request), then checks each against known hashes. There is no Wireless debugging and no PC. The first design read the packs out of an on-device `bu backup` after a Play-attributed install; it needed Wireless debugging and was dropped.
 3. **Client build on the phone.**
    - Ports of `tools/client116/build_client.py` and `axml.py`: merged APK, manifest patch, Gadget, hook.
@@ -74,4 +75,4 @@ Players who want multiplayer can switch to a shared server. Server fixes and bal
   - .NET, musl and OpenSSL, which are statically linked;
   - Python (PSF).
 - OpenStreetMap: show "© OpenStreetMap contributors" visibly. Generated indexes are ODbL derivative databases.
-- Risk: new players need Google Play, via Aurora, to keep serving 1.1.116 (300085) and its asset packs.
+- Risk: new players need Google Play to keep serving the 26 extra asset packs of 1.1.116 (300085), through an account that had the game. The base game can also come from APKMirror instead of Aurora.

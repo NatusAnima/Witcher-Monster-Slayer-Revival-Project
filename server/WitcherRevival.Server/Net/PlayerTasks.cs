@@ -121,6 +121,11 @@ public sealed partial class PlayerService
         };
     }
 
+    /// <summary>The client counts a walk done as it happens but reports it in steps of 100 m (RPC 27), so its claim can arrive while the
+    /// server is a step behind, or after a report was lost. Unless the profile is protected (then the server's own position fixes are
+    /// the only count), the client is the only witness of the walk anyway: RPC 27 takes whatever it reports.</summary>
+    private bool WalkedEnough(TaskEngine.Entry e) => e.Definition.Type == 3 && profiles.Snapshot().Movement?.Protected != true;
+
     // Factory 0x247D000: result=0 succeeds; questType must survive refusal so the matching callback unblocks.
     private static byte[] ClaimResponse(bool success, int id, int gold, int type)
     {
@@ -168,12 +173,23 @@ public sealed partial class PlayerService
                         if (s.Daily.RemoveAll(t => t.Definition.Id == id) > 0) reply = BuildIntResponse(true, id);
                         break;
                     case 81:
-                        if (profiles.Snapshot().Facts.GetValueOrDefault(3) != 1) break;
+                        if (profiles.Snapshot().Facts.GetValueOrDefault(3) != 1)
+                        {
+                            log.LogInformation("  Task claim {Task} refused: the tutorial is not finished", id);
+                            break;
+                        }
                         int index = s.Daily.FindIndex(t => t.Definition.Id == id);
-                        if (index >= 0 && TaskEngine.Complete(s.Daily[index]))
+                        if (index >= 0 && (TaskEngine.Complete(s.Daily[index]) || WalkedEnough(s.Daily[index])))
                         {
                             p = TaskEngine.Reward(p, s.Daily[index].Definition.Gold, []);
+                            log.LogInformation("  Task claim {Task} daily: paid {Gold} gold, wallet {Wallet}, progress {Progress} of {Target}",
+                                id, s.Daily[index].Definition.Gold, p.Gold, s.Daily[index].Progress, s.Daily[index].Definition.Target);
                             s.Daily.RemoveAt(index); reply = ClaimResponse(true, id, p.Gold, 1);
+                        }
+                        else if (index >= 0)
+                        {
+                            // task ids are distinct across daily and timed tasks, so there is no event task to look for
+                            log.LogInformation("  Task claim {Task} refused: progress {Progress} of {Target}", id, s.Daily[index].Progress, s.Daily[index].Definition.Target);
                         }
                         else if (ActiveEvent(c) is { } e)
                         {
@@ -184,9 +200,12 @@ public sealed partial class PlayerService
                                 var entry = eventState.Tasks[ti];
                                 p = TaskEngine.Reward(p, entry.Definition.Gold, entry.Definition.Rewards ?? []);
                                 eventState.Tasks[ti] = entry with { Claimed = true };
+                                log.LogInformation("  Task claim {Task} event: paid {Gold} gold, wallet {Wallet}", id, entry.Definition.Gold, p.Gold);
                                 reply = ClaimResponse(true, id, p.Gold, 2);
                             }
+                            else log.LogInformation("  Task claim {Task} refused: not a finished, unclaimed task of the event", id);
                         }
+                        else log.LogInformation("  Task claim {Task} refused: not one of today's tasks", id);
                         break;
                     case 95:
                         if (s.Stamps.Count >= c.Hunt.Size)

@@ -6,6 +6,7 @@
   const $ = (id) => document.getElementById(id);
   const views = {
     engine: [L.m("Silnik"), L.m("STEROWANIE USŁUGĄ"), L.m("Uruchamianie, zatrzymywanie i wyniki operacji silnika gry.")],
+    tuning: [L.m("Tuning"), L.m("YOUR OWN EXPERIENCE"), L.m("Simple values you can change to suit how you play. They are saved on this phone.")],
     testers: [L.m("Testerzy"), L.m("DOSTĘP DO LAB"), L.m("Kody instalacji, terminy dostępu i przypisania profili.")],
     overview: [
       L.m("Pulpit operatora"),
@@ -92,6 +93,7 @@
     "task-catalogue": L.m("Nowy katalog zadań"),
     "distance-policy": L.m("Ochrona naliczania dystansu"),
     "profile-label": L.m("Etykieta operatora"),
+    tuning: L.m("Tuning"),
     "profile-reset": L.m("Reset postępu"),
     "profile-copy": L.m("Kopiowanie postępu"),
     "profile-clock": L.m("Zegar fabuły"),
@@ -127,6 +129,7 @@
       "Wersja czeka na zastosowanie w oknie serwisowym. Wymaga restartu serwera i LAB.",
     ),
     "profile-label": L.m("Etykieta zmienia opis w panelu; nazwa w grze i postęp pozostają."),
+    tuning: L.m("The settings are saved and apply as each one says; no restart is needed."),
     "profile-restore": L.m("Przywrócono zapis. Uruchom LAB ponownie."),
     "profile-reset": L.m("Postęp zresetowano. Uruchom LAB ponownie."),
     "profile-copy": L.m(
@@ -181,6 +184,7 @@
     balanceDraft = null,
     speciesPage = 0,
     weatherData = null,
+    tuningData = null,
     catalogueData = null,
     mapData = null,
     mapContext = null, placementData = null, placementDraft = null, placementPreview = null,
@@ -1212,6 +1216,10 @@
       weatherData = await api("weather");
       renderWeather();
     },
+    tuning: async () => {
+      tuningData = await api("tuning");
+      renderTuning();
+    },
     catalogue: async () => {
       catalogueData = await api("catalogue");
       renderCatalogueOptions();
@@ -2096,6 +2104,30 @@
     6: L.m("Bezchmurnie"),
     7: L.m("Zachmurzenie"),
   };
+  function renderTuning() {
+    const d = tuningData, box = $("tuning-fields"), groups = new Map();
+    for (const s of d.definitions) groups.set(s.group, [...(groups.get(s.group) || []), s]);
+    box.replaceChildren();
+    for (const [group, settings] of groups) {
+      box.append(el("h3", L.m(group)));
+      for (const s of settings) {
+        const label = el("label", L.m(s.label)), input = el("input");
+        input.type = "number";
+        input.id = "tuning-" + s.key;
+        input.dataset.key = s.key;
+        input.min = s.min;
+        input.max = s.max;
+        input.step = s.step;
+        input.required = true;
+        input.value = d.values[s.key];
+        label.append(input);
+        box.append(label, el("p", L.join(L.m(s.help), " ", L.m("Default: "), s.default, " ", L.m(s.unit), L.m(". Range: "), s.min,
+          "–", s.max, L.m(". Takes effect: "), L.m(s.applies)), "hint"));
+      }
+    }
+    $("tuning-content").hidden = true;
+    $("tuning-form").hidden = false;
+  }
   function renderWeather() {
     const d = weatherData,
       e = d.effective,
@@ -3256,6 +3288,25 @@
     },
     "world",
   );
+  submit(
+    "tuning-form",
+    async () => {
+      const values = {};
+      for (const input of $("tuning-fields").querySelectorAll("input")) values[input.dataset.key] = Number(input.value);
+      const result = await api("tuning", {
+        method: "PUT",
+        body: JSON.stringify({ revision: tuningData.revision, document: { schemaVersion: 1, values } }),
+      });
+      tuningData = await api("tuning");
+      await finish(result, "tuning-form", "tuning", tuningData);
+      renderTuning();
+    },
+    "tuning",
+  );
+  $("tuning-defaults").addEventListener("click", () => {
+    for (const s of tuningData?.definitions || []) $("tuning-" + s.key).value = s.default;
+    markDirty("tuning-form");
+  });
   submit(
     "weather-form",
     async () => {

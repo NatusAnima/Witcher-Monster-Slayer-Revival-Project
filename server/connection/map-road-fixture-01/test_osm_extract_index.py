@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 """Tests the SQLite highway index reader with an invented database (no pyosmium needed)."""
+import contextlib
+import importlib.util
+import io
+import os
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -8,10 +12,13 @@ import unittest
 from osm_extract_index import (
     SCHEMA_VERSION,
     FeatureIndex,
+    build_index,
     classify_area,
     create_schema,
+    eta_seconds,
     pack_coordinates,
     pack_rings,
+    parse_status,
     ring_area_m2,
     skip_road,
     unpack_coordinates,
@@ -132,6 +139,39 @@ class ExtractIndexTests(unittest.TestCase):
         db.close()
         with self.assertRaises(ValueError):
             FeatureIndex(self.path)
+
+
+class ProgressTests(unittest.TestCase):
+    def test_eta_waits_for_five_percent_then_extrapolates(self):
+        self.assertIsNone(eta_seconds(100, 110, 1100, 5.0))  # 1% of the features phase: too early to say
+        self.assertEqual(eta_seconds(0, 250, 1000, 10.0), 30)  # a quarter in 10 s: 30 s left
+        self.assertIsNone(eta_seconds(500, 500, 500, 1.0))  # nothing to read
+
+    def test_memory_figures_are_read_from_proc_status(self):
+        text = "Name:\tpython\nVmHWM:\t  204800 kB\nVmRSS:\t  102400 kB\nRssAnon:\t   51200 kB\nRssFile:\t   51200 kB\nThreads:\t2\n"
+        self.assertEqual(parse_status(text), {"peak_mb": 200, "rss_mb": 100, "rss_anon_mb": 50, "rss_file_mb": 50})
+
+
+MONACO = Path(__file__).resolve().parents[3] / "local" / "cache" / "monaco-latest.osm.pbf"
+
+
+@unittest.skipUnless(MONACO.is_file() and importlib.util.find_spec("osmium"), "needs pyosmium and local/cache/monaco-latest.osm.pbf")
+class BuildMonaco(unittest.TestCase):
+    """The real builder on a 0.7 MB extract: the node index in a file builds the same map as the one in RAM."""
+
+    def test_file_backed_node_index_builds_the_same_map(self):
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:  # Windows keeps the node file mapped until exit
+            built = {}
+            for name, low_memory in (("memory", False), ("file", True)):
+                with contextlib.redirect_stdout(io.StringIO()) as printed:
+                    built[name] = build_index(MONACO, Path(tmp) / f"{name}.sqlite", low_memory)
+                self.assertIn("PHASE reading the map", printed.getvalue())
+            self.assertGreater(built["memory"]["roads"], 0)
+            for key in ("roads", "areas", "water_lines", "skipped_roads"):
+                self.assertEqual(built["file"][key], built["memory"][key], key)
+            if os.name != "nt":
+                self.assertFalse((Path(tmp) / "file.sqlite.nodes").exists(), "the temporary node file is removed")
+            self.assertEqual(FeatureIndex(Path(tmp) / "file.sqlite").meta["schema"], SCHEMA_VERSION)
 
 
 if __name__ == "__main__":

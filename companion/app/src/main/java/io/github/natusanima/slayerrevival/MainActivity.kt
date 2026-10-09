@@ -32,6 +32,7 @@ class MainActivity : Activity() {
         const val PLAY = "io.github.natusanima.slayerrevival.PLAY"
         const val INSTALL = "io.github.natusanima.slayerrevival.INSTALL"
         const val SITE = "https://github.com/${Updates.REPO}"
+        const val DISCORD = "https://discord.gg/dEJQfecqnU"
         const val AURORA_SITE = "https://gitlab.com/AuroraOSS/AuroraStore"
         /** SHA-256 of the certificate Google Play signs the game with: Aurora's copy, before the playable client. */
         const val PLAY_CERT = "35bb00ec82bd877bdcf816cdecba2c99566cf307015ca876768606ce258b3785"
@@ -42,10 +43,13 @@ class MainActivity : Activity() {
         private const val GOLD = 0xFFD9A441.toInt()
         private const val GREEN = 0xFF72C472.toInt()
         private const val RED = 0xFFE8695E.toInt()
-        private val LOGS = listOf("server" to "Server", "tiles" to "Tiles", "placement" to "Placement", "map-build" to "Map build")
+        private val LOGS = listOf("events" to "Events", "game" to "Game", "server" to "Server", "tiles" to "Tiles",
+            "placement" to "Placement", "map-build" to "Map build")
     }
 
     private var playing = false
+    private var ours = false // the installed game is the client this app built, so it can be updated in place
+    private var updateAction = {}
     private var logName = "server"
     private val handler = Handler(Looper.getMainLooper())
     private val refresh = object : Runnable {
@@ -89,7 +93,7 @@ class MainActivity : Activity() {
 
         updateCard = card(page, "Update")
         updateText = text(15f).also { updateCard.addView(it) }
-        updateButton = button("Update", primary = true) { Updates.install(this) }.also { updateCard.addView(it) }
+        updateButton = button("Update", primary = true) { updateAction() }.also { updateCard.addView(it) }
 
         val play = card(page, "Play")
         val status = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
@@ -136,6 +140,12 @@ class MainActivity : Activity() {
             text = "Not affiliated with CD PROJEKT RED or Spokko."
             gravity = Gravity.CENTER_HORIZONTAL
         })
+        page.addView(button("Send a report") { DebugInfo.share(this) }.apply { textSize = 12f },
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
+        page.addView(button("Report on GitHub (public)") { DebugInfo.issue(this) }.apply { textSize = 12f },
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
+        page.addView(button("Join the Discord community") { open(DISCORD) }.apply { textSize = 12f },
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
         val version = packageManager.getPackageInfo(packageName, 0).versionName
         page.addView(button("Version $version · Source code and credits") { open(SITE) }.apply { textSize = 12f },
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
@@ -145,6 +155,7 @@ class MainActivity : Activity() {
             addView(page)
         })
         Updates.check(this)
+        if (!MapService.running) Maps.sweep(this) // downloads and half-made maps that nothing will resume
         if (savedInstanceState == null) handle(intent)
     }
 
@@ -168,16 +179,25 @@ class MainActivity : Activity() {
 
     /** Starts the server, then opens the game once it answers. */
     private fun play() {
-        if (packageManager.getLaunchIntentForPackage(GAME) == null) {
+        val game = DebugInfo.installed(this, GAME)
+        if (game == null || packageManager.getLaunchIntentForPackage(GAME) == null) {
             Toast.makeText(this, "Install the game first: see Setup", Toast.LENGTH_LONG).show()
             return
         }
+        if (DebugInfo.playSigned(game)) { // the original from Google Play talks to servers that are gone
+            Toast.makeText(this, "This is the original game from Google Play, which cannot reach this server. " +
+                "Finish step 5 of the guided setup to install the playable client.", Toast.LENGTH_LONG).show()
+            EventLog.write(this, "play", "refused: the installed game is the Google Play copy")
+            return
+        }
+        EventLog.write(this, "play", "tapped, server ${ServerService.status}")
         playing = true
         startForegroundService(Intent(this, ServerService::class.java))
     }
 
     override fun onResume() {
         super.onResume()
+        ours = ClientBuildService.signedByUs(this) == true // asks the keystore: once here, not on every refresh
         handler.post(refresh)
     }
 
@@ -203,18 +223,39 @@ class MainActivity : Activity() {
         toggle.text = if (server == "Stopped") "Start server" else "Stop server"
         dashboard.isEnabled = server.startsWith("Running")
         val index = Maps.selected(this)
-        mapText.text = "Map: " + (index?.let { Maps.name(this, it) } ?: "none yet, choose it in the guided setup")
+        val unfinished = Maps.request(this) // a map was asked for and did not get built
+        mapText.text = "Map: " + when {
+            MapService.running -> MapService.status ?: "building"
+            unfinished != null -> "the map of ${unfinished.name} did not finish: open the guided setup and tap Try again" +
+                (index?.let { " (the earlier map, ${Maps.name(this, it)}, still works)" } ?: "")
+            index != null -> Maps.name(this, index)
+            else -> "none yet, choose it in the guided setup"
+        }
         if (playing && server == "Running") {
             playing = false
+            EventLog.write(this, "play", "server is running: opening the game")
             packageManager.getLaunchIntentForPackage(GAME)?.let(::startActivity)
         }
 
         val release = Updates.latest
-        updateCard.visibility = if (release == null) View.GONE else View.VISIBLE
+        val gameStale = ours && ClientBuildService.builtForOther(this, Updates.installedVersion(this))
+        updateCard.visibility = if (release == null && !gameStale) View.GONE else View.VISIBLE
         if (release != null) {
-            updateText.text = "Version ${release.version} is available. Updating keeps your progress." +
-                (Updates.status?.let { "\n$it" } ?: "")
+            updateText.text = "Version ${release.version} is available. " +
+                (if (release.game) "It also updates the game: when it is installed, tap Update the game here. "
+                else if (ours) "It leaves your game as it is. " else "") +
+                "Updating keeps your progress." + (Updates.status?.let { "\n$it" } ?: "")
+            updateButton.text = "Update"
             updateButton.isEnabled = !Updates.busy
+            updateAction = { Updates.install(this) }
+        } else if (gameStale) {
+            updateText.text = "The game needs updating to match this version of the app. It takes a few minutes and keeps your " +
+                "progress. Needs about 6 GB free while it runs." + (ClientBuildService.status?.let { "\n$it" } ?: "")
+            val waiting = ClientBuildService.pending != null // Android is waiting for a tap on its confirmation screen
+            updateButton.text = if (waiting) "Confirm now" else "Update the game"
+            updateButton.isEnabled = waiting || !ClientBuildService.running
+            updateAction = if (waiting) ({ ClientBuildService.confirmNow() })
+            else ({ startForegroundService(Intent(this, ClientBuildService::class.java).putExtra(ClientBuildService.PATCH, true)) })
         }
 
         logTabs.forEachIndexed { i, tab -> tab.setTextColor(if (LOGS[i].first == logName) GOLD else MUTED) }

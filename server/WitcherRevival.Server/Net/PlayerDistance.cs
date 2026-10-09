@@ -39,6 +39,7 @@ public sealed partial class PlayerService
             return snapshot with { Player = p with { Distance = new(state.Metres + delta, receipts) } };
         }, new TaskEngine.Action(M_DistanceTraveled));
         // Return today's total also for a retried old request, avoiding visible counter regression.
+        log.LogInformation("  DistanceTraveled delta={Delta} m accepted={Accepted} total={Total} m", delta, accepted, saved.Player!.Distance?.Metres ?? 0);
         return BuildIntResponse(accepted, saved.Player!.Distance?.Metres ?? 0);
     }
 }

@@ -1,5 +1,8 @@
 package io.github.natusanima.slayerrevival
 
+import android.content.Context
+import android.net.wifi.WifiManager
+import android.os.PowerManager
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -30,5 +33,27 @@ fun download(url: String, file: File, progress: (Long, Long) -> Unit) {
         }
     } finally {
         connection.disconnect()
+    }
+}
+
+/**
+ * Keeps the CPU and Wi-Fi from sleeping through a long job, which slows it or stalls it once the screen is off. Returns what
+ * lets them go; the CPU lock lapses by itself after [millis].
+ */
+@Suppress("DEPRECATION")
+fun keepAwake(context: Context, tag: String, millis: Long): () -> Unit {
+    try {
+        val awake = context.getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "slayerrevival:$tag")
+            .apply { acquire(millis) }
+        val wifi = try {
+            context.applicationContext.getSystemService(WifiManager::class.java)
+                .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "slayerrevival:$tag").apply { acquire() }
+        } catch (e: Exception) {
+            null
+        }
+        return { wifi?.release(); awake.release() }
+    } catch (e: Exception) {
+        EventLog.write(context, tag, "could not hold the wake locks: $e")
+        return {}
     }
 }

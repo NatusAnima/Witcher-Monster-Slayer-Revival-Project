@@ -8,8 +8,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.net.wifi.WifiManager
-import android.os.PowerManager
 import android.os.SystemClock
 import android.text.format.Formatter
 import java.io.File
@@ -38,6 +36,11 @@ class PackDownloadService : Service() {
 
         @Volatile
         var running = false
+            private set
+
+        /** True if the last run stopped on an error (not a cancel the player chose): the setup screen then offers a bug report. */
+        @Volatile
+        var failed = false
             private set
 
         fun dir(context: Context) = File(context.filesDir, "game/packs")
@@ -71,11 +74,12 @@ class PackDownloadService : Service() {
         if (running || intent == null) return START_NOT_STICKY
         running = true
         cancelled = false
+        failed = false
         progress = -1
         shownAt = 0L
         shownBytes = 0L
         thread(name = "pack-download") {
-            val release = keepAwake()
+            val release = keepAwake(this, "packs", 4 * 60 * 60 * 1000L)
             try {
                 download()
             } finally {
@@ -132,34 +136,17 @@ class PackDownloadService : Service() {
             update("Cancelled. Starting again continues where this stopped.")
         } catch (e: Exception) {
             PlayLog.write(this, "download stopped: $e")
+            failed = true
             update("The download stopped: ${e.message ?: e.javaClass.simpleName}")
-        }
-    }
-
-    /** Keeps the CPU and Wi-Fi from sleeping through a long download, which slows it once the screen is off. */
-    @Suppress("DEPRECATION")
-    private fun keepAwake(): () -> Unit {
-        try {
-            val awake = getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "slayerrevival:packs")
-                .apply { acquire(4 * 60 * 60 * 1000L) }
-            val wifi = try {
-                applicationContext.getSystemService(WifiManager::class.java)
-                    .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "slayerrevival:packs").apply { acquire() }
-            } catch (e: Exception) {
-                null
-            }
-            return { wifi?.release(); awake.release() }
-        } catch (e: Exception) {
-            PlayLog.write(this, "could not hold the wake locks: $e")
-            return {}
         }
     }
 
     /** The progress line, at most once a second: the bytes arrive far faster than a notification can be shown. */
     private fun show(done: Long, total: Long, index: Int, count: Int) {
         val now = SystemClock.elapsedRealtime()
-        if (now - shownAt < 1000) return
-        val rate = if (shownAt == 0L) 0 else maxOf(0L, done - shownBytes) * 1000 / (now - shownAt)
+        val last = shownAt // the download threads all call this: read it once, or another thread's update makes the divisor 0
+        if (now - last < 1000) return
+        val rate = if (last == 0L) 0 else maxOf(0L, done - shownBytes) * 1000 / (now - last)
         shownAt = now
         shownBytes = done
         update("Downloading the extra data: ${size(done)} of ${size(total)}" + (if (rate > 0) " · ${size(rate)}/s" else "") +
@@ -170,12 +157,13 @@ class PackDownloadService : Service() {
 
     private fun update(text: String) {
         status = text
+        EventLog.write(this, "packs", text)
         if (running) getSystemService(NotificationManager::class.java).notify(5, notification(text))
     }
 
     private fun notification(text: String, ongoing: Boolean = true): Notification {
         return Notification.Builder(this, "packs")
-            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setSmallIcon(if (ongoing) android.R.drawable.stat_sys_download else android.R.drawable.stat_sys_download_done)
             .setContentTitle("Extra data")
             .setContentText(text)
             .setStyle(Notification.BigTextStyle().bigText(text))

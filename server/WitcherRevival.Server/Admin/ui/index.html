@@ -123,6 +123,7 @@
           >
           <a href="#help" data-view="help"><svg><use href="#i-catalogue" /></svg>Pomoc<span class="nav-index">10</span></a>
           <a href="#engine" data-view="engine"><svg><use href="#i-refresh" /></svg>Silnik<span class="nav-index">11</span></a>
+          <a href="#tuning" data-view="tuning"><svg><use href="#i-overview" /></svg>Tuning<span class="nav-index">12</span></a>
         </nav>
         <div class="sidebar-note">
           <span class="rule-ornament" aria-hidden="true">◇</span>
@@ -637,6 +638,23 @@
                 <details class="gps-events" open><summary>Ostatnie decyzje serwera</summary><div id="gps-events" class="table-wrap"></div></details>
                 <details class="gps-policy"><summary>Reguły i zakres ochrony</summary><div id="gps-policy"></div></details>
               </div>
+            </div>
+          </section>
+          <section id="view-tuning" class="view" hidden>
+            <div id="tuning-content">
+              <p class="empty-state">Loading your settings…</p>
+            </div>
+            <div class="split policy-section">
+              <form id="tuning-form" hidden>
+                <p class="eyebrow">YOUR SETTINGS</p>
+                <h2>Tune the game to how you play</h2>
+                <div id="tuning-fields"></div>
+                <div class="callout">
+                  These are saved on this phone and need no restart. Each setting says when it takes effect.
+                </div>
+                <button type="submit">Save the settings</button>
+                <button type="button" id="tuning-defaults" class="secondary">Restore the defaults</button>
+              </form>
             </div>
           </section>
           <section id="view-weather" class="view" hidden>

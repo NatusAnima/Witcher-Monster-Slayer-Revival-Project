@@ -349,7 +349,8 @@ export function startGps(image, log) {
     const listeners=installWriteObservers(tk,mk);
     listeners.push(Interceptor.attach(image.base.add(AT.close),{onEnter(){if(coordinator)coordinator.fresh(false);}}));
     listeners.push(Interceptor.attach(image.base.add(AT.initialize),{onEnter(){queued.clear();if(coordinator)coordinator.fresh(false);}}));
-    listeners.push(Interceptor.attach(image.base.add(AT.pause),{onEnter(args){if(coordinator)coordinator.pause(args[1].toInt32()!==0);}}));
+    // Also logged (app paused or resumed), so a bug report tells a kill in the background from a crash in the foreground.
+    listeners.push(Interceptor.attach(image.base.add(AT.pause),{onEnter(args){const paused=args[1].toInt32()!==0;log('app '+(paused?'paused':'resumed'));if(coordinator)coordinator.pause(paused);}}));
     function send(bytes,id) {
       if(!ready || !workerHandle || queued.size || Process.getCurrentThreadId()!==unityThread)return false;
       const w=n.target(workerHandle);if(w.isNull())return false;

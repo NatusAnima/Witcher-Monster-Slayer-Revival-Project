@@ -38,6 +38,9 @@ object ClientSigner {
     /** The certificate every client is signed with; the key is made on first use. */
     fun certificate(): X509Certificate = key().second
 
+    /** Like [certificate], but null while no client has been built: the key is not made just to look. */
+    fun existingCertificate() = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.getCertificate(ALIAS) as X509Certificate?
+
     private fun key(): Pair<PrivateKey, X509Certificate> {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         if (!store.containsAlias(ALIAS)) {

@@ -23,6 +23,8 @@ public sealed class WorldPolicy
     public long SpawnBalanceFromUnixSeconds { get; }
     public WorldBalance Balance { get; }
     public DistancePolicy Distance { get; }
+    /// <summary>The numbers a player tunes in the dashboard.</summary>
+    public WorldTuning Tuning { get; }
 
     public WorldPolicy(IConfiguration cfg, ILogger<WorldPolicy> log)
     {
@@ -33,6 +35,7 @@ public sealed class WorldPolicy
         string? directory = cfg["World:Directory"];
         Balance = new WorldBalance(directory, log);
         Distance = new DistancePolicy(directory, log);
+        Tuning = WorldTuning.Current = new WorldTuning(directory, log);
         Distance.Read(refresh: true);
         if (!string.IsNullOrWhiteSpace(directory))
         {

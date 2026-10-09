@@ -8,6 +8,11 @@ plugins {
 // and its password. Lose it and installed copies can no longer update: keep a backup.
 val releaseKey = rootDir.resolve("../local/keys/companion.properties")
 
+// x.y.z. x: the stage (alpha, beta, ...). y: raise it for a release that touches the game itself; the app then updates
+// the installed game in place. z: raise it for a change to the app alone, which leaves the game as it is.
+// Tag the GitHub release v<version>. versionCode is derived from it, so y and z stay below 100.
+val appVersion = "0.2.0"
+
 android {
     namespace = "io.github.natusanima.slayerrevival"
     compileSdk = 36
@@ -16,8 +21,8 @@ android {
         applicationId = "io.github.natusanima.slayerrevival"
         minSdk = 30 // Android 11: the oldest the phone runtime has been tried on
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = appVersion.split('.').map(String::toInt).let { (x, y, z) -> x * 10_000 + y * 100 + z }
+        versionName = appVersion
         // The runtime is arm64-only: a phone with another ABI should refuse the install, not crash at start.
         ndk { abiFilters += "arm64-v8a" }
     }

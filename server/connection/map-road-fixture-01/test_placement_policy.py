@@ -37,7 +37,9 @@ class PlacementPolicyTests(unittest.TestCase):
             f.way('residential', [(-300,-100),(300,-100)]), f.area('building',30,20,70,60)]
         old = self.service.cell(self.cell, 20729)
         self.assertEqual(hashlib.sha256(json.dumps(old,sort_keys=True).encode()).hexdigest(),
-            '1752b331b9297999773cfd83593efcb4d7c44c6f1a47f7fe8bf47b240e73f5ee')
+            # was 1752b331... until woods were limited to half a cell and the ids took PLACEMENT_VERSION 4 (2026-10-07):
+            # a deliberate change of the default draw; days drawn under a scheduled policy keep their own rule
+            'e92e9ce4fc4100f06d7ba09fd98863e58d07c86060be7514198ed834f83d5715')
         self.save(dict(policy.DEFAULT, maxPoints=8, spacingMeters=100))
         self.assertEqual(self.service.cell(self.cell,20729),old)
         self.assertEqual(pl.PlayableLocations(self.index,self.path).cell(self.cell,20729),old)

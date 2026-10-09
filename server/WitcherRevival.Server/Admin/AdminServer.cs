@@ -89,6 +89,7 @@ public sealed partial class AdminServer(IConfiguration cfg, ProfileRegistry regi
         app.MapGet("/api/server/status", () => Results.Json(metrics.Read()));
         MapOperatorRoutes(app);
         MapPlacementRoutes(app);
+        MapTuningRoutes(app);
         MapTransportRoutes(app);
         MapPlayerProgressRoutes(app);
         app.MapGet("/api/profiles", () => Results.Json(registry.Saved().Select(id => ProfileSummary(id))));

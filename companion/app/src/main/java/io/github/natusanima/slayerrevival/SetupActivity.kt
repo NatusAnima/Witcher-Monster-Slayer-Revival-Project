@@ -1,11 +1,10 @@
 package io.github.natusanima.slayerrevival
 
 import android.app.Activity
+import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -16,9 +15,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
+import android.provider.Settings
 import android.text.format.Formatter
 import android.view.Gravity
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
@@ -26,9 +28,7 @@ import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import java.io.File
-import java.io.RandomAccessFile
-import java.security.MessageDigest
+import java.util.Locale
 
 /**
  * The guided setup: every step from a phone with nothing on it to a playable game, in order, with the next one
@@ -37,7 +37,7 @@ import java.security.MessageDigest
 class SetupActivity : Activity() {
     private companion object {
         const val NEEDED = 6L shl 30 // the extra data, the built client, and room to install it
-        const val GAME_SPLITS = 22 // the 21 asset-pack splits and the arm64 split of version 1.1.116
+        const val APKMIRROR_SEARCH = "https://www.apkmirror.com/?s=witcher+monster+slayer"
 
         val GAME_STEPS = listOf(
             "Tap Open in Aurora below.",
@@ -45,6 +45,13 @@ class SetupActivity : Activity() {
             "Tap the three dots at the top right, then Manual download.",
             "Enter the version code 300085. Not 1.1.116.",
             "Download and install it.",
+        )
+        val APKMIRROR_STEPS = listOf(
+            "Tap Open APKMirror below.",
+            "Open version 1.1.116 (code 300085) of The Witcher: Monster Slayer.",
+            "Download the APK: one file, about 700 MB. The bundle also works, but needs the APKMirror Installer app.",
+            "Open the downloaded file and install it. Told your browser can't install apps? Tap Settings and allow it.",
+            "Come back here.",
         )
         val SIGN_IN_STEPS = listOf(
             "Tap Sign in with Google below.",
@@ -72,6 +79,8 @@ class SetupActivity : Activity() {
         }
     }
     private lateinit var steps: List<Step>
+    private var ours = false // the installed game is the client this app built (asked once per resume: it reads the keystore)
+    private val prefs by lazy { getSharedPreferences("setup", MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +107,7 @@ class SetupActivity : Activity() {
         page.addView(card, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { bottomMargin = px(12) })
         steps = listOf("Check this phone", "Install the game, version 1.1.116", "Sign in to Google", "Download the extra data",
             "Build and install the playable client", "Choose your map region", "Play").mapIndexed { i, title -> Step(card, i + 1, title) }
-        page.addView(button("Copy debug info") { copyDebugInfo() },
+        page.addView(button("Send a report") { DebugInfo.share(this) },
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
         page.addView(text(12f, MUTED).apply {
             text = "Not affiliated with CD PROJEKT RED, Spokko or Google."
@@ -112,6 +121,7 @@ class SetupActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        ours = ClientBuildService.signedByUs(this) == true
         handler.post(refresh)
     }
 
@@ -122,9 +132,9 @@ class SetupActivity : Activity() {
 
     private fun render() {
         val game = installed(MainActivity.GAME)
-        val ours = game != null && !playSigned(game) // the playable client has replaced the Play copy
-        val fromPlay = game != null && !ours
-        val parts = game?.splitNames?.size ?: 0
+        val ours = game != null && this.ours // the playable client has replaced the other copy
+        val libraries = game != null && GameFiles.hasLibraries(game) // not the base APK alone
+        val viaPlay = game != null && !ours && installedByPlay()
         val packs = PackDownloadService.complete(this)
         val region = Maps.selected(this)
         val free = filesDir.usableSpace
@@ -133,32 +143,47 @@ class SetupActivity : Activity() {
         }
         val built = ClientBuildService.resumable(this) // the client is built, so what it was built from may go
         val roomy = free >= NEEDED || packs || ours || built
-        val gameDone = ours || built || (game != null && game.longVersionCode == MainActivity.GAME_VERSION && parts >= GAME_SPLITS)
+        val gameDone = ours || built || (game != null && game.longVersionCode == MainActivity.GAME_VERSION && libraries)
         val signedIn = PlayAccount.signedIn(this)
         val packsDone = packs || ours || built
         val done = listOf(roomy, gameDone, signedIn || packsDone, packsDone, ours, region != null)
         val current = done.indexOfFirst { !it }.let { if (it < 0) 6 else it }
         fun at(i: Int) = i == current
 
-        steps[0].show(roomy, at(0), "Free space: ${size(free)}. " + if (roomy) "Enough." else
-            "The setup needs about ${size(NEEDED)} while it runs. Free some up, then come back.")
+        // what would trip the setup later, shown now: small phones close the game when memory runs low, and with notifications
+        // off a build's confirmation can only be opened from here
+        val memory = ActivityManager.MemoryInfo().also { getSystemService(ActivityManager::class.java).getMemoryInfo(it) }
+        val warnings = listOfNotNull(
+            if (memory.totalMem < 4L shl 30) "This phone has about ${size(memory.totalMem)} of memory. The game may close when it " +
+                "runs low: close other apps while you play, and pick a small map region." else null,
+            if (!getSystemService(NotificationManager::class.java).areNotificationsEnabled()) "Notifications are off for this app. " +
+                "Downloads and builds still run, but their progress and confirmations show only on this screen." else null,
+        )
+        steps[0].show(roomy, at(0), "Free space: ${size(free)}. " + (if (roomy) "Enough." else
+            "The setup needs about ${size(NEEDED)} while it runs. Free some up, then come back.") + warnings.joinToString("") { "\n\n$it" })
 
         val aurora = installed(MainActivity.AURORA) != null
-        val auroraButton = if (aurora) "Open in Aurora" else "Get Aurora Store"
-        val auroraClick = { if (aurora) openInAurora() else open(MainActivity.AURORA_SITE) }
+        val apkmirror = prefs.getBoolean("apkmirror", false)
+        val sourceButton = if (apkmirror) "Open APKMirror" else if (aurora) "Open in Aurora" else "Get Aurora Store"
+        val sourceClick = { if (apkmirror) open(APKMIRROR_SEARCH) else if (aurora) openInAurora() else open(MainActivity.AURORA_SITE) }
+        val sourceSteps = if (apkmirror) APKMIRROR_STEPS else GAME_STEPS
+        val otherSource = if (apkmirror) "Use Aurora Store instead" else "Use APKMirror instead"
+        val switchSource = { prefs.edit().putBoolean("apkmirror", !apkmirror).apply() }
+        fun source(message: String) = steps[1].show(false, at(1), message, sourceButton, items = sourceSteps,
+            label2 = otherSource, onClick2 = switchSource, onClick = sourceClick)
         when {
             game == null && built -> steps[1].show(true, at(1), "Removed: the client built from it replaces it.")
-            game == null -> steps[1].show(false, at(1), "The game is not installed. Any source works, as long as it is exactly " +
-                "version 1.1.116 (code 300085) with all its parts. Aurora Store is one way:", auroraButton, items = GAME_STEPS, onClick = auroraClick)
+            game == null -> source("The game is not installed. Get it from Aurora Store (it downloads from Google Play, with an " +
+                "account that had the game) or from APKMirror (a file, no Google account for this step). Either way it must be " +
+                "exactly version 1.1.116 (code 300085). Aurora says the game is not available? That account never had it: use APKMirror.")
             ours -> steps[1].show(true, at(1), "Replaced by the playable client.")
-            game.longVersionCode != MainActivity.GAME_VERSION -> steps[1].show(false, at(1), "Version ${game.versionName} is " +
-                "installed, but this needs 1.1.116 (300085). Uninstall it, then install the right one:", auroraButton,
-                items = GAME_STEPS, onClick = auroraClick)
-            parts < GAME_SPLITS -> steps[1].show(false, at(1), "The game is installed but incomplete: $parts of $GAME_SPLITS " +
-                "parts. Uninstall it, then install the full version:", auroraButton, items = GAME_STEPS, onClick = auroraClick)
-            else -> steps[1].show(true, at(1), "1.1.116 (300085) is installed." + if (fromPlay) " Tip: stop Google Play " +
+            game.longVersionCode != MainActivity.GAME_VERSION -> source("Version ${game.versionName} is installed, but this " +
+                "needs 1.1.116 (300085). Uninstall it, then install the right one:")
+            !libraries -> source("The game is installed, but it has no game libraries: it is only the base APK. Uninstall it, " +
+                "then install the full APK or the bundle:")
+            else -> steps[1].show(true, at(1), "1.1.116 (300085) is installed." + if (viaPlay) " Tip: stop Google Play " +
                 "from updating it. Open its page in the Play Store, tap the three dots, untick Enable auto update." else "",
-                if (fromPlay) "Open in Play Store" else null) { openInPlay() }
+                if (viaPlay) "Open in Play Store" else null) { openInPlay() }
         }
 
         val email = PlayAccount.email(this)
@@ -183,26 +208,45 @@ class SetupActivity : Activity() {
             !signedIn -> steps[3].show(false, at(3), "Sign in first.")
             else -> steps[3].show(false, at(3), "1.3 GB from Google Play." + (if (wifi) "" else " You are not on Wi-Fi.") +
                 " You can leave the app: the download carries on in the background." + (last?.let { "\n\n$it" } ?: ""),
-                "Download") { startForegroundService(Intent(this, PackDownloadService::class.java)) }
+                "Download", label2 = if (PackDownloadService.failed) "Send a report" else null, onClick2 = { DebugInfo.share(this) }) {
+                startForegroundService(Intent(this, PackDownloadService::class.java))
+            }
         }
 
         val building = ClientBuildService.status
-        val build: () -> Unit = { startForegroundService(Intent(this, ClientBuildService::class.java)) }
+        val build: () -> Unit = {
+            if (!packageManager.canRequestPackageInstalls()) { // better to find out now than after the build's few minutes
+                EventLog.write(this, "setup", "this app may not install apps yet: opening its settings")
+                Toast.makeText(this, "Allow this app to install apps first. On a Samsung phone where the switch is greyed out, " +
+                    "turn off Auto Blocker (Settings, Security and privacy, Auto Blocker).", Toast.LENGTH_LONG).show()
+                startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
+            } else {
+                startForegroundService(Intent(this, ClientBuildService::class.java))
+            }
+        }
+        val buildReport = if (ClientBuildService.failed) "Send a report" else null
         when {
             ours -> steps[4].show(true, at(4), "Installed: the game connects to this app.")
-            ClientBuildService.running -> steps[4].show(false, at(4), building ?: "Building…", progress = ClientBuildService.progress)
+            ClientBuildService.running -> steps[4].show(false, at(4), building ?: "Building…",
+                if (ClientBuildService.pending != null) "Confirm now" else null, ClientBuildService.progress) { ClientBuildService.confirmNow() }
             !packsDone || !gameDone -> steps[4].show(false, at(4), "Finish the steps above first.")
             built -> steps[4].show(false, at(4), "The client is built. Install it to finish." + (building?.let { "\n\n$it" } ?: ""),
-                "Install the client", items = BUILD_STEPS.drop(1), onClick = build)
+                "Install the client", items = BUILD_STEPS.drop(1), label2 = buildReport, onClick2 = { DebugInfo.share(this) }, onClick = build)
             else -> steps[4].show(false, at(4), "The app builds the playable client on this phone from your copy of the game and " +
                 "the extra data, then replaces the game with it. No computer needed." + (building?.let { "\n\n$it" } ?: ""),
-                "Build the client", items = BUILD_STEPS, onClick = build)
+                "Build the client", items = BUILD_STEPS, label2 = buildReport, onClick2 = { DebugInfo.share(this) }, onClick = build)
         }
 
         val choose = { startActivity(Intent(this, RegionActivity::class.java)) }
+        val unfinished = Maps.request(this) // a map was asked for and did not get built: it failed, was cancelled, or Android closed the app
         when {
             MapService.running -> steps[5].show(false, at(5), MapService.status ?: "Starting", "Cancel", MapService.progress) {
                 startService(Intent(this, MapService::class.java).setAction(MapService.CANCEL))
+            }
+            unfinished != null -> steps[5].show(region != null, at(5), (Maps.failure(this) ?: MapService.status?.takeIf { it.startsWith("Cancelled") }
+                ?: "The map of ${unfinished.name} did not finish: Android may have closed the app. What is downloaded is kept.") +
+                " Tap Send a report below if it keeps happening.", "Try again", label2 = "Choose another region", onClick2 = choose) {
+                MapService.start(this, unfinished)
             }
             region != null -> steps[5].show(true, at(5), "${Maps.name(this, region)}, ${size(region.length())} on this phone.",
                 "Change region", onClick = choose)
@@ -211,18 +255,48 @@ class SetupActivity : Activity() {
                 "Choose region", onClick = choose)
         }
 
+        // a build that runs for minutes is safer from a screen-off battery saver when this screen shows it and the screen stays on
+        val busy = MapService.running || ClientBuildService.running || PackDownloadService.running
+        if (busy) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        val exempt = getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
         steps[6].show(false, at(6), "You are set. On the main screen, tap Play: the server runs on this phone while you " +
-            "play, and the game connects to it.", "Back to the main screen") { finish() }
+            "play, and the game connects to it.\n\nKeep the server running while you play: " +
+            (if (exempt) "background running is allowed. " else "tap Allow background running. ") + oemHint(),
+            "Back to the main screen", label2 = if (exempt) null else "Allow background running", onClick2 = { allowBackground() }) { finish() }
     }
 
-    private fun installed(name: String): PackageInfo? = try {
-        packageManager.getPackageInfo(name, PackageManager.GET_SIGNING_CERTIFICATES)
+    private fun installed(name: String) = DebugInfo.installed(this, name)
+
+    /** True if Google Play itself installed the game (then Play may try to update it). */
+    private fun installedByPlay() = try {
+        packageManager.getInstallSourceInfo(MainActivity.GAME).installingPackageName == MainActivity.PLAY_STORE
     } catch (_: PackageManager.NameNotFoundException) {
-        null
+        false
     }
 
-    private fun playSigned(info: PackageInfo) = info.signingInfo?.apkContentsSigners.orEmpty().any { signer ->
-        MessageDigest.getInstance("SHA-256").digest(signer.toByteArray()).joinToString("") { "%02x".format(it) } == MainActivity.PLAY_CERT
+    /** Phones that stop background apps, one line each on how to stop that for this app. */
+    private fun oemHint() = when (Build.MANUFACTURER.lowercase(Locale.US)) {
+        "samsung" -> "Samsung: in Settings, Battery, Background usage limits, add this app to Never sleeping apps; in the recent " +
+            "apps screen tap this app's icon and choose Keep open; if Game Booster is on for the game, turn off its memory clean-up."
+        "xiaomi", "redmi", "poco" -> "Xiaomi: swiping this app away from the recent apps screen stops the server. Lock it there " +
+            "(hold its card, tap the lock), turn on Autostart for it, and set its battery saver to No restrictions."
+        "oppo", "realme", "oneplus" -> "Allow this app to run in the background (Battery) and to start itself (App management), " +
+            "and lock it in the recent apps screen."
+        "vivo", "iqoo" -> "Allow background running for this app in Battery, and lock it in the recent apps screen."
+        "huawei", "honor" -> "In Battery, App launch, set this app to Manage manually and allow Run in background."
+        else -> "If the game stops working after a while, set this app's battery use to Unrestricted and keep it in the recent apps screen."
+    }
+
+    private fun allowBackground() {
+        try {
+            startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")))
+        } catch (_: ActivityNotFoundException) {
+            try {
+                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (_: ActivityNotFoundException) {
+            }
+        }
     }
 
     private fun openInAurora() = try {
@@ -240,33 +314,6 @@ class SetupActivity : Activity() {
     private fun open(url: String) = try {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     } catch (_: ActivityNotFoundException) {
-    }
-
-    /** What to paste into a bug report: this phone, the game's install, and the end of the logs. No tokens are in them. */
-    private fun copyDebugInfo() {
-        val game = installed(MainActivity.GAME)
-        val info = buildString {
-            append("App ${packageManager.getPackageInfo(packageName, 0).versionName}, Android ${Build.VERSION.RELEASE} ")
-            append("(SDK ${Build.VERSION.SDK_INT}), ${Build.MODEL}, free ${size(filesDir.usableSpace)}\n")
-            append("Game: " + (game?.let { "${it.versionName} (${it.longVersionCode}), ${it.splitNames?.size ?: 0} splits, " +
-                "${if (playSigned(it)) "Play" else "other"} signature" } ?: "not installed") + "\n")
-            append("Signed in to Google: ${PlayAccount.signedIn(this@SetupActivity)}\n")
-            append("Map: ${MapService.status ?: "not started"}\n")
-            for (log in listOf("play", "client-build", "map-build")) append("\n-- $log.log --\n${tail(File(filesDir, "logs/$log.log"))}\n")
-        }
-        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Debug info", info))
-        Toast.makeText(this, "Copied. Paste it where you report the problem.", Toast.LENGTH_LONG).show()
-    }
-
-    private fun tail(file: File): String {
-        if (!file.isFile) return "No log yet."
-        RandomAccessFile(file, "r").use { f ->
-            val start = maxOf(0L, f.length() - 6_000)
-            val bytes = ByteArray((f.length() - start).toInt())
-            f.seek(start)
-            f.readFully(bytes)
-            return String(bytes)
-        }
     }
 
     private fun size(bytes: Long) = Formatter.formatShortFileSize(this, bytes)
@@ -295,6 +342,7 @@ class SetupActivity : Activity() {
         private val bar = ProgressBar(this@SetupActivity, null, 0, android.R.style.Widget_Material_ProgressBar_Horizontal)
             .apply { max = 100 }
         private val action = button("") {}.apply { setPadding(0, paddingTop, paddingRight, paddingBottom) }
+        private val action2 = button("") {}.apply { setPadding(0, paddingTop, paddingRight, paddingBottom) }
 
         init {
             val column = LinearLayout(this@SetupActivity).apply { orientation = LinearLayout.VERTICAL }
@@ -303,6 +351,7 @@ class SetupActivity : Activity() {
             column.addView(list)
             column.addView(bar)
             column.addView(action, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+            column.addView(action2, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
             val row = LinearLayout(this@SetupActivity).apply { setPadding(0, px(12), 0, 0) }
             row.addView(mark, LayoutParams(px(24), px(24)).apply { marginEnd = px(12) })
             row.addView(column, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
@@ -310,7 +359,7 @@ class SetupActivity : Activity() {
         }
 
         fun show(done: Boolean, current: Boolean, message: String, label: String? = null, progress: Int? = null,
-                 items: List<String> = emptyList(), onClick: () -> Unit = {}) {
+                 items: List<String> = emptyList(), label2: String? = null, onClick2: () -> Unit = {}, onClick: () -> Unit = {}) {
             val open = current || done // a step still to come shows only its title
             val shown = if (current) items else emptyList()
             if (shown != listed) { // the screen refreshes every second: rebuild the rows only when they change
@@ -340,6 +389,9 @@ class SetupActivity : Activity() {
             action.visibility = if (label == null || !open) View.GONE else View.VISIBLE
             action.text = label
             action.setOnClickListener { onClick() }
+            action2.visibility = if (label2 == null || !open) View.GONE else View.VISIBLE
+            action2.text = label2
+            action2.setOnClickListener { onClick2() }
         }
     }
 }

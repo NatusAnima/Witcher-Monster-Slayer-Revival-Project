@@ -788,7 +788,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     /// (Factory 0x24837C4) [byte Success][int n][int ingredient id × n][int RespawnTime][long HerbInstanceId].
     /// PoiModule.HandleGatherHerbResponse (0x1903BD8) adds the loot and hides the herb until RespawnTime (Unix
     /// seconds). A served herb that has grown back is gathered: its loot goes to the inventory and it grows back
-    /// after WorldHerbs.RespawnSeconds; anything else is refused with no loot.</summary>
+    /// after WorldHerbs.Respawn; anything else is refused with no loot.</summary>
     private byte[] HandleGatherHerb(ApiProtocol.ApiRequest req)
     {
         if (req.Data.Length != 8) throw new InvalidDataException("Invalid GatherHerb payload.");
@@ -804,9 +804,10 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 var respawns = (player.HerbRespawns ?? new Dictionary<long, long>()).Where(r => r.Value > now)
                     .ToDictionary(r => r.Key, r => r.Value);
                 if (respawns.ContainsKey(id)) return null;
-                respawn = now + WorldHerbs.RespawnSeconds;
+                long period = WorldHerbs.Respawn;
+                respawn = now + period;
                 respawns[id] = respawn;
-                loot = WorldHerbs.Loot(id, respawn / WorldHerbs.RespawnSeconds);
+                loot = WorldHerbs.Loot(id, respawn / period);
                 AddItems(player, loot.GroupBy(i => i).Select(g => (ItemKinds.Ingredients, g.Key, g.Count())));
                 return player with { HerbRespawns = respawns };
             }, new TaskEngine.Action(19));
@@ -982,15 +983,16 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 foreach (int monster in monsters)
                 {
                     var species = WorldNests.SpeciesOf(monster);
-                    rarityExp += WorldNests.RarityExp(species?.Rarity ?? 1);
-                    if (kills.GetValueOrDefault(monster) == 0) firstExp += Reconstruction.FirstKillExp;
+                    rarityExp += Exp(WorldNests.RarityExp(species?.Rarity ?? 1));
+                    if (kills.GetValueOrDefault(monster) == 0) firstExp += Exp(Reconstruction.FirstKillExp);
                     kills[monster] = kills.GetValueOrDefault(monster) + 1;
                     loot.AddRange(Economy.FightLoot(monster, species?.Difficulty ?? 1));
                 }
-                attackExp = Reconstruction.CriticalHitExp * Sum(Reconstruction.DetailPerfectAttacks);
-                parryExp = Reconstruction.PerfectParryExp * Sum(Reconstruction.DetailPerfectParries);
-                oilExp = Reconstruction.ProperOilExp * Count(Reconstruction.DetailUsedProperOil);
-                clearingExp = WorldNests.ClearingExp;
+                loot = Looted(loot);
+                attackExp = Exp(Reconstruction.CriticalHitExp * Sum(Reconstruction.DetailPerfectAttacks));
+                parryExp = Exp(Reconstruction.PerfectParryExp * Sum(Reconstruction.DetailPerfectParries));
+                oilExp = Exp(Reconstruction.ProperOilExp * Count(Reconstruction.DetailUsedProperOil));
+                clearingExp = Exp(WorldNests.ClearingExp);
                 boostedExp = rarityExp * Reconstruction.ExperienceBonus(Worn(player)) / 100;   // equipment (effect 65)
                 gold = today.Wins < WorldNests.DailyLimit ? WorldNests.BountyGold : 0;
                 AddItems(player, loot.Select(item => (ItemKinds.Ingredients, item, 1)));
@@ -1600,6 +1602,22 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         return new CombatEndRequest(win, r.ReadByte() != 0, details);
     }
 
+    /// <summary>[amount] of fight experience as the dashboard has it set (a share of the normal amount).</summary>
+    private int Exp(int amount) =>
+        (int)Math.Min(int.MaxValue / 8, (long)amount * (long)world.Tuning.Get(WorldTuning.ExpPercent) / 100);
+
+    /// <summary>The ingredients a won fight drops, as many as the dashboard says: 200 % doubles each, 150 % adds half of them by chance.</summary>
+    private List<int> Looted(List<int> loot)
+    {
+        double percent = world.Tuning.Get(WorldTuning.LootPercent);
+        if (percent == 100) return loot;
+        var scaled = new List<int>();
+        foreach (int item in loot)
+            for (int copies = (int)(percent / 100) + (Random.Shared.NextDouble() * 100 < percent % 100 ? 1 : 0); copies > 0; copies--)
+                scaled.Add(item);
+        return scaled;
+    }
+
     /// <summary>Grants the fight experience of a won fight (see Reconstruction.BaseExp) and records the kill;
     /// <paramref name="record"/> may add more to the same saved revision. Response layout of CombatEnd (8,
     /// Factory 0x247E50C) and CombatEndSummonedMonster (114, 0x247EC60): [int lootCount][int × loot]
@@ -1611,22 +1629,22 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var loot = new List<int>();
         if (monster is { } fought && end.Won)
         {
-            baseExp = Reconstruction.BaseExp(fought.Difficulty);
-            comboExp = Reconstruction.CriticalHitExp * end.Detail(Reconstruction.DetailPerfectAttacks);
-            parryExp = Reconstruction.PerfectParryExp * end.Detail(Reconstruction.DetailPerfectParries);
-            oilExp = end.Detail(Reconstruction.DetailUsedProperOil) > 0 ? Reconstruction.ProperOilExp : 0;
+            baseExp = Exp(Reconstruction.BaseExp(fought.Difficulty));
+            comboExp = Exp(Reconstruction.CriticalHitExp * end.Detail(Reconstruction.DetailPerfectAttacks));
+            parryExp = Exp(Reconstruction.PerfectParryExp * end.Detail(Reconstruction.DetailPerfectParries));
+            oilExp = end.Detail(Reconstruction.DetailUsedProperOil) > 0 ? Exp(Reconstruction.ProperOilExp) : 0;
             if (profiles.Snapshot().Player is not null)
             {
                 profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
                 {
                     var before = player with { Kills = new(player.Kills!) };
                     var kills = player.Kills!;
-                    if (kills.GetValueOrDefault(fought.MonsterId) == 0) firstExp = Reconstruction.FirstKillExp;
+                    if (kills.GetValueOrDefault(fought.MonsterId) == 0) firstExp = Exp(Reconstruction.FirstKillExp);
                     kills[fought.MonsterId] = kills.GetValueOrDefault(fought.MonsterId) + 1;
                     record?.Invoke(player);
-                    loot = Economy.FightLoot(fought.MonsterId, fought.Difficulty);
+                    loot = Looted(Economy.FightLoot(fought.MonsterId, fought.Difficulty));
                     // Equipment effects the client leaves to the server (Dummy classes): experience from the kill
-                    // (65, reported as BoostedExp) and a chance of extra alchemy ingredients (66).
+                    // (65, reported as BoostedExp) and a chance of extra alchemy ingredients (Reconstruction.ExtraIngredientEffect).
                     var worn = Worn(player);
                     boostedExp = baseExp * Reconstruction.ExperienceBonus(worn) / 100;
                     if (Random.Shared.Next(100) < Reconstruction.ExtraIngredientChance(worn)) loot.AddRange(loot.Skip(2).DefaultIfEmpty(Economy.Tissue));

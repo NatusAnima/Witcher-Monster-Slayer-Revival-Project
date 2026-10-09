@@ -3,6 +3,7 @@
 // build_client.py). They are used instead of a by-name lookup, which crashed the Android 17 linker.
 // It imports the GPS collector and Frida's Java bridge, so restart.py bundles it before pushing it.
 'use strict';
+import Java from 'frida-java-bridge';
 import { startGps } from './gps.js';
 
 const CONFIG = {
@@ -13,13 +14,21 @@ const CONFIG = {
     ['https://gatekeeper.cloud.thewitchermonsterslayer.com', 'http://127.0.0.1:18080'],  // news
     ['https://vectortile.googleapis.com', 'http://127.0.0.1:18082'],                     // OSM map tiles
   ],
+  logPort: 18094,  // the companion app's log sink (ServerService.LOG_PORT)
+  crashMarker: '/sdcard/Android/data/com.spokko.witchermonsterslayer/files/crash-test',  // test only, see startDiagnostics
 };
+const LIBIL2CPP_SHA256 = 'c8a5556b1d37e86bb9427ce5b3d70389ac9b39fd9abcb81f31651d904c5b4aa3';  // what build_client.py verified
 
-// Gadget's script mode drops console output, so write to logcat ourselves (tag Frida; restart.py records it).
+// Gadget's script mode drops console output, so write to logcat ourselves (tag Frida; restart.py records it) and
+// to the companion app's log sink, so a bug report holds the game's side of a crash.
 const androidLog = new NativeFunction(Process.getModuleByName('liblog.so').getExportByName('__android_log_write'),
                                       'int', ['int', 'pointer', 'pointer']);
 const logTag = Memory.allocUtf8String('Frida');
-const log = (...parts) => androidLog(4, logTag, Memory.allocUtf8String(parts.join(' ')));
+const log = (...parts) => {
+  const text = parts.join(' ');
+  androidLog(4, logTag, Memory.allocUtf8String(text));
+  sinkWrite(text);
+};
 
 // Native redirect: the game reads its server from ClientSettings without always calling the getters,
 // so also resolve the original hosts to our server, then map their ports at connect().
@@ -52,6 +61,65 @@ Interceptor.attach(libc.getExportByName('connect'), {
     sa.add(3).writeU8(to & 0xff);
   },
 });
+
+// The log sink: lines go to the companion app over a loopback socket. Best effort and never blocking the game: the socket
+// is non-blocking, sends use MSG_DONTWAIT|MSG_NOSIGNAL, a missing listener or a full buffer only loses lines, and nothing
+// here runs at script load (the first line connects, at most every 5 s).
+const cSocket = new NativeFunction(libc.getExportByName('socket'), 'int', ['int', 'int', 'int']);
+const cConnect = new SystemFunction(libc.getExportByName('connect'), 'int', ['int', 'pointer', 'int']);
+const cSend = new NativeFunction(libc.getExportByName('send'), 'int', ['int', 'pointer', 'int', 'int']);
+const cClose = new NativeFunction(libc.getExportByName('close'), 'int', ['int']);
+const EINPROGRESS = 115;
+let sinkFd = -1;
+let sinkTried = 0;
+let sinkOpened = 0;
+const sinkBacklog = [];
+
+function openSink() {
+  const fd = cSocket(2, 1 | 0x800, 0);  // AF_INET, SOCK_STREAM | SOCK_NONBLOCK
+  if (fd < 0) return -1;
+  const sa = Memory.alloc(16);
+  sa.writeByteArray(new Array(16).fill(0));
+  sa.writeU16(2);
+  sa.add(2).writeU8(CONFIG.logPort >> 8);
+  sa.add(3).writeU8(CONFIG.logPort & 0xff);
+  serverIp.forEach((b, i) => sa.add(4 + i).writeU8(b));
+  const rc = cConnect(fd, sa, 16);
+  if (rc.value !== 0 && rc.errno !== EINPROGRESS) { cClose(fd); return -1; }
+  return fd;
+}
+
+function sinkSend(line) {
+  return cSend(sinkFd, Memory.allocUtf8String(line), line.length, 0x4040) === line.length;
+}
+
+function sinkWrite(text) {
+  try {
+    // ASCII only, so a line's length is its byte count
+    sinkBacklog.push(new Date().toISOString() + ' pid=' + Process.id + ' ' + String(text).replace(/[^\x20-\x7e]/g, '?').slice(0, 2000) + '\n');
+    if (sinkBacklog.length > 200) sinkBacklog.shift();
+    if (sinkFd < 0) {
+      if (Date.now() - sinkTried < 5000) return;
+      sinkTried = Date.now();
+      sinkFd = openSink();
+      sinkOpened = Date.now();
+      if (sinkFd < 0) return;
+    }
+    while (sinkBacklog.length) {
+      if (!sinkSend(sinkBacklog[0])) {
+        // still connecting, a full buffer, or the app is gone: after a second the connection is dropped and rebuilt later
+        if (Date.now() - sinkOpened > 1000) {
+          cClose(sinkFd);
+          sinkFd = -1;
+        }
+        return;
+      }
+      sinkBacklog.shift();
+    }
+  } catch (e) {
+    // a log line must never break the game
+  }
+}
 
 const RVA = {
   init: 0x16d0afc, domain_get: 0x16d1258, domain_get_assemblies: 0x16d1264, assembly_get_image: 0x16d0c38,
@@ -92,86 +160,174 @@ function applyNativeFixes(m) {
   }
 }
 
+// One install stage. A throw inside one used to end the whole install silently (Gadget's script mode shows no errors), leaving
+// the game half hooked; now each stage reports whether it worked and the others still run.
+function stage(name, work) {
+  try {
+    work();
+    log('stage ok:', name);
+    return true;
+  } catch (e) {
+    log('stage FAILED:', name, '-', e.message);
+    return false;
+  }
+}
+
 let installed = false;
 function install(m) {
   if (installed) return;
   installed = true;
-  applyNativeFixes(m);
-  const fn = (name, ret, args) => new NativeFunction(m.base.add(RVA[name]), ret, args);
-  const domainGet = fn('domain_get', 'pointer', []);
-  const assemblies = fn('domain_get_assemblies', 'pointer', ['pointer', 'pointer']);
-  const assemblyImage = fn('assembly_get_image', 'pointer', ['pointer']);
-  const imageName = fn('image_get_name', 'pointer', ['pointer']);
-  const classFromName = fn('class_from_name', 'pointer', ['pointer', 'pointer', 'pointer']);
-  const methodFromName = fn('class_get_method_from_name', 'pointer', ['pointer', 'pointer', 'int']);
-  const stringNew = fn('string_new', 'pointer', ['pointer']);
-  const stringChars = fn('string_chars', 'pointer', ['pointer']);
-  const stringLength = fn('string_length', 'int', ['pointer']);
-  const resolveIcall = fn('resolve_icall', 'pointer', ['pointer']);
-  const objectClass = fn('object_get_class', 'pointer', ['pointer']);
+  log('frida', Frida.version, Script.runtime, 'libil2cpp', m.path, 'base', m.base, 'size', m.size, 'built for sha256', LIBIL2CPP_SHA256);
+  stage('native fixes', () => applyNativeFixes(m));
 
-  const images = {};
-  const count = Memory.alloc(8);
-  const list = assemblies(domainGet(), count);
-  for (let i = 0; i < Number(count.readU64()); i++) {
-    const image = assemblyImage(list.add(i * 8).readPointer());
-    images[imageName(image).readCString()] = image;
-  }
-  const method = (assembly, ns, cls, name, argc) => {
-    const klass = classFromName(images[assembly], Memory.allocUtf8String(ns), Memory.allocUtf8String(cls));
-    if (klass.isNull()) throw new Error(`class ${ns}.${cls} not found`);
-    const info = methodFromName(klass, Memory.allocUtf8String(name), argc);
-    if (info.isNull()) throw new Error(`${cls}.${name} not found`);
-    return info.readPointer();  // MethodInfo.methodPointer
-  };
-  const str = s => stringNew(Memory.allocUtf8String(s));
-  const read = s => (s.isNull() ? null : stringChars(s).readUtf16String(stringLength(s)));
+  let il2cpp = null;
+  stage('il2cpp images', () => {
+    const fn = (name, ret, args) => new NativeFunction(m.base.add(RVA[name]), ret, args);
+    const domainGet = fn('domain_get', 'pointer', []);
+    const assemblies = fn('domain_get_assemblies', 'pointer', ['pointer', 'pointer']);
+    const assemblyImage = fn('assembly_get_image', 'pointer', ['pointer']);
+    const imageName = fn('image_get_name', 'pointer', ['pointer']);
+    const classFromName = fn('class_from_name', 'pointer', ['pointer', 'pointer', 'pointer']);
+    const methodFromName = fn('class_get_method_from_name', 'pointer', ['pointer', 'pointer', 'int']);
+    const stringNew = fn('string_new', 'pointer', ['pointer']);
+    const stringChars = fn('string_chars', 'pointer', ['pointer']);
+    const stringLength = fn('string_length', 'int', ['pointer']);
+    const resolveIcall = fn('resolve_icall', 'pointer', ['pointer']);
+    const objectClass = fn('object_get_class', 'pointer', ['pointer']);
 
-  // Game server: every ClientSettings lookup answers with our server, gatekeeper off.
-  const setting = (name, value) => {
-    let called = false;
-    Interceptor.attach(method('Game.dll', 'WitcherWorld.WebstuffClient', 'ClientSettings', name, 0), {
-      onLeave(ret) {
-        if (!called) log('ClientSettings.' + name, 'called');
-        called = true;
-        ret.replace(value());
-      },
+    const images = {};
+    const count = Memory.alloc(8);
+    const list = assemblies(domainGet(), count);
+    for (let i = 0; i < Number(count.readU64()); i++) {
+      const image = assemblyImage(list.add(i * 8).readPointer());
+      images[imageName(image).readCString()] = image;
+    }
+    const method = (assembly, ns, cls, name, argc) => {
+      const klass = classFromName(images[assembly], Memory.allocUtf8String(ns), Memory.allocUtf8String(cls));
+      if (klass.isNull()) throw new Error(`class ${ns}.${cls} not found`);
+      const info = methodFromName(klass, Memory.allocUtf8String(name), argc);
+      if (info.isNull()) throw new Error(`${cls}.${name} not found`);
+      return info.readPointer();  // MethodInfo.methodPointer
+    };
+    const str = s => stringNew(Memory.allocUtf8String(s));
+    const read = s => (s.isNull() ? null : stringChars(s).readUtf16String(stringLength(s)));
+    il2cpp = { images, classFromName, resolveIcall, objectClass, method, str, read };
+  });
+  if (il2cpp) {
+    const { images, classFromName, resolveIcall, objectClass, method, str, read } = il2cpp;
+
+    // Game server: every ClientSettings lookup answers with our server, gatekeeper off.
+    const setting = (name, value) => stage('ClientSettings.' + name, () => {
+      let called = false;
+      Interceptor.attach(method('Game.dll', 'WitcherWorld.WebstuffClient', 'ClientSettings', name, 0), {
+        onLeave(ret) {
+          if (!called) log('ClientSettings.' + name, 'called');
+          called = true;
+          ret.replace(value());
+        },
+      });
     });
-  };
-  setting('get_WebstuffServerIp', () => str(CONFIG.gameHost));
-  setting('get_WebstuffServerDefaultPort', () => ptr(CONFIG.gamePort));
-  setting('get_UseGatekeeper', () => ptr(0));
+    setting('get_WebstuffServerIp', () => str(CONFIG.gameHost));
+    setting('get_WebstuffServerDefaultPort', () => ptr(CONFIG.gamePort));
+    setting('get_UseGatekeeper', () => ptr(0));
 
-  // Web requests: every UnityWebRequest URL passes through this native setter. Log each new origin once.
-  const seen = new Set();
-  Interceptor.attach(resolveIcall(Memory.allocUtf8String('UnityEngine.Networking.UnityWebRequest::SetUrl')), {
-    onEnter(args) {
-      const url = read(args[1]);
-      if (!url) return;
-      const rule = CONFIG.rewrite.find(([from]) => url.startsWith(from));
-      if (rule) args[1] = str(rule[1] + url.slice(rule[0].length));
-      const origin = url.split('/').slice(0, 3).join('/');
-      if (!seen.has(origin)) {
-        seen.add(origin);
-        log('url', url.split('?')[0], rule ? '-> ' + rule[1] : '(unchanged)');
-      }
-    },
-  });
-  // Addressables: every asset key lookup goes through ResourceLocationMap.Locate(key, type, out locations).
-  const stringClass = classFromName(images['mscorlib.dll'], Memory.allocUtf8String('System'), Memory.allocUtf8String('String'));
-  Interceptor.attach(method('Unity.Addressables.dll', 'UnityEngine.AddressableAssets.ResourceLocators',
-                            'ResourceLocationMap', 'Locate', 3), {
-    onEnter(args) {
-      if (args[1].isNull() || !objectClass(args[1]).equals(stringClass)) return;
-      const key = read(args[1]);
-      const fix = ASSET_KEY_FIXES.find(([from]) => key.endsWith(from));
-      if (!fix) return;
-      args[1] = str(key.slice(0, -fix[0].length) + fix[1]);
-      log('asset key fixed', fix[0], '->', fix[1]);
-    },
-  });
+    // Web requests: every UnityWebRequest URL passes through this native setter. Log each new origin once.
+    stage('web requests', () => {
+      const seen = new Set();
+      Interceptor.attach(resolveIcall(Memory.allocUtf8String('UnityEngine.Networking.UnityWebRequest::SetUrl')), {
+        onEnter(args) {
+          const url = read(args[1]);
+          if (!url) return;
+          const rule = CONFIG.rewrite.find(([from]) => url.startsWith(from));
+          if (rule) args[1] = str(rule[1] + url.slice(rule[0].length));
+          const origin = url.split('/').slice(0, 3).join('/');
+          if (!seen.has(origin)) {
+            seen.add(origin);
+            log('url', url.split('?')[0], rule ? '-> ' + rule[1] : '(unchanged)');
+          }
+        },
+      });
+    });
+    // Addressables: every asset key lookup goes through ResourceLocationMap.Locate(key, type, out locations).
+    stage('addressables', () => {
+      const stringClass = classFromName(images['mscorlib.dll'], Memory.allocUtf8String('System'), Memory.allocUtf8String('String'));
+      Interceptor.attach(method('Unity.Addressables.dll', 'UnityEngine.AddressableAssets.ResourceLocators',
+                                'ResourceLocationMap', 'Locate', 3), {
+        onEnter(args) {
+          if (args[1].isNull() || !objectClass(args[1]).equals(stringClass)) return;
+          const key = read(args[1]);
+          const fix = ASSET_KEY_FIXES.find(([from]) => key.endsWith(from));
+          if (!fix) return;
+          args[1] = str(key.slice(0, -fix[0].length) + fix[1]);
+          log('asset key fixed', fix[0], '->', fix[1]);
+        },
+      });
+    });
+  }
   log('hooks installed');
-  try { startGps(m, log); } catch (e) { log('gps disabled:', e.message); }
+  stage('gps', () => startGps(m, log));
+  stage('diagnostics', startDiagnostics);
+}
+
+// Diagnostics for bug reports. Nothing here runs on a hot or a crashing path: a heartbeat every 10 s (a missing one is the
+// crash signal in the companion's game log) and, once, a look at how the previous run ended.
+function startDiagnostics() {
+  const started = Date.now();
+  const rssMb = () => {
+    try {
+      const m = /VmRSS:\s+(\d+) kB/.exec(File.readAllText('/proc/self/status'));
+      return m ? Math.round(m[1] / 1024) : -1;
+    } catch (e) {
+      return -1;
+    }
+  };
+  setInterval(() => sinkWrite('heartbeat rss=' + rssMb() + 'MB up=' + Math.round((Date.now() - started) / 1000) + 's'), 10000);
+
+  // How the previous run ended, read late so the game's start is not slowed: Android's record of it (a low-memory kill, a
+  // native crash, a swipe from Recents) and our own uid's last log lines, including a native crash's backtrace from the
+  // crash buffer. The companion keeps them in game.log.
+  setTimeout(() => {
+    const failed = e => sinkWrite('previous run: not readable: ' + e.message);
+    try {
+      Java.perform(() => {
+        try {
+          const manager = Java.cast(Java.use('android.app.ActivityThread').currentApplication().getSystemService('activity'),
+                                    Java.use('android.app.ActivityManager'));
+          const exits = manager.getHistoricalProcessExitReasons(null, 0, 5);
+          const ExitInfo = Java.use('android.app.ApplicationExitInfo');
+          for (let i = 0; i < exits.size(); i++) {
+            const e = Java.cast(exits.get(i), ExitInfo);
+            sinkWrite('previous exit ' + i + ': time=' + e.getTimestamp() + ' reason=' + e.getReason() + ' status=' + e.getStatus() +
+                      ' importance=' + e.getImportance() + ' pss=' + e.getPss() + 'kB rss=' + e.getRss() + 'kB description=' + e.getDescription());
+          }
+          for (const [label, args] of [['logcat crash', ['-d', '-b', 'crash']], ['logcat errors', ['-d', '*:E', '-t', '300']]]) {
+            const process = Java.use('java.lang.Runtime').getRuntime().exec(Java.array('java.lang.String', ['logcat'].concat(args)));
+            const reader = Java.use('java.io.BufferedReader').$new(Java.use('java.io.InputStreamReader').$new(process.getInputStream()));
+            let total = 0;
+            for (let line = reader.readLine(); line !== null && total < 65536; line = reader.readLine()) {
+              total += String(line).length;
+              sinkWrite(label + ': ' + String(line).slice(0, 400));
+            }
+            reader.close();
+            process.destroy();
+          }
+        } catch (e) {
+          failed(e);
+        }
+      });
+    } catch (e) {
+      failed(e);
+    }
+  }, 20000);
+
+  // Test aid, inert unless the marker file exists (adb can push it): abort the process so the capture above can be tried on a
+  // phone, where "am kill" cannot cause a native crash.
+  const access = new NativeFunction(libc.getExportByName('access'), 'int', ['pointer', 'int']);
+  if (access(Memory.allocUtf8String(CONFIG.crashMarker), 0) === 0) {
+    sinkWrite('crash test marker found: aborting in 20 s');
+    const abort = new NativeFunction(libc.getExportByName('abort'), 'void', []);
+    setTimeout(() => abort(), 20000);
+  }
 }
 
 const loaded = Process.findModuleByName('libil2cpp.so');

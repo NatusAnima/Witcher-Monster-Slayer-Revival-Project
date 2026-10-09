@@ -13,7 +13,9 @@ Points lie on footways, paths, tracks, cycleways and pedestrian streets, or insi
 forests; never within CARRIAGEWAY_CLEARANCE_M of a road for cars (MAJOR_ROAD_CLEARANCE_M for main
 roads), inside or next to a building, in water or on its shoreline. Biome ids follow the client's
 BiomeType (1 Forest, 4 Grassland, 7 Urban, 9 Barren, 10 Water). The selection is random per
-(cell, epoch), so each epoch gives new spots. Coordinates are never logged. Standard library only.
+(cell, epoch), so each epoch gives new spots; woods hold at most FOREST_MAX_PER_CELL of a cell's places (the player can
+change that in the dashboard: --tuning names the file that holds it).
+Coordinates are never logged. Standard library only.
 """
 from __future__ import annotations
 
@@ -50,9 +52,12 @@ PATH_STEP_M = 25.0
 AREA_STEP_M = 35.0
 MIN_SPACING_M = 50.0
 MAX_PER_CELL = 24
+# Woods are a grid over the whole polygon, so without a limit they fill every cell they touch (93-99% of the places around a big
+# forest, measured on the Israel extract) and the paths and parks beside them get none. Half a cell is the most they may hold.
+FOREST_MAX_PER_CELL = MAX_PER_CELL // 2  # the default; the dashboard's tuning file overrides it
 CELL_LEVEL = 14
 NEST_SPACING_M = 300.0  # below the minimum width of a level-14 S2 cell (~366 m)
-PLACEMENT_VERSION = 2
+PLACEMENT_VERSION = 4   # ids carry it, so places chosen under an older rule never share an id with these
 
 FOREST, SHRUBLAND, GRASSLAND, URBAN, BARREN, WATER = 1, 2, 4, 7, 9, 10
 
@@ -304,8 +309,9 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None) -> l
     return points
 
 
-def sample(points: list[dict], cell_id: int, epoch: int, policy=None) -> list[dict]:
-    """Up to MAX_PER_CELL points at least MIN_SPACING_M apart, random per (cell, epoch)."""
+def sample(points: list[dict], cell_id: int, epoch: int, policy=None, woods: int = FOREST_MAX_PER_CELL) -> list[dict]:
+    """Up to MAX_PER_CELL points at least MIN_SPACING_M apart, random per (cell, epoch), of which at most [woods]
+    lie in woods (the default draw; a scheduled policy has its own spread)."""
     rng = random.Random(f"{cell_id}:{epoch}")
     order = points[:]
     rng.shuffle(order)
@@ -331,19 +337,54 @@ def sample(points: list[dict], cell_id: int, epoch: int, policy=None) -> list[di
             if all(math.dist(position, v) >= spacing for v in selected_xy):
                 order.append(point); selected_xy.append(position)
             remaining = [(p, v) for p, v in remaining if p is not point and math.dist(position, v) >= spacing]
+    # A scheduled policy keeps its own spread (its past days must stay reproducible); only the default draw limits the woods.
+    woods_left = maximum if policy else woods
     for point in order:
+        wood = point["biomes"][0] == FOREST
+        if wood and not woods_left:
+            continue
         x, y = proj.xy(point["lat"], point["lng"])
         if all(math.hypot(x - cx, y - cy) >= spacing for cx, cy in xy):
             chosen.append(dict(point, id=f"lab-{cell_id:016x}-{epoch}-{(3 if policy else PLACEMENT_VERSION) * 1000 + len(chosen)}"))
             xy.append((x, y))
+            woods_left -= wood
             if len(chosen) == maximum:
                 break
     return chosen
 
 
+class Tuning:
+    """The player's numbers from the dashboard (the game server writes world/tuning.json), looked at about once a second.
+    A file that is missing, damaged or has an impossible number means the default."""
+
+    KEY = "woods.maxPlaces"
+
+    def __init__(self, path=None):
+        self.path, self._woods, self._checked, self._seen = path, FOREST_MAX_PER_CELL, 0.0, None
+
+    def woods(self) -> int:
+        if self.path is None:
+            return FOREST_MAX_PER_CELL
+        now = time.monotonic()
+        if now - self._checked >= 1.0:
+            self._checked = now
+            try:
+                stat = self.path.stat()
+                if (stat.st_mtime_ns, stat.st_size) != self._seen:
+                    value = json.loads(self.path.read_bytes())["values"][self.KEY]
+                    ok = type(value) in (int, float) and value == int(value) and 0 <= value <= MAX_PER_CELL
+                    self._woods, self._seen = (int(value) if ok else FOREST_MAX_PER_CELL), (stat.st_mtime_ns, stat.st_size)
+            except FileNotFoundError:
+                self._woods, self._seen = FOREST_MAX_PER_CELL, None
+            except (OSError, ValueError, KeyError, TypeError):
+                pass  # a half-written file settles on the next look: keep the last value
+        return self._woods
+
+
 class PlayableLocations:
-    def __init__(self, index: FeatureIndex, policy_path=None):
+    def __init__(self, index: FeatureIndex, policy_path=None, tuning_path=None):
         self.index = index
+        self.tuning = Tuning(tuning_path)
         self.policy = placement_policy.PolicyStore(policy_path)
         self._raw = _BoundedMemo(entries=256, points=100_000)
         self._sampled = _BoundedMemo(entries=1024, points=64 * 1024)
@@ -368,8 +409,9 @@ class PlayableLocations:
         def geometry():
             document = self.document(cell_id)
             return candidates(document, cell_id, active) if document is not None else []
-        return self._sampled.get((key, cell_id, epoch),
-            lambda: sample(self._raw.get((key, cell_id), geometry), cell_id, epoch, active))
+        woods = self.tuning.woods()
+        return self._sampled.get((key, woods, cell_id, epoch),
+            lambda: sample(self._raw.get((key, cell_id), geometry), cell_id, epoch, active, woods))
 
     def validate(self, value):
         policy = placement_policy.policy(value)
@@ -394,7 +436,7 @@ class PlayableLocations:
             document = self.document(cell_id)
             stats = {}
             points = candidates(document, cell_id, active, stats) if document is not None else []
-            chosen = sample(points, cell_id, epoch, active)
+            chosen = sample(points, cell_id, epoch, active, self.tuning.woods())
             spacing = (active or placement_policy.DEFAULT)["spacingMeters"]
             blocked = sum(not any(p["lat"] == q["lat"] and p["lng"] == q["lng"] for q in chosen)
                           and any(_distance_m(p, q) < spacing for q in chosen) for p in points)
@@ -516,8 +558,9 @@ def main():
     parser.add_argument("--index", type=Path, required=True)
     parser.add_argument("--port", type=int, default=18093)
     parser.add_argument("--policy", type=Path, help="Shared world/placement-policy.json schedule")
+    parser.add_argument("--tuning", type=Path, help="The dashboard's world/tuning.json (the woods limit per cell)")
     args = parser.parse_args()
-    service = PlayableLocations(FeatureIndex(args.index), args.policy)
+    service = PlayableLocations(FeatureIndex(args.index), args.policy, args.tuning)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service))
     print(f"playable locations on 127.0.0.1:{args.port}", flush=True)
     server.serve_forever()

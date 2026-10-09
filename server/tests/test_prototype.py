@@ -1896,6 +1896,47 @@ class PrototypeTests(unittest.TestCase):
         won = self.combat_end(Reader(c.rpc(114, b'\1' + I(13) + I(0) * 13 + b'\0')))
         self.assertEqual((won['base'], won['boosted']), (100, 10))
 
+    def test_item_effects_keep_their_power_in_the_client_descriptions(self):
+        # Effects.GetEffect (0x194E178) builds a Dummy with power 0 for these ids, so an item that used one read "0%" in its
+        # description: Wolven armor said "Grants a 0% chance ... extra alchemy ingredients". 70 and 71 build a Dummy that keeps it.
+        powerless = {0, *range(42, 56), 60, 62, 63, 66, 68, 73, 77, 78, 79, 81}
+        with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=1) as response:
+            data = json.loads(gzip.decompress(response.read()))
+        combat = {row['id'] for row in data['effects'] if row['effect_type_id'] == 1}  # utility effects go to GetUtilityEffect
+        for table in ('armor_to_effect', 'sword_to_effect', 'potion_to_effect', 'oil_to_effect', 'skill_to_effect'):
+            for row in data[table]:
+                with self.subTest(table=table, item=row['item_id'], effect=row['effect_id']):
+                    self.assertIn(row['effect_id'], {r['id'] for r in data['effects']})
+                    self.assertFalse(row['effect_id'] in combat and row['effect_id'] in powerless)
+        wolven = [(row['effect_id'], row['power']) for row in data['armor_to_effect'] if row['item_id'] == 3]
+        self.assertEqual(wolven, [(71, 50)])
+
+    def test_dashboard_tuning_sets_fight_rewards_and_herbs(self):
+        # world/tuning.json is what the dashboard saves; the server reads it again about once a second, here it is there from the start
+        folder = self.directory / 'tuning-world'
+        folder.mkdir()
+        (folder / 'world.json').write_text('{"schemaVersion":1,"monsterSlotsPerCell":18}')
+        (folder / 'tuning.json').write_text(json.dumps({'schemaVersion': 1, 'values': {
+            'exp.percent': 300, 'loot.percent': 0, 'herbs.perCell': 2, 'herbs.respawnMinutes': 5}}))
+        cells = [0x4704440000000000 + (k << 40) for k in range(3)]
+        url, _ = self.playable_service(lambda ids, epoch: {i: {'center': [10.0, 20.0], 'places': [
+            {'id': f'lab-{int(i):016x}-{epoch}-{n}', 'lat': 10.0 + n / 1000, 'lng': 20.0, 'biomes': [10], 'kind': 'path'}
+            for n in range(24)]} for i in ids})
+        server = self.start('test-tuning', dict(self.RECONSTRUCTED, Playable__Url=url, World__Directory=str(folder)))
+        c = self.client(server)
+        c.rpc(78, I(1) + I(10145) + I(1))
+        world = self.locations_by_cell(c.rpc(40, I(3) + b''.join(Q(cell) for cell in cells)))
+        self.assertEqual(len(world['herbs']), 2 * 3)                         # two a cell, not four
+        target = world['monsters'][0]
+        difficulty = next(s['difficulty'] for s in WORLD['species'] if s['monster_id'] == target['monster'])
+        self.assertEqual(c.rpc(41, Q(target['instance'])), b'\1')
+        won = self.combat_end(Reader(c.rpc(8, b'\1' + I(13) + I(0) * 13 + b'\0')))
+        self.assertEqual((won['base'], won['first'], won['loot']), (3 * {1: 100, 2: 250, 3: 600}[difficulty], 300, []))
+        got = Reader(c.rpc(19, Q(world['herbs'][0]['instance'])))
+        self.assertEqual(got.byte(), 1)
+        got.ints()
+        self.assertAlmostEqual(got.integer(), time.time() + 300, delta=5)    # five minutes, not an hour
+
     def test_difficulty_tiers_give_story_scale_hp_and_damage(self):
         # PrepareFightNode.PrepareMechanic defaults: enemy HP = player_attack_count x SwordBasicDamage (75), enemy
         # damage = 2400 / enemy_attack_count. The tiers follow the client's story fights (EVIDENCE.md §6b).

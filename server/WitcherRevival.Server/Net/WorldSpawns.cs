@@ -269,7 +269,11 @@ public static class WorldSpawns
 /// </summary>
 public static class WorldHerbs
 {
-    public const int HerbsPerCell = 4, RespawnSeconds = 3600;
+    public const int HerbsPerCell = 4, RespawnSeconds = 3600; // the defaults: the player tunes both (WorldTuning)
+
+    /// <summary>How many bushes a cell can hold, and how long a picked one stays gone, as the player has them tuned.</summary>
+    public static int PerCell => (int)WorldTuning.Current.Get(WorldTuning.HerbsPerCell);
+    public static long Respawn => (long)(WorldTuning.Current.Get(WorldTuning.HerbRespawnMinutes) * 60);
     public const int HerbaId = 101, RadixId = 102;
 
     public static readonly IReadOnlyList<(int Id, string Slug)> Types = new[]
@@ -291,7 +295,7 @@ public static class WorldHerbs
         var places = cell.Places.Where(p => !cell.HasNestPlacement || p.Id != cell.NestPlaceId)
             .OrderBy(_ => rng.Next()).ToList();
         var green = places.Where(p => p.Biomes.Intersect(PlantBiomes).Any()).ToList();
-        int count = Math.Min(HerbsPerCell, (places.Count + 2) / 3);
+        int count = Math.Min(PerCell, (places.Count + 2) / 3);
         return (green.Count >= count ? green : places).Take(count).Select(place =>
         {
             long id = WorldSpawns.StableHash($"{cell.Id}:herb:{place.Id}") & long.MaxValue;
