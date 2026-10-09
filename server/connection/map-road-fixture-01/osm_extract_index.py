@@ -128,6 +128,46 @@ def unpack_rings(blob: bytes) -> list[list[tuple[float, float]]]:
     return rings
 
 
+def clip_ring(ring, box):
+    """Sutherland-Hodgman clip of one (lat, lon) ring to a (south, west, north, east) box.
+
+    Vertices inside the box are kept as they are and in order; the ring may come back empty.
+    """
+    south, west, north, east = box
+    for axis, limit, keep_above in ((1, west, True), (1, east, False), (0, south, True), (0, north, False)):
+        if not ring:
+            break
+        out = []
+        previous = ring[-1]
+        previous_in = previous[axis] >= limit if keep_above else previous[axis] <= limit
+        for current in ring:
+            current_in = current[axis] >= limit if keep_above else current[axis] <= limit
+            if current_in != previous_in:
+                t = (limit - previous[axis]) / (current[axis] - previous[axis])
+                if axis == 1:
+                    out.append((previous[0] + t * (current[0] - previous[0]), limit))
+                else:
+                    out.append((limit, previous[1] + t * (current[1] - previous[1])))
+            if current_in:
+                out.append(current)
+            previous, previous_in = current, current_in
+        ring = out
+    return ring
+
+
+def clip_rings(rings, box):
+    """Clip an outer ring and its holes to a box; None when nothing of the outer ring is left."""
+    outer = clip_ring(rings[0], box)
+    if len(outer) < 3:
+        return None
+    clipped = [outer]
+    for hole in rings[1:]:
+        hole = clip_ring(hole, box)
+        if len(hole) >= 3:
+            clipped.append(hole)
+    return clipped
+
+
 def create_schema(db: sqlite3.Connection) -> None:
     db.executescript("""
         CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -379,12 +419,19 @@ class FeatureIndex:
         b_west, b_east, b_south, b_north = self.bounds
         return b_west <= west and east <= b_east and b_south <= south and north <= b_north
 
-    def document(self, south: float, west: float, north: float, east: float) -> dict:
-        """Return an Overpass-shaped document for osm_live_codec.build_live_tile."""
-        with self.lock:
-            return self._document((west, east, south, north))
+    def document(self, south: float, west: float, north: float, east: float, clip=None) -> dict:
+        """Return an Overpass-shaped document for osm_live_codec.build_live_tile.
 
-    def _document(self, box) -> dict:
+        `clip` is an optional (south, west, north, east) box containing the query box. Area rings
+        reaching outside it are cut to it, so a forest or lake many kilometres across costs only
+        the part near the query instead of all its vertices on every request. Inside the box the
+        geometry is unchanged; the new edges lie on the box, so callers keep a margin between the
+        box and anything they draw or measure.
+        """
+        with self.lock:
+            return self._document((west, east, south, north), clip)
+
+    def _document(self, box, clip=None) -> dict:
         elements = []
         for way_id, kind, klass, name, attrs, coords in self.db.execute(
                 "SELECT w.id, w.kind, w.class, w.name, w.attrs, w.coords FROM ways_rtree r "
@@ -399,12 +446,20 @@ class FeatureIndex:
             elements.append({"type": "way", "id": way_id, "tags": tags,
                              "geometry": [{"lat": lat, "lon": lon}
                                           for lat, lon in unpack_coordinates(coords)]})
-        for row, osm_area, kind, name, rings in self.db.execute(
-                "SELECT a.row, a.osm_area, a.kind, a.name, a.rings FROM areas_rtree r "
+        for row, osm_area, kind, name, rings, min_lon, max_lon, min_lat, max_lat in self.db.execute(
+                "SELECT a.row, a.osm_area, a.kind, a.name, a.rings, "
+                "r.min_lon, r.max_lon, r.min_lat, r.max_lat FROM areas_rtree r "
                 "JOIN areas a ON a.row = r.row "
                 "WHERE r.max_lon >= ? AND r.min_lon <= ? AND r.max_lat >= ? AND r.min_lat <= ?", box):
+            rings = unpack_rings(rings)
+            if clip is not None:
+                south, west, north, east = clip
+                if not (west <= min_lon and max_lon <= east and south <= min_lat and max_lat <= north):
+                    rings = clip_rings(rings, clip)
+                    if rings is None:
+                        continue
             elements.append({"type": "area", "id": row, "osm_area": osm_area, "kind": kind,
-                             "name": name, "rings": unpack_rings(rings)})
+                             "name": name, "rings": rings})
         return {"elements": elements,
                 "osm3s": {"timestamp_osm_base": self.meta.get("source_timestamp")}}
 

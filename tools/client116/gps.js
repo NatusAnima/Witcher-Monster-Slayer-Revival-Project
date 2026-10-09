@@ -375,8 +375,15 @@ export function startGps(image, log) {
   }
   function installCapture() {
     const app=Java.use('android.app.ActivityThread').currentApplication();
-    const systemClock=Java.use('android.os.SystemClock'),system=Java.use('java.lang.System');
-    function updateClock(){clock={elapsed:Number(systemClock.elapsedRealtime().toString()),utc:Number(system.currentTimeMillis().toString())};}
+    const sdk=Java.use('android.os.Build$VERSION').SDK_INT.value;
+    // The clock is read natively: SystemClock.elapsedRealtime() is CLOCK_BOOTTIME and currentTimeMillis() is the
+    // wall clock, so the 250 ms timer below needs no Java call (each one attached this thread to the VM).
+    const clockGettime=new NativeFunction(Process.getModuleByName('libc.so').getExportByName('clock_gettime'),'int',['int','pointer']);
+    const timespec=Memory.alloc(16);
+    function updateClock() {
+      clockGettime(7,timespec); // CLOCK_BOOTTIME
+      clock={elapsed:timespec.readS64().toNumber()*1000+Math.floor(timespec.add(8).readS64().toNumber()/1000000),utc:Date.now()};
+    }
     updateClock();
     coordinator=new DistanceCoordinator({clock:()=>clock,note,send:(b,id)=>runtimeSend(b,id),accepted:()=>{}});
     const location=Java.use('android.location.Location');
@@ -390,47 +397,64 @@ export function startGps(image, log) {
         lat:Number(fix.getLatitude()),lon:Number(fix.getLongitude()),
         accuracy:has?Number(fix.getAccuracy()):0,flags:(has?1:0)|(fix.isFromMockProvider()?2:0)});
     }
-    // Android 12+: the game's fused-location callback, the LAB collector's capture point.
-    const fused=Java.use('com.spokko.mycustomnative.CustomUnityActivity$3').onLocationResult.overload('com.google.android.gms.location.LocationResult');
-    fused.implementation=function(result) {
-      try {
-        updateClock();
-        if(result!==null && permissions) {
-          const list=result.getLocations(),size=list===null?0:list.size();
-          if(size>128)coordinator.breakContinuity();
-          for(let i=Math.max(0,size-128);i<size;i++)capture(Java.cast(list.get(i),location));
-        } else coordinator.breakContinuity();
-      } catch(_) {coordinator.breakContinuity();note('capture-failed');}
-      return fused.call(this,result); // Original movement callback and exceptions are preserved.
-    };
+    // Android 12+: no Java method of the game is replaced. On Android 16 (Samsung, ART cecb684d…) every method
+    // replacement by the Java bridge broke ART: replacing ReflectionHelper.a crashed the GC
+    // (CodeInfo::DecodeGcMasksOnly), and replacing the fused callback CustomUnityActivity$3.onLocationResult
+    // crashed the first delivery from Google Play services (Class::GetDescriptor in InitializeClass). The game
+    // keeps location running, so the newest fix Android holds is read from LocationManager instead, twice a
+    // second, with plain calls from this thread.
+    let pollFix=null;
+    if(sdk>30) {
+      const manager=Java.cast(app.getSystemService('location'),Java.use('android.location.LocationManager'));
+      const providers=['fused','gps','network'];
+      let lastPoll=-1;
+      pollFix=()=>{
+        if(clock.elapsed-lastPoll<500)return;
+        lastPoll=clock.elapsed;
+        let newest=null,newestAt=-1;
+        for(const provider of providers) {
+          let fix=null;
+          try {fix=manager.getLastKnownLocation(provider);} catch(_) {continue;} // provider missing on this phone
+          if(fix===null)continue;
+          const at=Number(fix.getElapsedRealtimeNanos().toString());
+          if(at>newestAt) {newest=fix;newestAt=at;}
+        }
+        if(newest!==null)capture(newest);
+      };
+    }
     // Android 11 and older: Unity listens to LocationManager through a Java proxy; every proxy call passes here.
-    const proxy=Java.use('com.unity3d.player.ReflectionHelper').a.overload('long','java.lang.String','[Ljava.lang.Object;');
-    proxy.implementation=function(handle,name,args) {
-      if(name==='onLocationChanged') {
-        try {
-          updateClock();
-          const fix=args!==null && args.length===1 ? args[0] : null;
-          if(fix!==null && location.class.isInstance(fix)) {
-            if(permissions)capture(Java.cast(fix,location));else coordinator.breakContinuity();
-          }
-        } catch(_) {coordinator.breakContinuity();note('capture-failed');}
-      }
-      return proxy.call(this,handle,name,args);
-    };
-    keep.push(fused,proxy);
+    if(sdk<=30) {
+      const proxy=Java.use('com.unity3d.player.ReflectionHelper').a.overload('long','java.lang.String','[Ljava.lang.Object;');
+      proxy.implementation=function(handle,name,args) {
+        if(name==='onLocationChanged') {
+          try {
+            updateClock();
+            const fix=args!==null && args.length===1 ? args[0] : null;
+            if(fix!==null && location.class.isInstance(fix)) {
+              if(permissions)capture(Java.cast(fix,location));else coordinator.breakContinuity();
+            }
+          } catch(_) {coordinator.breakContinuity();note('capture-failed');}
+        }
+        return proxy.call(this,handle,name,args);
+      };
+      keep.push(proxy);
+    }
     setInterval(()=>{
-      try {Java.performNow(()=>{
-        updateClock();
-        if(clock.elapsed-lastPermission>=2000) {
-          lastPermission=clock.elapsed;
+      try {updateClock();}catch(_){note('clock-unavailable');if(coordinator)coordinator.breakContinuity();return;}
+      if(clock.elapsed-lastPermission>=2000) {
+        lastPermission=clock.elapsed;
+        try {Java.performNow(()=>{
           const current=app.checkSelfPermission('android.permission.ACCESS_FINE_LOCATION')===0;
           if(permissions!==current) {permissions=current;coordinator.setPermission(current);note(current?'permission-restored':'permission-missing');}
-        }
-        if(clock.elapsed-lastStats>=60000) {
-          lastStats=clock.elapsed;const c=coordinator.counts;
-          log('gps counts captured='+c.captured+' dropped='+c.dropped+' sent='+c.sent+' ack='+c.acked+' resets='+c.resets);
-        }
-      });}catch(_){note('clock-unavailable');if(coordinator)coordinator.breakContinuity();}
+        });}catch(_){note('permission-unavailable');coordinator.breakContinuity();}
+      }
+      if(pollFix!==null && permissions) {
+        try {Java.performNow(pollFix);}catch(_){note('capture-failed');coordinator.breakContinuity();}
+      }
+      if(clock.elapsed-lastStats>=60000) {
+        lastStats=clock.elapsed;const c=coordinator.counts;
+        log('gps counts captured='+c.captured+' dropped='+c.dropped+' sent='+c.sent+' ack='+c.acked+' resets='+c.resets);
+      }
     },250);
     javaReady=true;note('capture-ready');
   }

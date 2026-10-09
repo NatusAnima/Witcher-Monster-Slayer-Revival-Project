@@ -32,7 +32,7 @@ class PlacementAdminTests(unittest.TestCase):
         class Index:
             meta={'source_timestamp':'2026-01-01T00:00:00Z'}
             def covers(self,*args):return True
-            def document(self,*args):return {'elements':[dict(type='area',id=1,kind='forest',rings=[ring])]}
+            def document(self,*args,clip=None):return {'elements':[dict(type='area',id=1,kind='forest',rings=[ring])]}
         service=pl.PlayableLocations(Index(),self.world/'placement-policy.json')
         listener=ThreadingHTTPServer(('127.0.0.1',0),pl.make_handler(service))
         thread=threading.Thread(target=listener.serve_forever,daemon=True);thread.start()

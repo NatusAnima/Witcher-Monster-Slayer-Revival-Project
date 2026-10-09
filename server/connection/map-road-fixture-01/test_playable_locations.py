@@ -191,7 +191,7 @@ class TuningTests(unittest.TestCase):
 
         class Index:
             def covers(self, *args): return True
-            def document(self, *args):
+            def document(self, *args, clip=None):
                 return {"elements": [dict(type="area", kind="forest", rings=[wood]), dict(type="area", kind="park", rings=[park])]}
 
         service = pl.PlayableLocations(Index(), None, self.path)
@@ -244,7 +244,7 @@ class CacheTests(unittest.TestCase):
         class Index:
             calls = 0
             def covers(self, *args): return True
-            def document(self, *args):
+            def document(self, *args, clip=None):
                 self.calls += 1
                 return {'elements': [dict(type='area', kind='forest', rings=[ring])]}
         index = Index(); service = pl.PlayableLocations(index)

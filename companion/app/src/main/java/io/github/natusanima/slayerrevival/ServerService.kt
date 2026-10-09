@@ -36,6 +36,20 @@ class ServerService : Service() {
         /** Where the game's hook sends its own log (see LogSink below); the hook has the same number. */
         const val LOG_PORT = 18094
 
+        /**
+         * The server shares the phone with the game, so its .NET heap is kept small: workstation GC
+         * without the background GC thread, compacting eagerly, and a hard ceiling on the managed
+         * heap (the server's data is a few MB; the ceiling only stops the GC from letting garbage
+         * pile up because the phone has free RAM at that moment). Values are hex, as .NET reads them.
+         */
+        private val SERVER_MEMORY = mapOf(
+            "DOTNET_gcServer" to "0",
+            "DOTNET_gcConcurrent" to "0",
+            "DOTNET_GCConserveMemory" to "7",
+            "DOTNET_GCHeapHardLimit" to "0x10000000", // 256 MB
+            "DOTNET_TieredPGO" to "0", // no profiling instrumentation kept per method
+        )
+
         @Volatile
         var status = "Stopped"
             private set
@@ -129,7 +143,7 @@ class ServerService : Service() {
                 // one timestamped line per entry: the log is read by people and by the bug report
                 "--Logging:Console:FormatterOptions:SingleLine", "true",
                 "--Logging:Console:FormatterOptions:TimestampFormat", "HH:mm:ss.fff ",
-            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0"))
+            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0") + SERVER_MEMORY)
             thread(name = "recorder") { // what the phone was doing around a crash: memory, the server's processes, heat
                 while (!stopping) {
                     EventLog.sample(this)
