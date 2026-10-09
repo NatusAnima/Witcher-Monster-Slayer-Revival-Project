@@ -80,6 +80,33 @@ class ExtractIndexTests(unittest.TestCase):
         # a hole outside the box goes, the outer ring stays
         self.assertEqual(len(clip_rings([square, [(3.5, 1.0), (3.5, 2.0), (3.8, 2.0)]], box)), 1)
 
+    def test_tile_cuts_lie_on_the_edges_as_the_tile_draws_them(self):
+        # A 20 km diagonal edge at 65 N leaving a z17 tile: cut in lat/lon it would bend inside the tile, cut in Mercator
+        # it stays on the straight line the codec draws between the original vertices.
+        import math
+        from osm_tile_codec import _tile_point
+        z, lat, lon = 17, 65.0, 25.0
+        x = int((lon + 180) / 360 * (1 << z))
+        y = int((1 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2 * (1 << z))
+        south, west, north, east = tile_bounds(z, x, y)
+        dy, dx = (north - south) / 8, (east - west) / 8
+        box = (south - dy, west - dx, north + dy, east + dx)
+        inside = ((south + north) / 2, (west + east) / 2)
+        ring = [inside, (inside[0] + 0.18, inside[1] + 0.3), (inside[0] - 0.2, inside[1] + 0.35)]
+        edges = [(ring[k - 1], ring[k]) for k in range(len(ring))]
+
+        def worst_miss(clipped):
+            def off_line(p, a, b):
+                (px, py), (ax, ay), (bx, by) = (_tile_point(*q, z, x, y) for q in (p, a, b))
+                return abs((bx - ax) * (py - ay) - (by - ay) * (px - ax)) / ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5
+            corners = {(a, b) for a in (box[0], box[2]) for b in (box[1], box[3])}  # where the area covers the box's corner
+            cuts = [p for p in clipped if p not in ring and p not in corners]
+            self.assertTrue(cuts)
+            return max(min(off_line(p, a, b) for a, b in edges) for p in cuts)
+
+        self.assertLess(worst_miss(clip_ring(ring, box, mercator=True)), 0.01)
+        self.assertGreater(worst_miss(clip_ring(ring, box)), 1)  # the lat/lon cut the placement service uses
+
     def test_clipped_query_cuts_only_areas_reaching_outside(self):
         south, west, north, east = 52.4021, 16.9021, 52.4031, 16.9031
         whole = self.index.document(south, west, north, east)

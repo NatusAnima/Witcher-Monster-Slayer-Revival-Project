@@ -128,10 +128,20 @@ def unpack_rings(blob: bytes) -> list[list[tuple[float, float]]]:
     return rings
 
 
-def clip_ring(ring, box):
+def _mercator_y(lat: float) -> float:
+    return math.log(math.tan(math.pi / 4 + math.radians(lat) / 2))
+
+
+def _mercator_lat(y: float) -> float:
+    return math.degrees(2 * math.atan(math.exp(y)) - math.pi / 2)
+
+
+def clip_ring(ring, box, mercator=False):
     """Sutherland-Hodgman clip of one (lat, lon) ring to a (south, west, north, east) box.
 
-    Vertices inside the box are kept as they are and in order; the ring may come back empty.
+    Vertices inside the box are kept as they are and in order; the ring may come back empty. A cut point lies on its
+    edge as a straight line in lat/lon, or with [mercator] in Web Mercator, which is how a tile draws the edge: a long
+    edge cut in lat/lon would bend inside the tile (hundreds of tile units for 20 km edges at 65 degrees).
     """
     south, west, north, east = box
     for axis, limit, keep_above in ((1, west, True), (1, east, False), (0, south, True), (0, north, False)):
@@ -143,10 +153,14 @@ def clip_ring(ring, box):
         for current in ring:
             current_in = current[axis] >= limit if keep_above else current[axis] <= limit
             if current_in != previous_in:
-                t = (limit - previous[axis]) / (current[axis] - previous[axis])
                 if axis == 1:
-                    out.append((previous[0] + t * (current[0] - previous[0]), limit))
+                    t = (limit - previous[1]) / (current[1] - previous[1])
+                    lat = (_mercator_lat(_mercator_y(previous[0]) + t * (_mercator_y(current[0]) - _mercator_y(previous[0])))
+                           if mercator else previous[0] + t * (current[0] - previous[0]))
+                    out.append((lat, limit))
                 else:
+                    t = ((_mercator_y(limit) - _mercator_y(previous[0])) / (_mercator_y(current[0]) - _mercator_y(previous[0]))
+                         if mercator else (limit - previous[0]) / (current[0] - previous[0]))
                     out.append((limit, previous[1] + t * (current[1] - previous[1])))
             if current_in:
                 out.append(current)
@@ -155,14 +169,14 @@ def clip_ring(ring, box):
     return ring
 
 
-def clip_rings(rings, box):
+def clip_rings(rings, box, mercator=False):
     """Clip an outer ring and its holes to a box; None when nothing of the outer ring is left."""
-    outer = clip_ring(rings[0], box)
+    outer = clip_ring(rings[0], box, mercator)
     if len(outer) < 3:
         return None
     clipped = [outer]
     for hole in rings[1:]:
-        hole = clip_ring(hole, box)
+        hole = clip_ring(hole, box, mercator)
         if len(hole) >= 3:
             clipped.append(hole)
     return clipped
@@ -419,19 +433,19 @@ class FeatureIndex:
         b_west, b_east, b_south, b_north = self.bounds
         return b_west <= west and east <= b_east and b_south <= south and north <= b_north
 
-    def document(self, south: float, west: float, north: float, east: float, clip=None) -> dict:
+    def document(self, south: float, west: float, north: float, east: float, clip=None, mercator=False) -> dict:
         """Return an Overpass-shaped document for osm_live_codec.build_live_tile.
 
         `clip` is an optional (south, west, north, east) box containing the query box. Area rings
         reaching outside it are cut to it, so a forest or lake many kilometres across costs only
         the part near the query instead of all its vertices on every request. Inside the box the
         geometry is unchanged; the new edges lie on the box, so callers keep a margin between the
-        box and anything they draw or measure.
+        box and anything they draw or measure. With `mercator` the cuts follow edges as a tile draws them.
         """
         with self.lock:
-            return self._document((west, east, south, north), clip)
+            return self._document((west, east, south, north), clip, mercator)
 
-    def _document(self, box, clip=None) -> dict:
+    def _document(self, box, clip=None, mercator=False) -> dict:
         elements = []
         for way_id, kind, klass, name, attrs, coords in self.db.execute(
                 "SELECT w.id, w.kind, w.class, w.name, w.attrs, w.coords FROM ways_rtree r "
@@ -455,7 +469,7 @@ class FeatureIndex:
             if clip is not None:
                 south, west, north, east = clip
                 if not (west <= min_lon and max_lon <= east and south <= min_lat and max_lat <= north):
-                    rings = clip_rings(rings, clip)
+                    rings = clip_rings(rings, clip, mercator)
                     if rings is None:
                         continue
             elements.append({"type": "area", "id": row, "osm_area": osm_area, "kind": kind,

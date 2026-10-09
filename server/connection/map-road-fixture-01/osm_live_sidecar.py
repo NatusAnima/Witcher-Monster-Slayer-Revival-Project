@@ -239,7 +239,7 @@ class LocalIndexSource:
         south, west, north, east = bounds = tile_bounds(*key)
         dy, dx = (north - south) * CLIP_MARGIN, (east - west) * CLIP_MARGIN
         self.local_stats["index_queries"] += 1
-        return self.index.document(*bounds, clip=(south - dy, west - dx, north + dy, east + dx))
+        return self.index.document(*bounds, clip=(south - dy, west - dx, north + dy, east + dx), mercator=True)
 
 
 class GridCanarySource:

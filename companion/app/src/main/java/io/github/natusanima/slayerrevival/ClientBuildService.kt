@@ -12,6 +12,8 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.PowerManager
 import java.io.File
+import java.util.zip.CRC32
+import java.util.zip.ZipFile
 import kotlin.concurrent.thread
 
 /**
@@ -79,6 +81,23 @@ class ClientBuildService : Service() {
 
         /** True if the client this app built is installed but must be updated to carry the game of [version]. */
         fun staleFor(context: Context, version: String) = builtForOther(context, version) && signedByUs(context) == true
+
+        /**
+         * True if the installed client carries a different hook from the one this app ships, so a release that only fixes the
+         * hook (a z release) is offered too. Compares the APK entry's CRC with the unpacked runtime's copy, and only once that
+         * runtime belongs to this version of the app (it is unpacked when the server first starts); false when unsure.
+         */
+        fun hookChanged(context: Context): Boolean = try {
+            val rt = Runtime.root(context)
+            val version = context.packageManager.getPackageInfo(context.packageName, 0).lastUpdateTime.toString()
+            val shipped = File(rt, "client/hook.bundle.js")
+            if (File(rt, ".stamp").readText() != version || !shipped.isFile) false
+            else ZipFile(context.packageManager.getApplicationInfo(MainActivity.GAME, 0).sourceDir).use { apk ->
+                apk.getEntry("lib/arm64-v8a/libhook.js.so")?.let { it.crc != CRC32().apply { update(shipped.readBytes()) }.value }
+            } ?: false
+        } catch (_: Exception) {
+            false
+        }
     }
 
     // Not the cache folder: Android empties that when storage runs low, which is just when a 2 GB install needs room.

@@ -49,6 +49,7 @@ class MainActivity : Activity() {
 
     private var playing = false
     private var ours = false // the installed game is the client this app built, so it can be updated in place
+    private var hookStale = false // that client's hook differs from the one this app ships
     private var updateAction = {}
     private var logName = "server"
     private val handler = Handler(Looper.getMainLooper())
@@ -198,6 +199,7 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         ours = ClientBuildService.signedByUs(this) == true // asks the keystore: once here, not on every refresh
+        hookStale = ours && ClientBuildService.hookChanged(this)
         handler.post(refresh)
     }
 
@@ -238,7 +240,7 @@ class MainActivity : Activity() {
         }
 
         val release = Updates.latest
-        val gameStale = ours && ClientBuildService.builtForOther(this, Updates.installedVersion(this))
+        val gameStale = ours && ClientBuildService.builtForOther(this, Updates.installedVersion(this)) || hookStale
         updateCard.visibility = if (release == null && !gameStale) View.GONE else View.VISIBLE
         if (release != null) {
             updateText.text = "Version ${release.version} is available. " +
