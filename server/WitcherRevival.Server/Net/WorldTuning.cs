@@ -16,7 +16,7 @@ public sealed class WorldTuning
 
     public const string ExpPercent = "exp.percent", LootPercent = "loot.percent",
         HerbRespawnMinutes = "herbs.respawnMinutes", HerbsPerCell = "herbs.perCell", RealWeather = "weather.real",
-        StartingBag = "inventory.startSize", NestGold = "nests.gold";
+        StartingBag = "inventory.startSize", NestGold = "nests.gold", TrollDefeats = "story.trollDefeats";
 
     private const string PlacesApply = "Places drawn from now on. Monsters already out stay for up to 30 minutes.";
 
@@ -65,6 +65,10 @@ public sealed class WorldTuning
             "How many items the inventory holds before any bag is bought. The five bags in Thorstein's shop add 50 to 400 " +
             "each, up to 1000 in all. A full bag leaves fight loot behind and refuses herbs and shop items.",
             "The next game start.", 200, 50, 1000, 10, "items"),
+        new(TrollDefeats, "Story", "Monster Slayer: troll defeats",
+            "After Good Money, a player who has beaten a rock troll must lose this many fights to rock trolls before the troll " +
+            "talks and offers Monster Slayer. The game shows the quest from its next start.",
+            "The next lost fight.", 3, 1, 10, 1, "fights"),
     };
 
     /// <summary>The running server's settings, for code that has no access to the service (the herb rules are static). All defaults

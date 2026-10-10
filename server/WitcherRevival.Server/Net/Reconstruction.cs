@@ -668,21 +668,22 @@ public static class Reconstruction
         // and potion 205 (Donor). Quantities are Authored; two bombs mirror the two training throws.
         "exam" => new Reward(0, 0, Items((ItemKinds.Oils, BasicOilId, 1), (ItemKinds.Bombs, ExamBombId, 2),
             (ItemKinds.Potions, SwallowPotionId, 1))),
-        // Community (Gamepressure "Final Exam"): 1500 XP and 300 gold on completion.
-        "exam_end" => new Reward(1500, 300, Items()),
+        // Maintainer (reward list, 10 Oct 2026): no reward (Gamepressure said 1500 XP and 300 gold). Recorded once for the
+        // devourer's bestiary entry (OutputKills).
+        "exam_end" => new Reward(0, 0, Items()),
         // Nothing to hand over: recorded once so the tutorial ghoul's bestiary entry goes out once (OutputKills).
         "tutorial_end" => new Reward(0, 0, Items()),
         // Client (1.1.116 I2Languages) and Donor (prolog_02 dialog): Thorstein hands over the Hybrid Oil after the
         // horse fights ("[Take it]. Hybrid oil? …"), in the dialog that closes all three horse endings; his first
         // dialog (prolog_01) gives nothing. GamerJournalist's "on accepting" skips the horse part entirely.
         "dead_horse" or "1ghoul_left" or "2ghouls_left" => new Reward(0, 0, Items((ItemKinds.Oils, HybridOilId, 1))),
-        // Community (Gamepressure "Winged Bandit"): 1000 XP and 100 gold for the griffin.
-        "griffin_1" or "griffin_2" => new Reward(1000, 100, Items()),
+        // "Winged Bandit". Maintainer: 250 XP and 45 orens (Gamepressure said 1000 XP and 100 gold).
+        "griffin_1" or "griffin_2" => new Reward(250, 45, Items()),
         // "A Joint Venture". Authored: a won wraith fight gives the difficulty-2 fight experience and the
-        // gargoyle king the difficulty-3 one (BaseExp). Community (Gamepressure): 60 gold for the quest.
+        // gargoyle king the difficulty-3 one (BaseExp). Maintainer: 275 XP for the quest (Gamepressure said 60 gold).
         "crown" or "crown_again" or "heart" or "heart_again" or "wraith_won" => new Reward(BaseExp(2), 0, Items()),
         "gargoyle" or "gargoyle_again" => new Reward(BaseExp(3), 0, Items()),
-        "success" or "success_heart" => new Reward(0, 60, Items()),
+        "success" or "success_heart" => new Reward(275, 0, Items()),
         _ => null,
     };
 
@@ -1015,8 +1016,12 @@ public static class ReconstructionRows
             ["id"] = tier.Id, ["slug"] = $"tier_{tier.Id}", ["player_attack_count"] = tier.PlayerAttackCount,
             ["enemy_attack_count"] = tier.EnemyAttackCount,
         })).ToArray();
-        // Player modifiers of the season 1 graphs (PlayerModifier: id, slug; see Reconstruction.PlayerModifiers).
-        rows["player_modifiers"] = StoryEngine.ModifierRows().ToArray();
+        // Player modifiers of the season 1 graphs (PlayerModifier: id, slug; see Reconstruction.PlayerModifiers), and the
+        // dashboard's debug modifiers with their effects (PlayerService.DebugModifiers; gameplay never grants them).
+        rows["player_modifiers"] = [.. StoryEngine.ModifierRows(), .. PlayerService.DebugModifiers.Select(m =>
+            J(new Dictionary<string, object> { ["id"] = m.Id, ["slug"] = m.Slug }))];
+        rows["player_modifier_to_effect"] = PlayerService.DebugModifiers.Select(m =>
+            ItemEffectRow(new Reconstruction.ItemEffect(m.Id, m.Effect, PlayerService.DebugModifierPower, 1))).ToArray();
         // Native pack type and slug; numeric id and rewards are explicit LAB policy.
         rows["packs_types"] = [J(new Dictionary<string, object>
         { ["id"] = SocialService.PackId, ["slug"] = "pack_herbalist", ["priority"] = 1 })];

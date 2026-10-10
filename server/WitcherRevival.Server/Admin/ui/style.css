@@ -3930,3 +3930,7 @@ dialog .facts {
 .progress-section td small { display: block; margin-top: .35rem; overflow-wrap: anywhere; }
 .progress-section progress { display: block; width: min(10rem, 100%); height: .65rem; margin-top: .5rem; accent-color: #967647; }
 .help-grid pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; border: 1px solid currentColor; border-radius: .4rem; }
+.debug-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }
+.debug-row input { width: 9rem; }
+.debug-row select { max-width: 100%; }
+.debug-badge { color: var(--danger, #a44239); font-weight: 600; }

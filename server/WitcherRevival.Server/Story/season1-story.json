@@ -6,84 +6,108 @@
    "code": "s01mq01",
    "name": "Good Money",
    "journal": "assets/_bundledassets/story/journal/s01/s01mq01_scholar/log_s01mq01.asset",
-   "criteria": "f100>=4"
+   "criteria": "f100>=4",
+   "done": 177,
+   "main": true
   },
   {
    "id": 104,
    "code": "s01mq04",
    "name": "Evil Never Sleeps",
    "journal": "assets/_bundledassets/story/journal/s01/s01mq04_cursed_one/log_s01mq04.asset",
-   "criteria": "f1001>=1"
+   "criteria": "f100>=4",
+   "done": 180,
+   "main": true
   },
   {
    "id": 148,
    "code": "s01hq05",
    "name": "To The Rescue",
    "journal": "assets/_bundledassets/story/journal/s01/s01hq05_bandit_and_devourer/log_s01hq05.asset",
-   "criteria": "f1001>=1"
+   "criteria": "f100>=4",
+   "done": 187,
+   "main": false
   },
   {
    "id": 150,
    "code": "s01mq02",
    "name": "Pride Ain't Cheap",
    "journal": "assets/_bundledassets/story/journal/s01/s01mq02_cure/log_s01mq02.asset",
-   "criteria": "f1001>=1"
+   "criteria": "f1001>=1",
+   "done": 178,
+   "main": true
   },
   {
    "id": 159,
    "code": "s01hq02",
    "name": "What Lurks in the Nemeta",
    "journal": "assets/_bundledassets/story/journal/s01/s01hq02_nests/log_s01hq02.asset",
-   "criteria": "f1003>=1"
+   "criteria": "f1003>=1",
+   "done": 184,
+   "main": false
   },
   {
    "id": 147,
    "code": "s01hq03",
    "name": "The Dark Side Of The Full Moon",
    "journal": "assets/_bundledassets/story/journal/s01/s01hq03_blacksmith/log_s01hq03.asset",
-   "criteria": "f1001>=1"
+   "criteria": "f1001>=1",
+   "done": 185,
+   "main": false
   },
   {
    "id": 158,
    "code": "s01hq01",
    "name": "Sword in the Stone",
    "journal": "assets/_bundledassets/story/journal/s01/s01hq01_sword_in_stone/log_s01hq01.asset",
-   "criteria": "f46>=1"
+   "criteria": "f46>=1",
+   "done": 183,
+   "main": false
   },
   {
    "id": 161,
    "code": "s01hq06",
    "name": "Monster Slayer",
    "journal": "assets/_bundledassets/story/journal/s01/s01hq06_trolling/log_s01hq06.asset",
-   "criteria": "f1000>=1"
+   "criteria": "f1010>=1",
+   "done": 188,
+   "main": false
   },
   {
    "id": 160,
    "code": "s01hq04",
    "name": "Will O' The Wisp",
    "journal": "assets/_bundledassets/story/journal/s01/s01hq04_firefly/log_s01hq04.asset",
-   "criteria": "f1001>=1"
+   "criteria": "f184>=1",
+   "done": 186,
+   "main": false
   },
   {
    "id": 153,
    "code": "s01mq05",
    "name": "The Great Mushrooming",
    "journal": "assets/_bundledassets/story/journal/s01/s01mq05_mushroom_hunt/log_s01mq05.asset",
-   "criteria": "f1001>=1"
+   "criteria": "f179>=1",
+   "done": 181,
+   "main": true
   },
   {
    "id": 152,
    "code": "s01mq03",
    "name": "The Sins Of Our Fathers",
    "journal": "assets/_bundledassets/story/journal/s01/s01mq03_striga/log_s01mq03.asset",
-   "criteria": "f54>=4"
+   "criteria": "f178>=1",
+   "done": 179,
+   "main": true
   },
   {
    "id": 154,
    "code": "s01mq06",
    "name": "Intruder",
    "journal": "assets/_bundledassets/story/journal/s01/s01mq06_frightener/log_s01mq06.asset",
-   "criteria": "f31>=5"
+   "criteria": "f31>=5",
+   "done": 182,
+   "main": false
   }
  ],
  "nodes": [
@@ -101,7 +125,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 297,
@@ -117,7 +142,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 11492,
@@ -133,7 +159,8 @@
    "max": 150,
    "near": "s01mq01_cocoon_1",
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 11493,
@@ -149,7 +176,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq01_margit",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16160,
@@ -165,7 +193,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16161,
@@ -181,7 +210,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16162,
@@ -197,7 +227,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq04_bedwyr",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16163,
@@ -213,7 +244,8 @@
    "max": 650,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16164,
@@ -229,7 +261,8 @@
    "max": 650,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 4
   },
   {
    "id": 16165,
@@ -245,7 +278,8 @@
    "max": 500,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16166,
@@ -261,7 +295,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq04_bedwyr",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 16167,
@@ -277,7 +312,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 218,
@@ -293,7 +329,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 222,
@@ -309,7 +346,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 224,
@@ -325,7 +363,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 223,
@@ -341,7 +380,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 292,
@@ -357,7 +397,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 7
   },
   {
    "id": 17920,
@@ -373,7 +414,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01hq05_kienan",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 293,
@@ -389,7 +431,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 294,
@@ -405,7 +448,8 @@
    "max": 600,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 301,
@@ -421,7 +465,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 302,
@@ -437,7 +482,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18000,
@@ -453,7 +499,8 @@
    "max": 650,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18001,
@@ -469,7 +516,8 @@
    "max": 650,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18002,
@@ -485,7 +533,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq02_varik",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18003,
@@ -496,12 +545,13 @@
    "instance": 5124757743546138933,
    "kind": "poi",
    "root": "",
-   "show": "f54=3 & wait:s01mq02_varik_2.medic_02:1440",
+   "show": "f54=3 & wait:s01mq02_varik_2.medic_02:43200",
    "min": 250,
    "max": 700,
    "near": null,
    "placeOf": "s01mq02_varik",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 304,
@@ -517,7 +567,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18360,
@@ -533,7 +584,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18361,
@@ -549,7 +601,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18362,
@@ -565,7 +618,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18363,
@@ -581,7 +635,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 289,
@@ -597,7 +652,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 17880,
@@ -613,7 +669,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01hq03_lothar",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 17881,
@@ -629,7 +686,8 @@
    "max": 600,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 4
   },
   {
    "id": 291,
@@ -645,7 +703,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 464,
@@ -661,7 +720,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01hq03_lothar",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 381,
@@ -677,7 +737,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01hq03_lothar",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 399,
@@ -688,12 +749,13 @@
    "instance": 5124757777905877391,
    "kind": "queued",
    "root": "",
-   "show": "f46=1 & !started:158 & !done:158",
+   "show": "f1001>=1 & !started:158 & !done:158",
    "min": 250,
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 400,
@@ -709,7 +771,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 385,
@@ -725,7 +788,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 395,
@@ -741,7 +805,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 396,
@@ -757,7 +822,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18440,
@@ -773,7 +839,8 @@
    "max": 650,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 390,
@@ -789,7 +856,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 446,
@@ -805,7 +873,8 @@
    "max": 400,
    "near": "s01hq04_nemeton",
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 393,
@@ -821,7 +890,8 @@
    "max": 400,
    "near": "s01hq04_stump",
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 394,
@@ -837,7 +907,8 @@
    "max": 400,
    "near": "s01hq04_plant",
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18120,
@@ -853,7 +924,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18121,
@@ -869,7 +941,8 @@
    "max": 600,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 321,
@@ -885,7 +958,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 331,
@@ -896,12 +970,13 @@
    "instance": 5124733107613729099,
    "kind": "poi",
    "root": "",
-   "show": "f56=3 & !wait:s01mq05_vogt.vogt:1440",
-   "min": 60,
-   "max": 450,
+   "show": "f56=3 & !wait:s01mq05_vogt.vogt:86400",
+   "min": 250,
+   "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 5
+   "copies": 1,
+   "display": 7
   },
   {
    "id": 327,
@@ -917,7 +992,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 325,
@@ -933,7 +1009,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 324,
@@ -949,7 +1026,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 326,
@@ -965,7 +1043,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 495,
@@ -981,7 +1060,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 330,
@@ -997,7 +1077,8 @@
    "max": 600,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18122,
@@ -1013,7 +1094,8 @@
    "max": 600,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 347,
@@ -1024,12 +1106,13 @@
    "instance": 5124757812265615707,
    "kind": "poi",
    "root": "",
-   "show": "f56=3 & wait:s01mq05_vogt.vogt:1440",
+   "show": "f56=3 & wait:s01mq05_vogt.vogt:86400",
    "min": 250,
    "max": 700,
    "near": null,
    "placeOf": "s01mq05_vogt",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18080,
@@ -1045,7 +1128,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18081,
@@ -1061,7 +1145,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 311,
@@ -1077,7 +1162,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18082,
@@ -1093,7 +1179,8 @@
    "max": 600,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 4
   },
   {
    "id": 18083,
@@ -1109,7 +1196,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18084,
@@ -1125,7 +1213,8 @@
    "max": 500,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18085,
@@ -1141,7 +1230,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 313,
@@ -1157,7 +1247,8 @@
    "max": 200,
    "near": "s01mq03_lure",
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18086,
@@ -1173,7 +1264,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq03_lair",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18160,
@@ -1189,7 +1281,8 @@
    "max": 300,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 403,
@@ -1205,7 +1298,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18161,
@@ -1221,7 +1315,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18162,
@@ -1237,7 +1332,8 @@
    "max": 800,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18163,
@@ -1253,7 +1349,8 @@
    "max": 400,
    "near": "s01mq06_massacre",
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18164,
@@ -1269,7 +1366,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18165,
@@ -1285,7 +1383,8 @@
    "max": 650,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 357,
@@ -1301,7 +1400,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 358,
@@ -1317,7 +1417,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 478,
@@ -1333,7 +1434,8 @@
    "max": 700,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 361,
@@ -1349,7 +1451,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq06_frightener",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18166,
@@ -1365,7 +1468,8 @@
    "max": 500,
    "near": null,
    "placeOf": null,
-   "copies": 1
+   "copies": 1,
+   "display": 1
   },
   {
    "id": 18167,
@@ -1381,7 +1485,8 @@
    "max": 700,
    "near": null,
    "placeOf": "s01mq06_vogt",
-   "copies": 1
+   "copies": 1,
+   "display": 1
   }
  ],
  "outputs": [
@@ -1538,7 +1643,7 @@
    "node": 11493,
    "name": "scholar_02",
    "endpoint": true,
-   "exp": 1200,
+   "exp": 250,
    "gold": 40,
    "items": {},
    "kills": {}
@@ -2189,7 +2294,11 @@
      "205": 2
     },
     "oils": {
-     "307": 1
+     "307": 1,
+     "302": 1
+    },
+    "bombs": {
+     "402": 1
     }
    },
    "kills": {}
@@ -2631,7 +2740,7 @@
    "node": 385,
    "name": "sword",
    "endpoint": true,
-   "exp": 500,
+   "exp": 150,
    "gold": 0,
    "items": {
     "swords": {
@@ -2699,7 +2808,7 @@
    "node": 395,
    "name": "won",
    "endpoint": true,
-   "exp": 600,
+   "exp": 550,
    "gold": 0,
    "items": {},
    "kills": {
@@ -2711,7 +2820,7 @@
    "node": 395,
    "name": "lost",
    "endpoint": true,
-   "exp": 350,
+   "exp": 300,
    "gold": 0,
    "items": {},
    "kills": {}
@@ -2771,7 +2880,7 @@
    "node": 396,
    "name": "lost",
    "endpoint": true,
-   "exp": 350,
+   "exp": 300,
    "gold": 0,
    "items": {},
    "kills": {}
@@ -2781,7 +2890,7 @@
    "node": 396,
    "name": "won",
    "endpoint": true,
-   "exp": 600,
+   "exp": 550,
    "gold": 0,
    "items": {},
    "kills": {
@@ -2803,8 +2912,8 @@
    "node": 18440,
    "name": "won",
    "endpoint": true,
-   "exp": 350,
-   "gold": 100,
+   "exp": 300,
+   "gold": 35,
    "items": {},
    "kills": {}
   },
@@ -2823,8 +2932,8 @@
    "node": 18440,
    "name": "grey_rocks",
    "endpoint": true,
-   "exp": 350,
-   "gold": 100,
+   "exp": 300,
+   "gold": 0,
    "items": {},
    "kills": {}
   },
@@ -2846,7 +2955,7 @@
    "name": "firefly",
    "endpoint": false,
    "exp": 250,
-   "gold": 100,
+   "gold": 50,
    "items": {},
    "kills": {
     "24": 1
@@ -2908,7 +3017,7 @@
    "name": "treasure",
    "endpoint": true,
    "exp": 250,
-   "gold": 0,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -3184,10 +3293,10 @@
    "name": "forktail",
    "endpoint": false,
    "exp": 250,
-   "gold": 0,
+   "gold": 50,
    "items": {},
    "kills": {
-    "7": 1
+    "138": 1
    }
   },
   {
@@ -3474,7 +3583,7 @@
    "name": "striga_killed_knew",
    "endpoint": true,
    "exp": 750,
-   "gold": 0,
+   "gold": 60,
    "items": {},
    "kills": {}
   },
@@ -3494,7 +3603,7 @@
    "name": "striga_killed",
    "endpoint": true,
    "exp": 500,
-   "gold": 0,
+   "gold": 60,
    "items": {},
    "kills": {}
   },
@@ -3585,8 +3694,8 @@
    "node": 18086,
    "name": "armor",
    "endpoint": true,
-   "exp": 500,
-   "gold": 0,
+   "exp": 750,
+   "gold": 60,
    "items": {
     "armors": {
      "8": 1
@@ -4143,8 +4252,8 @@
    "node": 18167,
    "name": "full_reward",
    "endpoint": true,
-   "exp": 500,
-   "gold": 0,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4152,9 +4261,9 @@
    "id": 1270,
    "node": 18167,
    "name": "reward",
-   "endpoint": false,
-   "exp": 0,
-   "gold": 0,
+   "endpoint": true,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4163,8 +4272,8 @@
    "node": 18167,
    "name": "bad_reward",
    "endpoint": true,
-   "exp": 500,
-   "gold": 0,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4173,8 +4282,8 @@
    "node": 18167,
    "name": "bonus_reward",
    "endpoint": true,
-   "exp": 500,
-   "gold": 0,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4182,9 +4291,9 @@
    "id": 1273,
    "node": 18167,
    "name": "full_reward_dhl",
-   "endpoint": false,
-   "exp": 0,
-   "gold": 0,
+   "endpoint": true,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4192,9 +4301,9 @@
    "id": 1274,
    "node": 18167,
    "name": "reward_dhl",
-   "endpoint": false,
-   "exp": 0,
-   "gold": 0,
+   "endpoint": true,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4202,9 +4311,9 @@
    "id": 1275,
    "node": 18167,
    "name": "bad_reward_dhl",
-   "endpoint": false,
-   "exp": 0,
-   "gold": 0,
+   "endpoint": true,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   },
@@ -4212,53 +4321,48 @@
    "id": 1276,
    "node": 18167,
    "name": "bonus_reward_dhl",
-   "endpoint": false,
-   "exp": 0,
-   "gold": 0,
+   "endpoint": true,
+   "exp": 2000,
+   "gold": 100,
    "items": {},
    "kills": {}
   }
  ],
+ "prices": {
+  "payment": 500
+ },
  "modifiers": [
   {
    "id": 1,
-   "slug": "s01_blacksmith",
-   "seconds": null
+   "slug": "s01_blacksmith"
   },
   {
    "id": 2,
-   "slug": "s01_curse",
-   "seconds": null
+   "slug": "s01_curse"
   },
   {
    "id": 3,
-   "slug": "s01_mushrooming",
-   "seconds": 1440
+   "slug": "s01_mushrooming"
   },
   {
    "id": 4,
-   "slug": "s01_candle",
-   "seconds": null
+   "slug": "s01_candle"
   },
   {
    "id": 5,
-   "slug": "s01_potion",
-   "seconds": null
+   "slug": "s01_potion"
   },
   {
    "id": 6,
-   "slug": "s01_24h",
-   "seconds": 1440
+   "slug": "s01_24h"
   },
   {
    "id": 7,
-   "slug": "s01_12h",
-   "seconds": 1440
+   "slug": "s01_12h"
   },
   {
    "id": 8,
-   "slug": "s01_firefly",
-   "seconds": null
+   "slug": "s01_firefly"
   }
  ],
  "monsters": [
@@ -4925,7 +5029,7 @@
    ],
    [
     "wait",
-    1440
+    43200
    ],
    [
     null,
@@ -5115,7 +5219,8 @@
     "firefly",
     {
      "120": 1,
-     "175": 100
+     "175": 50,
+     "226": 1
     },
     [
      "s01hq04_stump"
@@ -5202,7 +5307,7 @@
    ],
    [
     "wait",
-    1440
+    86400
    ],
    [
     null,
@@ -5238,7 +5343,7 @@
     {
      "56": 4,
      "160": 4,
-     "31": 4
+     "31": 5
     },
     []
    ]
@@ -5334,7 +5439,7 @@
     "armor",
     {
      "179": 1,
-     "31": 5
+     "31": 4
     },
     []
    ]

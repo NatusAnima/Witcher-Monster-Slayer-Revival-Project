@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extract the season 1 behaviour graphs of the client into structured data for the story engine.
 
-For every graph of `s01_story_common_assets_all` (1.3.102 asset packs that LAB loads) this lists the quest node id
+For every graph of `s01_story_common_assets_all` (the client's asset pack; the server's story uses 1.1.116) this lists the quest node id
 and instance id the graph carries, the quests it tracks, the quest nodes it queues, the player modifiers it adds or
 removes, and every graph output (QuestEndRequestNode, sent as EndBehaviourGraph 57) with:
   - the facts set in the same step as the output and on the way to it,
@@ -10,6 +10,7 @@ removes, and every graph output (QuestEndRequestNode, sent as EndBehaviourGraph 
 The monsters, quest items and journal logs referred to are listed too, so their static-data rows can be checked.
 
   python season1_graphs.py --assetpacks <play export>/assetpacks --output season1-graphs.json
+  python season1_graphs.py --assetpacks ~/witcher_1.1.116_packs --output season1-graphs.json   # extract_packs.py output
 """
 from __future__ import annotations
 
@@ -236,7 +237,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     name = "s01_story_common_assets_all"
-    bundle = Bundle(glob.glob(str(args.assetpacks / name / "*/*/assets/assetpack" / name))[0])
+    bundle = Bundle((glob.glob(str(args.assetpacks / name / "*/*/assets/assetpack" / name)) or [str(args.assetpacks / name)])[0])
     graphs = {}
     for asset, pid in sorted(bundle.assets.items()):
         if "/bgraphs/s01/" not in asset or bundle.objects[pid][0] != "BehaviourGraph":

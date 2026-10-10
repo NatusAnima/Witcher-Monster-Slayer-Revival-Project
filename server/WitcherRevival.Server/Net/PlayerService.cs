@@ -239,6 +239,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 var trophy = new ByteBuffer(); trophy.WriteInt(id);
                 await FrameCodec.WriteAsync(stream, Ch_Api, ApiProtocol.BuildResponse(0, 25, trophy.ToArray(), ack: []), ct);
             }
+        await DrainPushesAsync(stream, req.Method, movementSession, ct);   // the dashboard's debug tools (PlayerDebug)
     }
 
     // Requests that change the profile (rewards, purchases, spending, crafting, skills, modifiers, drops).
@@ -642,7 +643,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
 
     /// <summary>GetWeather (67): GetWeatherRequest [float lat][float lng] (0x2476E24); GetWeatherResponse
     /// [int WeatherCode] (0x247A5F4). The weather of the position's 0.1° cell (WorldWeather); Clear when no
-    /// weather source is configured or the request carries no position.</summary>
+    /// weather source is configured or the request carries no position. The debug tools' time for quests (<see cref="sky"/>)
+    /// rides on the code as 16 × (1 + mask); hook.js takes it off before the game reads the code.</summary>
     private byte[] BuildGetWeatherResponse(ApiProtocol.ApiRequest req)
     {
         int code = WorldWeather.Clear;
@@ -651,10 +653,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             var r = new ByteBuffer(req.Data);
             float lat = r.ReadFloat(), lng = r.ReadFloat();
             code = weather.Code(lat, lng);
+            if (float.IsFinite(lat) && float.IsFinite(lng)) Volatile.Write(ref weatherSpot, new Spot(lat, lng));
         }
-        log.LogInformation("  GetWeather code={Code} source={Source}", code, weather.Enabled ? "open-meteo" : "none");
+        int mask = Volatile.Read(ref sky);
+        log.LogInformation("  GetWeather code={Code} source={Source} sky={Sky}", code, weather.Enabled ? "open-meteo" : "none", mask);
         var b = new ByteBuffer();
-        b.WriteInt(code);
+        b.WriteInt(mask < 0 ? code : code + 16 * (1 + mask));
         return b.ToArray();
     }
 
@@ -678,8 +682,10 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         if (cells is null) return BuildGetLocationsByCellResponse();
         playable.ObserveCells(cells);
         var monsters = CurrentSpawns(snapshot, cells, now);
-        var givers = StoryGivers(snapshot).Select(g => (g.Node, g.Place, Instance: g.Node.Instance))
-            .Concat(RelocationGivers(snapshot, cells)).Where(g => cells.Any(c => c.Id == g.Place.CellId)).ToList();
+        // A started quest's hidden relocation giver stays Normal: a Collecting one would come up beside the walking player.
+        var givers = StoryGivers(snapshot).Select(g => (g.Node, g.Place, Instance: g.Node.Instance, Display: g.Node.Display))
+            .Concat(RelocationGivers(snapshot, cells).Select(g => (g.Node, g.Place, g.Instance, Display: Reconstruction.DisplayNormal)))
+            .Where(g => cells.Any(c => c.Id == g.Place.CellId)).ToList();
         var b = new ByteBuffer();
         b.WriteByte(1);
         b.WriteInt(cells.Count);
@@ -717,9 +723,10 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // QuestNodeInstancePlacements: the season 1 quest givers (Placement<QuestNodeInstance>: [byte Type][string
         // PlaceId] then QuestNodeInstance.Deserialize 0x1934B40 [long InstanceId][int QuestNodeId][string PlaceId]
         // [string SettingsPath][string BehaviourGraphName][int DisplayMode]); the client marks them IsQuestGiver and
-        // shows those whose quest it offers. Other story nodes come with RPC 60 and 57.
+        // shows those whose quest it offers (a Collecting one beside the player after 200 m of walking). Other story
+        // nodes come with RPC 60 and 57.
         b.WriteInt(givers.Count);
-        foreach (var (node, place, instance) in givers)
+        foreach (var (node, place, instance, display) in givers)
         {
             b.WriteByte(0);
             b.WriteString(place.Id);
@@ -728,7 +735,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             b.WriteString(place.Id);
             b.WriteString(node.Poi);
             b.WriteString(node.Graph);
-            b.WriteInt(Reconstruction.DisplayNormal);
+            b.WriteInt(display);
         }
         var nests = CurrentNests(snapshot, cells, now);
         var today = TodaysNests(snapshot.Player, now);
@@ -1303,8 +1310,13 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             .Where(m => m.Id != 13 || tasks.Catalog is not null).ToList();
         b.WriteInt(0);
         b.WriteInt(live.Count);
-        foreach (var m in live) { b.WriteInt(m.Id); b.WriteInt(m.Start); b.WriteInt(m.Expire); }
+        foreach (var m in live) { b.WriteInt(m.Id); b.WriteInt(m.Start); b.WriteInt(Expiry(m)); }
     }
+
+    /// <summary>The expiry the client reads: a permanent modifier (saved below 1, older saves have 0) is sent as -1, which the
+    /// effects panel shows without a timer (PlayerModifierGUISlot.Initialize 0x18224B8 hides it for a negative expiry; at 0
+    /// Update 0x1822240 shows the time left until 1970, a negative countdown).</summary>
+    private static int Expiry(LocalProfileStore.ModifierState m) => m.Expire < 1 ? -1 : m.Expire;
 
     /// <summary>Friend actions from FriendsModule (103 AddFriend, 104 AcceptFriendInvitation, 105
     /// RejectFriendInvitation, 106 SendPack, 107 OpenPack, 108 DeleteFriend). Requests: LongRequest [long playerId],
@@ -1330,7 +1342,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     }
 
     /// <summary>AddPlayerModifier (90), sent by the AddExpiringEffect graph action (TriggerAction 0x17E1C3C):
-    /// IntIntRequest [int modifierId][int seconds, -1 = until removed]. Response (Factory 0x247C338, matching the
+    /// IntIntRequest [int modifierId][int seconds, -1 = until removed, 0 = ends now: Will o' the Wisp's treasure graph ends
+    /// the wisp's 15-minute timer (effect 8) that way]. Response (Factory 0x247C338, matching the
     /// client's own Serialize 0x247C244): [int 4][int Result, 0 = success][int Id][int StartTimestamp]
     /// [int ExpireTimestamp]; the factory returns null unless the first int is at least 4.
     /// PlayerModifiersModule.Tick and GetActiveEffects treat an expiry below 1 as permanent. Reconstructed
@@ -1341,26 +1354,24 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var r = new ByteBuffer(req.Data);
         int id = r.ReadInt(), seconds = r.ReadInt();
         if (r.RemainingToRead != 0) throw new InvalidDataException("Invalid AddPlayerModifier payload.");
-        // LAB pacing: the long season 1 timers are shortened to the story's own wait (StoryEngine.Modifier.Seconds).
-        if (seconds > 0 && StoryEngine.Modifiers.FirstOrDefault(m => m.Id == id)?.Seconds is int shortened) seconds = shortened;
         int now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        var added = new LocalProfileStore.ModifierState(id, now, seconds > 0 ? now + seconds : 0);
+        var added = new LocalProfileStore.ModifierState(id, now, seconds < 0 ? -1 : now + seconds);
         bool ok = false;
         if (Reconstruction.PlayerModifiers.Any(m => m.Id == id) && profiles.Snapshot().Player is not null)
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
             {
                 var kept = LiveModifiers(player, now).Where(m => m.Id != id).ToList();
-                kept.Add(added);
+                if (seconds != 0) kept.Add(added);
                 ok = true;
                 return player with { Modifiers = kept };
             });
-        log.LogInformation("  AddPlayerModifier result={Result} permanent={Permanent}", ok ? "added" : "refused", seconds <= 0);
+        log.LogInformation("  AddPlayerModifier result={Result} seconds={Seconds}", ok ? "added" : "refused", seconds);
         var b = new ByteBuffer();
         b.WriteInt(4);
         b.WriteInt(ok ? 0 : 1);
         b.WriteInt(id);
         b.WriteInt(ok ? added.Start : 0);
-        b.WriteInt(ok ? added.Expire : 0);
+        b.WriteInt(ok ? Expiry(added) : 0);
         return b.ToArray();
     }
 
@@ -1604,6 +1615,25 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         return new CombatEndRequest(win, r.ReadByte() != 0, details);
     }
 
+    /// <summary>Monster Slayer's trigger (season1_quests.py SERVER_FACTS; Community: "kill at least one rock troll, then lose
+    /// to the next one you meet several times until the troll talks"): once Good Money has opened it (fact 1000 = 1, Monster
+    /// Slayer's own state), a won rock-troll fight sets fact 1011 to 1 and each lost one adds 1; at the Tuning number of
+    /// losses fact 1010 offers the quest, and its giver is placed beside the player. The game shows it from its next start,
+    /// as it reads facts only then. Null when the fight changes nothing.</summary>
+    private Dictionary<int, int>? TrollFight(int monsterId, bool won)
+    {
+        var facts = profiles.Snapshot().Facts;
+        if (WorldBestiary.Of(monsterId)?.Slug != "cavetroll" || facts.GetValueOrDefault(1000) != 1 ||
+            facts.GetValueOrDefault(StoryEngine.TrollTriggerFact) > 0)
+            return null;
+        int fights = facts.GetValueOrDefault(StoryEngine.TrollFightsFact);
+        if (won) return fights == 0 ? new() { [StoryEngine.TrollFightsFact] = 1 } : null;
+        if (fights == 0) return null;
+        var next = new Dictionary<int, int> { [StoryEngine.TrollFightsFact] = fights + 1 };
+        if (fights >= world.Tuning.Get(WorldTuning.TrollDefeats)) next[StoryEngine.TrollTriggerFact] = 1;   // fights - 1 losses before this one
+        return next;
+    }
+
     /// <summary>[amount] of fight experience as the dashboard has it set (a share of the normal amount).</summary>
     private int Exp(int amount) =>
         (int)Math.Min(int.MaxValue / 8, (long)amount * (long)world.Tuning.Get(WorldTuning.ExpPercent) / 100);
@@ -1634,6 +1664,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     {
         int baseExp = 0, comboExp = 0, oilExp = 0, parryExp = 0, firstExp = 0, boostedExp = 0, packType = 0;
         var loot = new List<int>();
+        var trollFacts = monster is { } troll ? TrollFight(troll.MonsterId, end.Won) : null;
         if (monster is { } fought && end.Won)
         {
             baseExp = Exp(Reconstruction.BaseExp(fought.Difficulty));
@@ -1642,7 +1673,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             oilExp = end.Detail(Reconstruction.DetailUsedProperOil) > 0 ? Exp(Reconstruction.ProperOilExp) : 0;
             if (profiles.Snapshot().Player is not null)
             {
-                profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
+                profiles.UpdatePlayer(trollFacts ?? new Dictionary<int, int>(), null, player =>
                 {
                     var before = player with { Kills = new(player.Kills!) };
                     var kills = player.Kills!;
@@ -1662,11 +1693,14 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 }, new TaskEngine.Action(label == "CombatEnd" ? 8 : 114, [end.Details]));
             }
         }
-        if (monster is not null && !end.Won && TasksEnabled)
-            profiles.UpdatePlayer(new Dictionary<int, int>(), null, player => player,
+        if (monster is not null && !end.Won && (TasksEnabled || trollFacts is not null))
+            profiles.UpdatePlayer(trollFacts ?? new Dictionary<int, int>(), null, player => player,
                 new TaskEngine.Action(label == "CombatEnd" ? 8 : 114, [end.Details]));
         log.LogInformation("  {Label} win={Win} surrendered={Surrendered} monster={Monster} exp={Exp}",
             label, end.Win, end.Surrendered, monster?.MonsterId, baseExp + comboExp + oilExp + parryExp + firstExp + boostedExp);
+        if (trollFacts is not null)
+            log.LogInformation("  Monster Slayer trigger troll fights={Fights} offered={Offered}",
+                trollFacts[StoryEngine.TrollFightsFact], trollFacts.ContainsKey(StoryEngine.TrollTriggerFact));
         var b = new ByteBuffer();
         b.WriteInt(loot.Count); // Loot: item ids, one per unit (reconstructed profiles: ingredients)
         foreach (int item in loot) b.WriteInt(item);
@@ -1847,18 +1881,27 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
 
     /// <summary>EndBehaviourGraph (57) after "A Joint Venture" (StoryEngine): saves the facts; for a season 1 node
     /// (by instance, or a journal button by output name) it starts or finishes the quest, records the output and,
-    /// the first time the output is reached, grants its experience, gold and items and counts its monsters. The
+    /// the first time the output is reached, grants its experience, gold and items and counts its monsters. An output
+    /// of a graph that is no quest node may cost orens (StoryEngine.PriceOf: Lothar's map). The
     /// response has the same layout as for the prologue: the active nodes, then Exp and Gold (deltas the client
     /// adds; an endpoint output shows them in the quest-completed window), the item maps and BestiaryEntries.</summary>
     private byte[] StoryEndBehaviourGraph(long instanceId, string outputName, Dictionary<int, int> facts)
     {
         StoryEngine.Step? step = null;
+        int paid = 0;
         var snapshot = profiles.UpdatePlayer(facts, null, player =>
         {
             var progress = player.Story ?? LocalProfileStore.StoryProgress.Empty;
-            if (StoryEngine.Resolve(progress, instanceId, outputName) is not { } node) return null;
+            if (StoryEngine.Resolve(progress, instanceId, outputName) is not { } node)
+            {
+                if (StoryEngine.PriceOf(outputName) is not int price || player.Gold < price) return null;
+                paid = price;
+                return player with { Gold = player.Gold - price };
+            }
             step = StoryEngine.Advance(progress, node, outputName, StoryNow(progress));
             if (step is null) return null;
+            // UpdatePlayer saves the facts after this change, so the ending's own facts join the client's.
+            foreach (var (fact, value) in step.Facts) facts[fact] = value;
             player = player with { Story = step.Progress };
             if (!step.FirstTime) return player;
             foreach (var (monster, kills) in step.Output.Kills)
@@ -1878,12 +1921,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var granted = step is { FirstTime: true } ? step.Output : null;
         log.LogInformation("  Method 57 story node={Node} output={Output} result={Result} reward={Reward}",
             step?.Node.Key ?? "unknown", SafeGraphOutputForLog(outputName),
-            step is null ? "facts only" : step.Output.Endpoint ? "quest finished" : "recorded",
+            step is null ? paid > 0 ? $"paid {paid}" : "facts only" : step.Output.Endpoint ? "quest finished" : "recorded",
             granted is null ? "none" : "granted");
         var b = new ByteBuffer(); b.WriteByte(1);
         WriteStory(b, snapshot);
         b.WriteInt(granted?.Exp ?? 0);
-        b.WriteInt(granted?.Gold ?? 0);
+        b.WriteInt(granted?.Gold ?? -paid);
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Potions));
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Bombs));
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Oils));
@@ -2529,16 +2572,17 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         {
             // Map nodes of started quests on their places (each copy on its own); queued nodes on the fixture place
             // beside the player (CloseFollow), where the client's FireQueuedGraph (0x17E89D0) finds the nearest
-            // quest POI with the queued node id once the queuing graph ends.
+            // quest POI with the queued node id once the queuing graph ends; Collecting nodes there too, which the
+            // client itself shows beside the player after 200 m of walking (CollectingQuestPoi.OnUpdate 0x19091D0).
             var shown = StoryEngine.Active(story, snapshot.Facts, StoryNow(story)).ToList();
-            var placed = StoryView(shown.Where(n => !n.Queued));
+            var placed = StoryView(shown.Where(n => !n.BesidePlayer));
             WriteQuestLocations(b, placed.Select(item => item.Place).DistinctBy(place => place.Id).ToList());
-            var queued = shown.Where(n => n.Queued).ToList();
-            b.WriteInt(placed.Count + queued.Count);
+            var beside = shown.Where(n => n.BesidePlayer).ToList();
+            b.WriteInt(placed.Count + beside.Count);
             foreach (var (node, place, copy) in placed)
-                WriteStoryNode(b, node, node.Instance + copy, place.Id, Reconstruction.DisplayNormal);
-            foreach (var node in queued)
-                WriteStoryNode(b, node, node.Instance, TutPlaceId, Reconstruction.DisplayCloseFollow);
+                WriteStoryNode(b, node, node.Instance + copy, place.Id, node.Display);
+            foreach (var node in beside)
+                WriteStoryNode(b, node, node.Instance, TutPlaceId, BesideDisplay(node));
             return;
         }
         if (JointVentureView(snapshot) is { } view)
@@ -2564,6 +2608,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private static LocalProfileStore.StoryProgress? SeasonOne(LocalProfileStore.Profile snapshot) =>
         snapshot.Player is { } player && snapshot.QuestStage == LocalProfileStore.JvDoneStage
             ? player.Story ?? LocalProfileStore.StoryProgress.Empty : null;
+
+    /// <summary>The display of a node beside the player: queued ones follow it (CloseFollow), the others keep their own.</summary>
+    private static int BesideDisplay(StoryEngine.Node node) => node.Queued ? Reconstruction.DisplayCloseFollow : node.Display;
 
     /// <summary>QuestNodeInstance (0x1934B40): [long InstanceId][int QuestNodeId][string PlaceId][string SettingsPath]
     /// [string BehaviourGraphName][int DisplayMode].</summary>
@@ -2600,11 +2647,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             return saved.GetValueOrDefault(owner.Key) ?? StoryPlaceOf(owner);
         string key = StoryPlaceKey(node, copy);
         // A giver shows only within the giver hide distance (QuestPoiInstance.ShouldBeInstantiated 0x1909F58), so
-        // one left outside the loaded area (the player moved away) gets a new place there.
+        // one left outside the loaded area or out of the player's sight (the player moved away) gets a new place.
         var area = playable.Area;
-        if (saved.GetValueOrDefault(key) is { } known &&
+        var known = saved.GetValueOrDefault(key);
+        if (known is not null &&
             !(node.Giver && profiles.Snapshot().Player?.Story?.Started.Contains(node.Quest) != true &&
-                known.CellId is ulong cell && area.Count > 0 && !area.Contains(cell)))
+                (known.CellId is ulong cell && area.Count > 0 && !area.Contains(cell) || OutOfSight(known))))
             return known;
         // Spots of other nodes of unfinished quests and of copies are kept apart.
         var finished = profiles.Snapshot().Player?.Story?.Finished ?? new List<int>();
@@ -2614,8 +2662,15 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             .Select(other => saved.GetValueOrDefault(other)).OfType<LocalProfileStore.StoryPlace>().ToList();
         var near = node.Near is null ? null : StoryEngine.NodeByKey(node.Near) is { } anchor ? StoryPlaceOf(anchor) : null;
         if (node.Near is not null && near is null) return null;
-        return ChooseStoryPlace(key, node.Min, node.Max, near, taken);
+        return ChooseStoryPlace(key, node.Min, node.Max, near, taken) ?? known;
     }
+
+    // Client: PoiSettings.questOnMapHideDistance (season1_story.py GIVER_DISTANCE); a giver farther from the player is not drawn.
+    private const double GiverHideDistance = 350;
+
+    private bool OutOfSight(LocalProfileStore.StoryPlace place) =>
+        playable.Area is { Count: > 0 } area && playable.Cells(area, 0) is { Count: > 0 } cells && PlayerPositionIn(cells) is { } at &&
+        PlayableLocations.Distance(at.Lat, at.Lng, place.Lat, place.Lng) > GiverHideDistance;
 
     /// <summary>The givers of the season 1 quests the client offers now, with their places.</summary>
     private List<(StoryEngine.Node Node, LocalProfileStore.StoryPlace Place)> StoryGivers(LocalProfileStore.Profile snapshot) =>
@@ -2695,7 +2750,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var options = new List<PlayableLocations.Place>();
         if (cells is { Count: > 0 })
         {
-            var player = PlayerPosition();
+            var player = PlayerPositionIn(cells);
             double lat = near?.Lat ?? player?.Lat ?? cells.Average(c => c.Lat),
                 lng = near?.Lng ?? player?.Lng ?? cells.Average(c => c.Lng);
             // Authored spacing: separate spots for separate goals; a companion node may stand closer.

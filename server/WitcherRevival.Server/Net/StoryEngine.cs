@@ -26,16 +26,28 @@ namespace WitcherRevival.Server.Net;
 public static class StoryEngine
 {
     public const int TutorialQuest = 144;
+    private const long AuthoredInstance = 5124760000000000000;   // season1_story.py AUTHORED_INSTANCE
+    /// <summary>The finished main quests (Quest.Main), which Intruder's criteria counts.</summary>
+    public const int MainQuestsFact = 31;
+    /// <summary>The server's own facts (season1_quests.py SERVER_FACTS): Monster Slayer offered, and the rock-troll fights
+    /// after the first win, plus one.</summary>
+    public const int TrollTriggerFact = 1010, TrollFightsFact = 1011;
 
-    public sealed record Quest(int Id, string Code, string Name, string Journal, string Criteria);
+    /// <param name="Done">The completion fact the quest's endings set; the server saves it with the ending too.</param>
+    /// <param name="Main">One of the five main quests counted in fact 31.</param>
+    public sealed record Quest(int Id, string Code, string Name, string Journal, string Criteria, int Done = 0, bool Main = false);
 
+    /// <param name="Display">How the client shows the node (PoiDisplayMode): 1 Normal, 4 Hunt (a search circle that shrinks as
+    /// the player nears and starts the graph there), 7 Collecting (beside the player after 200 m of walking).</param>
     public sealed record Node(int Id, int Quest, string Key, string Graph, string Poi, long Instance, string Kind,
-        string Root, string Show, double Min, double Max, string? Near, string? PlaceOf, int Copies)
+        string Root, string Show, double Min, double Max, string? Near, string? PlaceOf, int Copies, int Display = 1)
     {
         [JsonIgnore] public bool Giver => Kind == "giver";
         [JsonIgnore] public bool Queued => Kind == "queued";
         [JsonIgnore] public bool Button => Kind == "button";
         [JsonIgnore] public bool OnMap => Kind is "poi" or "queued";
+        /// <summary>A map node with no place of its own: queued ones, and those the client places itself (Collecting).</summary>
+        [JsonIgnore] public bool BesidePlayer => Queued || Kind == "poi" && Display == 7;
         public bool HasInstance(long instance) => instance >= Instance && instance < Instance + Copies;
     }
 
@@ -52,12 +64,17 @@ public static class StoryEngine
         new(20002, 403, "mushroom_start", 1234),
     ];
 
-    /// <summary>A player modifier of the season 1 graphs; Seconds, when set, replaces the graph's duration (LAB
-    /// pacing, see season1_quests.py LAB_WAIT).</summary>
-    public sealed record Modifier(int Id, string Slug, int? Seconds = null);
+    /// <summary>A player modifier of the season 1 graphs.</summary>
+    public sealed record Modifier(int Id, string Slug);
 
+    /// <param name="Prices">Orens the server takes for an output of a graph that is no quest node (Lothar's map).</param>
     private sealed record Data(List<Quest> Quests, List<Node> Nodes, List<Output> Outputs, List<Modifier> Modifiers,
-        List<JsonElement> Monsters, Dictionary<string, int[]> Vulnerabilities);
+        List<JsonElement> Monsters, Dictionary<string, int[]> Vulnerabilities, Dictionary<string, List<JsonElement>> Walks,
+        Dictionary<string, int>? Prices = null);
+
+    /// <summary>A walk-through step (season1_quests.py): a node's output with the facts its graph sends, or a wait of
+    /// <see cref="Wait"/> seconds (no node).</summary>
+    public sealed record WalkStep(Node? Node, string? Output, Dictionary<int, int> Facts, int Wait);
 
     private static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
 
@@ -83,8 +100,16 @@ public static class StoryEngine
     }
 
     public static Quest? QuestById(int id) => Quests.FirstOrDefault(q => q.Id == id);
+    /// <summary>The orens an output of a graph that is no quest node costs (season1_quests.py PRICES).</summary>
+    public static int? PriceOf(string output) => Story.Prices?.TryGetValue(output, out int price) == true ? price : null;
     public static Node? NodeById(int id) => Nodes.FirstOrDefault(n => n.Id == id);
     public static Node? NodeByKey(string key) => Nodes.FirstOrDefault(n => n.Key == key);
+    /// <summary>A quest's walk-through in order (the tests' "check the map" steps left out).</summary>
+    public static IReadOnlyList<WalkStep> WalkOf(int questId) =>
+        (Story.Walks.GetValueOrDefault(questId.ToString()) ?? []).Where(s => s[0].ValueKind == JsonValueKind.String)
+            .Select(s => s[0].GetString() == "wait" ? new WalkStep(null, null, [], s[1].GetInt32())
+                : new WalkStep(NodeByKey(s[0].GetString()!), s[1].GetString(),
+                    s[2].EnumerateObject().ToDictionary(f => int.Parse(f.Name), f => f.Value.GetInt32()), 0)).ToList();
     public static Node? RootOf(int questId) =>
         Nodes.FirstOrDefault(n => n.Quest == questId && n.Giver) ?? Nodes.FirstOrDefault(n => n.Quest == questId && n.Queued);
     public static Output? OutputOf(int nodeId, string name)
@@ -174,12 +199,19 @@ public static class StoryEngine
         if (Nodes.FirstOrDefault(n => n.HasInstance(instanceId) && OutputOf(n.Id, outputName) is not null) is { } node) return node;
         var buttons = Nodes.Where(n => n.Button && progress.Started.Contains(n.Quest) && OutputOf(n.Id, outputName) is not null)
             .ToList();
-        return buttons.Count == 1 ? buttons[0] : null;
+        if (buttons.Count == 1) return buttons[0];
+        // Several: a button sent without an instance is one whose graph has none (season1_story.py gives it an authored
+        // one), and such buttons of one quest that end with the same output are one step (s01hq02's two notebook items).
+        buttons = buttons.Where(n => instanceId is 0 or -1 && n.Instance == AuthoredInstance + n.Id).ToList();
+        return buttons.Count > 0 && buttons.All(n => n.Quest == buttons[0].Quest) ? buttons[0] : null;
     }
 
     /// <summary>The effect of a graph output: the quest starts on its first output and finishes on an endpoint; the
-    /// output's reward is paid the first time it is reached.</summary>
-    public sealed record Step(Node Node, Output Output, LocalProfileStore.StoryProgress Progress, bool FirstTime);
+    /// output's reward is paid the first time it is reached. Facts are what the server saves with it: an ending's
+    /// completion fact and, for a main quest, the count of finished main quests, so the next game start offers what
+    /// follows even when the client's step did not carry them.</summary>
+    public sealed record Step(Node Node, Output Output, LocalProfileStore.StoryProgress Progress, bool FirstTime,
+        IReadOnlyDictionary<int, int> Facts);
 
     public static Step? Advance(LocalProfileStore.StoryProgress progress, Node node, string outputName, long now)
     {
@@ -196,11 +228,17 @@ public static class StoryEngine
         bool firstTime = !reached.ContainsKey(output.Id) && !progress.Outputs.Contains(output.Id);
         if (firstTime) reached[output.Id] = now;
         var outputs = firstTime ? progress.Outputs.Append(output.Id).ToList() : progress.Outputs.ToList();
+        var facts = new Dictionary<int, int>();
+        if (output.Endpoint && QuestById(node.Quest) is { } quest)
+        {
+            if (quest.Done > 0) facts[quest.Done] = 1;
+            if (quest.Main) facts[MainQuestsFact] = finished.Count(id => QuestById(id)?.Main == true);
+        }
         return new Step(node, output, progress with
         {
             Started = started, Finished = finished, Outputs = outputs, Reached = reached,
             Tracked = output.Endpoint && progress.Tracked == node.Quest ? null : progress.Tracked,
-        }, firstTime);
+        }, firstTime, facts);
     }
 
     // ── Static data rows ────────────────────────────────────────────────────────────────────

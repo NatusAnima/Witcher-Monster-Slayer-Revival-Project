@@ -31,8 +31,8 @@ public sealed class LocalProfileStore : IDisposable
     /// knowledge tier; Brewers holds owned crafting stations and their work; OneTimeBundles lists shop bundles
     /// bought once; Sensed maps monsters revealed by the witcher senses to the Unix second they leave; Modifiers
     /// holds the expiring player modifiers added by story graphs; LevelAnnounced is the last level announced to
-    /// the client with a LevelUp push; HerbRespawns maps gathered herbs to the Unix second they grow back. Older
-    /// files have none of them.</summary>
+    /// the client with a LevelUp push; HerbRespawns maps gathered herbs to the Unix second they grow back; Debug marks a
+    /// profile the dashboard's debug tools changed. Older files have none of them.</summary>
     public sealed record PlayerState(int Exp, int Gold, int SkillPoints, List<int> Skills,
         Dictionary<string, Dictionary<int, int>> Items, List<string> Granted, string? Name = null, byte Gender = 0,
         Dictionary<int, int>? Kills = null, List<SummonedMonsters.Group>? Summons = null,
@@ -42,7 +42,7 @@ public sealed class LocalProfileStore : IDisposable
         Dictionary<long, long>? Sensed = null, List<ModifierState>? Modifiers = null, int? LevelAnnounced = null,
         Dictionary<long, long>? HerbRespawns = null, NestDay? Nests = null, StoryProgress? Story = null,
         EquipmentState? Equipment = null, Dictionary<long, TransactionRecord>? Transactions = null,
-        TaskEngine.State? Tasks = null, AuraUsage? Aura = null, DistanceState? Distance = null);
+        TaskEngine.State? Tasks = null, AuraUsage? Aura = null, DistanceState? Distance = null, bool? Debug = null);
 
     /// <summary>Earned metres from legacy RPC27 or validated companion segments after protection. Old reconstructed saves
     /// start at zero: the former constant 15000 was never earned progress. Recent random request IDs
@@ -236,6 +236,21 @@ public sealed class LocalProfileStore : IDisposable
             if (changed is null && factsUnchanged && stage == _profile.QuestStage)
                 return Copy(_profile);
             return SaveFacts(facts, stage, changed, taskActionFactory?.Invoke() ?? taskAction);
+        }
+    }
+
+    /// <summary>The dashboard's debug tools: a change saved as one revision while the player may be online, which the task
+    /// engine does not see (no task or trinket counts it; goals measured on the state itself, such as a level to reach,
+    /// catch up at the next game save). <paramref name="backup"/> receives the profile before it; the player is marked
+    /// Debug. The change receives a detached copy and returns the new state, or null to keep it.</summary>
+    public Profile DebugUpdate(Func<PlayerState, PlayerState?> change, Action<Profile> backup)
+    {
+        lock (_gate)
+        {
+            if (_profile.Player is null) throw new InvalidOperationException("Legacy profiles have no player state.");
+            if (change(CopyPlayer(_profile.Player)) is not { } changed) return Copy(_profile);
+            backup(Copy(_profile));
+            return WriteProfile(_profile with { Revision = checked(_profile.Revision + 1), Player = changed with { Debug = true } });
         }
     }
 

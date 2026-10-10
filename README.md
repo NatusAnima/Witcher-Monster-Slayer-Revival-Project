@@ -39,6 +39,8 @@ The companion app, **Witcher Monster Slayer - Revival**, runs the server and the
 
 While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather, and a Tuning page for simple values: monsters and places per map cell, where places lie (paths, parks, woods, water, near houses), experience, loot, herbs, nest gold, the starting bag size and real weather) inside the app.
 
+On the phone, Players → your profile also has **Debug tools** for testing: set orens, level and skill points, learn every skill, give or take items, turn on invincibility or one-hit kills, bring the quests next to you, set the time the quests see (full moon night, dusk, dawn, night or day, for the steps that wait for them), and a quest list that shows every quest's next step and can complete it for you (including the 12 h and 24 h waits). Each change can be undone from History (with the game closed).
+
 The app checks Releases for a newer version and offers to update itself (Android asks you to confirm the install). Updates keep your progress, but uninstalling the app deletes it.
 
 If a release also changes the game, the update says so, and the app then offers **Update the game**. It patches the game it built in place: no Google sign-in and no download, about 6 GB free for a few minutes, and one install confirmation.

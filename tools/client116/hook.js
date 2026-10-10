@@ -130,6 +130,17 @@ const RVA = {
   string_new: 0x16d15f4, string_chars: 0x16d15f0, string_length: 0x16d15ec, resolve_icall: 0x16d0c08,
   object_get_class: 0x16d1558,
   create_http: 0x20a4a28,  // System.Net.WebRequest.CreateHttp(string); the overload with Uri has the same name and arity
+  weather_response: 0x247a5f4,  // GetWeatherResponse.Factory.Deserialize: the reply with the weather code (+0x10)
+  astro_condition: 0x17e1fac,   // AstroConditionNode.HasDesiredValue: the quests' full moon, sunrise, sunset and day checks
+  enviro_next_port: 0x17f2604,  // LoadEnviroNode.GetNextOutputPort: its "NextNode" port, which the graph follows
+  investigation_next_port: 0x17f175c,  // InvestigationNode.GetNextOutputPort: its "FollowingNode" port
+  node_output_port: 0x3201c20,  // XNode.Node.GetOutputPort(string)
+  node_input_port: 0x3201c44,   // XNode.Node.GetInputPort(string)
+  port_connections: 0x3206610,  // XNode.NodePort.get_ConnectionCount
+  port_add: 0x32077fc,          // XNode.NodePort.AddConnections(NodePort): copies the other port's connections onto this one
+  port_clear: 0x3201b98,        // XNode.NodePort.ClearConnections
+  port_connect: 0x3204ab4,      // XNode.NodePort.Connect(NodePort)
+  object_name: 0x290ef4c,       // UnityEngine.Object.get_name
 };
 
 // Asset paths the client asks for that 1.1.116 ships elsewhere. The reward popup is only under
@@ -183,6 +194,26 @@ function install(m) {
   installed = true;
   log('frida', Frida.version, Script.runtime, 'libil2cpp', m.path, 'base', m.base, 'size', m.size, 'built for sha256', LIBIL2CPP_SHA256);
   stage('native fixes', () => applyNativeFixes(m));
+  // Time for quests (the dashboard's debug tools): the server adds 16 × (1 + mask) to the weather code, one mask bit per
+  // AstroConditionNode.condition (+0x44: full moon 0, sunrise 1, sunset 2, day 3). The game gets the plain code back, and
+  // its quests see that sky until a plain code comes; without one they see the phone's own.
+  stage('quest sky', () => {
+    let sky = -1;
+    Interceptor.attach(m.base.add(RVA.weather_response), {
+      onLeave(reply) {
+        if (reply.isNull()) return;
+        const code = reply.add(0x10).readS32();
+        const mask = code >= 16 ? (code >> 4) - 1 : -1;
+        if (mask !== sky) log('quest sky', mask < 0 ? 'as on the phone' : 'mask ' + mask);
+        sky = mask;
+        if (mask >= 0) reply.add(0x10).writeS32(code & 15);
+      },
+    });
+    Interceptor.attach(m.base.add(RVA.astro_condition), {
+      onEnter(args) { this.node = args[0]; },
+      onLeave(result) { if (sky >= 0) result.replace(ptr((sky >> this.node.add(0x44).readS32()) & 1)); },
+    });
+  });
 
   let il2cpp = null;
   stage('il2cpp images', () => {
@@ -259,6 +290,52 @@ function install(m) {
           if (!url || !CONFIG.news[0].test(url)) return;
           args[0] = str(url.replace(CONFIG.news[0], CONFIG.news[1]));
           log('news', url, '->', CONFIG.news[1]);
+        },
+      });
+    });
+    // Graph wiring fixed in 1.2: Will o' the Wisp's stump and catch graphs (the only ones in 1.1.116) hang their next step on
+    // LoadEnviroNode's "ResultNode" port instead of "NextNode", so the graph stops on the loaded background (logcat: "Load
+    // Enviro ... doesn't have following node connected", a black screen). Before the game reads the node's next port, any
+    // ResultNode connections move onto NextNode, as in 1.2's graphs; nodes without them are untouched.
+    stage('graph wiring', () => {
+      const fn = (rva, ret, args) => new NativeFunction(m.base.add(rva), ret, args);
+      const outputPort = fn(RVA.node_output_port, 'pointer', ['pointer', 'pointer', 'pointer']);
+      const connections = fn(RVA.port_connections, 'int', ['pointer', 'pointer']);
+      const addConnections = fn(RVA.port_add, 'void', ['pointer', 'pointer', 'pointer']);
+      const clearConnections = fn(RVA.port_clear, 'void', ['pointer', 'pointer']);
+      Interceptor.attach(m.base.add(RVA.enviro_next_port), {
+        onEnter(args) {
+          const result = outputPort(args[0], str('ResultNode'), NULL);   // strings made per call: nothing keeps them alive
+          if (result.isNull() || connections(result, NULL) === 0) return;
+          const next = outputPort(args[0], str('NextNode'), NULL);
+          if (next.isNull()) return;
+          addConnections(next, result, NULL);
+          clearConnections(result, NULL);
+          log('graph wiring fixed: LoadEnviroNode ResultNode -> NextNode');
+        },
+      });
+      // The treasure graph's investigation (the chest) is followed by its expiring effect alone: the "Fadeoutblacktransition"
+      // runner that sends the quest end "treasure" has nothing leading in, so the game runs the effect, finds no next step
+      // and the chest stays open (logcat: "Investigation ... in s01hq04_treasure graph doesn't have following node
+      // connected"). As in the catch graph, a runner of that name with nothing leading in is connected after the
+      // investigation; it is the only one in the story graphs.
+      const inputPort = fn(RVA.node_input_port, 'pointer', ['pointer', 'pointer', 'pointer']);
+      const connect = fn(RVA.port_connect, 'void', ['pointer', 'pointer', 'pointer']);
+      const objectName = fn(RVA.object_name, 'pointer', ['pointer', 'pointer']);
+      Interceptor.attach(m.base.add(RVA.investigation_next_port), {
+        onEnter(args) {
+          const graph = args[0].add(0x20).readPointer();          // Node.graph
+          const nodes = graph.isNull() ? NULL : graph.add(0x18).readPointer();   // NodeGraph.nodes, a List<Node>
+          if (nodes.isNull()) return;
+          const items = nodes.add(0x10).readPointer();
+          for (let i = 0; i < nodes.add(0x18).readS32(); i++) {
+            const node = items.add(0x20 + i * 8).readPointer();
+            if (node.isNull() || !(read(objectName(node, NULL)) || '').startsWith('Fadeoutblacktransition')) continue;
+            const preceding = inputPort(node, str('PrecedingNode'), NULL);
+            if (preceding.isNull() || connections(preceding, NULL) !== 0) continue;
+            connect(outputPort(args[0], str('FollowingNode'), NULL), preceding, NULL);
+            log('graph wiring fixed: Investigation FollowingNode -> Fadeoutblacktransition');
+          }
         },
       });
     });

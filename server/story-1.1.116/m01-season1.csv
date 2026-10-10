@@ -1,0 +1,18 @@
+"Season 1 rows of M01, the community Monster Slayer sheet, as season1_story.py reads them (recovered from season1-story.json)"
+Rarity,Skulls,Name,,Strong,Fast,Steel,Silver,Fire,Kinetic,Dime
+Common,0,Arachnomorph,,,x,x,,x,,
+Common,1,Common Arachas,,,x,x,,x,,
+Common,1,Archspore,,x,,,x,x,,
+Common,1,Fiend,,x,,x,,x,,
+Common,1,Rock Troll,,x,,x,,,x,
+Common,1,Foglet,,,x,,x,,x,
+Rare,1,Ignis Fatuus,,,x,,x,,x,
+Legendary,2,Frightener,,x,,,x,,,
+Common,2,Golem,,,,,,,,x
+Rare,1,Leshen Hound,,x,,x,,x,,
+Rare,2,Leshen,,x,,x,,x,,
+Rare,2,Liho,,x,,x,,,x,
+Rare,1,Nekker Shaman,,x,,,x,,,
+Common,0,Scolopendromorph,,x,,x,,,,
+Legendary,2,White Striga,,x,,,x,x,,
+Common,1,Vodnik,,,x,x,,x,,

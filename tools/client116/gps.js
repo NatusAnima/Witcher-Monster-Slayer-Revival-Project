@@ -397,14 +397,14 @@ export function startGps(image, log) {
         lat:Number(fix.getLatitude()),lon:Number(fix.getLongitude()),
         accuracy:has?Number(fix.getAccuracy()):0,flags:(has?1:0)|(fix.isFromMockProvider()?2:0)});
     }
-    // Android 12+: no Java method of the game is replaced. On Android 16 (Samsung, ART cecb684d…) every method
-    // replacement by the Java bridge broke ART: replacing ReflectionHelper.a crashed the GC
-    // (CodeInfo::DecodeGcMasksOnly), and replacing the fused callback CustomUnityActivity$3.onLocationResult
-    // crashed the first delivery from Google Play services (Class::GetDescriptor in InitializeClass). The game
-    // keeps location running, so the newest fix Android holds is read from LocationManager instead, twice a
-    // second, with plain calls from this thread.
+    // Every Android version: the game keeps location running, so the newest fix Android holds is read from
+    // LocationManager twice a second, with plain calls from this thread. On Android 12+ no Java method of the game is
+    // replaced: on Android 16 (Samsung, ART cecb684d…) every method replacement by the Java bridge broke ART
+    // (ReflectionHelper.a crashed the GC in CodeInfo::DecodeGcMasksOnly, the fused callback
+    // CustomUnityActivity$3.onLocationResult crashed the first delivery from Google Play services in
+    // Class::GetDescriptor). On an Android 11 Xiaomi neither callback ever delivered a fix (no capture in any log).
     let pollFix=null;
-    if(sdk>30) {
+    {
       const manager=Java.cast(app.getSystemService('location'),Java.use('android.location.LocationManager'));
       const providers=['fused','gps','network'];
       let lastPoll=-1;
@@ -441,14 +441,16 @@ export function startGps(image, log) {
     }
     setInterval(()=>{
       try {updateClock();}catch(_){note('clock-unavailable');if(coordinator)coordinator.breakContinuity();return;}
-      if(clock.elapsed-lastPermission>=2000) {
+      // Unity stops ticking in the background: no Java calls there (Android kills a cached app above 2% CPU).
+      const active=clock.elapsed-lastTick<=2000;
+      if(active && clock.elapsed-lastPermission>=2000) {
         lastPermission=clock.elapsed;
         try {Java.performNow(()=>{
           const current=app.checkSelfPermission('android.permission.ACCESS_FINE_LOCATION')===0;
           if(permissions!==current) {permissions=current;coordinator.setPermission(current);note(current?'permission-restored':'permission-missing');}
         });}catch(_){note('permission-unavailable');coordinator.breakContinuity();}
       }
-      if(pollFix!==null && permissions) {
+      if(active && pollFix!==null && permissions) {
         try {Java.performNow(pollFix);}catch(_){note('capture-failed');coordinator.breakContinuity();}
       }
       if(clock.elapsed-lastStats>=60000) {

@@ -99,7 +99,7 @@ public sealed partial class PlayerService
     private IEnumerable<(StoryEngine.Node Node, LocalProfileStore.StoryPlace Place, long Instance)> RelocationGivers(
         LocalProfileStore.Profile snapshot, IReadOnlyList<PlayableLocations.Cell> requested)
     {
-        var quests = MovableQuests(snapshot).Where(q => q.Active.Any(n => !n.Queued)).ToList();
+        var quests = MovableQuests(snapshot).Where(q => q.Active.Any(n => !n.BesidePlayer)).ToList();
         var area = playable.Area;
         if (quests.Count == 0 || area.Count == 0 || requested.Count == 0) yield break;
         foreach (var quest in quests)
@@ -181,15 +181,15 @@ public sealed partial class PlayerService
             ? saved.GetValueOrDefault(owner) : saved.GetValueOrDefault(StoryPlaceKey(node, copy));
         // The client owns the distance rule (goal > AllowRelocateQuestMinDistance, 1000 m). The server sees cells, not
         // GPS: requiring the goal outside its 2 km area estimate refused every goal 1-2 km away, so only a placed goal is required.
-        if (!quest.Active.Any(n => !n.Queued && Enumerable.Range(0, Math.Max(1, n.Copies))
+        if (!quest.Active.Any(n => !n.BesidePlayer && Enumerable.Range(0, Math.Max(1, n.Copies))
                 .Any(copy => Existing(n, copy) is not null)))
             return Refuse("goals-unplaced");
         // A retry with a new request id for the giver the quest already moved to cannot move it again.
         if (saved.GetValueOrDefault(quest.Root.Key)?.Id == target.Id) return Refuse("already-moved-here");
         var cells = playable.Cells(area, 0)?.Where(c => area.Contains(c.Id)).ToList();
         if (cells is null || cells.Count == 0) return Refuse("no-map");
-        // Goals go around the player's GPS position when the collector reports one, else the area's centre.
-        var player = PlayerPosition();
+        // Goals go around the player's position when the server knows it, else the area's centre.
+        var player = PlayerPositionIn(cells);
         var planned = new Dictionary<string, LocalProfileStore.StoryPlace>(saved);
         var keys = quest.Nodes.SelectMany(n => Enumerable.Range(0, Math.Max(1, n.Copies))
             .Select(copy => StoryPlaceKey(n, copy))).ToHashSet();
@@ -213,7 +213,7 @@ public sealed partial class PlayerService
             if (chosen is not null) planned[key] = chosen;
             return chosen;
         }
-        foreach (var node in quest.Nodes.Where(n => !n.Queued && !n.Button &&
+        foreach (var node in quest.Nodes.Where(n => !n.BesidePlayer && !n.Button &&
                      (quest.Active.Any(a => a.Id == n.Id) || Enumerable.Range(0, Math.Max(1, n.Copies))
                          .Any(copy => saved.ContainsKey(StoryPlaceKey(n, copy))))))
             for (int copy = 0; copy < Math.Max(1, node.Copies); copy++)
@@ -226,14 +226,14 @@ public sealed partial class PlayerService
         {
             var active = StoryEngine.Active(story, updated.Facts, StoryNow(story)).ToList();
             var placed = new List<(StoryEngine.Node Node, LocalProfileStore.StoryPlace Place, int Copy)>();
-            foreach (var node in active.Where(n => !n.Queued))
+            foreach (var node in active.Where(n => !n.BesidePlayer))
                 for (int copy = 0; copy < Math.Max(1, node.Copies); copy++)
                     if (planned.GetValueOrDefault(node.PlaceOf ?? StoryPlaceKey(node, copy)) is { } place)
                         placed.Add((node, place, copy));
             WriteQuestLocations(b, placed.Select(p => p.Place).DistinctBy(p => p.Id).ToList());
-            b.WriteInt(placed.Count + active.Count(n => n.Queued));
-            foreach (var (node, place, copy) in placed) WriteStoryNode(b, node, node.Instance + copy, place.Id, Reconstruction.DisplayNormal);
-            foreach (var node in active.Where(n => n.Queued)) WriteStoryNode(b, node, node.Instance, TutPlaceId, Reconstruction.DisplayCloseFollow);
+            b.WriteInt(placed.Count + active.Count(n => n.BesidePlayer));
+            foreach (var (node, place, copy) in placed) WriteStoryNode(b, node, node.Instance + copy, place.Id, node.Display);
+            foreach (var node in active.Where(n => n.BesidePlayer)) WriteStoryNode(b, node, node.Instance, TutPlaceId, BesideDisplay(node));
         }
         else
         {

@@ -124,6 +124,9 @@ class ServerService : Service() {
             }
             // the update's own notes for What's new, replaced every time (NewsFeed shows them before the owner's news)
             File(rt, "defaults/news/release.json").copyTo(File(state, "news/release.json"), overwrite = true)
+            // trinkets only ever gain rows (the server refuses a changed or missing one) and the dashboard never edits
+            // them, so each update's new trinkets replace the copy too
+            File(rt, "defaults/tasks/trinkets.json").copyTo(File(state, "tasks/trinkets.json"), overwrite = true)
             val world = File(state, "world").apply { mkdirs() }
             File(world, "world.json").takeUnless { it.exists() }
                 ?.writeText("{\n  \"schemaVersion\": 1,\n  \"monsterSlotsPerCell\": 18\n}\n")
@@ -144,6 +147,7 @@ class ServerService : Service() {
                 "--Weather:Url", "https://api.open-meteo.com/v1/forecast",
                 "--Admin:Port", "$ADMIN_PORT", "--Admin:Origin", "http://127.0.0.1:$ADMIN_PORT", // DashboardActivity
                 "--Admin:KeyFile", "$key", "--Admin:DataDirectory", "$state/admin/data",
+                "--Admin:DebugTools", "true", // the Players tab's debug tools: the phone is the player's own server
                 // one timestamped line per entry: the log is read by people and by the bug report
                 "--Logging:Console:FormatterOptions:SingleLine", "true",
                 "--Logging:Console:FormatterOptions:TimestampFormat", "HH:mm:ss.fff ",

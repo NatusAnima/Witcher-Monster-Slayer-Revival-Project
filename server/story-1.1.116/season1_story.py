@@ -10,11 +10,16 @@ each won fight, gold announced through fact 175) and checks everything against t
   - every condition parses and names known nodes, outputs and quests;
   - every walk-through step sends only facts its graph sets;
   - every quest has exactly one root, givers stand inside the client's giver distance;
+  - every quest's completion fact is set by one of its graphs, and the server's own facts are no graph's;
   - every monster a fight or a combat preparation loads has a monsters row.
 It refuses to write the file when a check fails.
 
   python season1_story.py --graphs season1-graphs.json --catalog <LAB APK>/assets/aa/catalog.json \
-      --sheet m01.csv --output ../WitcherRevival.Server/Story/season1-story.json
+      --sheet m01-season1.csv --output ../WitcherRevival.Server/Story/season1-story.json
+
+The graphs come from the 1.1.116 packs, the client this server runs (the story was first built from the 1.3.102 ones;
+the only differences are the gold notices and the forktail fight fixed on 2026-10-10). story_audit.py checks the
+result against the same graphs.
 """
 from __future__ import annotations
 
@@ -27,7 +32,7 @@ import struct
 import sys
 from pathlib import Path
 
-from season1_quests import MODIFIER_SECONDS, MODIFIERS, MONSTERS, QUESTS
+from season1_quests import DISPLAY, MODIFIERS, MONSTERS, PRICES, QUESTS, SERVER_FACTS
 
 GIVER_DISTANCE = 350        # Client: PoiSettings.questOnMapHideDistance on LAB 16 (QuestPoiInstance.ShouldBeInstantiated)
 GIVER_BAND = (80, 300)
@@ -39,6 +44,9 @@ EXISTING_DIFFICULTY = {1: 1, 2: 2, 3: 1, 4: 1, 5: 2, 6: 3, 7: 2, 8: 3, 9: 3, 10:
 BASE_EXP = {1: 100, 2: 250, 3: 600}      # Reconstruction.BaseExp (Community: Gamepressure)
 ATOM = re.compile(r"^(!?)(?:f(\d+)(<=|>=|!=|=|<|>)(-?\d+)|out:([\w.]+)|wait:([\w.]+):(\d+)|done:(\d+)|started:(\d+))$")
 AUTHORED_INSTANCE = 5124760000000000000
+# The story was first built from the 1.3.102 graphs, which name this output mushroom_timer_start; saved progress keeps
+# that name, and StoryEngine.OutputAliases answers the 1.1.116 spelling.
+OUTPUT_NAMES = {"mushroom_start": "mushroom_timer_start"}
 
 
 def catalog_keys(path: Path) -> set[str]:
@@ -118,6 +126,12 @@ def main():
                              "model": model, "image": image, "trophy": trophy_key, "slug": slug})
         vulnerabilities[slug] = stats["vulnerable"] or [6, 2]
         next_id += 1
+    # World bestiary rows (world_bestiary.py, ids from 101): the client's 1.1.116 graphs fight some of them in the story
+    # (the mushroom hunt's forktail), so they count like the story's own monsters.
+    world = json.loads((Path(__file__).resolve().parent.parent / "WitcherRevival.Server/Story/world-bestiary.json").read_text())
+    for row in world["monsters"]:
+        if row["slug"] not in monster_ids:
+            monster_ids[row["slug"]], difficulty[row["id"]], count_kills[row["slug"]] = row["id"], row["difficulty"], True
 
     # ── Quests, nodes and outputs ───────────────────────────────────────────────────────────
     quests, nodes, outputs, walks = [], [], [], {}
@@ -127,7 +141,8 @@ def main():
         quest_id, code = q["id"], q["code"]
         journal = f"assets/_bundledassets/story/journal/s01/{q['folder']}/log_{code}.asset"
         need_key(journal, f"{code} journal")
-        quests.append({"id": quest_id, "code": code, "name": q["name"], "journal": journal, "criteria": q["criteria"]})
+        quests.append({"id": quest_id, "code": code, "name": q["name"], "journal": journal, "criteria": q["criteria"],
+                       "done": q["done"], "main": q.get("main", False)})
         auto = 12000 + quest_id * 40
         roots = [n for n in q["nodes"] if n["kind"] == "giver"] or [n for n in q["nodes"] if n["kind"] == "queued"][:1]
         if len(roots) != 1:
@@ -162,14 +177,22 @@ def main():
             band = n["band"] or (GIVER_BAND if n["kind"] == "giver" else POI_BAND)
             if n["kind"] == "giver" and band[1] > GIVER_DISTANCE - 30:
                 errors.append(f"{n['key']}: a giver must stand well inside {GIVER_DISTANCE} m")
+            # A collecting map node stands beside the player (written like the queued ones); a collecting giver keeps its
+            # place, which the map-cell reply needs, and a hunt node its place, the centre of its search circle.
+            if n["display"] not in DISPLAY or n["display"] != "normal" and n["kind"] not in ("poi", "giver"):
+                errors.append(f"{n['key']}: display {n['display']} is for map nodes and givers")
+            elif n["display"] == "collecting" and n["kind"] == "poi" and (n["band"] or n["near"] or n["place_of"] or n["copies"] != 1):
+                errors.append(f"{n['key']}: a collecting node stands beside the player: no band, near, place_of or copies")
             nodes.append({"id": node_id, "quest": quest_id, "key": n["key"], "graph": graph_key, "poi": n["poi"] or "",
                           "instance": instance, "kind": n["kind"], "root": n["root"], "show": n["show"],
-                          "min": band[0], "max": band[1], "near": n["near"], "placeOf": n["place_of"], "copies": n["copies"]})
-            for name, info in graph["outputs"].items():
+                          "min": band[0], "max": band[1], "near": n["near"], "placeOf": n["place_of"], "copies": n["copies"],
+                          "display": DISPLAY.get(n["display"], 1)})
+            for sent, info in graph["outputs"].items():
+                name = OUTPUT_NAMES.get(sent, sent)
                 reward = dict(q["end"].get(f"{n['key']}.{name}", {}))
                 exp, gold = reward.get("exp", 0), reward.get("gold", 0)
                 kills = {}
-                monster = graph.get("fight_outputs", {}).get(name)
+                monster = graph.get("fight_outputs", {}).get(sent)
                 if monster:
                     if monster not in monster_ids:
                         errors.append(f"{n['key']}.{name}: no monsters row for {monster}")
@@ -191,6 +214,9 @@ def main():
             node_ids = [x["id"] for x in nodes if x["key"] == node_key]
             if not node_ids or not any(o["node"] in node_ids and o["name"] == name for o in outputs):
                 errors.append(f"{code}: ending {ending} is not an output of its node")
+        # The completion fact is the client's own: one of the quest's graphs sets it to 1.
+        if not any(f == q["done"] and str(v) == "1" for x in nodes if x["quest"] == quest_id for f, v in graphs[x["graph"]]["sets"]):
+            errors.append(f"{code}: no graph of the quest sets its completion fact f{q['done']}=1")
         walks[str(quest_id)] = [list(step) for step in q["walk"]]
 
     # Conditions and walk-throughs refer to known things.
@@ -209,8 +235,13 @@ def main():
                     ref = match.group(5) or match.group(6)
                     if ref and ref not in known_outputs:
                         errors.append(f"{x['key']}: condition refers to unknown output {ref}")
-    # A condition waits only on facts some graph sets (fact 100 comes from "A Joint Venture").
-    set_somewhere = {100} | {f for g in graphs.values() for f, _ in g["sets"]}
+    # A condition waits only on facts some graph sets (fact 100 comes from "A Joint Venture") or the server owns.
+    graph_facts = {f for g in graphs.values() for f, _ in g["sets"]}
+    errors += [f"server fact f{f} is also a graph's" for f in SERVER_FACTS if f in graph_facts]
+    # A price is for an output a graph sends without a quest node.
+    errors += [f"price for {name}: no graph sends it, or a node has it" for name in PRICES
+               if not any(name in g["outputs"] for g in graphs.values()) or any(o["name"] == name for o in outputs)]
+    set_somewhere = {100} | graph_facts | set(SERVER_FACTS)
     for where, expr in [(x["key"], x["root"] + "&" + x["show"]) for x in nodes] + [(q["code"], q["criteria"]) for q in quests]:
         for fact in re.findall(r"(?<![\w:])f(\d+)(?=<|>|=|!)", expr):
             if int(fact) not in set_somewhere:
@@ -237,11 +268,12 @@ def main():
         sys.exit(1)
     story = {"source": "season1_story.py (graphs of s01_story_common_assets_all, overlay season1_quests.py)",
              "quests": quests, "nodes": nodes, "outputs": outputs,
-             "modifiers": [{"id": i, "slug": s, "seconds": MODIFIER_SECONDS.get(i)} for i, s in MODIFIERS],
+             "prices": PRICES,
+             "modifiers": [{"id": i, "slug": s} for i, s in MODIFIERS],
              "monsters": monster_rows,
              "vulnerabilities": vulnerabilities, "walks": walks}
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(story, indent=1, ensure_ascii=False) + "\n")
+    args.output.write_text(json.dumps(story, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     print(f"{len(quests)} quests, {len(nodes)} nodes, {len(outputs)} outputs, {len(monster_rows)} monster rows")
 
 

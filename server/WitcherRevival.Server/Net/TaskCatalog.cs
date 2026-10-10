@@ -178,7 +178,7 @@ public sealed class TaskCatalog : IDisposable
                     throw new InvalidDataException("Invalid task references.");
             if (d.Type == 1 && d.Target > 256 ||
                 d.Monsters?.Any(id => WorldBestiary.Of(id) is null) == true ||
-                d.Quests?.Any(id => !StoryEngine.Quests.Any(q => q.Id == id)) == true ||
+                d.Quests?.Any(id => !StoryEngine.Quests.Any(q => q.Id == id) && id != TaskEngine.JointVentureQuest) == true ||
                 d.Outputs?.Any(id => !StoryEngine.Outputs.Any(o => o.Id == id)) == true ||
                 d.Items?.Any(id => !Reconstruction.KnownItem(d.Type == 12 ? ItemKinds.Ingredients : d.Type == 4 ? ItemKinds.Bombs : Economy.KindOf(d.ItemType) ?? "", id)) == true ||
                 d.Actions?.Any(id => id > 12) == true ||

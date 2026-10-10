@@ -80,7 +80,7 @@ LEGACY_LEVEL_UPS = [
 RECONSTRUCTED_EMPTY_BEFORE = ('effects', 'skill_to_effect', 'oils', 'oil_to_effect', 'potions', 'player_starting_skills', 'auto_equip',
                               'damage_types', 'bomb_damage_types', 'potion_to_effect', 'armor_to_effect', 'sword_to_effect',
                               'monster_vulnerabilities', 'herbs', 'lures', 'shop_lures', 'game_configuration',
-                              'player_modifiers',
+                              'player_modifiers', 'player_modifier_to_effect',
                               # Alchemy and the shop (Economy.cs).
                               'ingredients', 'senses_potions', 'brewers', 'recipe_tiers', 'potion_recipes', 'oil_recipes',
                               'bomb_recipes', 'senses_potion_recipes', 'potion_recipe_ingredients', 'oil_recipe_ingredients',
@@ -621,19 +621,19 @@ class PrototypeTests(unittest.TestCase):
         self.assert_zero_completion_rewards(replay)
         self.assertEqual(self.inventory(c)['oils'], {301: 1})
         done = Reader(c.rpc(57, self.completion_body({3: 1, 2: 1}, instance=self.TUT_EXAM, output='exam_end'))).end_graph()
-        self.assertEqual((done['exp'], done['gold']), (1500, 300))
+        self.assertEqual((done['exp'], done['gold']), (0, 0))      # the maintainer's reward list: the exam pays nothing
         self.assertEqual(done['nodes'][0]['instance'], THORSTEIN)
         # Thorstein lies hurt on the map until his first dialog (the standing figure is season 1's).
         self.assertEqual(done['nodes'][0]['settings'], 'assets/_bundledassets/story/poi_settings/s00/prolog/thorstein_hurt_lq.asset')
         info = self.player_info(c)
-        self.assertEqual((info['exp'], info['gold'], info['tutorial_finished']), (1500, 300, 1))
+        self.assertEqual((info['exp'], info['gold'], info['tutorial_finished']), (0, 0, 1))
         self.assertEqual(decode_finished_quests(decode_batch(c.rpc(115))[70])['tracked'], 145)
         accepted = Reader(c.rpc(57, self.completion_body())).end_graph()
         self.assertEqual(accepted['oils'], {})          # prolog_01 gives nothing.
         self.assertEqual(accepted['nodes'][0]['instance'], HORSE)
         self.assertEqual(self.inventory(c)['oils'], {301: 1})
-        # Level 2 at 1500 XP grants five skill points.
-        self.assertEqual(server.state()['player']['skillPoints'], 5)
+        # Still level 1, so no skill points yet.
+        self.assertEqual(server.state()['player']['skillPoints'], 0)
         # Winning both horse fights ends with "dead_horse", which also leads to the griffin; Thorstein's
         # dialog after the fights hands over the Hybrid Oil once, whichever ending is replayed.
         horse = Reader(c.rpc(57, self.completion_body({94: -3}, instance=HORSE, output='dead_horse'))).end_graph()
@@ -857,7 +857,7 @@ class PrototypeTests(unittest.TestCase):
         # Beating the griffin closes the prologue (reward once) and offers quest node 287, whose graph the
         # client queued; it starts "A Joint Venture" and is followed by no node yet.
         done = Reader(c.rpc(57, self.completion_body({109: 1}, instance=GRIFFIN, output='griffin_1'))).end_graph()
-        self.assertEqual((done['exp'], done['gold']), (1000, 100))
+        self.assertEqual((done['exp'], done['gold']), (250, 45))
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
         self.assertEqual((quests['finished'], quests['tracked'], quests['active']), ([144, 145], 146, [146]))
         start, = done['nodes']
@@ -936,12 +936,12 @@ class PrototypeTests(unittest.TestCase):
         # Story fights count in the bestiary: the griffin, two wraiths (heart, wrong gift) and the gargoyle.
         killed = Reader(decode_batch(c.rpc(115))[7]).facts()
         self.assertEqual({m: killed.get(m) for m in (9, 11, 13)}, {9: 1, 11: 2, 13: 1})
-        # The figurine cutscene and Thorstein's dialog end the quest: 60 gold, no node left.
+        # The figurine cutscene and Thorstein's dialog end the quest: 275 XP, no node left.
         result, _ = step('success_heart', {100: 4, 102: 3, 145: 2}, instance=5124756678394249457)
-        self.assertEqual((result['nodes'], result['gold']), ([], 60))
+        self.assertEqual((result['nodes'], result['exp'], result['gold']), ([], 275, 0))
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
         self.assertEqual((quests['finished'], quests['tracked'], quests['active']), ([144, 145, 146], -1, []))
-        self.assertEqual(step('success', instance=5124756678394249457)[0]['gold'], 0)
+        self.assertEqual(step('success', instance=5124756678394249457)[0]['exp'], 0)
         server.stop()
         c = self.client(self.start('test-venture', env))
         self.assertEqual(Reader(c.rpc(60)).quest()['nodes'], [])
@@ -1014,8 +1014,16 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(bundles[1205]['gold_price'], 60)                 # Swallow ×3 (TheGamer)
         prices = {(r['item_type_id'], r['item_id']): r['gold_price'] for r in data['auto_equip_items_prices']}
         self.assertEqual((prices[(4, 301)], prices[(3, 201)]), (25, 10))
-        # Gold from the tutorial exam; today's deals; a stack of potions and alchemy ingredients.
+        # The tutorial exam pays nothing (the maintainer's reward list), so a purse of 300 orens; today's deals; a stack of
+        # potions and alchemy ingredients.
         c.rpc(57, self.completion_body({3: 1}, instance=self.TUT_EXAM, output='exam_end'))
+        server.stop()
+        path = self.profile_file('test-economy')
+        profile = json.loads(path.read_text())
+        profile['Player']['Gold'] = 300
+        path.write_text(json.dumps(profile))
+        server = self.start('test-economy', self.RECONSTRUCTED)
+        c = self.client(server)
         self.assertEqual(self.player_info(c)['gold'], 300)
         deals = Reader(c.rpc(79)); self.assertEqual(deals.byte(), 1)
         daily = deals.ints()
@@ -1525,6 +1533,38 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.rpc(50, I(507) + I(1)), b'\1' + I(507) + I(1))
         self.assertEqual(self.inventory(c)['lures'], {})
 
+    def test_a_giver_stands_within_sight_of_where_the_game_says_the_player_is(self):
+        # Without GPS from the hook a giver goes around the loaded area's centre, which can be out of the client's 350 m
+        # sight. The game's weather request carries its own position: a giver not yet met is placed again around it.
+        origin = (10.0, 20.0)
+        metres = lambda a, b: math.hypot((a[0] - b[0]) * 110540.0, (a[1] - b[1]) * 111320.0 * math.cos(math.radians(a[0])))
+        east = lambda m: (origin[0], origin[1] + m / (111320.0 * math.cos(math.radians(origin[0]))))
+        places = [{'id': f'lab-test-{r}-{k}', 'lat': origin[0] + dy * r / 110540.0,
+                   'lng': origin[1] + dx * r / (111320.0 * math.cos(math.radians(origin[0]))), 'biomes': [4], 'kind': 'path'}
+                  for r in (200, 350, 500, 650, 750) for k, (dy, dx) in enumerate(((1, 0), (0, 1), (-1, 0), (0, -1)))]
+        url, _ = self.playable_service(lambda ids, epoch: {
+            i: {'center': list(origin), 'places': places if n == 0 else []} for n, i in enumerate(ids)})
+        env = dict(self.RECONSTRUCTED, Playable__Url=url)
+        server = self.start('test-sight', env)
+        first = self.client(server); first.rpc(3); first.rpc(3)
+        server.stop()
+        path = self.profile_file('test-sight')
+        profile = json.loads(path.read_text())
+        profile['QuestStage'], profile['Facts'] = 'jv_done', {'100': 4}
+        path.write_text(json.dumps(profile))
+        c = self.client(self.start('test-sight', env))
+        request = I(9) + b''.join(Q(0x4704440000000000 + (k << 40)) for k in range(9))
+        c.rpc(88, request)
+
+        def margit():
+            world = self.locations_by_cell(c.rpc(40, request))
+            giver, = [g for g in world['quests'] if g['node'] == 11491]
+            return {name: point for rows in world['cells'].values() for name, point, _ in rows}[giver['place']]
+        self.assertTrue(80 <= metres(margit(), origin) <= 300)            # no position known: around the area's centre
+        player = east(650)
+        c.rpc(67, struct.pack('>ff', *player))
+        self.assertTrue(80 <= metres(margit(), player) <= 300)
+
     def test_good_money_runs_from_the_giver_to_the_payment(self):
         # Season 1 story engine: after "A Joint Venture" Margit is offered as a quest giver; her graph starts
         # quest 149, the cocoons follow, and her payment ends the quest.
@@ -1568,7 +1608,9 @@ class PrototypeTests(unittest.TestCase):
         c = self.client(server)
         c.rpc(88, request)
         world = self.locations_by_cell(c.rpc(40, request))
-        giver, = world['quests']
+        # Evil Never Sleeps and To the Rescue need no earlier quest either (Kienan shows beside the walking player).
+        self.assertEqual({g['node']: g['mode'] for g in world['quests']}, {11491: 1, 16160: 1, 292: 7})
+        giver = next(g for g in world['quests'] if g['node'] == 11491)
         self.assertEqual((giver['node'], giver['graph'], giver['settings'].rsplit('/', 2)[-2:], giver['mode']),
                          (11491, 's01/s01mq01_scholar/s01mq01_scholar_01', ['mq01', 'scholar_lq.asset'], 1))
         self.assertEqual(giver['place'], giver['at'])
@@ -1590,8 +1632,7 @@ class PrototypeTests(unittest.TestCase):
         self.assertTrue(300 <= metres(lair, origin) <= 800)
         # The started quest has a hidden relocation giver with a separate instance; the client hides it
         # through SetActiveQuestGivers but uses it when looking for a relocation destination.
-        relocation, = self.locations_by_cell(c.rpc(40, request))['quests']
-        self.assertEqual(relocation['node'], giver['node'])
+        relocation, = [g for g in self.locations_by_cell(c.rpc(40, request))['quests'] if g['node'] == giver['node']]
         self.assertNotEqual(relocation['instance'], giver['instance'])
         self.assertEqual(c.rpc(72, I(149)), b'\1' + I(149))
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
@@ -1614,24 +1655,26 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual((tailed['exp'], tailed['bestiary']), (250, {15: 1}))
         result, at = step('embrions', {53: 3, 50: 1, 1: 7}, second)
         self.assertEqual([(n['node'], n['place']) for n in result['nodes']], [(11493, giver['place'])])
-        # Her payment ends the quest: the published 1200 XP and 40 gold, nothing left on the map.
+        # Her payment ends the quest: 250 XP and 40 gold (the maintainer's reward list), nothing left on the map.
         before = self.player_info(c)
         done = Reader(c.rpc(57, self.completion_body({53: 4, 1000: 1, 1001: 1, 1003: 1, 102: 4}, instance=result['nodes'][0]['instance'],
                                                     output='scholar_02'))).end_graph()
-        self.assertEqual((done['exp'], done['gold'], done['nodes']), (1200, 40, []))
+        # Nothing of Good Money is left; Lothar's map (Sword in the Stone) now waits invisible beside the player.
+        self.assertEqual((done['exp'], done['gold'], [n['node'] for n in done['nodes']]), (250, 40, [399]))
         after = self.player_info(c)
-        self.assertEqual((after['exp'] - before['exp'], after['gold'] - before['gold']), (1200, 40))
+        self.assertEqual((after['exp'] - before['exp'], after['gold'] - before['gold']), (250, 40))
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
         self.assertEqual((quests['finished'], quests['tracked'], quests['active']), ([144, 145, 146, 149], -1, []))
-        # Facts 1000, 1001 and 1003 open eight more quests: their givers take Margit's place in the cells.
+        # Facts 1001 and 1003 open Pride Ain't Cheap, What Lurks in the Nemeta and The Dark Side of the Full Moon; Monster
+        # Slayer waits for its troll trigger, Will o' the Wisp and The Great Mushrooming for their quests before.
         self.assertEqual({q['node'] for q in self.locations_by_cell(c.rpc(40, request))['quests']},
-                         {16160, 292, 301, 18360, 289, 395, 390, 18120})
+                         {16160, 292, 301, 18360, 289})
         state = server.state()['player']
         self.assertEqual((state['kills']['14'], state['kills']['15']), (3, 1))
-        self.assertEqual(state['exp'], 100 * 3 + 250 + 1200)
+        self.assertEqual(state['exp'], 100 * 3 + 250 + 250)
         # An output the node does not have changes nothing.
         unknown = Reader(c.rpc(57, self.completion_body({}, instance=result['nodes'][0]['instance'], output='nope'))).end_graph()
-        self.assertEqual((unknown['exp'], unknown['nodes']), (0, []))
+        self.assertEqual((unknown['exp'], [n['node'] for n in unknown['nodes']]), (0, [399]))
 
     def relocation_fixture(self, stage='jv_done', facts=None, started=None, done=None):
         area_a, area_b = 0x4704440000000000, 0x4804440000000000
@@ -1667,9 +1710,9 @@ class PrototypeTests(unittest.TestCase):
         return server, c, path, env, old, area_a, area_b, control
 
     def test_relocation_moves_goals_once_preserves_progress_and_survives_restart(self):
-        # Five mushroom copies, queued graphs and a second, untouched active quest in the response.
+        # The leshen moves; the mushroom and the queued graphs stay beside the player, and a second active quest is untouched.
         server, c, path, env, old, a, b, _ = self.relocation_fixture(
-            facts={100: 4, 56: 3, 53: 1}, started=[153, 149])
+            facts={100: 4, 56: 3, 53: 1, 58: 1}, started=[153, 149])
         old_world = self.locations_by_cell(c.rpc(40, I(1) + Q(a)))
         c.rpc(88, I(1) + Q(b))
         world = self.locations_by_cell(c.rpc(40, I(1) + Q(b)))
@@ -1695,16 +1738,15 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(after['Facts'], before['Facts'])
         moved = Reader(response[1:]).quest()
         old_nodes = {n['instance']: n for n in Reader(old).quest()['nodes']}
-        mushroom = next(n for n in SEASON1['nodes'] if n['key'] == 's01mq05_mushroom')
-        copies = [n for n in moved['nodes'] if n['node'] == mushroom['id']]
-        self.assertEqual(len(copies), 5)
-        self.assertEqual(len({n['place'] for n in copies}), 5)
+        leshen = next(n for n in SEASON1['nodes'] if n['key'] == 's01mq05_leshen')
+        goal, = [n for n in moved['nodes'] if n['node'] == leshen['id']]
         positions = {key: struct.unpack('>ff', raw) for key, raw, _ in moved['locations']}
-        for node in copies:
-            self.assertNotEqual(node['place'], old_nodes[node['instance']]['place'])
-            self.assertLess(abs(positions[node['place']][0] - 11), .01)
+        self.assertNotEqual(goal['place'], old_nodes[goal['instance']]['place'])
+        self.assertLess(abs(positions[goal['place']][0] - 11), .01)
+        mushroom = next(n for n in SEASON1['nodes'] if n['key'] == 's01mq05_mushroom')
+        self.assertEqual([(n['mode'], n['place']) for n in moved['nodes'] if n['node'] == mushroom['id']], [(7, 'tut_thorstein')])
         for node in moved['nodes']:
-            if node not in copies: self.assertEqual(node, old_nodes[node['instance']])
+            if node is not goal: self.assertEqual(node, old_nodes[node['instance']])
         self.assertEqual(c.rpc(77, Q(giver['instance']), repeat=True), response)
         self.assertEqual(json.loads(path.read_text()), after)
         self.assertEqual(c.rpc(60), response[1:])
@@ -1807,7 +1849,7 @@ class PrototypeTests(unittest.TestCase):
 
     def test_relocation_refusals_leave_entire_profile_unchanged(self):
         server, c, path, _, old, a, b, control = self.relocation_fixture(facts={100: 4, 53: 1}, started=[149])
-        giver, = self.locations_by_cell(c.rpc(40, I(1) + Q(a)))['quests']
+        giver, = [g for g in self.locations_by_cell(c.rpc(40, I(1) + Q(a)))['quests'] if g['node'] == 11491]
         before = path.read_bytes()
         for data in (Q(-1), Q(Reader(old).quest()['nodes'][0]['instance']), Q(1) + b'\0'):
             self.assertEqual(c.rpc(77, data), b'\0' * 13)
@@ -1815,7 +1857,7 @@ class PrototypeTests(unittest.TestCase):
         c.rpc(88, I(1) + Q(b))
         self.assertEqual(c.rpc(77, Q(giver['instance'])), b'\0' * 13)  # stale giver, not served here
         self.assertEqual(path.read_bytes(), before)
-        giver, = self.locations_by_cell(c.rpc(40, I(1) + Q(b)))['quests']
+        giver, = [g for g in self.locations_by_cell(c.rpc(40, I(1) + Q(b)))['quests'] if g['node'] == 11491]
         before = path.read_bytes()
         control['radii'] = (100,)  # A destination giver fits, but the active goal's band does not.
         self.assertEqual(c.rpc(77, Q(giver['instance'])), b'\0' * 13)
@@ -1885,7 +1927,7 @@ class PrototypeTests(unittest.TestCase):
     def test_relocation_preserves_near_and_return_to_giver_relationships(self):
         server, c, path, env, _, a, b, _ = self.relocation_fixture(facts={100: 4, 53: 2}, started=[149])
         c.rpc(88, I(1) + Q(b))
-        giver, = self.locations_by_cell(c.rpc(40, I(1) + Q(b)))['quests']
+        giver, = [g for g in self.locations_by_cell(c.rpc(40, I(1) + Q(b)))['quests'] if g['node'] == 11491]
         response = c.rpc(77, Q(giver['instance']))
         self.assertEqual(response[:1], b'\1')
         self.assertEqual(c.rpc(60), response[1:])
@@ -2058,7 +2100,7 @@ class PrototypeTests(unittest.TestCase):
                 self.assertLessEqual({int(i) for i in items}, ids)
         for row in SEASON1['monsters']:
             self.assertEqual(monsters[row['id']]['slug'], row['slug'])
-        self.assertEqual([m['id'] for m in data['player_modifiers']], [1, 2, 3, 4, 5, 6, 7, 8])
+        self.assertEqual([m['id'] for m in data['player_modifiers']], [1, 2, 3, 4, 5, 6, 7, 8, 901, 902])  # 901-902: debug tools
 
     def test_season1_original_output_alias_rows_preserve_donor_rows_and_edges(self):
         with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=1) as response:
@@ -2187,8 +2229,15 @@ class PrototypeTests(unittest.TestCase):
         served = Reader(c.rpc(60)).quest()['nodes']
         reached, finished = set(), [144, 145, 146]
         exp = server.state()['player']['exp']
-        for quest_id, steps in SEASON1['walks'].items():
-            quest = int(quest_id)
+        # An order the prerequisites allow (the maintainer's list, 10 October 2026): The Sins of Our Fathers before The Great
+        # Mushrooming, Intruder after the five main quests; Monster Slayer opens on the server's troll trigger (test_season1
+        # plays the fights; here the fact comes as the game would learn it).
+        order = ['149', '104', '148', '150', '159', '147', '158', '161', '160', '152', '153', '154']
+        self.assertEqual(sorted(order), sorted(SEASON1['walks']))
+        for quest_id in order:
+            steps, quest = SEASON1['walks'][quest_id], int(quest_id)
+            if quest == 161:
+                self.assertEqual(c.rpc(78, I(2) + I(1010) + I(1)), b'\1')
             root = next((n for n in SEASON1['nodes'] if n['quest'] == quest and n['kind'] == 'giver'), None)
             givers = {g['node']: g for g in self.locations_by_cell(c.rpc(40, request))['quests']}
             if root is not None:
@@ -2207,8 +2256,8 @@ class PrototypeTests(unittest.TestCase):
                         node = by_key[step[0]]
                         if node['kind'] == 'giver':
                             instance = givers[node['id']]['instance']
-                        elif node['kind'] == 'button':
-                            instance = 0          # journal buttons: found by output name among started quests
+                        elif node['kind'] == 'button':  # a journal button sends its graph's instance; without one, none
+                            instance = 0 if node['instance'] == 5124760000000000000 + node['id'] else node['instance']
                         else:
                             instance = next(n['instance'] for n in served if n['node'] == node['id'])
                         facts = {int(k): v for k, v in step[2].items()}
@@ -2234,10 +2283,16 @@ class PrototypeTests(unittest.TestCase):
             self.assertNotIn(quest, status['active'])
         self.assertEqual(len(finished), 3 + 12)
         self.assertEqual(server.state()['player']['exp'], exp)
+        # Every step was recorded, journal buttons sent without an instance too (s01hq02 has two that end with "notebook").
+        self.assertLessEqual(reached, set(server.state()['player']['story']['outputs']))
         # The quest rewards joined the equipment: Hermit's Armor (8) and Dawnbringer (17).
         gear = server.state()['player']['equipment']
         self.assertIn(8, gear['armors'])
         self.assertIn(17, gear['swords'])
+        # Every ending saved its quest's completion fact (177-188), and fact 31 counts the five main quests.
+        facts = server.state()['facts']
+        self.assertEqual({f: facts.get(str(f)) for f in range(177, 189)}, {f: 1 for f in range(177, 189)})
+        self.assertEqual(facts['31'], 5)
         # Nothing is offered or left on the map once the season is over.
         self.assertEqual(self.locations_by_cell(c.rpc(40, request))['quests'], [])
         self.assertEqual(Reader(c.rpc(60)).quest()['nodes'], [])
@@ -2917,11 +2972,16 @@ class PrototypeTests(unittest.TestCase):
         server, c = self.reconstructed()
         c.rpc(3)
         self.assertEqual(c.pushes, [])                             # a new profile starts at level 1, announced
-        # The tutorial exam grants 1500 XP: level 2 (1000 XP), pushed after the response as an Api RESPONSE with
-        # message id 0, no acknowledgement and method 31: [int Level] + 13 lists with one id per unit. The window
-        # never finishes loading without an item, so every level grants its rewards (added to the inventory).
+        # Story rewards reach level 2 (1000 XP): the griffin's 250 and a wraith's 250 do not, the gargoyle king's 600 does.
+        # The level is pushed after that response as an Api RESPONSE with message id 0, no acknowledgement and method 31:
+        # [int Level] + 13 lists with one id per unit. The window never finishes loading without an item, so every level
+        # grants its rewards (added to the inventory).
         before = self.inventory(c)
-        c.rpc(57, self.completion_body({3: 1}, instance=self.TUT_EXAM, output='exam_end'))
+        for output in ('griffin_1', 'wraith_won'):
+            c.rpc(57, self.completion_body({}, instance=GRIFFIN, output=output))
+        c.rpc(3)
+        self.assertEqual(c.pushes, [])
+        c.rpc(57, self.completion_body({}, instance=GRIFFIN, output='gargoyle'))
         c.rpc(3)
         lists = [I(1) + I(205)] + [I(0)] * 9 + [I(5) + I(103) * 3 + I(101) * 2] + [I(0)] * 2
         self.assertEqual(c.pushes, [(31, I(2) + b''.join(lists))])
@@ -2930,7 +2990,7 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(after['potions'].get(205, 0) - before['potions'].get(205, 0), 1)
         c.rpc(3)
         self.assertEqual(len(c.pushes), 1)                          # announced once
-        self.assertEqual(server.state()['player']['exp'], 1500)
+        self.assertEqual(server.state()['player']['exp'], 1100)
         # The level-up window's CheckInApp (101) is answered true, so no in-app offer opens.
         self.assertEqual(c.rpc(101), b'\1')
         # Several levels at once are pushed in order, also after a restart of the client.
@@ -2983,14 +3043,13 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.rpc(90, I(99) + I(3600)), I(4) + I(1) + I(99) + I(0) + I(0))
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata', timeout=1) as response:
             rows = json.loads(gzip.decompress(response.read()))['player_modifiers']
-        self.assertEqual(rows, [{'id': m['id'], 'slug': m['slug']} for m in SEASON1['modifiers']])
-        self.assertEqual({m['id']: m['seconds'] for m in SEASON1['modifiers'] if m['seconds']}, {3: 1440, 6: 1440, 7: 1440})
+        self.assertEqual(rows[:-2], [{'id': m['id'], 'slug': m['slug']} for m in SEASON1['modifiers']])  # then the debug tools' two
         self.assertEqual({row['id']: row['slug'] for row in rows}[7], 's01_12h')
-        # Vesemir's remedy (modifier 7, 12 h in the graph) lasts the story's LAB wait, like the node it gates.
+        # Vesemir's remedy (modifier 7) lasts the graph's 12 h, like the node it gates.
         r = Reader(c.rpc(90, I(7) + I(43200)))
         self.assertEqual((r.integer(), r.integer(), r.integer()), (4, 0, 7))
         start, expire = r.integer(), r.integer()
-        self.assertEqual(expire - start, 24 * 60)
+        self.assertEqual(expire - start, 12 * 3600)
         r = Reader(c.rpc(90, I(5) + I(7200)))                     # the potion keeps its 2 h
         self.assertEqual((r.integer(), r.integer(), r.integer()), (4, 0, 5))
         self.assertEqual(-r.integer() + r.integer(), 7200)

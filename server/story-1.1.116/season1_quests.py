@@ -14,36 +14,60 @@ fact is 0), `out:<node>.<output>` (reached), `wait:<node>.<output>:<seconds>` (r
 the client row carries the first one (the client evaluates a single expression) and the server checks them all.
 
 Evidence: Client (graphs, journals, POI settings, localisation), Community (Gamepressure walkthroughs, 2021) or
-Authored, as noted per quest.
+Authored, as noted per quest. What each quest pays ("end") follows the maintainer's reward list of 10 October 2026;
+coin notices inside a quest (fact 175) are paid on top, by the outputs that show them.
 """
 
 POI = "assets/_bundledassets/story/poi_settings/"
 
-# LAB pacing (Authored, at the player's request, 30 September 2026): the long real-time waits of season 1 last 24
-# minutes instead of hours. Client: the graphs' AddExpiringEffect times are 43200 s (modifier 7, Vesemir's remedy)
-# and 86400 s (modifier 3, the mushroom hunt; modifier 6, the Intruder's solvent); Community (Gamepressure): Vesemir
-# wakes after 12 hours, the mushroom contest ends after a day. The server serves the nodes after LAB_WAIT and answers
-# AddPlayerModifier for these modifiers with LAB_WAIT, so the client's timers show the same time.
-LAB_WAIT = 24 * 60
-MODIFIER_SECONDS = {7: LAB_WAIT, 3: LAB_WAIT, 6: LAB_WAIT}
+# The real-time waits of season 1. Client: the graphs' AddExpiringEffect times are 43200 s (modifier 7, Vesemir's remedy)
+# and 86400 s (modifier 3, the mushroom hunt; modifier 6, the Intruder's solvent); Community (Gamepressure): Vesemir wakes
+# after 12 hours, the mushroom contest ends after a day. The server serves the nodes after these waits and answers
+# AddPlayerModifier with the graphs' own times; the dashboard's quest runner moves the story clock on to test them. (From 30
+# September to 10 October 2026 they lasted 24 minutes, at the maintainer's request.)
+REMEDY_WAIT = 12 * 3600
+CONTEST_WAIT = 24 * 3600
 EMPTY = POI + "_common/empty.asset"
 TRACKS = POI + "s00/prolog/footprint_placeholder.asset"
 
+# How a map node shows (Client: PoiDisplayMode). "collecting" (CollectingQuestPoi) stands beside the player once they have
+# walked 200 m and hides when used, until the next 200 m: the mushrooms of the contest, and Kienan, met while walking.
+# "hunt" (HuntQuestPoi, the prologue griffin's) draws its own search circle, which shrinks as the player nears and starts the
+# graph there: the tracks and the leshen hound, whose only settings (s00/prolog/footprint_placeholder) have no prefab, so as
+# a normal node they drew nothing (the hound "did not spawn at all", 10 October 2026).
+DISPLAY = {"normal": 1, "hunt": 4, "collecting": 7}
+
+# Facts only the server sets (no graph of either story pack uses them). Monster Slayer opens on a trigger
+# (PlayerService.TrollFight; Community (Gamepressure): "kill at least one rock troll, then lose to the next one you meet
+# several times until the troll talks"): after Good Money a won rock-troll fight sets 1011 to 1, each lost one adds 1,
+# and at the Tuning number of losses 1010 opens the quest. The game reads facts at start-up, so it shows from the next one.
+SERVER_FACTS = {1010: "Monster Slayer offered", 1011: "rock troll fights after the first win, plus one"}
+
+# Outputs of graphs that are no quest node, with the orens the server takes for them (StoryEngine.PriceOf): the reply's
+# gold is a change the client adds (QuestEndRequestNode → PlayerData.AddGold). Client: Lothar's s01hq03_map_payment sends
+# "payment" with no facts and queues the map (node 399); Community (the maintainer's walkthrough): the map costs 500 coins.
+PRICES = {"payment": 500}
+
 
 def node(key, graph, poi=None, kind="poi", show="", root="", band=None, near=None, place_of=None, node_id=None,
-         copies=1, button_id=None):
+         copies=1, button_id=None, display="normal"):
     return {"key": key, "graph": graph, "poi": poi, "kind": kind, "show": show, "root": root, "band": band,
-            "near": near, "place_of": place_of, "id": node_id, "copies": copies, "button_id": button_id}
+            "near": near, "place_of": place_of, "id": node_id, "copies": copies, "button_id": button_id, "display": display}
 
 
 def items(**kinds):
     return {kind: {str(k): v for k, v in m.items()} for kind, m in kinds.items()}
 
 
+# Each quest's "criteria" (the client's quest row: one fact atom) follows the maintainer's list of 10 October 2026 (Community:
+# the Witcher wiki); "done" is the completion fact its endings set (Client), which the server also saves when it records the
+# ending, so the next game start offers what follows; "main" marks the five main quests whose endings count in fact 31
+# (Intruder, the sixth, opens at 5).
 QUESTS = [
-    # ── Good Money (s01mq01). Community (Gamepressure, 19 Aug 2021): 1200 XP and 40 gold; the figurine pays 60
-    # (Client: fact 175 = 60 with the gold notice). Unlocks the side quests (facts 1000, 1001, 1003).
-    {"id": 149, "code": "s01mq01", "name": "Good Money", "folder": "s01mq01_scholar", "criteria": "f100>=4",
+    # ── Good Money (s01mq01). Maintainer: 250 XP and 40 orens (Gamepressure said 1200 XP); the figurine pays 60
+    # (Client: fact 175 = 60 with the gold notice). Its end sets facts 1000 (Monster Slayer's own state), 1001 (Pride Ain't
+    # Cheap, The Dark Side of the Full Moon) and 1003 (What Lurks in the Nemeta).
+    {"id": 149, "code": "s01mq01", "name": "Good Money", "folder": "s01mq01_scholar", "criteria": "f100>=4", "done": 177, "main": True,
      "nodes": [
          node("s01mq01_margit", "s01mq01_scholar_01", POI + "s01/mq01/scholar_lq.asset", "giver", root="f53<1", node_id=11491),
          node("s01mq01_cocoon_1", "s01mq01_cocoon_01", POI + "s01/mq01/endrega_cocoon_lq.asset", show="f53=1", band=(300, 800)),
@@ -52,7 +76,7 @@ QUESTS = [
          node("s01mq01_margit_2", "s01mq01_scholar_02", POI + "s01/mq01/scholar_lq.asset", show="f53=3", place_of="s01mq01_margit",
               node_id=11493),
      ],
-     "end": {"s01mq01_margit_2.scholar_02": {"exp": 1200, "gold": 40}},
+     "end": {"s01mq01_margit_2.scholar_02": {"exp": 250, "gold": 40}},
      "walk": [
          ("s01mq01_margit", "scholar_01", {53: 1, 175: 60}, ["s01mq01_cocoon_1"]),
          ("s01mq01_cocoon_1", "endriagaworker_01", {1: 1}, ["s01mq01_cocoon_1"]),
@@ -67,16 +91,18 @@ QUESTS = [
     # ── Evil Never Sleeps (s01mq04, "Licho nadało"). Client: progress fact 72 (1 contract, 2 arachnomorphs killed,
     # 3 cursed amulet, 4 journal read, 5 mixture made, 6 likho killed), ingredients 73 (moss) and 74 (hemlock),
     # amulet thrown 75. Community (Gamepressure): Bedwyr sends you after spiders, the amulet curses you, two
-    # ingredients, the campfire summons the likho, back to Bedwyr; 250 XP and 35 gold. Authored: the hound's POI
-    # (footprints; no hound settings exist), places, 'no_reward' pays no gold.
-    {"id": 104, "code": "s01mq04", "name": "Evil Never Sleeps", "folder": "s01mq04_cursed_one", "criteria": "f1001>=1",
+    # ingredients, the campfire summons the likho, back to Bedwyr; 250 XP and 35 gold; no earlier quest needed (the
+    # maintainer's list). Authored: the hound's POI (the footprints placeholder, as a hunt circle; no hound settings exist),
+    # places, 'no_reward' pays no gold.
+    {"id": 104, "code": "s01mq04", "name": "Evil Never Sleeps", "folder": "s01mq04_cursed_one", "criteria": "f100>=4", "done": 180,
+     "main": True,
      "nodes": [
          node("s01mq04_bedwyr", "s01mq04_cursedone_01", POI + "s01/mq04/cursed_one_lq.asset", "giver", root="f72<1"),
          node("s01mq04_nest", "s01mq04_nest", POI + "s01/mq04/arachnomorph_lq.asset", show="f72=1", band=(300, 800)),
          node("s01mq04_bedwyr_curse", "s01mq04_cursedone_02", POI + "s01/mq04/cursed_one_lq.asset", show="f72=2",
               place_of="s01mq04_bedwyr"),
          node("s01mq04_hemlock", "s01mq04_herb_01", POI + "s01/mq04/water_hemlocks_lq.asset", show="f72=4 & f74<1", band=(200, 650)),
-         node("s01mq04_hound", "s01mq04_leshen_hound_01", TRACKS, show="f72=4 & f73<1", band=(200, 650)),
+         node("s01mq04_hound", "s01mq04_leshen_hound_01", TRACKS, show="f72=4 & f73<1", band=(200, 650), display="hunt"),
          node("s01mq04_campfire", "s01mq04_licho_01", POI + "s01/mq04/camp_fire_2_lq.asset", show="f72=5", band=(150, 500)),
          node("s01mq04_bedwyr_end", "s01mq04_cursedone_03", POI + "s01/mq04/cursed_one_cured_lq.asset", show="f72=6 & f75>=1",
               place_of="s01mq04_bedwyr"),
@@ -105,10 +131,12 @@ QUESTS = [
     # 143 = 1 and 65 = 1 when Geralt helps ('help'); 'no_help' refuses and his second dialogue (bandit_again)
     # helps (10148 = 1) or ends it (143 = 2); the pit (wife) ends with 23 = 2, 121 = 2..5 and 143 = 3..6; the bribe
     # path leaves the actor's key (200 = 1) for the treasure. Community (Gamepressure): meet Kienan, the pit holds a devourer, kill or spare
-    # him; 250 XP and 45 gold. Authored: Kienan asks again half an hour after a refusal; places.
-    {"id": 148, "code": "s01hq05", "name": "To The Rescue", "folder": "s01hq05_bandit_and_devourer", "criteria": "f1001>=1",
+    # him; 250 XP and 45 gold; no earlier quest, met at random while walking (the maintainer's list). Authored: Kienan is a
+    # collecting giver (he appears beside the player after 200 m of walking); he asks again half an hour after a refusal; places.
+    {"id": 148, "code": "s01hq05", "name": "To The Rescue", "folder": "s01hq05_bandit_and_devourer", "criteria": "f100>=4", "done": 187,
      "nodes": [
-         node("s01hq05_kienan", "s01hq05_bandit", POI + "s01/hq05/actor_lq.asset", "giver", root="f65<1 & f143<1"),
+         node("s01hq05_kienan", "s01hq05_bandit", POI + "s01/hq05/actor_lq.asset", "giver", root="f65<1 & f143<1",
+              display="collecting"),
          node("s01hq05_kienan_again", "s01hq05_bandit_again", POI + "s01/hq05/actor_lq.asset",
               show="wait:s01hq05_kienan.no_help:1800 & f143<1 & !out:s01hq05_kienan_again.help & !out:s01hq05_kienan_again.end",
               place_of="s01hq05_kienan"),
@@ -128,9 +156,10 @@ QUESTS = [
 
     # ── Pride Ain't Cheap (s01mq02, "Słona cena pychy"). Client: progress fact 54 (1 witcher found, 2 Varik's
     # errand, 3 remedy brewing, 4 Vesemir awake), saliva/root 29 (1 saliva, 3 root), the decoction 28; Varik's
-    # remedy adds the 12 h modifier 7 and Vesemir wakes after it. Community (Gamepressure): 250 XP, 2 Swallows and
-    # an Insectoid Oil; "give him 12 hours". Authored: places.
-    {"id": 150, "code": "s01mq02", "name": "Pride Ain't Cheap", "folder": "s01mq02_cure", "criteria": "f1001>=1",
+    # remedy adds the 12 h modifier 7 and Vesemir wakes after it. Maintainer: 250 XP, 2 Swallows, Insectoid and
+    # Necrophage Oil and a Grapeshot; Community (Gamepressure): "give him 12 hours"; after Good Money. Authored: places.
+    {"id": 150, "code": "s01mq02", "name": "Pride Ain't Cheap", "folder": "s01mq02_cure", "criteria": "f1001>=1", "done": 178,
+     "main": True,
      "nodes": [
          node("s01mq02_witcher", "s01mq02_witcher", POI + "s01/mq02/young_vesemir_meditating_lq.asset", "giver", root="f54<1"),
          node("s01mq02_varik", "s01mq02_medic_01", POI + "s01/mq02/medic_lq.asset", show="f54=1", band=(250, 700)),
@@ -139,10 +168,10 @@ QUESTS = [
          node("s01mq02_varik_2", "s01mq02_medic_02", POI + "s01/mq02/medic_lq.asset", show="f54=2 & f29>=3",
               place_of="s01mq02_varik"),
          node("s01mq02_vesemir", "s01mq02_medic_03", POI + "s01/mq03/youngvesemir_lq.asset",
-              show=f"f54=3 & wait:s01mq02_varik_2.medic_02:{LAB_WAIT}", place_of="s01mq02_varik"),
+              show=f"f54=3 & wait:s01mq02_varik_2.medic_02:{REMEDY_WAIT}", place_of="s01mq02_varik"),
          node("s01mq02_potion", "quest_item_buttons/qi_potion_button", kind="button", node_id=304),
      ],
-     "end": {"s01mq02_vesemir.vesemir": {"exp": 250, "items": items(potions={205: 2}, oils={307: 1})}},
+     "end": {"s01mq02_vesemir.vesemir": {"exp": 250, "items": items(potions={205: 2}, oils={307: 1, 302: 1}, bombs={402: 1})}},
      "walk": [
          ("s01mq02_witcher", "witcher", {54: 1, 52: 1}, ["s01mq02_varik"]),
          ("s01mq02_varik", "medic_01", {54: 2, 28: 1}, ["s01mq02_drowner"]),
@@ -150,7 +179,7 @@ QUESTS = [
          ("s01mq02_potion", "potion", {28: -1}, ["s01mq02_plant"]),
          ("s01mq02_plant", "scolo_again", {29: 3}, ["s01mq02_varik_2"]),
          ("s01mq02_varik_2", "medic_02", {54: 3, 29: -1}, []),
-         ("wait", LAB_WAIT),
+         ("wait", REMEDY_WAIT),
          (None, None, None, ["s01mq02_vesemir"]),
          ("s01mq02_vesemir", "vesemir", {54: 4, 31: 3}, []),
      ]},
@@ -158,9 +187,9 @@ QUESTS = [
     # ── What Lurks in the Nemeta (s01hq02, "Co się kryje w nemetach"). Client: progress fact 47 (1 nemeton cleared
     # with the notebook, 2 notes read, 3 met the partner at the well, 4 missed); the quest opens with fact 1003
     # (set by Good Money, cleared by the nemeton graph). Community (Gamepressure): found at a nemeton, meet the
-    # partner at sunset; 250 XP and 100 gold. Authored: the nemeton giver uses the map nest prefab; the three-day
-    # miss is not timed.
-    {"id": 159, "code": "s01hq02", "name": "What Lurks in the Nemeta", "folder": "s01hq02_nests", "criteria": "f1003>=1",
+    # partner at sunset; 250 XP and 100 gold; after Good Money. Authored: the nemeton giver uses the map nest prefab; the
+    # three-day miss is not timed.
+    {"id": 159, "code": "s01hq02", "name": "What Lurks in the Nemeta", "folder": "s01hq02_nests", "criteria": "f1003>=1", "done": 184,
      "nodes": [
          node("s01hq02_nemeton", "s01hq02_nest", POI + "s01/mq05/nest_lq.asset", "giver", root="f47<1"),
          node("s01hq02_notebook", "quest_item_buttons/qi_notebook", kind="button"),
@@ -180,12 +209,12 @@ QUESTS = [
     # the new blacksmith (381) end it; both can hand over the Sword in the Stone map (queue 399). Community
     # (Gamepressure): 350 XP. Authored: the hunt resets on 'too_late' (119 = 0) to the forge.
     {"id": 147, "code": "s01hq03", "name": "The Dark Side Of The Full Moon", "folder": "s01hq03_blacksmith",
-     "criteria": "f1001>=1",
+     "criteria": "f1001>=1", "done": 185,
      "nodes": [
          node("s01hq03_lothar", "s01hq03_blacksmith", POI + "_common/blacksmith_lq.asset", "giver", root="f119<1"),
          node("s01hq03_forge", "s01hq03_blacksmith", POI + "_common/blacksmith_lq.asset", show="f119=0 & f141<2",
               place_of="s01hq03_lothar"),
-         node("s01hq03_tracks", "s01hq03_tracks", TRACKS, show="f119=1", band=(200, 600)),
+         node("s01hq03_tracks", "s01hq03_tracks", TRACKS, show="f119=1", band=(200, 600), display="hunt"),
          node("s01hq03_werewolf", "s01hq03_werewolf", POI + "s01/hq03/werewolf_lq.asset", show="f119=2", band=(300, 800)),
          node("s01hq03_farewell", "s01hq03_blacksmith_final", POI + "_common/blacksmith_lq.asset", show="f141=4 & f119<3",
               place_of="s01hq03_lothar"),
@@ -204,16 +233,19 @@ QUESTS = [
     # ── Sword in the Stone (s01hq01, "Miecz w skale"). Client: the map comes from the blacksmith quest (fact 46 = 1,
     # 172 = 1..4) and the graph that shows it is queued as node 399 (s01hq01_map); the journal's "Examine" button
     # (node 400) sets 46 = 2 and the stone (385) appears; the name is learnt at dusk and spoken at dawn
-    # (AstroCondition in the graph), then the golem is fought. Community (Gamepressure): dusk and dawn in real time.
-    # Authored: 500 XP (no published reward), the map node stands beside the player.
-    {"id": 158, "code": "s01hq01", "name": "Sword in the Stone", "folder": "s01hq01_sword_in_stone", "criteria": "f46>=1",
+    # (AstroCondition in the graph), then the golem is fought. Lothar also sells the map (s01hq03_map_payment, PRICES).
+    # The client opens a queued node only if it already has it, and six graphs queue the map (Lothar's sale and payment,
+    # the werewolf, his farewell and alarm, the new smith), some without a reply from the server in between: so the map
+    # stands invisible beside the player from when Lothar can be met (after Good Money, f1001) until the quest starts.
+    # Community (Gamepressure): dusk and dawn in real time. Maintainer: 150 XP and the Dawnbringer.
+    {"id": 158, "code": "s01hq01", "name": "Sword in the Stone", "folder": "s01hq01_sword_in_stone", "criteria": "f46>=1", "done": 183,
      "nodes": [
-         node("s01hq01_map", "s01hq01_map", EMPTY, "queued", show="f46=1 & !started:158 & !done:158"),
+         node("s01hq01_map", "s01hq01_map", EMPTY, "queued", show="f1001>=1 & !started:158 & !done:158"),
          node("s01hq01_map_button", "quest_item_buttons/qi_map_button", kind="button", node_id=400),
          node("s01hq01_stone", "s01hq01_sword_in_stone", POI + "s01/hq01/quest_golem_alt.asset", show="f46=2", band=(300, 800)),
      ],
      # Community (Witcher Wiki; Game Rant, 27 Nov 2021): the quest gives the Dawnbringer sword (swords row 17).
-     "end": {"s01hq01_stone.sword": {"exp": 500, "items": items(swords={17: 1})}},
+     "end": {"s01hq01_stone.sword": {"exp": 150, "items": items(swords={17: 1})}},
      "walk": [
          ("s01hq01_map", "map", {46: 1, 10158: 1}, []),
          ("s01hq01_map_button", "map_button", {46: 2}, ["s01hq01_stone"]),
@@ -224,10 +256,11 @@ QUESTS = [
 
     # ── Monster Slayer (s01hq06, "Pogromca potworów"). Client: the troll Pryk (node 395) asks for help (144 = 1)
     # or fights; the cave (396) is investigated; blaming the bandits ends at the cave (41 = 3/4), blaming the
-    # nekker shaman leads to the fleder (144 = 5). Community (Gamepressure): from a stone troll; the reward is a
-    # choice (grey stones or gold). Authored: 350 XP (+100 gold on the fleder endings), the troll stands by the
-    # cave (no troll POI settings), the random-troll attack (474) is not served.
-    {"id": 161, "code": "s01hq06", "name": "Monster Slayer", "folder": "s01hq06_trolling", "criteria": "f1000>=1",
+    # nekker shaman leads to the fleder (144 = 5). Community (Gamepressure): from a stone troll; offered on the troll
+    # trigger (SERVER_FACTS). Maintainer: 300 XP and 35 orens or the stones: the troll's dialogue picks 'won' (orens) or
+    # 'grey_rocks', whose graph gives the stones as a quest item (NEW_QUEST_ITEM). Authored: the other endings pay the XP,
+    # the troll stands by the cave (no troll POI settings), the random-troll attack (474) is not served.
+    {"id": 161, "code": "s01hq06", "name": "Monster Slayer", "folder": "s01hq06_trolling", "criteria": "f1010>=1", "done": 188,
      "nodes": [
          node("s01hq06_troll", "s01hq06_conversation", POI + "s01/hq06/troll_corpse_lq.asset", "giver", root="f144<1"),
          node("s01hq06_cave", "s01hq06_investigation", POI + "s01/hq06/troll_corpse_lq.asset", show="f144=1 & !out:s01hq06_cave.fleder",
@@ -235,9 +268,9 @@ QUESTS = [
          node("s01hq06_fleder", "s01hq06_fleder", POI + "s01/hq06/fleder_lq.asset", show="out:s01hq06_cave.fleder & f144<5",
               band=(200, 650)),
      ],
-     "end": {"s01hq06_troll.refuse": {}, "s01hq06_troll.won": {"exp": 350}, "s01hq06_troll.lost": {"exp": 350},
-             "s01hq06_cave.won": {"exp": 350}, "s01hq06_cave.lost": {"exp": 350},
-             "s01hq06_fleder.won": {"exp": 350, "gold": 100}, "s01hq06_fleder.grey_rocks": {"exp": 350, "gold": 100}},
+     "end": {"s01hq06_troll.refuse": {}, "s01hq06_troll.won": {"exp": 300}, "s01hq06_troll.lost": {"exp": 300},
+             "s01hq06_cave.won": {"exp": 300}, "s01hq06_cave.lost": {"exp": 300},
+             "s01hq06_fleder.won": {"exp": 300, "gold": 35}, "s01hq06_fleder.grey_rocks": {"exp": 300}},
      "walk": [
          ("s01hq06_troll", "help", {144: 1, 1000: 2}, ["s01hq06_cave"]),
          ("s01hq06_cave", "fleder", {10161: 2}, ["s01hq06_fleder"]),
@@ -246,10 +279,11 @@ QUESTS = [
      ]},
 
     # ── Will O' The Wisp (s01hq04, "Błędny ognik"). Client: a nemeton (390, firefly nest with its event graph and a
-    # fake nest fight) releases the wisp (120 = 1, 100 gold by fact 175); the stump (446), the plant (393) and the
-    # treasure (394, 120 = 2) follow. Community (Gamepressure): three points, 250 XP and 100 gold. Authored: the
-    # points appear one after another, 150-400 m apart, without the 15-minute limit.
-    {"id": 160, "code": "s01hq04", "name": "Will O' The Wisp", "folder": "s01hq04_firefly", "criteria": "f1001>=1",
+    # fake nest fight) releases the wisp (120 = 1, 50 gold by fact 175); the stump (446), the plant (393) and the
+    # treasure (394, 120 = 2) follow. Maintainer and Community (Gamepressure): three points, 250 XP and 100 orens (paid at the
+    # treasure, on top of the nemeton's 50); after What Lurks in the
+    # Nemeta. Authored: the points appear one after another, 150-400 m apart, without the 15-minute limit.
+    {"id": 160, "code": "s01hq04", "name": "Will O' The Wisp", "folder": "s01hq04_firefly", "criteria": "f184>=1", "done": 186,
      "nodes": [
          node("s01hq04_nemeton", "s01hq04_firefly", POI + "s01/hq04/firefly_nest_lq.asset", "giver", root="f120<1"),
          node("s01hq04_stump", "s01hq04_stump", POI + "s01/hq04/firefly_stump_lq.asset",
@@ -259,9 +293,10 @@ QUESTS = [
          node("s01hq04_treasure", "s01hq04_treasure", POI + "s01/hq04/firefly_treasure_lq.asset",
               show="out:s01hq04_plant.catch", near="s01hq04_plant", band=(150, 400)),
      ],
-     "end": {"s01hq04_treasure.treasure": {"exp": 250}},
+     "end": {"s01hq04_treasure.treasure": {"exp": 250, "gold": 100}},
      "walk": [
-         ("s01hq04_nemeton", "firefly", {120: 1, 175: 100}, ["s01hq04_stump"]),
+         # 226 = 1 at once (as the stump and catch do): the treasure graph's branch for 226 = 0 leads nowhere.
+         ("s01hq04_nemeton", "firefly", {120: 1, 175: 50, 226: 1}, ["s01hq04_stump"]),
          ("s01hq04_stump", "stump", {}, ["s01hq04_plant"]),
          ("s01hq04_plant", "catch", {}, ["s01hq04_treasure"]),
          ("s01hq04_treasure", "treasure", {120: 2}, []),
@@ -271,16 +306,19 @@ QUESTS = [
     # Good Money's key (56 = 2, 50 gold), the vogt Darach Dearg (321: 56 = 3, the 24 h modifier 3), mushrooms (331,
     # counters 11 and 30) whose graph queues the champion (327), a corpse, a monster corpse, Dehael and "enough"
     # (324-326, 495), the draconid nest (330), the leshen and the final ceremony with the fiend (347). Community
-    # (Gamepressure): 24 hours of mushrooms, 750 XP and 120 gold. Authored: the queued events stand invisible
+    # (Gamepressure): 24 hours of mushrooms, 750 XP and 120 gold; after The Sins of Our Fathers. The mushroom is a
+    # collecting node: one appears beside the player after every 200 m walked (the mushroom graph only counts picks, in
+    # facts 30 and 11, and queues the events at picks 3, 11, 20 and 28). Authored: the queued events stand invisible
     # beside the player (the mushroom graph sends nothing to the server, so they must already be there), the
-    # assignment of 324-326 and 495, five mushrooms around the player.
-    {"id": 153, "code": "s01mq05", "name": "The Great Mushrooming", "folder": "s01mq05_mushroom_hunt", "criteria": "f1001>=1",
+    # assignment of 324-326 and 495.
+    {"id": 153, "code": "s01mq05", "name": "The Great Mushrooming", "folder": "s01mq05_mushroom_hunt", "criteria": "f179>=1",
+     "done": 181, "main": True,
      "nodes": [
          node("s01mq05_madman", "s01mq05_madman", POI + "s01/mq05/mad_lad_lq.asset", "giver", root="f56<1"),
          node("s01mq05_chest", "s01mq05_treasure", POI + "s01/mq05/mad_lad_treasure_lq.asset", show="f56=1", band=(200, 600)),
          node("s01mq05_vogt", "s01mq05_vogt", POI + "s01/mq05/vogt_lq.asset", show="f56=2", band=(250, 700)),
          node("s01mq05_mushroom", "s01mq05_mushroom", POI + "s01/mq05/mushroom_lq.asset",
-              show=f"f56=3 & !wait:s01mq05_vogt.vogt:{LAB_WAIT}", band=(60, 450), copies=5),
+              show=f"f56=3 & !wait:s01mq05_vogt.vogt:{CONTEST_WAIT}", display="collecting"),
          node("s01mq05_champion", "s01mq05_champion", EMPTY, "queued", show="f56=3 & f153<1", node_id=327),
          node("s01mq05_corpse", "s01mq05_corpse", EMPTY, "queued", show="f56=3 & !out:s01mq05_corpse.corpse & !out:s01mq05_corpse.no_nest", node_id=325),
          node("s01mq05_monster_corpse", "s01mq05_monster_corpse", EMPTY, "queued", show="f56=3 & f58<1", node_id=324),
@@ -291,7 +329,7 @@ QUESTS = [
               band=(200, 600)),
          node("s01mq05_leshen", "s01mq05_leshen", POI + "s01/mq05/leshen_lq.asset", show="f58=1 & f9<4", band=(200, 600)),
          node("s01mq05_final", "s01mq05_final", POI + "s01/mq05/vogt_lq.asset",
-              show=f"f56=3 & wait:s01mq05_vogt.vogt:{LAB_WAIT}", place_of="s01mq05_vogt"),
+              show=f"f56=3 & wait:s01mq05_vogt.vogt:{CONTEST_WAIT}", place_of="s01mq05_vogt"),
      ],
      "end": {f"s01mq05_final.{name}": {"exp": 750, "gold": 120}
              for name in ("first_place", "second_place", "third_place", "peleton", "last_place")},
@@ -302,26 +340,28 @@ QUESTS = [
                                                       "s01mq05_monster_corpse", "s01mq05_dehael", "s01mq05_enough"]),
          ("s01mq05_corpse", "corpse", {34: 1, 10153: 17}, ["s01mq05_mushroom", "s01mq05_champion", "s01mq05_monster_corpse",
                                                  "s01mq05_dehael", "s01mq05_enough", "s01mq05_nest"]),
-         ("wait", LAB_WAIT),
+         ("wait", CONTEST_WAIT),
          (None, None, None, ["s01mq05_champion", "s01mq05_monster_corpse", "s01mq05_dehael", "s01mq05_enough",
                              "s01mq05_nest", "s01mq05_final"]),
          ("s01mq05_final", "fiend", {12: 2}, ["s01mq05_champion", "s01mq05_monster_corpse", "s01mq05_dehael",
                                               "s01mq05_enough", "s01mq05_nest", "s01mq05_final"]),
-         ("s01mq05_final", "second_place", {56: 4, 160: 4, 31: 4}, []),
+         ("s01mq05_final", "second_place", {56: 4, 160: 4, 31: 5}, []),
      ]},
 
     # ── The Sins Of Our Fathers (s01mq03, "Grzechy naszych ojców"). Client: Vesemir hands over the contract (55 = 1);
     # the hermit (311, arachas fight; 147 = 1); the tracks (129 = 2); the vodyanoi's blood (129 = 3, 32 = 1);
     # Thorstein's candles (26 = 1); the lure at the grave (127 = 1); the striga's lair (313: kill her, or lift the
     # curse through the night with the candles, 55 = 3..6, 147 = 2); the armour chest (179 = 1). Community
-    # (Gamepressure): given by Vesemir at the end of Pride Ain't Cheap. Authored: 500 XP (no published reward),
-    # the hermit stands on the mq04 hermit settings, the lure on the tombstone, the empty lair (453) is not served.
-    {"id": 152, "code": "s01mq03", "name": "The Sins Of Our Fathers", "folder": "s01mq03_striga", "criteria": "f54>=4",
+    # (Gamepressure): given by Vesemir at the end of Pride Ain't Cheap. Maintainer: 60 orens, 750 XP for breaking the curse
+    # and Hermit's Armor; Authored: 500 XP when the striga is killed, the hermit stands on the mq04 hermit settings, the lure
+    # on the tombstone, the empty lair (453) is not served; offered on Pride's completion fact 178, which its last step sends.
+    {"id": 152, "code": "s01mq03", "name": "The Sins Of Our Fathers", "folder": "s01mq03_striga", "criteria": "f178>=1",
+     "done": 179, "main": True,
      "nodes": [
          node("s01mq03_vesemir", "s01mq03_vesemir", POI + "s01/mq03/youngvesemir_lq.asset", "giver", root="f55<1"),
          node("s01mq03_instruction", "s01mq03_instruction", kind="button"),
          node("s01mq03_hermit", "s01mq03_hermit", POI + "s01/mq04/hermit_lq.asset", show="f55>=1 & f147<1", band=(300, 800)),
-         node("s01mq03_tracks", "s01mq03_tracks", TRACKS, show="f147=1 & f129<2", band=(200, 600)),
+         node("s01mq03_tracks", "s01mq03_tracks", TRACKS, show="f147=1 & f129<2", band=(200, 600), display="hunt"),
          node("s01mq03_vodnik", "s01mq03_vodnik", POI + "s01/mq03/vodnik_lq.asset", show="f129=2", band=(250, 700)),
          node("s01mq03_thorstein", "s01mq03_thorstein", POI + "_common/thorstein_lq.asset", show="f129=3 & f26<1",
               band=(150, 500)),
@@ -332,9 +372,9 @@ QUESTS = [
          node("s01mq03_armor", "s01mq03_armor", POI + "s01/mq03/armor_chest_lq.asset", show="f55>=5 & f179<1",
               place_of="s01mq03_lair"),
      ],
-     "end": {"s01mq03_lair.striga_killed": {"exp": 500}, "s01mq03_lair.striga_killed_knew": {"exp": 500},
+     "end": {"s01mq03_lair.striga_killed": {"exp": 500, "gold": 60}, "s01mq03_lair.striga_killed_knew": {"exp": 500, "gold": 60},
              # Community (Witcher Wiki): lifting the curse gives Hermit's Armor (armors row 8).
-             "s01mq03_armor.armor": {"exp": 500, "items": items(armors={8: 1})}},
+             "s01mq03_armor.armor": {"exp": 750, "gold": 60, "items": items(armors={8: 1})}},
      "walk": [
          ("s01mq03_vesemir", "vesemir", {55: 1, 51: 1}, ["s01mq03_hermit"]),
          ("s01mq03_hermit", "arachas", {197: 2}, ["s01mq03_hermit"]),
@@ -344,18 +384,22 @@ QUESTS = [
          ("s01mq03_thorstein", "thorstein", {26: 1}, ["s01mq03_lure"]),
          ("s01mq03_lure", "lure", {127: 1, 134: 1}, ["s01mq03_lair"]),
          ("s01mq03_lair", "curse_lifted", {55: 5, 147: 2, 127: -1}, ["s01mq03_armor"]),
-         ("s01mq03_armor", "armor", {179: 1, 31: 5}, []),
+         ("s01mq03_armor", "armor", {179: 1, 31: 4}, []),
      ]},
 
     # ── Intruder (s01mq06, "Intruz"; the first of the two versions in the 1.1.116 catalog, quest 154). Client: it
-    # opens at the fifth finished side quest (fact 31 = 5; the finishing graphs queue node 403); progress runs on
+    # opens when the five main quests before it are done (fact 31 = 5; the finishing graphs queue node 403; the
+    # maintainer chose this rule of the game's over "after The Great Mushrooming"); progress runs on
     # fact 57 when the Great Mushrooming told the vogt about the frightener (161 = 2), otherwise on 162: 1 the
     # contract, 2 the massacre, 4 Vesemir's poison, 5 the solvent used; the first frightener fight sets 59; the
     # archespore gives the solvent (27 = 2); journal buttons 357 (solvent), 358 and 478 (poison); the second
-    # frightener fight (361) sets 61; Thorstein (124) and the vogt's payment end it. Authored: 500 XP, the start
+    # frightener fight (361) sets 61; Thorstein (124) and the vogt's payment end it, with one of eight outputs
+    # (s01mq06_vogt_02): bad_reward after the sorcerer's deal (164 = 2), otherwise reward, full_reward or
+    # bonus_reward, each with a _dhl twin sent when Dehael was not advised (13 <= 0). Maintainer: 2000 XP and 100 orens
+    # (every ending, as the list gives one reward). Authored: the start
     # stands beside the player and as a giver, the 24-hour wait advised by the sorcerer is not served (the
     # frightener can be hunted at once), the massacre POI uses the corpse settings.
-    {"id": 154, "code": "s01mq06", "name": "Intruder", "folder": "s01mq06_frightener", "criteria": "f31>=5",
+    {"id": 154, "code": "s01mq06", "name": "Intruder", "folder": "s01mq06_frightener", "criteria": "f31>=5", "done": 182,
      "nodes": [
          node("s01mq06_dehael", "s01mq06_start", POI + "s01/mq06/dehael_lq.asset", "giver", root="f57<1 & f162<1"),
          node("s01mq06_dehael_queued", "s01mq06_start", POI + "s01/mq06/dehael_lq.asset", "queued",
@@ -379,7 +423,9 @@ QUESTS = [
          node("s01mq06_vogt_end", "s01mq06_vogt_02", POI + "s01/mq05/vogt_lq.asset", show="f61>=2 & f124>=1",
               place_of="s01mq06_vogt"),
      ],
-     "end": {f"s01mq06_vogt_end.{name}": {"exp": 500} for name in ("bad_reward", "bonus_reward", "full_reward")},
+     "end": {f"s01mq06_vogt_end.{name}{twin}": {"exp": 2000, "gold": 100}
+             for name in ("bad_reward", "bonus_reward", "full_reward", "reward")
+             for twin in ("", "_dhl")},
      "walk": [
          ("s01mq06_dehael", "start", {}, ["s01mq06_vogt"]),
          ("s01mq06_vogt", "vogt", {162: 1}, ["s01mq06_massacre"]),

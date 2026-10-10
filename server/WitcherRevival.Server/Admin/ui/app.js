@@ -1257,6 +1257,7 @@
       );
       identity.append(name, el("small", p.id), el("small", profileIdentity(p)));
       if (p.label && p.name) identity.append(el("small", p.name));
+      if (p.debug) identity.append(el("small", L.m("Changed with the debug tools"), "debug-badge"));
       const progress = el("td");
       L.attr(progress, "data-label", L.m("Postęp"));
       progress.append(
@@ -1344,6 +1345,72 @@
     $("label-dialog").close();
     return true;
   }
+  // The Players tab's debug tools (POST profiles/{id}/debug, only with Admin:DebugTools). Each change saves at once, even
+  // while the player is in the game, and leaves a receipt in History.
+  const debugKinds = [["ingredients", "Ingredients"], ["potions", "Potions"], ["oils", "Oils"], ["bombs", "Bombs"],
+    ["lures", "Baits"], ["senses_potions", "Senses potions"], ["friend_packs", "Friend packs", "packs_types"],
+    ["summoning_scrolls", "Summoning scrolls"], ["swords", "Swords"], ["armors", "Armours"], ["brewers", "Stations"]];
+  async function debugAction(p, body) {
+    try {
+      const result = await api("profiles/" + encodeURIComponent(p.id) + "/debug", { method: "POST", body: JSON.stringify(body) });
+      const o = result.outcome;
+      notice(o.pushes.length ? L.join(L.m(o.effect), " ", o.live ? L.m("The game shows it within moments.")
+        : L.m("The game shows it at its next start.")) : L.m(o.effect));
+      await showProfile(p);
+    } catch (e) { reportError(e); }
+  }
+  async function debugPanel(p, d) {
+    if (!catalogueData) try { catalogueData = await api("catalogue"); } catch {}
+    const box = el("section", null, "profile-detail-section");
+    box.append(el("h3", L.m("Debug tools")), el("p", L.m("For testing. Orens, level, skills, items and effects reach a " +
+      "running game within moments; moved quests after a restart. History can undo each change (with the game closed)."), "hint"));
+    const number = (value, min, max) => {
+      const input = el("input"); Object.assign(input, { type: "number", min, max, step: 1, value }); return input;
+    };
+    const row = (...parts) => { const r = el("div", null, "debug-row"); r.append(...parts); box.append(r); };
+    const gold = number(d.summary.gold ?? 0, 0, 100000000), level = number(d.summary.level || 1, 1, 40),
+      points = number(d.summary.skillPoints ?? 0, 0, 100000);
+    row(gold, button(L.m("Set orens"), () => debugAction(p, { action: "gold", value: Number(gold.value) })));
+    row(level, button(L.m("Set level"), () => debugAction(p, { action: "level", value: Number(level.value) })));
+    row(points, button(L.m("Set skill points"), () => debugAction(p, { action: "skillPoints", value: Number(points.value) })),
+      button(L.m("Learn every skill"), () => debugAction(p, { action: "allSkills" })));
+    const kind = el("select"), item = el("select"), amount = number(1, 1, 100000);
+    for (const [value, label] of debugKinds) kind.append(L.option(L.m(label), value));
+    const fill = () => {
+      const [k, , table] = debugKinds.find(([value]) => value === kind.value);
+      const rows = (catalogueData?.tables || []).find((t) => t.name === (table || k))?.rows || [];
+      item.replaceChildren(...rows.map((r) => L.option(L.join(r.name || r.slug || "", " · ", r.id), r.id)));
+    };
+    kind.addEventListener("change", fill); fill();
+    const move = (sign) => debugAction(p, { action: "item", kind: kind.value, item: Number(item.value), amount: sign * Number(amount.value) });
+    row(kind, item, amount, button(L.m("Give"), () => move(1)), button(L.m("Take"), () => move(-1)));
+    const held = new Set(d.modifiers || []);
+    for (const [action, id, label] of [["invincible", 901, "Invincibility"], ["oneHit", 902, "One-hit kills"]])
+      row(el("span", L.join(L.m(label), ": ", held.has(id) ? L.m("on") : L.m("off"))),
+        button(held.has(id) ? L.m("Turn off") : L.m("Turn on"), () => debugAction(p, { action, on: !held.has(id) })));
+    row(button(L.m("Bring quests next to me"), () => debugAction(p, { action: "questsHere" })));
+    // Time for quests: what the game's full moon, dawn, dusk and day checks see (bits 0-3; -1 the phone's own sky).
+    const sky = el("select");
+    for (const [value, label] of [[-1, "As on the phone"], [1, "Full moon night"], [4, "Dusk"], [2, "Dawn"], [0, "Night"], [8, "Day"]])
+      sky.append(L.option(L.m(label), value));
+    sky.value = String(d.sky ?? -1);
+    row(el("span", L.m("Time for quests")), sky,
+      button(L.m("Set"), () => debugAction(p, { action: "sky", value: Number(sky.value) })));
+    // The quest runner: every quest in story order and its next step; Complete sends that step as the game would.
+    const quests = table([L.m("Quest"), L.m("State"), L.m("Next step"), ""]);
+    const states = { done: L.m("done"), "in progress": L.m("in progress"), offered: L.m("offered"), locked: L.m("locked") };
+    for (const q of d.quests || []) {
+      const tr = el("tr"), cell = el("td");
+      if (q.next) cell.append(button(L.m("Complete"), () => debugAction(p, { action: "questStep", value: q.id }), "secondary"));
+      tr.append(el("td", q.name), el("td", states[q.state] || q.state), el("td", q.next || "—"), cell);
+      quests.body.append(tr);
+    }
+    const wrap = el("div", null, "table-wrap");
+    wrap.append(quests.table);
+    box.append(el("h4", L.m("Quests")), el("p", L.m("Play each next step in the game; Complete does a step for you " +
+      "(for a broken trigger or a long wait). Restart the game to see quest changes."), "hint"), wrap);
+    return box;
+  }
   async function showProfile(p) {
     const epoch = ++profileDetailsRequest;
     try {
@@ -1380,6 +1447,11 @@
       );
       const refreshProgress = button(L.m("Odśwież postęp gracza"), () => showProfile(p), "secondary");
       target.append(refreshProgress);
+      if (d.debugTools) {
+        const panel = await debugPanel(p, d);
+        if (epoch !== profileDetailsRequest) return;
+        target.append(panel);
+      }
       if (progress.status === "fulfilled") renderPlayerProgress(progress.value, target);
       else target.append(el("p", L.m("Postęp jest chwilowo niedostępny. Odśwież odczyt; brak danych nie oznacza zerowego postępu."), "error"));
       const section = (title, content) => {

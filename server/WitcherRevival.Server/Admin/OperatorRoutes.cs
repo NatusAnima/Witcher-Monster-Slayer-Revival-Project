@@ -207,6 +207,8 @@ public sealed partial class AdminServer
         RequireProfile(id);
         var p = registry.Store(id).Snapshot(); var player = p.Player; var taskState = player?.Tasks;
         return Results.Json(new { observedAt = DateTimeOffset.UtcNow, source = "saved-profile-snapshot", summary = ProfileSummary(id, p),
+            debugTools = DebugTools, modifiers = player?.Modifiers?.Select(m => m.Id),
+            quests = DebugTools ? registry.Player(id).QuestBook() : null, sky = DebugTools ? registry.Player(id).Sky : (int?)null,
             inventory = player?.Items, equipment = player?.Equipment, skills = player?.Skills,
             bestiary = player?.Kills?.OrderBy(k => k.Key).Select(k => new { monsterId = k.Key,
                 name = WorldBestiary.Of(k.Key)?.Name ?? $"Monster {k.Key}", kills = k.Value,

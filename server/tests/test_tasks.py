@@ -253,16 +253,42 @@ class TaskTests(base.PrototypeTests):
         data['Player']['Kills'] = {'166': 1, '30': 2, '188': 1}
         path.write_text(json.dumps(data))
         server, c = self.task_server()
-        self.assertEqual(c.rpc(24), b'\1'+I(0))
+        vintage = I(20025)+I(self.NOW)   # The Best Vintage, every player's from the start
+        self.assertEqual(c.rpc(24), b'\1'+I(2)+vintage)
         c.rpc(115)
         self.assertFalse(any(method == 25 for method, _ in c.pushes))
         server.stop()
         data = json.loads(path.read_text()); data['Player']['Kills']['31'] = 1
         path.write_text(json.dumps(data))
         server, c = self.task_server()
-        self.assertEqual(c.rpc(24), b'\1'+I(2)+I(20002)+I(self.NOW))
+        self.assertEqual(c.rpc(24), b'\1'+I(4)+I(20002)+I(self.NOW)+vintage)
         server.stop(); server, c = self.task_server()
-        self.assertEqual(c.rpc(24), b'\1'+I(2)+I(20002)+I(self.NOW))
+        self.assertEqual(c.rpc(24), b'\1'+I(4)+I(20002)+I(self.NOW)+vintage)
+
+    def test_tasks_season1_trinkets_follow_endings_and_catch_up(self):
+        def achievements(c):
+            r = Reader(c.rpc(24)); self.assertEqual(r.byte(), 1); values = r.ints()
+            return set(values[::2])
+        server, c = self.task_server()
+        self.assertEqual(achievements(c), {20025})   # The Best Vintage: every player, from the start
+        server.stop()
+        # A profile that played Good Money, Pride and "A Joint Venture" before these trinkets existed catches up.
+        path = self.profile_file('tasks'); data = json.loads(path.read_text())
+        data['QuestStage'] = 'jv_done'
+        data['Player']['Granted'].append('joint_venture')
+        data['Player']['Story'] = {'Active': [], 'Started': [], 'Finished': [149, 150], 'Outputs': [1015, 1078],
+                                   'Tracked': None, 'Reached': {}, 'Clock': 0}
+        path.write_text(json.dumps(data))
+        server, c = self.task_server()
+        self.assertEqual(achievements(c), {20025, 20014, 20015, 20016})
+        server.stop()
+        # Each branch of an ending has its own trinket; the season journal waits for all twelve quests.
+        data = json.loads(path.read_text())
+        data['Player']['Story']['Finished'] = [104, 147, 148, 149, 150, 152, 153, 154, 158, 159, 160, 161]
+        data['Player']['Story']['Outputs'] += [1043, 1039, 1116, 1275, 1176]   # curse broken, Lothar killed, Dehael died
+        path.write_text(json.dumps(data))
+        server, c = self.task_server()
+        self.assertEqual(achievements(c), {20025, 20014, 20015, 20016, 20018, 20020, 20021, 20023, 20024})
 
     def test_tasks_offline_leshen_repair_survives_refresh_without_reaward(self):
         from test_trinket_repair import repair
@@ -276,7 +302,8 @@ class TaskTests(base.PrototypeTests):
         path = self.profile_file('tasks'); data = json.loads(path.read_text())
         data['Player']['Kills'] = {'166': 1}; path.write_text(json.dumps(data))
         server, c = self.task_server()
-        self.assertEqual(c.rpc(24), b'\1'+I(2)+I(20002)+I(self.NOW))
+        vintage = I(20025)+I(self.NOW)   # The Best Vintage, every player's from the start
+        self.assertEqual(c.rpc(24), b'\1'+I(4)+I(20002)+I(self.NOW)+vintage)
         paths = {'trinkets': self.directory/'tasks/trinkets.json',
                  'manifest': self.directory/'profiles/tasks-catalogue.json', 'profile': path}
         expected = {k:repair.digest(p.read_bytes()) for k,p in paths.items()}
@@ -292,8 +319,8 @@ class TaskTests(base.PrototypeTests):
         del wanted['Player']['Tasks']['Achievements']['20002']
         self.assertEqual(json.loads(path.read_text()), wanted)
         server, c = self.task_server()
-        self.assertEqual(c.rpc(24), b'\1'+I(0)); c.rpc(115)
-        self.assertEqual(c.rpc(24), b'\1'+I(0))
+        self.assertEqual(c.rpc(24), b'\1'+I(2)+vintage); c.rpc(115)
+        self.assertEqual(c.rpc(24), b'\1'+I(2)+vintage)
         self.assertFalse(any(method == 25 for method, _ in c.pushes))
 
     def test_tasks_bad_reload_keeps_catalogue_and_malformed_rpcs_keep_session(self):
@@ -323,8 +350,8 @@ class TaskTests(base.PrototypeTests):
         self.assertTrue(all(row['contract_id'] in contracts for row in data['daily_quests']+data['achievements']))
         self.assertEqual(len([d for d in data['daily_quests'] if d['daily_quest_type_id'] == 1]), 42)
         self.assertEqual(len([d for d in data['daily_quests'] if d['daily_quest_type_id'] == 2]), 3)
-        self.assertEqual(len(data['achievements']), 13)
-        self.assertEqual(len(contracts), 58)
+        self.assertEqual(len(data['achievements']), 25)
+        self.assertEqual(len(contracts), 70)
         combat = [row for row in data['contracts'] if row['contract_type_id'] == 11]
         self.assertTrue(combat)
         # Native map/nest progress skips its sword filter only for -1. Zero means steel,
@@ -459,6 +486,42 @@ class TaskTests(base.PrototypeTests):
         self.fight(c)
         self.assertTrue(all(v == [0]*4 for v in self.daily(c)[0].values()))
         self.assertEqual(Reader(c.rpc(94)).weekly()['stamps'], [])
+
+    def test_tasks_skills_quests_and_story_outputs_count_as_they_happen(self):
+        # Types 8 (skills learned), 9 (quests finished) and 13 (story outputs reached, here a trinket).
+        daily = self.kills()[:3]
+        daily[0] = dict(id=10001, slug='kill_4_monsters', type=8, target=1, gold=5)
+        daily[1] = dict(id=10002, slug='kill_4_monsters', type=9, target=1, quests=[149], gold=5)
+        server, c = self.task_server(daily, trinkets=[dict(id=20001, slug='trophy_in_forest_dark', type=13, target=1, outputs=[1001])])
+        with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata') as response:
+            skills = {row['slug']: row['id'] for row in reversed(json.loads(gzip.decompress(response.read()))['skills'])}
+        self.daily(c)                                                                     # issued as the game asks at boot
+        for output in ('griffin_1', 'wraith_won', 'gargoyle'):                            # 1100 XP: level 2's skill points
+            c.rpc(57, self.completion_body({}, instance=self.TUT_EXAM, output=output))
+        self.assertEqual(c.rpc(64, I(skills['muscle_memory']))[0], 1)
+        self.assertEqual(self.daily(c)[0][10001], [1])
+        server.stop()
+        path = self.profile_file('tasks'); data = json.loads(path.read_text())
+        data['QuestStage'], data['Facts'] = 'jv_done', {'100': 4}                       # "A Joint Venture" done
+        path.write_text(json.dumps(data))
+        server, c = self.task_server()
+        for key, output, facts, _ in base.SEASON1['walks']['149']:                       # Good Money, as the game plays it
+            node = next(n for n in base.SEASON1['nodes'] if n['key'] == key)
+            c.rpc(57, self.completion_body({int(k): v for k, v in facts.items()}, instance=node['instance'], output=output))
+        self.assertEqual(self.daily(c)[0][10002], [1])
+        self.assertEqual(c.rpc(24), b'\1'+I(2)+I(20001)+I(self.NOW))
+
+    def test_tasks_every_kill_and_story_target_can_be_met(self):
+        # A kill task's monsters spawn in the world or fall in a story fight; a story trinket's outputs exist.
+        folder = next(p for p in (base.ROOT / 'WitcherRevival.Server/tasks', base.ROOT / 'app/tasks') if p.exists())
+        load = lambda name, key: json.loads((folder / f'{name}.json').read_text())[key]
+        tasks = load('daily', 'tasks') + load('trinkets', 'trinkets') + [t for e in load('timed', 'events') for t in e['tasks']]
+        met = {s['monster_id'] for s in base.WORLD['species']} | {int(k) for o in base.SEASON1['outputs'] for k in o['kills']}
+        outputs = {o['id'] for o in base.SEASON1['outputs']}
+        for task in tasks:
+            with self.subTest(task=task['id']):
+                self.assertLessEqual(set(task.get('monsters') or []), met)
+                self.assertLessEqual(set(task.get('outputs') or []), outputs)
 
     def test_tasks_bombs_count_owned_consumption_once(self):
         daily = self.kills()[:3]

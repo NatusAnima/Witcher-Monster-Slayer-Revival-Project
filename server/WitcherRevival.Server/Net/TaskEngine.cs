@@ -185,13 +185,17 @@ public sealed class TaskEngine(TaskCatalog catalog, TimeProvider clock, IConfigu
                  d.Type == 2 ? s.NestsCleared : LifetimeProgress(d, p)) >= Required(d))
                 s.Achievements[d.Id] = checked((int)now);
     }
+    /// <summary>"A Joint Venture", the prologue's last quest. It is no season 1 quest: its ending leaves its reward key.</summary>
+    public const int JointVentureQuest = 146;
+
     private static int LifetimeProgress(TaskCatalog.Definition d, LocalProfileStore.PlayerState p) => d.Type switch
     {
         1 => (p.Kills ?? []).Where(k => Matches(d.Monsters, k.Key)).Sum(k => k.Value),
         3 => p.Distance?.Metres ?? 0,
         7 => Reconstruction.LevelForExp(p.Exp),
         8 => p.Skills.Count,
-        9 => (p.Story?.Finished ?? []).Count(id => Matches(d.Quests, id)),
+        9 => (p.Story?.Finished ?? []).Count(id => Matches(d.Quests, id)) +
+             (d.Quests?.Contains(JointVentureQuest) == true && p.Granted.Contains(Reconstruction.RewardKey("success")) ? 1 : 0),
         13 => (p.Story?.Outputs ?? []).Count(id => Matches(d.Outputs, id)),
         _ => 0,
     };

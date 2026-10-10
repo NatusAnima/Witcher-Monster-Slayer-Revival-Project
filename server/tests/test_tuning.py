@@ -38,7 +38,7 @@ class TuningApiTests(unittest.TestCase):
         # a stale page cannot overwrite, and nothing impossible is saved
         self.assertEqual(self.request('tuning', 'PUT', self.body({}, 'missing'))[0], 409)
         for bad in ({'places.woods': 101}, {'places.perCell': 49}, {'places.spacing': -1}, {'exp.percent': 5}, {'herbs.perCell': 2.5},
-                    {'exp.percent': 'lots'}, {'nonsense': 1}):
+                    {'exp.percent': 'lots'}, {'story.trollDefeats': 0}, {'story.trollDefeats': 11}, {'nonsense': 1}):
             with self.subTest(bad=bad):
                 self.assertEqual(self.request('tuning', 'PUT', self.body(bad, now['revision']))[0], 400)
         self.assertEqual(self.request('tuning', 'PUT', {'revision': now['revision'], 'document': {'values': {}}})[0], 400)

@@ -92,6 +92,7 @@ public sealed partial class AdminServer(IConfiguration cfg, ProfileRegistry regi
         MapTuningRoutes(app);
         MapTransportRoutes(app);
         MapPlayerProgressRoutes(app);
+        MapPlayerDebugRoutes(app);
         app.MapGet("/api/profiles", () => Results.Json(registry.Saved().Select(id => ProfileSummary(id))));
         app.MapPost("/api/profiles/{id}", async (string id, HttpRequest request) => ChangeProfile(id, await Body<ProfileWrite>(request)));
         app.MapGet("/api/news/{language}", (string language) => { CheckLanguage(language); return Results.Json(ReadDocument(Path.Combine(newsRoot, language + ".json"),
@@ -155,7 +156,8 @@ public sealed partial class AdminServer(IConfiguration cfg, ProfileRegistry regi
         return new { id, revision = p.Revision, schema = p.SchemaVersion, name = p.Player?.Name, level = p.Player is null ? 0 : Reconstruction.LevelForExp(p.Player.Exp),
             label = ReadProfileLabel(id).Label, identityKind = identity.IdentityKind, deviceCount = identity.DeviceCount,
             gold = p.Player?.Gold, skillPoints = p.Player?.SkillPoints, skillCount = p.Player?.Skills.Count,
-            storyClockSeconds = p.Player?.Story?.Clock ?? 0, activeSessions = registry.ActiveSessions(id) };
+            storyClockSeconds = p.Player?.Story?.Clock ?? 0, activeSessions = registry.ActiveSessions(id),
+            debug = p.Player?.Debug == true };
     }
 
     private IResult ChangeProfile(string id, ProfileWrite write)

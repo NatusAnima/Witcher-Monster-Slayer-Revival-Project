@@ -83,6 +83,17 @@ class LiveSidecarTests(unittest.TestCase):
         status, _ = self.get(server, "/lab/feature-tile/%d/%d/%d" % TILE)
         self.assertEqual(status, 200)
 
+    def test_offline_tiles_outside_the_map_are_empty_and_said_once(self):
+        source = FakeSource(ready=False)
+        source.offline = True
+        server, events = self.start(source)
+        for x in (TILE[1], TILE[1] + 1):
+            status, body = self.get(server, "/lab/feature-tile/%d/%d/%d" % (TILE[0], x, TILE[2]))
+            self.assertEqual((status, decode_features(body)), (200, []))
+        self.assertEqual(source.prefetched, [])
+        self.assertEqual([e["event"] for e in events if e["event"] != "osm_live_http"], ["osm_live_outside_map"])
+        self.assertEqual(server.stats["outside_map"], 2)
+
     def test_google_style_paths_from_patched_client(self):
         server, events = self.start(FakeSource())
         status, body = self.get(server, "/v1/featuretiles/@%d,%d,%dz?key=SECRET&v=1" % (TILE[1], TILE[2], TILE[0]))

@@ -126,6 +126,27 @@ class MainActivity : Activity() {
         })
         setup.addView(button("Open the guided setup", primary = true) { startActivity(Intent(this, SetupActivity::class.java)) })
 
+        val data = card(page, "Save Data")
+        data.addView(text(14f, MUTED).apply {
+            text = "Backup and restore your game progress."
+            setPadding(0, px(6), 0, px(12))
+        })
+        val dataButtons = LinearLayout(this)
+        dataButtons.addView(button("Backup") {
+            startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/zip"
+                putExtra(Intent.EXTRA_TITLE, "witcher-save.zip")
+            }, 1)
+        }, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
+        dataButtons.addView(button("Restore") {
+            startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/zip"
+            }, 2)
+        }, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f))
+        data.addView(dataButtons)
+
         val logs = card(page, "Logs")
         val tabs = LinearLayout(this)
         logTabs = LOGS.map { (name, title) -> button(title) { logName = name; render() }.also { tabs.addView(it) } }
@@ -163,6 +184,63 @@ class MainActivity : Activity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handle(intent)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (resultCode != RESULT_OK || intent?.data == null) return
+        val uri = intent.data!!
+        when (requestCode) {
+            1 -> {
+                try {
+                    contentResolver.openOutputStream(uri)?.use { out ->
+                        java.util.zip.ZipOutputStream(out).use { zout ->
+                            val profiles = File(filesDir, "state/profiles")
+                            if (profiles.isDirectory) {
+                                profiles.walk().forEach { file ->
+                                    if (file.isFile) {
+                                        val entry = java.util.zip.ZipEntry(file.relativeTo(profiles).path)
+                                        zout.putNextEntry(entry)
+                                        file.inputStream().use { it.copyTo(zout) }
+                                        zout.closeEntry()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Toast.makeText(this, "Backup saved", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Backup failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+            2 -> {
+                try {
+                    contentResolver.openInputStream(uri)?.use { input ->
+                        java.util.zip.ZipInputStream(input).use { zin ->
+                            val profiles = File(filesDir, "state/profiles")
+                            profiles.deleteRecursively()
+                            profiles.mkdirs()
+                            var entry = zin.nextEntry
+                            while (entry != null) {
+                                val file = File(profiles, entry.name)
+                                if (entry.isDirectory) {
+                                    file.mkdirs()
+                                } else {
+                                    file.parentFile?.mkdirs()
+                                    file.outputStream().use { zin.copyTo(it) }
+                                }
+                                zin.closeEntry()
+                                entry = zin.nextEntry
+                            }
+                        }
+                    }
+                    Toast.makeText(this, "Save data restored", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     private fun handle(intent: Intent?) {

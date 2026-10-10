@@ -14,6 +14,9 @@ public sealed partial class PlayerService
     private DistanceIntegrity.Fix? movementLastFix;
     // Where the game last placed the player, mock or inaccurate fixes included: story places go around it.
     private DistanceIntegrity.Fix? movementPosition;
+    // Where the game last asked for the weather (GetWeather 67 carries its own position): memory only, never logged.
+    private sealed record Spot(double Lat, double Lng);
+    private Spot? weatherSpot;
     private long movementLastReceived;
     private string? movementReason;
     private string movementDecision = "ignored";
@@ -24,6 +27,7 @@ public sealed partial class PlayerService
 
     public void ReleaseMovementSession(Guid session)
     {
+        ForgetBootedSession(session);
         lock (movementGate)
             if (movementLease.Release(session))
             {
@@ -239,6 +243,17 @@ public sealed partial class PlayerService
         Volatile.Read(ref movementPosition) is { } fix &&
         DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - fix.CapturedUtcMs <= DistanceIntegrity.RetentionSeconds * 1000L
             ? (fix.Lat, fix.Lng) : null;
+
+    /// <summary>Where the player stands, for story goals among the loaded <paramref name="cells"/>: the collector's fresh GPS
+    /// fix, else where the game last asked for the weather while that lies inside the loaded area (the 3×3 level-14 cells
+    /// reach about 900 m from their centre; the hook reads no GPS on some phones), else null (the area's centre).</summary>
+    private (double Lat, double Lng)? PlayerPositionIn(IReadOnlyCollection<PlayableLocations.Cell> cells)
+    {
+        if (PlayerPosition() is { } fix) return fix;
+        return Volatile.Read(ref weatherSpot) is { } spot && cells.Count > 0 &&
+            PlayableLocations.Distance(cells.Average(c => c.Lat), cells.Average(c => c.Lng), spot.Lat, spot.Lng) <= 1000
+                ? (spot.Lat, spot.Lng) : null;
+    }
 
     public object DistanceStatus()
     {

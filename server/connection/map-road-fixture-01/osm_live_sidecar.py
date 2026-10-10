@@ -370,9 +370,19 @@ class LiveTileServer(ThreadingHTTPServer):
         if getattr(self.source, "per_tile", False) and self.source.covers((z, x, y)):
             key = (z, x, y)  # The local index answers exact tile bounds quickly.
         if not self.blocking and not self.source.available(key):
-            self.source.prefetch(key)
-            raise LookupError("area fetch pending")
-        document = self.source.document(key)
+            if not self.source.offline:
+                self.source.prefetch(key)
+                raise LookupError("area fetch pending")
+            # Offline nothing can be fetched: the tile lies outside the map that was built (the player is elsewhere),
+            # so it is empty for good. Said once, not as a failure per tile.
+            with self.counter_lock:
+                self.stats["outside_map"] += 1
+                first = self.stats["outside_map"] == 1
+            if first:
+                self.emit({"event": "osm_live_outside_map", "note": "the game shows a place outside the map; served empty"})
+            document = {"elements": []}
+        else:
+            document = self.source.document(key)
         if self.only_kinds:
             document = {**document, "elements": [
                 e for e in document["elements"]

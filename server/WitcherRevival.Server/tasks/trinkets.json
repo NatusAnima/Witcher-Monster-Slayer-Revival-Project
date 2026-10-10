@@ -115,6 +115,18 @@
     },
     {"id": 20011, "slug": "trophy_from_vizima_to_beauclair", "type": 3, "target": 2000000, "evidence": "Client"},
     {"id": 20012, "slug": "trophy_disturbed_the_water", "type": 1, "target": 10, "window_seconds": 3600, "monsters": [3], "evidence": "Client"},
-    {"id": 20013, "slug": "trophy_fear_no_more", "type": 1, "target": 5, "window_seconds": 3600, "monsters": [8, 11, 12, 108, 157, 159, 164, 165, 171, 172, 173, 174, 175, 202], "evidence": "Client"}
+    {"id": 20013, "slug": "trophy_fear_no_more", "type": 1, "target": 5, "window_seconds": 3600, "monsters": [8, 11, 12, 108, 157, 159, 164, 165, 171, 172, 173, 174, 175, 202], "evidence": "Client"},
+    {"id": 20014, "slug": "trophy_smashed_figurine", "type": 13, "target": 1, "outputs": [1015], "evidence": "Community"},
+    {"id": 20015, "slug": "trophy_stone_heart", "type": 9, "target": 1, "quests": [146], "evidence": "Community"},
+    {"id": 20016, "slug": "trophy_flower_bottle", "type": 13, "target": 1, "outputs": [1078], "evidence": "Community"},
+    {"id": 20017, "slug": "trophy_used_candles", "type": 13, "target": 1, "outputs": [1214], "evidence": "Community"},
+    {"id": 20018, "slug": "trophy_child_drawing", "type": 13, "target": 2, "outputs": [1043, 1038, 1039], "evidence": "Community"},
+    {"id": 20019, "slug": "trophy_blacksmith_hammer", "type": 13, "target": 1, "outputs": [1114, 1115], "evidence": "Community"},
+    {"id": 20020, "slug": "trophy_blacksmith_hammer_bloody", "type": 13, "target": 1, "outputs": [1116], "evidence": "Authored"},
+    {"id": 20021, "slug": "trophy_mushroom_leshen", "type": 13, "target": 1, "outputs": [1176], "evidence": "Community"},
+    {"id": 20022, "slug": "trophy_toy_sword", "type": 13, "target": 1, "outputs": [1269, 1270, 1272, 1273, 1274, 1276], "evidence": "Community"},
+    {"id": 20023, "slug": "trophy_toy_sword_bloody", "type": 13, "target": 1, "outputs": [1275], "evidence": "Community"},
+    {"id": 20024, "slug": "trophy_journal_season_01", "type": 9, "target": 12, "quests": [104, 147, 148, 149, 150, 152, 153, 154, 158, 159, 160, 161], "evidence": "Community"},
+    {"id": 20025, "slug": "trophy_soft_reward", "type": 7, "target": 1, "evidence": "Authored"}
   ]
 }
