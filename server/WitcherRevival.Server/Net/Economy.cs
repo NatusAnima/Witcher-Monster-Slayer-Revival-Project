@@ -22,6 +22,8 @@ public static class Economy
         TypeLure => ItemKinds.Lures,
         TypeSensesPotion => ItemKinds.SensesPotions,
         TypeFriendPack => SocialService.PackItems,
+        SummonScrolls.ItemType => ItemKinds.SummoningScrolls,
+        Consumables.ItemType => ItemKinds.Consumables,
         _ => null,
     };
 
@@ -83,18 +85,31 @@ public static class Economy
     // ── Bags ────────────────────────────────────────────────────────────────────────────────
     // Client: ITEMS/NAMES/BUNDLES/BUNDLE_95..99 (Bag, Small pouch, Medium-sized pouch, Spacious pouch, Set of
     // saddlebags) with descriptions "Adds 50/50/100/200/400 inventory slots. One-time purchase."; a bag item adds
-    // its amount to the inventory size (PlayerInventory.TryAddItem) and the client stops at 1000
-    // (CanExpandInventory). Community (wiki, v1.1): 200 slots at the start, the five bags sold once each in the
-    // Equipment tab for 500/500/1000/2000/4000 orens. The client has no bag group (GroupType), so they sit in Items.
+    // its amount to the inventory size (PlayerInventory.TryAddItem), and the shop sells bags only below 1000
+    // (CanExpandInventory 0x1A0E05C: cmp w8, #1000; hook.js raises it to 4095, so the dashboard's largest bag decides).
+    // Community (wiki, v1.1): 200 slots at the start, the five bags sold once each in the Equipment tab for
+    // 500/500/1000/2000/4000 orens. The client has no bag group (GroupType), so they sit in Items.
     public static readonly IReadOnlyList<(int Bundle, int Slots, int Price)> Bags =
         new[] { (95, 50, 500), (96, 50, 500), (97, 100, 1000), (98, 200, 2000), (99, 400, 4000) };
 
-    public const int MaxBagSize = 1000;
-
-    /// <summary>How many items the player's inventory holds: the dashboard's starting size plus the bags bought.</summary>
-    public static int BagSize(LocalProfileStore.PlayerState? player) => Math.Min(MaxBagSize,
+    /// <summary>How many items the player's inventory holds: the dashboard's starting size, the bags bought and the
+    /// slots of the quest endings reached (the Rewards page), up to the dashboard's largest bag.</summary>
+    public static int BagSize(LocalProfileStore.PlayerState? player) => Math.Min((int)WorldTuning.Current.Get(WorldTuning.MaxBag),
         (int)WorldTuning.Current.Get(WorldTuning.StartingBag) +
-        Bags.Where(bag => player?.OneTimeBundles?.Contains(bag.Bundle) == true).Sum(bag => bag.Slots));
+        Bags.Where(bag => player?.OneTimeBundles?.Contains(bag.Bundle) == true).Sum(bag => bag.Slots) + QuestSlots(player) +
+        TrinketBuffs.Amount(player, TrinketBuffs.Kind.Slots));
+
+    /// <summary>Extra slots of the quest endings reached (Revival: the Great Mushrooming's set of saddlebags), counted from
+    /// the endings, so a changed table applies to endings reached before.</summary>
+    public static int QuestSlots(LocalProfileStore.PlayerState? player)
+    {
+        if (player is null) return 0;
+        var rewards = WorldTuning.Current.Rewards;
+        int slots = player.Granted.Distinct().Sum(key => rewards.For(RewardTables.PrologueKey + key)?.Slots ?? 0);
+        foreach (int id in player.Story?.Outputs ?? [])
+            if (StoryEngine.Outputs.FirstOrDefault(o => o.Id == id) is { } output) slots += rewards.For(RewardTables.KeyOf(output))?.Slots ?? 0;
+        return slots;
+    }
 
     // ── Formulae ────────────────────────────────────────────────────────────────────────────
     // Community (TheGamer 2021): times and ingredients. Family oils take other families' remains as listed;
@@ -252,6 +267,13 @@ public static class Economy
         foreach (var pack in OrenPacks)
             bundles.Add(new Bundle(pack.Bundle, 0, "Basic", "Gold", "OneByOne", new[] { (TypeGold, 1, pack.Orens) }, priority++,
                 DailyDiscount: 0, InAppPrice: pack.PriceId));
+        // Summoning scrolls beside the baits (Tuning shop.scrolls) and the weather items (shop.weatherItems), one at a time.
+        foreach (var scroll in SummonScrolls.All)
+            bundles.Add(Single(ScrollBundle + scroll.Id, scroll.Price, "Alchemy", "Baits", SummonScrolls.ItemType, scroll.Id, 1, priority++)
+                with { DailyDiscount = 0 });
+        foreach (var item in Consumables.All.Where(c => c.Price is not null))
+            bundles.Add(Single(ConsumableBundle + item.Id, item.Price!.Value, "Alchemy", "Items", Consumables.ItemType, item.Id, 1, priority++)
+                with { DailyDiscount = 0 });
         // Chests (client bundles 64 "A little something" and 65 "For professionals").
         bundles.Add(new Bundle(64, 250, "Basic", "Packs", "TwoByOne", new[]
         {
@@ -266,6 +288,13 @@ public static class Economy
     }
 
     public static Bundle? BundleById(int id) => Bundles.FirstOrDefault(b => b.Id == id);
+
+    public const int ScrollBundle = 5000, ConsumableBundle = 6000;
+
+    /// <summary>Whether the shop offers a bundle: scrolls and weather items only while the dashboard sells them.</summary>
+    public static bool Offered(Bundle bundle) =>
+        (!bundle.Items.Any(i => i.Type == SummonScrolls.ItemType) || WorldTuning.Current.On(WorldTuning.ShopScrolls)) &&
+        (!bundle.Items.Any(i => i.Type == Consumables.ItemType) || WorldTuning.Current.On(WorldTuning.ShopWeatherItems));
 
     /// <summary>Today's daily deals (GetDailyShopBundles 79): three potion, oil or bomb stacks, the same for a
     /// UTC day (Authored rotation).</summary>
@@ -312,7 +341,8 @@ public static class Economy
             rows[$"{table}_recipe_ingredients"] = recipes.SelectMany(r => r.Ingredients.Select(n => J(new Dictionary<string, object>
                 { ["recipe_id"] = r.Id, ["ingredient_id"] = n.Ingredient, ["amount"] = n.Amount }))).ToArray();
         }
-        rows["shop_bundles"] = Bundles.Select(b => J(new Dictionary<string, object?>
+        var offered = Bundles.Where(Offered).ToList();
+        rows["shop_bundles"] = offered.Select(b => J(new Dictionary<string, object?>
         {
             ["id"] = b.Id, ["gold_price"] = b.GoldPrice, ["discount"] = 0, ["daily_discount"] = b.DailyDiscount,
             ["permanent"] = 1, ["layout_priority"] = b.Priority, ["one_time"] = b.OneTime ? 1 : 0, ["dev"] = 0,
@@ -323,9 +353,9 @@ public static class Economy
             { ["id"] = pack.PriceId, ["amount"] = pack.PriceCents, ["name"] = pack.ProductId, ["product_type"] = "Consumable" })).ToArray();
         rows["inapp_price_shops"] = OrenPacks.SelectMany(pack => new[] { "GooglePlay", "AppStore" }.Select(store => J(new Dictionary<string, object>
             { ["inapp_price_id"] = pack.PriceId, ["name"] = pack.ProductId, ["shop_name"] = store, ["shop_price_id"] = pack.ProductId }))).ToArray();
-        rows["shop_bundle_items"] = Bundles.SelectMany(b => b.Items.Select(item => J(new Dictionary<string, object>
+        rows["shop_bundle_items"] = offered.SelectMany(b => b.Items.Select(item => J(new Dictionary<string, object>
             { ["shop_bundle_id"] = b.Id, ["item_type_id"] = item.Type, ["item_id"] = item.Item, ["amount"] = item.Amount }))).ToArray();
-        rows["shop_bundles_layout_group_name_categories"] = Bundles.Select(b => J(new Dictionary<string, object>
+        rows["shop_bundles_layout_group_name_categories"] = offered.Select(b => J(new Dictionary<string, object>
             { ["shop_bundle_id"] = b.Id, ["layout_group_name_main_category"] = b.Tab, ["layout_group_name_sub_category"] = b.Group })).ToArray();
         rows["auto_equip_items_prices"] = UnitPrices().Select((p, n) => J(new Dictionary<string, object>
             { ["id"] = n + 1, ["item_type_id"] = p.Type, ["item_id"] = p.Item, ["gold_price"] = p.Price })).ToArray();

@@ -124,6 +124,7 @@
           <a href="#help" data-view="help"><svg><use href="#i-catalogue" /></svg>Pomoc<span class="nav-index">10</span></a>
           <a href="#engine" data-view="engine"><svg><use href="#i-refresh" /></svg>Silnik<span class="nav-index">11</span></a>
           <a href="#tuning" data-view="tuning"><svg><use href="#i-overview" /></svg>Tuning<span class="nav-index">12</span></a>
+          <a href="#rewards" data-view="rewards"><svg><use href="#i-catalogue" /></svg>Rewards<span class="nav-index">13</span></a>
         </nav>
         <div class="sidebar-note">
           <span class="rule-ornament" aria-hidden="true">◇</span>
@@ -648,14 +649,55 @@
               <form id="tuning-form" hidden>
                 <p class="eyebrow">YOUR SETTINGS</p>
                 <h2>Tune the game to how you play</h2>
+                <div class="inline-controls preset-bar">
+                  <label>Preset<select id="tuning-preset"></select></label>
+                  <button type="button" id="tuning-preset-copy" class="secondary">Copy</button>
+                  <button type="button" id="tuning-preset-rename" class="secondary">Rename</button>
+                  <button type="button" id="tuning-preset-delete" class="secondary">Delete</button>
+                </div>
+                <p id="tuning-preset-note" class="hint"></p>
                 <div id="tuning-fields"></div>
                 <div class="callout">
-                  These are saved on this phone and need no restart. Each setting says when it takes effect.
+                  These are saved on this phone and need no restart. Each setting says when it takes effect. Revival and
+                  Vanilla stay as they are: saving changes to them makes a copy of your own.
                 </div>
                 <button type="submit">Save the settings</button>
-                <button type="button" id="tuning-defaults" class="secondary">Restore the defaults</button>
               </form>
             </div>
+          </section>
+          <section id="view-rewards" class="view" hidden>
+            <div id="rewards-content">
+              <p class="empty-state">Loading the rewards…</p>
+            </div>
+            <form id="rewards-form" hidden>
+              <p class="eyebrow">WHAT THE GAME PAYS</p>
+              <h2>Rewards of the preset in use</h2>
+              <p id="rewards-preset" class="hint"></p>
+              <div class="inline-controls">
+                <button type="button" id="rewards-load-revival" class="secondary">Fill in Revival's values</button>
+                <button type="button" id="rewards-load-vanilla" class="secondary">Fill in Vanilla's values</button>
+              </div>
+              <h3>Quest endings</h3>
+              <p class="hint">Experience, orens, extra inventory slots and items for each ending. Items are written as names
+                with an amount, separated by commas, e.g. <code>oil_insectoid, potion_swallow x2</code>. An ending pays once;
+                endings already reached keep what they paid, and slots count as soon as the ending is reached.</p>
+              <div class="table-wrap"><table><thead><tr><th scope="col">Quest</th><th scope="col">Ending</th>
+                <th scope="col">Experience</th><th scope="col">Orens</th><th scope="col">Slots</th><th scope="col">Items</th></tr></thead>
+                <tbody id="rewards-quests"></tbody></table></div>
+              <h3>Daily tasks</h3>
+              <label>Items per claimed task<input type="number" id="rewards-daily-count" min="0" max="5" step="1" required /></label>
+              <p class="hint">Each claimed task adds this many items, drawn by weight from the list below (an item waits for its
+                level). The gold and experience are on the Tuning page.</p>
+              <div class="table-wrap"><table><thead><tr><th scope="col">Item</th><th scope="col">Weight</th>
+                <th scope="col">From level</th><th scope="col"></th></tr></thead><tbody id="rewards-pool"></tbody></table></div>
+              <button type="button" id="rewards-pool-add" class="secondary">Add an item</button>
+              <h3>Level-ups</h3>
+              <p class="hint">Orens and items each new level brings (skill points come as before).</p>
+              <div class="table-wrap"><table><thead><tr><th scope="col">Level</th><th scope="col">Orens</th>
+                <th scope="col">Items</th></tr></thead><tbody id="rewards-levels"></tbody></table></div>
+              <datalist id="rewards-items"></datalist>
+              <button type="submit">Save the rewards</button>
+            </form>
           </section>
           <section id="view-weather" class="view" hidden>
             <div id="weather-content">

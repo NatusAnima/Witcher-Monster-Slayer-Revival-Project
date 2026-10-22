@@ -173,7 +173,8 @@ public sealed partial class PlayerService
                 {
                     ItemKinds.Lures => WorldNests.Lures.Any(l => l.Id == id),
                     SocialService.PackItems => id == SocialService.PackId,
-                    "summoning_scrolls" => id == 2 && TasksEnabled,
+                    ItemKinds.SummoningScrolls => SummonScrolls.ById(id) is not null && TasksEnabled,
+                    ItemKinds.Consumables => Consumables.ById(id) is not null,
                     _ => Reconstruction.KnownItem(kind, id),
                 };
                 if (!known) throw new ArgumentException("Unknown item.");
@@ -247,6 +248,7 @@ public sealed partial class PlayerService
                 M_GetPlayerInfo => BuildGetPlayerInfoPayload(),
                 M_GetInventory => BuildGetInventoryPayload(),
                 M_GetPlayerModifiers => BuildGetPlayerModifiersResponse(),
+                M_GetWeather => WeatherPayload(Volatile.Read(ref weatherSpot) is { } spot ? weather.Code(spot.Lat, spot.Lng) : WorldWeather.Clear),
                 _ => InitialPlayerDataPart(pushed),
             };
             var push = ApiProtocol.BuildResponse(0, pushed, payload, ack: Array.Empty<long>());

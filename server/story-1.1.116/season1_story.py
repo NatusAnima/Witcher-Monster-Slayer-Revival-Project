@@ -238,9 +238,9 @@ def main():
     # A condition waits only on facts some graph sets (fact 100 comes from "A Joint Venture") or the server owns.
     graph_facts = {f for g in graphs.values() for f, _ in g["sets"]}
     errors += [f"server fact f{f} is also a graph's" for f in SERVER_FACTS if f in graph_facts]
-    # A price is for an output a graph sends without a quest node.
-    errors += [f"price for {name}: no graph sends it, or a node has it" for name in PRICES
-               if not any(name in g["outputs"] for g in graphs.values()) or any(o["name"] == name for o in outputs)]
+    # A price is for an output of a quest node.
+    named = {f"{x['key']}.{o['name']}" for x in nodes for o in outputs if o["node"] == x["id"]}
+    errors += [f"price for {key}: no node has that output" for key in PRICES if key not in named]
     set_somewhere = {100} | graph_facts | set(SERVER_FACTS)
     for where, expr in [(x["key"], x["root"] + "&" + x["show"]) for x in nodes] + [(q["code"], q["criteria"]) for q in quests]:
         for fact in re.findall(r"(?<![\w:])f(\d+)(?=<|>|=|!)", expr):

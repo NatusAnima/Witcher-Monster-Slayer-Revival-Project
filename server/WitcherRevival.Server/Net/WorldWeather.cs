@@ -22,6 +22,9 @@ public sealed class WorldWeather
 
     private readonly string? _url;
     private readonly TimeSpan _ttl;
+    // A failed look (no network, as in airplane mode) is tried again after a minute, not after a whole cache period.
+    private static readonly TimeSpan FailedRetry = TimeSpan.FromMinutes(1);
+    private readonly ILogger? _log;
     private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(4) };
     private readonly object _gate = new();
     private sealed record CachedWeather(DateTimeOffset AttemptedAt, int Code, DateTimeOffset? DataAt, bool FetchSucceeded);
@@ -55,15 +58,19 @@ public sealed class WorldWeather
             throw new InvalidDataException("Manual weather requires code 1–7 and a future expiration within 24 hours.");
     }
 
-    public WorldWeather(string? url, TimeSpan ttl, string? overrideDirectory = null)
+    public WorldWeather(string? url, TimeSpan ttl, string? overrideDirectory = null, ILogger? log = null)
     {
         _url = string.IsNullOrWhiteSpace(url) ? null : url.Trim();
         _ttl = ttl;
+        _log = log;
         if (!string.IsNullOrWhiteSpace(overrideDirectory))
             _overridePath = Path.Combine(Path.GetFullPath(overrideDirectory), "weather.json");
     }
 
     public bool Enabled => _url is not null;
+
+    /// <summary>The last answer and where it came from (for the GetWeather log line).</summary>
+    public Answer? LastAnswered { get { lock (_gate) return _lastAnswered; } }
 
     /// <summary>The active override, otherwise the last automatic lookup in this process (Clear initially).
     /// Lookups also occur during map generation; this is not per-player weather telemetry.</summary>
@@ -121,7 +128,7 @@ public sealed class WorldWeather
         bool have;
         lock (_gate) have = _cells.TryGetValue(cell, out known);
         if (!have) return Remember(Fetch(cell), cached: false);
-        if (DateTimeOffset.UtcNow - known!.AttemptedAt >= _ttl)
+        if (DateTimeOffset.UtcNow - known!.AttemptedAt >= (known.FetchSucceeded ? _ttl : FailedRetry))
         {
             bool start;
             lock (_gate) start = _refreshing.Add(cell);
@@ -165,6 +172,7 @@ public sealed class WorldWeather
     private CachedWeather Fetch((int Lat, int Lng) cell)
     {
         int? code = null;
+        string? failure = null;
         try
         {
             string lat = (cell.Lat / 10.0).ToString("0.0", CultureInfo.InvariantCulture);
@@ -176,9 +184,14 @@ public sealed class WorldWeather
                 using var json = JsonDocument.Parse(response.Content.ReadAsStream());
                 code = FromWmo(json.RootElement.GetProperty("current").GetProperty("weather_code").GetInt32());
             }
+            else failure = "HTTP " + (int)response.StatusCode;
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or KeyNotFoundException
-                                     or InvalidOperationException) { }
+                                     or InvalidOperationException)
+        {
+            failure = e.GetType().Name + ": " + e.Message;   // names the host, not the query with the position
+        }
+        if (failure is not null) _log?.LogWarning("Weather fetch failed: {Reason}", failure);
         // A failed request keeps the cell's last value (or Clear) until the next period.
         lock (_gate)
         {

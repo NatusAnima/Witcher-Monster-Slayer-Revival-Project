@@ -201,11 +201,14 @@ public sealed class TaskCatalog : IDisposable
 
     private static void ValidateReward(Reward r)
     {
-        if (r is null || r.Amount is < 1 or > 10000 || !(r.Type == 16 && r.Item == 2 ||
-            Economy.KindOf(r.Type) is { } kind && (Reconstruction.KnownItem(kind, r.Item) ||
-                kind == ItemKinds.Lures && WorldNests.Lures.Any(l => l.Id == r.Item))))
+        if (r is null || r.Amount is < 1 or > 10000 || !(Economy.KindOf(r.Type) is { } kind && RewardTables.KnownItem(kind, r.Item)))
             throw new InvalidDataException("Unknown task reward item.");
     }
+
+    /// <summary>The orens a daily task pays: its own amount as the dashboard scales it (Tuning tasks.goldPercent). Definitions
+    /// cannot change once issued (PreserveCatalogue), so the scaling lives here, for the panel's row and the claim alike.</summary>
+    public static int DailyGold(Definition d) =>
+        (int)Math.Min(100_000, Math.Round(d.Gold * WorldTuning.Current.Get(WorldTuning.TaskGoldPercent) / 100));
 
     /// <summary>Wire rows use the exact lowercase aliases recovered from the 1.1.116 attribute generators.</summary>
     public static Dictionary<string, string[]> Rows(Catalog c)
@@ -237,7 +240,7 @@ public sealed class TaskCatalog : IDisposable
         }
         foreach (var d in c.AllTasks)
         {
-            Add("daily_quests", new { id = d.Id, slug = d.Slug, reward = d.Gold, contract_id = d.Id,
+            Add("daily_quests", new { id = d.Id, slug = d.Slug, reward = c.Daily.Tasks.Any(t => t.Id == d.Id) ? DailyGold(d) : d.Gold, contract_id = d.Id,
                 daily_quest_type_id = c.Daily.Tasks.Any(t => t.Id == d.Id) ? 1 : 2 });
             foreach (var r in d.Rewards ?? []) Add("daily_quest_rewards", new { id = d.Id, daily_quest_id = d.Id, reward_type_id = r.Type, reward_id = r.Item, amount = r.Amount });
         }
@@ -251,11 +254,6 @@ public sealed class TaskCatalog : IDisposable
         }
         Add("weekly_quests_rewards", new { id = c.Hunt.RewardId, weekly_quest_tier_id = 0,
             item_type_id = c.Hunt.Reward.Type, amount = c.Hunt.Reward.Amount, gold = 0, item_id = c.Hunt.Reward.Item });
-        Add("summoning_scrolls", new { id = 2, slug = "summoning_scroll_basic", priority = 0, duration = 500 });
-        Add("summoning_scrolls_player_modifiers", new { summoning_scroll_id = 2, player_modifier_id = 13 });
-        // Native LoadSummoningScrolls requires the modifier. ID13 is in the original GUI blacklist;
-        // empty effects are accepted by LoadPlayerModifiers and do not invent a combat buff.
-        Add("player_modifiers", new { id = 13, slug = "summoning_scroll_basic" });
         Add("game_configuration", new { id = 9301, param_name = "weeklyStampsMaxCount", param_value = c.Hunt.Size.ToString(System.Globalization.CultureInfo.InvariantCulture) });
         return rows.ToDictionary(p => p.Key, p => p.Value.Select(r => JsonSerializer.Serialize(r)).ToArray());
     }

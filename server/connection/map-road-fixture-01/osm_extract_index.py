@@ -5,6 +5,8 @@ Stored feature classes:
   ways        highway lines (roads, paths) and waterway=river/canal lines
   areas       parks, forests, beaches, water bodies and buildings, including
               multipolygon relations (one row per outer ring with its holes)
+  coastlines  natural=coastline ways (land on their left): OSM has no sea areas,
+              so the reader makes the sea of a tile from them (sea_rings)
 
 The live sidecar then answers any tile inside the extract without a network
 request. Building requires pyosmium (`pip install osmium`); reading uses only
@@ -182,6 +184,157 @@ def clip_rings(rings, box, mercator=False):
     return clipped
 
 
+def _clip_line(points, x0, y0, x1, y1):
+    """The parts of a polyline inside an (x0, y0, x1, y1) box (Liang-Barsky); a part ends on the box where it was cut."""
+    parts, part = [], None
+    for a, b in zip(points, points[1:]):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        t0, t1 = 0.0, 1.0
+        for p, q in ((-dx, a[0] - x0), (dx, x1 - a[0]), (-dy, a[1] - y0), (dy, y1 - a[1])):
+            if p == 0:
+                if q < 0:
+                    t0, t1 = 1.0, 0.0  # parallel to that edge and outside it
+            elif p < 0:
+                t0 = max(t0, q / p)
+            else:
+                t1 = min(t1, q / p)
+        if t0 > t1:
+            part = None
+            continue
+        start = a if t0 == 0 else (a[0] + t0 * dx, a[1] + t0 * dy)
+        end = b if t1 == 1 else (a[0] + t1 * dx, a[1] + t1 * dy)
+        if part is None or part[-1] != start:
+            part = [start]
+            parts.append(part)
+        part.append(end)
+        if t1 < 1:
+            part = None
+    return [p for p in parts if len(set(p)) > 1]
+
+
+def _signed_area(ring) -> float:
+    """Twice the signed area of an (x, y) ring: positive when it turns counter-clockwise (y up)."""
+    return sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(ring, ring[1:] + ring[:1]))
+
+
+def _inside(point, ring) -> bool:
+    inside = False
+    for (ax, ay), (bx, by) in zip(ring, ring[1:] + ring[:1]):
+        if (ay > point[1]) != (by > point[1]) and point[0] < ax + (point[1] - ay) * (bx - ax) / (by - ay):
+            inside = not inside
+    return inside
+
+
+def sea_rings(lines, box, seaward):
+    """The sea inside a (south, west, north, east) box, from coastline ways ((lat, lon) lists, land on their left), as
+    areas [[outer, *holes], ...] of (lat, lon) rings.
+
+    The coastline is cut to the box in Web Mercator (as a tile draws it) and its pieces joined where they meet. The sea
+    lies to the right of a piece, so from where one leaves the box the sea follows the box's edge clockwise to where the
+    next one enters. A closed ring inside the box is an island (a hole), or water where it turns clockwise. A box no
+    coastline crosses is all sea or all land: seaward(lat, lon) says which, for its north-west corner. A coastline that
+    ends inside the box (where the extract was cut) leaves its side unknown, so the box gets no sea.
+    """
+    south, west, north, east = box
+    x0, x1, y0, y1 = math.radians(west), math.radians(east), _mercator_y(south), _mercator_y(north)
+    eps = (x1 - x0) * 1e-9
+
+    def on_edge(p):
+        return min(abs(p[0] - x0), abs(p[0] - x1), abs(p[1] - y0), abs(p[1] - y1)) <= eps
+
+    def around(p):  # clockwise along the box's edge from its north-west corner, 0 <= t < 4
+        x, y = p
+        if abs(y - y1) <= eps and x < x1 - eps:
+            return (x - x0) / (x1 - x0)
+        if abs(x - x1) <= eps and y > y0 + eps:
+            return 1 + (y1 - y) / (y1 - y0)
+        if abs(y - y0) <= eps and x > x0 + eps:
+            return 2 + (x1 - x) / (x1 - x0)
+        return 3 + (y - y0) / (y1 - y0)
+
+    parts = [part for line in lines
+             for part in _clip_line([(math.radians(lon), _mercator_y(lat)) for lat, lon in line], x0, y0, x1, y1)]
+    following = {part[0]: part for part in parts if not on_edge(part[0])}
+
+    def follow(chain):  # on to the box's edge or back to its start; None at a loose end
+        while not on_edge(chain[-1]):
+            if len(chain) > 2 and chain[-1] == chain[0]:
+                return chain
+            nxt = following.pop(chain[-1], None)
+            if nxt is None:
+                return None
+            chain.extend(nxt[1:])
+        return chain
+
+    crossing, closed = [], []
+    for part in parts:
+        if on_edge(part[0]):
+            chain = follow(list(part))
+            if chain is None:
+                return []
+            crossing.append(chain)
+    while following:
+        chain = follow(list(following.popitem()[1]))
+        if chain is None or on_edge(chain[-1]):
+            return []  # a coastline that begins inside the box
+        closed.append(chain[:-1])
+
+    corners = [(0, (x0, y1)), (1, (x1, y1)), (2, (x1, y0)), (3, (x0, y0))]
+    starts = [(around(c[0]), n) for n, c in enumerate(crossing)]
+    ends = [around(c[-1]) for c in crossing]
+    outers, done = [], set()
+    for first in range(len(crossing)):
+        if first in done:
+            continue
+        ring, n = [], first
+        while n not in done:
+            done.add(n)
+            ring.extend(crossing[n])
+            t = ends[n]
+            gap, n = min(((s - t) % 4, m) for s, m in starts)
+            if any(0 < (e - t) % 4 < gap for e in ends):
+                return []  # another piece leaves before the next one enters: a broken coastline
+            ring.extend(point for d, point in sorted(((k - t) % 4, point) for k, point in corners) if 0 < d < gap)
+        if n != first:
+            return []
+        outers.append(ring)
+    if not crossing and seaward(north, west):
+        outers.append([corner for _, corner in corners])
+    outers += [ring for ring in closed if _signed_area(ring) < 0]
+    areas = [[outer] for outer in outers]
+    for hole in (ring for ring in closed if _signed_area(ring) > 0):
+        area = next((a for a in areas if _inside(hole[0], a[0])), None)
+        if area is not None:
+            area.append(hole)
+    return [[[(_mercator_lat(y), math.degrees(x)) for x, y in ring] for ring in area] for area in areas]
+
+
+def coast_side(lines, lat: float, lon: float):
+    """(metres to the nearest segment of the coastline ways, whether the point is on its sea side), or None without one.
+    The sea is right of a coastline way; at a vertex both segments decide: right of either where the coast turns left,
+    right of both where it turns right."""
+    kx, ky = 111_320.0 * math.cos(math.radians(lat)), 110_540.0
+    found = []  # (distance, position on the segment, cross product, direction)
+    for line in lines:
+        points = [((p_lon - lon) * kx, (p_lat - lat) * ky) for p_lat, p_lon in line]  # the point is the origin
+        for (ax, ay), (bx, by) in zip(points, points[1:]):
+            dx, dy = bx - ax, by - ay
+            length = dx * dx + dy * dy
+            t = 0.0 if length == 0 else max(0.0, min(1.0, -(ax * dx + ay * dy) / length))
+            found.append((math.hypot(ax + t * dx, ay + t * dy), t, -dx * ay + dy * ax, (dx, dy)))
+    if not found:
+        return None
+    nearest = min(f[0] for f in found)
+    near = [f for f in found if f[0] <= nearest + 1e-6]
+    middle = next((f for f in near if 0 < f[1] < 1), None)
+    into, out = next((f for f in near if f[1] == 1), None), next((f for f in near if f[1] == 0), None)
+    if middle is None and into is not None and out is not None:
+        turn = into[3][0] * out[3][1] - into[3][1] * out[3][0]
+        right = (into[2] < 0 or out[2] < 0) if turn > 0 else (into[2] < 0 and out[2] < 0)
+        return nearest, right
+    return nearest, (middle or near[0])[2] < 0
+
+
 def create_schema(db: sqlite3.Connection) -> None:
     db.executescript("""
         CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -191,6 +344,8 @@ def create_schema(db: sqlite3.Connection) -> None:
         CREATE TABLE areas(row INTEGER PRIMARY KEY, osm_area INTEGER NOT NULL, kind TEXT NOT NULL,
                            name TEXT, rings BLOB NOT NULL);
         CREATE VIRTUAL TABLE areas_rtree USING rtree(row, min_lon, max_lon, min_lat, max_lat);
+        CREATE TABLE coastlines(id INTEGER PRIMARY KEY, coords BLOB NOT NULL);
+        CREATE VIRTUAL TABLE coastlines_rtree USING rtree(id, min_lon, max_lon, min_lat, max_lat);
     """)
 
 
@@ -295,11 +450,11 @@ def build_index(input_path: Path, output_path: Path, low_memory: bool = False) -
         node_index.unlink()
     db = sqlite3.connect(temporary)
     create_schema(db)
-    stats = {"roads": 0, "skipped_roads": 0, "water_lines": 0, "areas": 0, "skipped_small_areas": 0,
+    stats = {"roads": 0, "skipped_roads": 0, "water_lines": 0, "coastlines": 0, "areas": 0, "skipped_small_areas": 0,
              "skipped_invalid": 0}
     progress = FeatureProgress(input_path, stats, temporary)
     area_kinds: dict[str, int] = {}
-    ways, way_boxes, areas, area_boxes = [], [], [], []
+    ways, way_boxes, areas, area_boxes, coasts, coast_boxes = [], [], [], [], [], []
     next_area_row = [1]
 
     def flush():
@@ -307,7 +462,9 @@ def build_index(input_path: Path, output_path: Path, low_memory: bool = False) -
         db.executemany("INSERT INTO ways_rtree VALUES (?,?,?,?,?)", way_boxes)
         db.executemany("INSERT INTO areas VALUES (?,?,?,?,?)", areas)
         db.executemany("INSERT INTO areas_rtree VALUES (?,?,?,?,?)", area_boxes)
-        for batch in (ways, way_boxes, areas, area_boxes):
+        db.executemany("INSERT INTO coastlines VALUES (?,?)", coasts)
+        db.executemany("INSERT INTO coastlines_rtree VALUES (?,?,?,?,?)", coast_boxes)
+        for batch in (ways, way_boxes, areas, area_boxes, coasts, coast_boxes):
             batch.clear()
 
     def points_of(nodes):
@@ -319,6 +476,17 @@ def build_index(input_path: Path, output_path: Path, low_memory: bool = False) -
                 progress.start()  # the first way means the node phase is over
             highway = way.tags.get("highway")
             waterway = way.tags.get("waterway")
+            if way.tags.get("natural") == "coastline":
+                try:
+                    points = points_of(way.nodes)
+                except osmium.InvalidLocationError:
+                    stats["skipped_invalid"] += 1
+                    return
+                if len(points) >= 2:
+                    coasts.append((way.id, pack_coordinates(points)))
+                    coast_boxes.append((way.id, *_bbox(points)))
+                    stats["coastlines"] += 1
+                return
             if highway in HIGHWAY_FEATURE_TYPES:
                 if skip_road(way.tags):
                     stats["skipped_roads"] += 1
@@ -384,6 +552,7 @@ def build_index(input_path: Path, output_path: Path, low_memory: bool = False) -
     flush()
     header = osmium.io.Reader(str(input_path), osmium.osm.osm_entity_bits.NOTHING).header()
     timestamp = header.get("osmosis_replication_timestamp") or header.get("timestamp") or ""
+    box = header.box()
     meta = {
         "schema": SCHEMA_VERSION,
         "source_file": input_path.name,
@@ -395,9 +564,12 @@ def build_index(input_path: Path, output_path: Path, low_memory: bool = False) -
         "area_filter": AREA_FILTER_VERSION,
         "skipped_roads": str(stats["skipped_roads"]),
         "water_lines": str(stats["water_lines"]),
+        "coastlines": str(stats["coastlines"]),
         "areas": str(stats["areas"]),
         "area_kinds": json.dumps(area_kinds, sort_keys=True),
     }
+    if box.valid():  # the extract's own box (west,south,east,north): the sea past the last road is in the map too
+        meta["bounds"] = f"{box.bottom_left.lon},{box.bottom_left.lat},{box.top_right.lon},{box.top_right.lat}"
     db.executemany("INSERT INTO meta VALUES (?,?)", meta.items())
     db.commit()
     db.close()
@@ -425,9 +597,14 @@ class FeatureIndex:
         self.meta = dict(self.db.execute("SELECT key, value FROM meta"))
         if self.meta.get("schema") != SCHEMA_VERSION:
             raise ValueError("unsupported feature index schema; rebuild with osm_extract_index.py")
-        row = self.db.execute("SELECT min(min_lon), max(max_lon), min(min_lat), max(max_lat) "
-                              "FROM ways_rtree").fetchone()
-        self.bounds = row  # west, east, south, north
+        if "bounds" in self.meta:  # the extract's own box: the sea past the last road is in the map too
+            west, south, east, north = map(float, self.meta["bounds"].split(","))
+            self.bounds = west, east, south, north
+        else:
+            self.bounds = self.db.execute("SELECT min(min_lon), max(max_lon), min(min_lat), max(max_lat) "
+                                          "FROM ways_rtree").fetchone()  # west, east, south, north
+        # Maps built before the coastline was kept have the roads' box above and no sea.
+        self.coast = self.db.execute("SELECT 1 FROM sqlite_master WHERE name = 'coastlines'").fetchone() is not None
 
     def covers(self, south: float, west: float, north: float, east: float) -> bool:
         b_west, b_east, b_south, b_north = self.bounds
@@ -474,8 +651,48 @@ class FeatureIndex:
                         continue
             elements.append({"type": "area", "id": row, "osm_area": osm_area, "kind": kind,
                              "name": name, "rings": rings})
+        if self.coast:  # the sea, cut to the clip box like the other areas (always as a tile draws it)
+            sea_box = clip if clip is not None else (box[2], box[0], box[3], box[1])
+            for n, rings in enumerate(sea_rings(self._coastlines(*sea_box), sea_box, self._seaward)):
+                elements.append({"type": "area", "id": f"sea-{n}", "osm_area": "sea", "kind": "water",
+                                 "name": None, "rings": rings})
         return {"elements": elements,
                 "osm3s": {"timestamp_osm_base": self.meta.get("source_timestamp")}}
+
+    def _coastlines(self, south, west, north, east):
+        return [unpack_coordinates(coords) for (coords,) in self.db.execute(
+            "SELECT c.coords FROM coastlines_rtree r JOIN coastlines c ON c.id = r.id "
+            "WHERE r.max_lon >= ? AND r.min_lon <= ? AND r.max_lat >= ? AND r.min_lat <= ?", (west, east, south, north))]
+
+    def _seaward(self, lat: float, lon: float) -> bool:
+        """Whether a point is on the sea side of its nearest coastline; land when none is within about 50 km."""
+        kx, ky = 111_320.0 * max(0.01, math.cos(math.radians(lat))), 110_540.0
+
+        def gap(row):  # metres from the point to a way's box
+            _, west, east, south, north = row
+            return math.hypot(max(west - lon, 0, lon - east) * kx, max(south - lat, 0, lat - north) * ky)
+
+        for radius in (1_000.0, 4_000.0, 16_000.0, 50_000.0):
+            dlat, dlon = radius / ky, radius / kx
+            rows = self.db.execute(
+                "SELECT id, min_lon, max_lon, min_lat, max_lat FROM coastlines_rtree "
+                "WHERE max_lon >= ? AND min_lon <= ? AND max_lat >= ? AND min_lat <= ?",
+                (lon - dlon, lon + dlon, lat - dlat, lat + dlat)).fetchall()
+            # Nearest boxes first: a way whose box lies beyond the nearest segment found cannot hold a nearer one (the ways
+            # meeting at that segment's end are all kept, as the side at a vertex needs both).
+            lines, nearest = [], None
+            for row in sorted(rows, key=gap):
+                if nearest is not None and gap(row) > nearest:
+                    break
+                (coords,) = self.db.execute("SELECT coords FROM coastlines WHERE id = ?", (row[0],)).fetchone()
+                lines.append(unpack_coordinates(coords))
+                distance = coast_side(lines[-1:], lat, lon)
+                if distance is not None and (nearest is None or distance[0] < nearest):
+                    nearest = distance[0]
+            side = coast_side(lines, lat, lon)
+            if side is not None and side[0] <= radius:
+                return side[1]
+        return False
 
 
 HighwayIndex = FeatureIndex  # Earlier name used by the sidecar and tests.

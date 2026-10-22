@@ -1,5 +1,5 @@
 {
- "source": "world_bestiary.py (client bestiary texts and settings of 1.1.116, community sheet M01)",
+ "source": "world_bestiary.py (client bestiary texts and settings of 1.1.116, community sheet M01) + wiki_bestiary.py (en rev 580603, pl rev 235511, fetched 2026-10-22)",
  "species": [
   {
    "monster_id": 2,
@@ -13,7 +13,17 @@
    "tags": [
     "URBAN",
     "DUSK"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "DUSK"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 101,
@@ -27,7 +37,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "pl",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 102,
@@ -41,7 +61,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 103,
@@ -56,7 +86,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 18,
@@ -72,7 +113,19 @@
     "NON_URBAN",
     "RAIN",
     "DAWN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 104,
@@ -88,7 +141,19 @@
     "NON_URBAN",
     "RAIN",
     "DAWN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 105,
@@ -102,7 +167,17 @@
    "tags": [
     "FOREST",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 106,
@@ -117,7 +192,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 19,
@@ -131,7 +217,17 @@
    "tags": [
     "FOREST",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 20,
@@ -146,7 +242,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 107,
@@ -162,7 +269,19 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 8,
@@ -175,8 +294,18 @@
    "difficulty": 3,
    "tags": [
     "NEUTRAL2",
+    "NIGHT"
+   ],
+   "client_tags": [
+    "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 108,
@@ -190,7 +319,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 109,
@@ -204,7 +343,17 @@
    "tags": [
     "WATER",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 110,
@@ -218,8 +367,20 @@
    "tags": [
     "WATER",
     "NON_URBAN",
+    "FOG",
+    "DAY"
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
     "FOG"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 21,
@@ -233,7 +394,17 @@
    "tags": [
     "FOREST",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 111,
@@ -241,14 +412,25 @@
    "name": "Tiger Fiend",
    "sheet": "Tiger Fiend",
    "family": 6,
-   "rarity": 2,
+   "rarity": 1,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "FOREST",
     "NON_URBAN",
     "DUSK"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DUSK"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 112,
@@ -263,7 +445,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 113,
@@ -271,14 +464,25 @@
    "name": "Leecher",
    "sheet": "Leecher",
    "family": 1,
-   "rarity": 2,
+   "rarity": 1,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 114,
@@ -290,10 +494,20 @@
    "skulls": 1,
    "difficulty": 2,
    "tags": [
+    "NON_URBAN",
+    "DAY"
+   ],
+   "client_tags": [
     "FOREST",
     "NON_URBAN",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 115,
@@ -307,7 +521,17 @@
    "tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 22,
@@ -321,7 +545,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 116,
@@ -336,7 +570,18 @@
     "NEUTRAL2",
     "RAIN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "RAIN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 117,
@@ -350,7 +595,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 118,
@@ -365,7 +620,18 @@
     "FOREST",
     "NON_URBAN",
     "DAWN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAWN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 119,
@@ -380,7 +646,18 @@
     "FOREST",
     "NON_URBAN",
     "DUSK"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DUSK"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 120,
@@ -395,8 +672,20 @@
     "FOREST",
     "NON_URBAN",
     "FOG",
+    "DAY"
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "FOG",
     "DAWN"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 121,
@@ -408,9 +697,19 @@
    "skulls": 1,
    "difficulty": 2,
    "tags": [
+    "NON_URBAN",
+    "DAY"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 122,
@@ -424,7 +723,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 123,
@@ -438,7 +747,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 124,
@@ -451,7 +770,16 @@
    "difficulty": 3,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 125,
@@ -459,12 +787,21 @@
    "name": "Grimnir",
    "sheet": "Grimnir",
    "family": 3,
-   "rarity": 3,
+   "rarity": 2,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 10,
@@ -479,7 +816,18 @@
     "FOREST",
     "NON_URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 126,
@@ -493,7 +841,17 @@
    "tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 127,
@@ -505,9 +863,19 @@
    "skulls": 2,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN",
+    "DAY"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 128,
@@ -522,7 +890,18 @@
     "NEUTRAL2",
     "FOG",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 3,
@@ -537,7 +916,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 129,
@@ -552,7 +942,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 130,
@@ -567,7 +968,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 131,
@@ -581,7 +993,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 132,
@@ -595,7 +1017,17 @@
    "tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 133,
@@ -607,8 +1039,17 @@
    "skulls": 2,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN"
+   ],
+   "client_tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 16,
@@ -623,7 +1064,18 @@
     "FOREST",
     "NON_URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 15,
@@ -638,7 +1090,18 @@
     "FOREST",
     "NON_URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 134,
@@ -653,7 +1116,18 @@
     "FOREST",
     "NON_URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 14,
@@ -668,7 +1142,18 @@
     "FOREST",
     "NON_URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 135,
@@ -682,7 +1167,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 136,
@@ -690,13 +1185,23 @@
    "name": "Pale Fleder",
    "sheet": "Pale Fleder",
    "family": 10,
-   "rarity": 2,
+   "rarity": 1,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 23,
@@ -711,7 +1216,18 @@
     "WATER",
     "NON_URBAN",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "client",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 24,
@@ -726,7 +1242,18 @@
     "WATER",
     "NON_URBAN",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 137,
@@ -734,14 +1261,25 @@
    "name": "Royal Foglet",
    "sheet": "Royal Foglet",
    "family": 1,
-   "rarity": 3,
+   "rarity": 2,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "WATER",
     "NON_URBAN",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 138,
@@ -755,7 +1293,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 139,
@@ -763,13 +1311,23 @@
    "name": "Green Forktail",
    "sheet": "Green Forktail",
    "family": 2,
-   "rarity": 2,
+   "rarity": 1,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 140,
@@ -781,9 +1339,19 @@
    "skulls": 2,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN",
+    "DAY"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 25,
@@ -797,7 +1365,17 @@
    "tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 141,
@@ -812,7 +1390,18 @@
     "FOREST",
     "NON_URBAN",
     "DUSK"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "DUSK"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 142,
@@ -826,7 +1415,17 @@
    "tags": [
     "FOREST",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 13,
@@ -839,7 +1438,16 @@
    "difficulty": 3,
    "tags": [
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 143,
@@ -853,7 +1461,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 144,
@@ -867,7 +1485,17 @@
    "tags": [
     "URBAN",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 145,
@@ -881,7 +1509,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 146,
@@ -895,7 +1533,17 @@
    "tags": [
     "WATER",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 1,
@@ -908,7 +1556,16 @@
    "difficulty": 1,
    "tags": [
     "URBAN"
-   ]
+   ],
+   "client_tags": [
+    "URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 147,
@@ -922,7 +1579,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 26,
@@ -937,7 +1604,18 @@
     "FOREST",
     "WATER",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "WATER",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 27,
@@ -950,7 +1628,16 @@
    "difficulty": 3,
    "tags": [
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 148,
@@ -963,9 +1650,19 @@
    "difficulty": 3,
    "tags": [
     "WATER",
+    "RAIN"
+   ],
+   "client_tags": [
+    "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 149,
@@ -978,7 +1675,16 @@
    "difficulty": 1,
    "tags": [
     "URBAN"
-   ]
+   ],
+   "client_tags": [
+    "URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 150,
@@ -991,7 +1697,16 @@
    "difficulty": 2,
    "tags": [
     "URBAN"
-   ]
+   ],
+   "client_tags": [
+    "URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 151,
@@ -1005,7 +1720,17 @@
    "tags": [
     "URBAN",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 152,
@@ -1020,7 +1745,18 @@
     "FOREST",
     "NON_URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 9,
@@ -1034,7 +1770,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 153,
@@ -1046,10 +1792,21 @@
    "skulls": 3,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN",
+    "FOG",
+    "DAY"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "FOG",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 154,
@@ -1063,7 +1820,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 155,
@@ -1076,9 +1843,19 @@
    "difficulty": 3,
    "tags": [
     "FOREST",
+    "DAY"
+   ],
+   "client_tags": [
+    "FOREST",
     "NON_URBAN",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 156,
@@ -1093,7 +1870,18 @@
     "NEUTRAL2",
     "FOG",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 157,
@@ -1107,7 +1895,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 158,
@@ -1121,7 +1919,17 @@
    "tags": [
     "URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 159,
@@ -1136,7 +1944,18 @@
     "URBAN",
     "FOG",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "FOG",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 160,
@@ -1148,9 +1967,20 @@
    "skulls": 3,
    "difficulty": 3,
    "tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "RAIN"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 161,
@@ -1164,7 +1994,17 @@
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 206,
@@ -1179,7 +2019,18 @@
     "URBAN",
     "FOG",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "FOG",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 162,
@@ -1194,7 +2045,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 163,
@@ -1208,8 +2070,20 @@
    "tags": [
     "WATER",
     "NON_URBAN",
+    "RAIN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "pl",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 164,
@@ -1223,7 +2097,17 @@
    "tags": [
     "URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 165,
@@ -1237,7 +2121,17 @@
    "tags": [
     "URBAN",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 166,
@@ -1252,7 +2146,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 30,
@@ -1267,7 +2172,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 31,
@@ -1282,7 +2198,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 32,
@@ -1296,7 +2223,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 167,
@@ -1308,10 +2245,21 @@
    "skulls": 2,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN",
+    "NIGHT",
+    "FULL_MOON"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "NIGHT",
     "FULL_MOON_ONLY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "en"
+   }
   },
   {
    "monster_id": 4,
@@ -1324,7 +2272,16 @@
    "difficulty": 1,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 168,
@@ -1338,7 +2295,17 @@
    "tags": [
     "WATER",
     "NON_URBAN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 169,
@@ -1352,7 +2319,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 5,
@@ -1365,7 +2342,16 @@
    "difficulty": 2,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 170,
@@ -1378,7 +2364,16 @@
    "difficulty": 3,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 33,
@@ -1392,7 +2387,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 171,
@@ -1407,7 +2412,18 @@
     "NEUTRAL2",
     "NIGHT",
     "MIDNIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT",
+    "MIDNIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 172,
@@ -1420,9 +2436,19 @@
    "difficulty": 3,
    "tags": [
     "NEUTRAL2",
+    "MIDNIGHT"
+   ],
+   "client_tags": [
+    "NEUTRAL2",
     "NIGHT",
     "MIDNIGHT"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 173,
@@ -1437,7 +2463,18 @@
     "NEUTRAL2",
     "DAY",
     "NOON"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY",
+    "NOON"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 174,
@@ -1451,7 +2488,17 @@
    "tags": [
     "NEUTRAL2",
     "NOON"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NOON"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 175,
@@ -1466,7 +2513,18 @@
     "NEUTRAL2",
     "FOG",
     "NOON"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NOON"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 176,
@@ -1480,7 +2538,17 @@
    "tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 177,
@@ -1494,7 +2562,17 @@
    "tags": [
     "URBAN",
     "DAWN"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "DAWN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 178,
@@ -1508,7 +2586,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 179,
@@ -1522,7 +2610,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 180,
@@ -1534,9 +2632,20 @@
    "skulls": 3,
    "difficulty": 3,
    "tags": [
+    "FOREST",
+    "NON_URBAN",
+    "FOG"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 34,
@@ -1551,7 +2660,18 @@
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 181,
@@ -1559,14 +2679,25 @@
    "name": "Writher",
    "sheet": "Writher",
    "family": 8,
-   "rarity": 2,
+   "rarity": 1,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
     "FOREST",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 182,
@@ -1579,7 +2710,16 @@
    "difficulty": 2,
    "tags": [
     "URBAN"
-   ]
+   ],
+   "client_tags": [
+    "URBAN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 183,
@@ -1595,7 +2735,19 @@
     "NON_URBAN",
     "RAIN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 184,
@@ -1611,7 +2763,19 @@
     "NON_URBAN",
     "RAIN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 185,
@@ -1627,7 +2791,19 @@
     "NON_URBAN",
     "RAIN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "RAIN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 186,
@@ -1642,7 +2818,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 187,
@@ -1650,7 +2837,7 @@
    "name": "Sea Witch",
    "sheet": "Sea Witch",
    "family": 4,
-   "rarity": 2,
+   "rarity": 1,
    "skulls": 2,
    "difficulty": 3,
    "tags": [
@@ -1658,7 +2845,19 @@
     "NON_URBAN",
     "RAIN",
     "DAWN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 7,
@@ -1672,7 +2871,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 188,
@@ -1687,7 +2896,18 @@
     "FOREST",
     "NON_URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "FOREST",
+    "NON_URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 189,
@@ -1700,8 +2920,19 @@
    "difficulty": 3,
    "tags": [
     "NEUTRAL2",
+    "NIGHT",
+    "FULL_MOON"
+   ],
+   "client_tags": [
+    "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "en"
+   }
   },
   {
    "monster_id": 35,
@@ -1716,7 +2947,18 @@
     "NEUTRAL2",
     "FOG",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 190,
@@ -1730,7 +2972,17 @@
    "tags": [
     "URBAN",
     "DUSK"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "DUSK"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 191,
@@ -1739,12 +2991,22 @@
    "sheet": "Night Succubus",
    "family": 4,
    "rarity": 2,
-   "skulls": 2,
-   "difficulty": 3,
+   "skulls": 1,
+   "difficulty": 2,
    "tags": [
     "URBAN",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "URBAN",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 192,
@@ -1757,10 +3019,21 @@
    "difficulty": 3,
    "tags": [
     "WATER",
+    "RAIN",
+    "DAWN"
+   ],
+   "client_tags": [
+    "WATER",
     "NON_URBAN",
     "RAIN",
     "DAWN"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 193,
@@ -1772,11 +3045,23 @@
    "skulls": 3,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN",
+    "FOG",
+    "NIGHT",
+    "FULL_MOON"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "FOG",
     "NIGHT",
     "FULL_MOON_ONLY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "pl",
+    "moon": "en"
+   }
   },
   {
    "monster_id": 36,
@@ -1792,7 +3077,19 @@
     "NON_URBAN",
     "RAIN",
     "DAWN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN",
+    "DAWN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 194,
@@ -1807,7 +3104,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 195,
@@ -1822,7 +3130,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 196,
@@ -1837,7 +3156,18 @@
     "WATER",
     "NON_URBAN",
     "RAIN"
-   ]
+   ],
+   "client_tags": [
+    "WATER",
+    "NON_URBAN",
+    "RAIN"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 197,
@@ -1850,7 +3180,16 @@
    "difficulty": 1,
    "tags": [
     "FOREST"
-   ]
+   ],
+   "client_tags": [
+    "FOREST"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 198,
@@ -1863,7 +3202,16 @@
    "difficulty": 2,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 199,
@@ -1877,9 +3225,20 @@
    "tags": [
     "URBAN",
     "FOG",
+    "D_AND_D"
+   ],
+   "client_tags": [
+    "URBAN",
+    "FOG",
     "DAWN",
     "DUSK"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 200,
@@ -1893,7 +3252,17 @@
    "tags": [
     "NEUTRAL2",
     "FOG"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "FOG"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "en",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 6,
@@ -1908,7 +3277,18 @@
     "NEUTRAL2",
     "NIGHT",
     "FULL_MOON_ONLY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT",
+    "FULL_MOON_ONLY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "en"
+   }
   },
   {
    "monster_id": 201,
@@ -1921,7 +3301,16 @@
    "difficulty": 3,
    "tags": [
     "NEUTRAL2"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "none",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 11,
@@ -1935,7 +3324,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 12,
@@ -1949,7 +3348,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 202,
@@ -1963,7 +3372,17 @@
    "tags": [
     "NEUTRAL2",
     "NIGHT"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "NIGHT"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 203,
@@ -1977,7 +3396,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 204,
@@ -1989,10 +3418,21 @@
    "skulls": 3,
    "difficulty": 3,
    "tags": [
+    "NON_URBAN",
+    "FOG",
+    "DAY"
+   ],
+   "client_tags": [
     "NEUTRAL2",
     "FOG",
     "DAY"
-   ]
+   ],
+   "tags_source": {
+    "habitat": "en",
+    "weather": "pl",
+    "time": "en",
+    "moon": "none"
+   }
   },
   {
    "monster_id": 205,
@@ -2006,7 +3446,17 @@
    "tags": [
     "NEUTRAL2",
     "DAY"
-   ]
+   ],
+   "client_tags": [
+    "NEUTRAL2",
+    "DAY"
+   ],
+   "tags_source": {
+    "habitat": "pl",
+    "weather": "none",
+    "time": "en",
+    "moon": "none"
+   }
   }
  ],
  "monsters": [
@@ -2145,7 +3595,7 @@
    "family_id": 6,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 2,
+   "rarity": 1,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/BIES_LVL2",
    "model": "Assets/_bundledassets/characters/monsters/s00/bies_lvl2/bies_lvl2_lq/bies_lvl2_lq.prefab",
@@ -2171,7 +3621,7 @@
    "family_id": 1,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 2,
+   "rarity": 1,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/BLOEDZUIGER_LVL2",
    "model": "Assets/_bundledassets/characters/monsters/s00/bloedzuiger_lvl2/bloedzuiger_lvl2_lq/bloedzuiger_lvl2_lq.prefab",
@@ -2327,7 +3777,7 @@
    "family_id": 3,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 3,
+   "rarity": 2,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/CYCLOP_LVL3",
    "model": "Assets/_bundledassets/characters/monsters/s00/cyclop_lvl3/cyclop_lvl3_lq/cyclop_lvl3_lq.prefab",
@@ -2470,7 +3920,7 @@
    "family_id": 10,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 2,
+   "rarity": 1,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/FLEDER_LVL2",
    "model": "Assets/_bundledassets/characters/monsters/s00/fleder_lvl2/fleder_lvl2_lq/fleder_lvl2_lq.prefab",
@@ -2483,7 +3933,7 @@
    "family_id": 1,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 3,
+   "rarity": 2,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/FOGLINGTANGALORE",
    "model": "Assets/_bundledassets/characters/monsters/s00/foglingtangalore/foglingtangalore_lq/foglingtangalore_lq.prefab",
@@ -2509,7 +3959,7 @@
    "family_id": 2,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 2,
+   "rarity": 1,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/FORKTAIL_LVL2",
    "model": "Assets/_bundledassets/characters/monsters/s00/forktail_lvl2/forktail_lvl2_lq/forktail_lvl2_lq.prefab",
@@ -3068,7 +4518,7 @@
    "family_id": 8,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 2,
+   "rarity": 1,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/SCOLOPENDROMORPH_LVL2",
    "model": "Assets/_bundledassets/characters/monsters/s00/scolopendromorph_lvl2/scolopendromorph_lvl2_lq/scolopendromorph_lvl2_lq.prefab",
@@ -3146,7 +4596,7 @@
    "family_id": 4,
    "encounter_distance": 50,
    "attack_animation_time": 2000,
-   "rarity": 2,
+   "rarity": 1,
    "difficulty": 3,
    "name": "MONSTERS/NAMES/SIRENMORSZCZYNKA",
    "model": "Assets/_bundledassets/characters/monsters/s00/sirenmorszczynka/sirenmorszczynka_lq/sirenmorszczynka_lq.prefab",
@@ -3199,7 +4649,7 @@
    "encounter_distance": 50,
    "attack_animation_time": 2000,
    "rarity": 2,
-   "difficulty": 3,
+   "difficulty": 2,
    "name": "MONSTERS/NAMES/SUCCUBUS_LVL2",
    "model": "Assets/_bundledassets/characters/monsters/s00/succubus_lvl2/succubus_lvl2_lq/succubus_lvl2_lq.prefab",
    "image": "Assets/_bundledassets/characters/monsters/s00/succubus_lvl2/succubus_lvl2_hq/succubus_lvl2_hq_presentation.prefab",

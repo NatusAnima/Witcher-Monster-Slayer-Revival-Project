@@ -24,7 +24,8 @@ builder.WebHost.ConfigureKestrel(k => k.Listen(IPAddress.Loopback, httpPort));
 builder.Logging.AddFilter("Microsoft.AspNetCore", LogLevel.None);
 // One weather cache for every player: a 0.1° cell is asked for once per cache period.
 builder.Services.AddSingleton(sp => new WorldWeather(builder.Configuration["Weather:Url"],
-    TimeSpan.FromMinutes(builder.Configuration.GetValue("Weather:CacheMinutes", 15)), builder.Configuration["World:Directory"]));
+    TimeSpan.FromMinutes(builder.Configuration.GetValue("Weather:CacheMinutes", 15)), builder.Configuration["World:Directory"],
+    sp.GetRequiredService<ILogger<WorldWeather>>()));
 builder.Services.AddSingleton<ProfileRegistry>();
 builder.Services.AddSingleton<NewsFeed>();
 builder.Services.AddSingleton<GameSocketService>();
@@ -82,6 +83,9 @@ app.MapGet("/news/{language}", (HttpContext context, NewsFeed news, string langu
     .WithMetadata(new LocalHttpEndpoint("news"));
 app.MapGet("/news/images/{name}", (NewsFeed news, string name) => news.Image(name))
     .WithMetadata(new LocalHttpEndpoint("news_image"));
+// The texts hook.js gives the game (ClientTexts): the bestiary's wiki occurrences, trinket bonuses, weather item names.
+app.MapGet("/revival/texts", () => Results.Json(WitcherRevival.Server.Net.ClientTexts.Build()))
+    .WithMetadata(new LocalHttpEndpoint("texts"));
 app.MapGet("/v1/featuretiles/{**rest}", () => Results.Bytes(Array.Empty<byte>(), "application/x-protobuf")).WithMetadata(new LocalHttpEndpoint("featuretiles"));
 foreach (string route in new[] { "/gatekeeper", "/idjson", "/idjson/bob" })
     app.MapGet(route, () => Results.Json(new { Type = 0, Message = 0, EndTime = "", Address = "127.0.0.1", WitcherId = 1L },

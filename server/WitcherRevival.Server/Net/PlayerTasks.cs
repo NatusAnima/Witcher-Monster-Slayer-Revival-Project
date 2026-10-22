@@ -6,21 +6,39 @@ namespace WitcherRevival.Server.Net;
 
 public sealed partial class PlayerService
 {
-    private byte[] SummonOwnedScroll(int longitude, int latitude)
+    /// <summary>An owned summoning scroll (SummonScrolls): its group follows its own description ("Summons 5 random
+    /// draconids", "one rare or legendary elemental", …), within the player's level when the level gate is on (a rarity
+    /// the gate leaves empty falls back to the next lower one) and never a full-moon-only monster outside the full moon.
+    /// Habitat, time and weather do not apply: the monsters are summoned. Species repeat when a family has too few.
+    /// The lifetime is the client default 500 s.</summary>
+    private byte[] SummonOwnedScroll(SummonScrolls.Scroll scroll, int longitude, int latitude)
     {
-        // The basic-scroll description specifies four common monsters and one common/rare monster.
-        // Species selection and the rare fifth slot are authored; the lifetime is the client default 500 s.
-        var species = WorldBestiary.All.Where(s => s.Rarity == 1).OrderBy(_ => Random.Shared.Next()).Take(4)
-            .Concat(WorldBestiary.All.Where(s => s.Rarity == 2).OrderBy(_ => Random.Shared.Next()).Take(1))
-            .Select(s => (s.MonsterId, s.Difficulty)).ToArray();
-        var group = summons.TrySummonOwned(UnixSeconds(), longitude, latitude, species, (created, groups) =>
+        int level = Reconstruction.LevelForExp(profiles.Snapshot().Player?.Exp ?? 0);
+        bool fullMoon = WorldSpawns.Sky(0, 0, DateTimeOffset.UtcNow, WorldWeather.Clear).FullMoon;
+        var eligible = WorldBestiary.All.Where(s => (scroll.Family is null || s.Family == scroll.Family) &&
+            WorldSpawns.Allowed(s, level) && (fullMoon || !WorldSpawns.TagsOf(s).Contains("FULL_MOON_ONLY"))).ToList();
+        WorldBestiary.Species? Pick(params int[] rarities)
+        {
+            for (int fallback = 0; fallback < 3; fallback++)
+            {
+                var pool = eligible.Where(s => rarities.Contains(s.Rarity + fallback)).ToList();
+                if (pool.Count > 0) return pool[Random.Shared.Next(pool.Count)];
+            }
+            return null;
+        }
+        var picks = Enumerable.Range(0, scroll.Common).Select(_ => Pick(1))
+            .Concat(Enumerable.Range(0, scroll.CommonOrRare).Select(_ => Pick(1, 2)))
+            .Concat(Enumerable.Range(0, scroll.RareOrLegendary).Select(_ => Pick(2, 3)))
+            .Concat(Enumerable.Range(0, scroll.LegendaryOnly).Select(_ => Pick(3)))
+            .OfType<WorldBestiary.Species>().Select(s => (s.MonsterId, s.Difficulty)).ToArray();
+        var group = picks.Length == 0 ? null : summons.TrySummonOwned(scroll.Id, UnixSeconds(), longitude, latitude, picks, (created, groups) =>
         {
             bool paid = false;
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, p =>
             {
-                var owned = p.Items.GetValueOrDefault("summoning_scrolls");
-                if (owned?.GetValueOrDefault(2) is not > 0) return null;
-                if (--owned[2] == 0) owned.Remove(2);
+                var owned = p.Items.GetValueOrDefault(ItemKinds.SummoningScrolls);
+                if (owned?.GetValueOrDefault(scroll.Id) is not > 0) return null;
+                if (--owned[scroll.Id] == 0) owned.Remove(scroll.Id);
                 paid = true;
                 var modifiers = (p.Modifiers ?? []).Where(m => m.Id != 13).ToList();
                 modifiers.Add(new(13, created.StartTime, created.StartTime + 500));
@@ -28,6 +46,8 @@ public sealed partial class PlayerService
             });
             return paid;
         });
+        log.LogInformation("  SummonLocalMonsters scroll {Scroll} {Result} monsters={Monsters}", scroll.Slug,
+            group is null ? "refused" : "summoned", string.Join(",", picks.Select(p => p.MonsterId)));
         var b = new ByteBuffer(); b.WriteByte(group is null ? (byte)0 : (byte)1); b.WriteInt(group is null ? 0 : 1);
         if (group is not null) WriteSummonedGroup(b, group);
         return b.ToArray();
@@ -181,9 +201,17 @@ public sealed partial class PlayerService
                         int index = s.Daily.FindIndex(t => t.Definition.Id == id);
                         if (index >= 0 && (TaskEngine.Complete(s.Daily[index]) || WalkedEnough(s.Daily[index])))
                         {
-                            p = TaskEngine.Reward(p, s.Daily[index].Definition.Gold, []);
-                            log.LogInformation("  Task claim {Task} daily: paid {Gold} gold, wallet {Wallet}, progress {Progress} of {Target}",
-                                id, s.Daily[index].Definition.Gold, p.Gold, s.Daily[index].Progress, s.Daily[index].Definition.Target);
+                            // The panel shows the gold (its daily_quests row); the experience and the items (the Rewards
+                            // page's daily pool) arrive with the pushes below, or at the next game start.
+                            int gold = TaskCatalog.DailyGold(s.Daily[index].Definition), exp = (int)world.Tuning.Get(WorldTuning.TaskExp);
+                            var items = world.Tuning.Rewards.DrawDaily(Reconstruction.LevelForExp(p.Exp), Random.Shared);
+                            p = Reconstruction.WithExp(TaskEngine.Reward(p, gold, []), exp);
+                            foreach (var item in items) AddItems(p, [(item.Kind, item.Id, item.Amount)]);
+                            log.LogInformation("  Task claim {Task} daily: paid {Gold} gold, {Exp} exp, items {Items}, wallet {Wallet}, " +
+                                "progress {Progress} of {Target}", id, gold, exp,
+                                items.Count == 0 ? "none" : string.Join(", ", items.Select(i => $"{i.Kind} {i.Id}")), p.Gold,
+                                s.Daily[index].Progress, s.Daily[index].Definition.Target);
+                            if (exp > 0 || items.Count > 0) lock (pushGate) pendingPushes.UnionWith([M_GetPlayerInfo, M_GetInventory]);
                             s.Daily.RemoveAt(index); reply = ClaimResponse(true, id, p.Gold, 1);
                         }
                         else if (index >= 0)

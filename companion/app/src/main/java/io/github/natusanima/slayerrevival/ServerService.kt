@@ -35,6 +35,8 @@ class ServerService : Service() {
         const val PLACEMENT_PORT = 18093
         /** Where the game's hook sends its own log (see LogSink below); the hook has the same number. */
         const val LOG_PORT = 18094
+        /** Where the server asks for the weather (see startWeatherRelay below). */
+        const val WEATHER_PORT = 18095
 
         /**
          * The server shares the phone with the game, so its .NET heap is kept small: workstation GC
@@ -68,6 +70,7 @@ class ServerService : Service() {
     private var launching = false
     @Volatile private var stopping = false
     private var sink: ServerSocket? = null
+    private var weatherRelay: ServerSocket? = null
 
     override fun onBind(intent: Intent?) = null
 
@@ -105,9 +108,11 @@ class ServerService : Service() {
             processes.forEach { it.destroy() }
             processes.clear()
         }
-        try {
-            sink?.close()
-        } catch (_: Exception) {
+        for (socket in listOf(sink, weatherRelay)) {
+            try {
+                socket?.close()
+            } catch (_: Exception) {
+            }
         }
         update("Stopped")
         super.onDestroy()
@@ -137,22 +142,23 @@ class ServerService : Service() {
                 key.writeText(Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING))
             }
             startSink()
+            startWeatherRelay()
             val mapped = startMap(rt, world)
             start("server", "libserver.so", listOf(
                 "--Http:Port", "$HTTP_PORT", "--GameServer:Port", "$GAME_PORT",
                 "--LocalProfile:DataDirectory", "$state/profiles", "--LocalProfile:NewProfileMode", "reconstructed",
                 "--News:Directory", "$state/news", "--Tasks:Directory", "$state/tasks", "--World:Directory", "$world",
                 "--Playable:Url", "http://127.0.0.1:$PLACEMENT_PORT",
-                // real weather: free, no key; the server sends only the position rounded to 0.1° (about 11 km)
-                "--Weather:Url", "https://api.open-meteo.com/v1/forecast",
+                // real weather (Open-Meteo, through the app): free, no key; the server sends only the position rounded to
+                // 0.1° (about 11 km)
+                "--Weather:Url", "http://127.0.0.1:$WEATHER_PORT/v1/forecast",
                 "--Admin:Port", "$ADMIN_PORT", "--Admin:Origin", "http://127.0.0.1:$ADMIN_PORT", // DashboardActivity
                 "--Admin:KeyFile", "$key", "--Admin:DataDirectory", "$state/admin/data",
                 "--Admin:DebugTools", "true", // the Players tab's debug tools: the phone is the player's own server
                 // one timestamped line per entry: the log is read by people and by the bug report
                 "--Logging:Console:FormatterOptions:SingleLine", "true",
                 "--Logging:Console:FormatterOptions:TimestampFormat", "HH:mm:ss.fff ",
-            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0",
-                "SSL_CERT_FILE" to "$rt/etc/ca-certificates.crt") + SERVER_MEMORY)
+            ), mapOf("ASPNETCORE_ENVIRONMENT" to "Production", "DOTNET_EnableDiagnostics" to "0") + SERVER_MEMORY)
             thread(name = "recorder") { // what the phone was doing around a crash: memory, the server's processes, heat
                 while (!stopping) {
                     EventLog.sample(this)
@@ -266,6 +272,67 @@ class ServerService : Service() {
                         EventLog.write(this, "game", "the game's hook disconnected")
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Fetches Open-Meteo's forecast for the server, which cannot look a host up on Android: musl, its C library, reads
+     * /etc/resolv.conf, which Android does not have, so every weather request fell back to Clear. The app's own networking
+     * resolves through Android. Loopback only, a few connections, and only Open-Meteo's forecast with a plain query.
+     */
+    private fun startWeatherRelay() {
+        val socket = try {
+            ServerSocket(WEATHER_PORT, 4, InetAddress.getByName("127.0.0.1"))
+        } catch (e: Exception) {
+            EventLog.write(this, "server", "the weather port $WEATHER_PORT is not available: $e")
+            return
+        }
+        weatherRelay = socket
+        val open = AtomicInteger()
+        thread(name = "weather") {
+            while (!stopping) {
+                val client = try {
+                    socket.accept()
+                } catch (_: Exception) {
+                    break
+                }
+                if (open.incrementAndGet() > 4) {
+                    open.decrementAndGet()
+                    client.close()
+                    continue
+                }
+                thread(name = "weather-client") {
+                    try {
+                        relayWeather(client)
+                    } finally {
+                        open.decrementAndGet()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun relayWeather(client: Socket) {
+        client.use {
+            try {
+                it.soTimeout = 10_000
+                // "GET /v1/forecast?latitude=..&longitude=..&current=weather_code HTTP/1.1"
+                val request = it.getInputStream().bufferedReader()
+                val target = request.readLine()?.split(' ')?.getOrNull(1) ?: return
+                while (!request.readLine().isNullOrEmpty()) { } // the headers, read so that closing does not reset the connection
+                val query = target.removePrefix("/v1/forecast?")
+                if (query == target || query.length > 200 || !query.all { c -> c.isLetterOrDigit() || c in "._-=&," }) return
+                val upstream = URL("https://api.open-meteo.com/v1/forecast?$query").openConnection() as HttpURLConnection
+                upstream.connectTimeout = 2000 // the server waits 4 s in all
+                upstream.readTimeout = 2000
+                val code = upstream.responseCode
+                val body = (if (code < 400) upstream.inputStream else upstream.errorStream)?.use { s -> s.readBytes() } ?: ByteArray(0)
+                val head = "HTTP/1.1 $code ${if (code < 400) "OK" else "Error"}\r\nContent-Type: application/json\r\n" +
+                    "Content-Length: ${body.size}\r\nConnection: close\r\n\r\n"
+                it.getOutputStream().write(head.toByteArray() + body)
+            } catch (_: Exception) {
+                // no answer: the server keeps the cell's last weather (or Clear) until its next look
             }
         }
     }

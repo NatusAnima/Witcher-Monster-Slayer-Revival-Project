@@ -28,7 +28,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from osm_live_codec import build_area_canary, build_grid_canary, build_live_tile, build_river_canary
+from osm_live_codec import VERSION_ID, build_area_canary, build_grid_canary, build_live_tile, build_river_canary
 from osm_tile_codec import validate_tile_address
 
 
@@ -210,6 +210,10 @@ class LocalIndexSource:
         self.fallback = fallback
         self.offline = fallback is None or fallback.offline
         self.local_stats = collections.Counter()
+        # Names the tiles this source makes: the game keeps every tile on disk, and its hook drops them when this changes
+        # (a rebuilt or another map, or a new encoding).
+        meta = getattr(index, "meta", {})
+        self.map = f"{VERSION_ID}:{meta.get('source_file')}:{meta.get('source_timestamp')}:{meta.get('coastlines', '-')}"
 
     @property
     def stats(self):
@@ -328,6 +332,7 @@ class LiveTileServer(ThreadingHTTPServer):
             "fetch_zoom": self.fetch_zoom,
             "served_zooms": [MIN_SERVED_ZOOM, MAX_SERVED_ZOOM],
             "offline": self.source.offline,
+            "map": getattr(self.source, "map", None),
             "counters": dict(self.stats),
             "source_counters": dict(self.source.stats),
             "client_rendering": "unverified",

@@ -208,7 +208,7 @@ class AlchemyTests(base.PrototypeTests):
         server, _, _ = self.seed_alchemy()
         rows = self.catalogue_alchemy(server)['skill_to_effect']
         # Native event9 is shield ending; keep that distinction in the report, not a fictional cast callback.
-        expected = {7: (27, 1), 8: (28, 1), 23: (4, 4), 26: (4, 1), 28: (10, 1),
+        expected = {7: (27, 22), 8: (28, 22), 23: (4, 4), 26: (4, 22), 28: (10, 1),
                     41: (4, 11), 42: (4, 9), 43: (4, 8), 44: (4, 7), 45: (14, 1), 62: (4, 10)}
         for skill, pair in expected.items():
             self.assertEqual([(r['effect_id'], r['effect_apply_type_id']) for r in rows if r['item_id'] == skill], [pair])

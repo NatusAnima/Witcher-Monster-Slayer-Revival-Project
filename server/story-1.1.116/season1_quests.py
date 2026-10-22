@@ -43,10 +43,12 @@ DISPLAY = {"normal": 1, "hunt": 4, "collecting": 7}
 # and at the Tuning number of losses 1010 opens the quest. The game reads facts at start-up, so it shows from the next one.
 SERVER_FACTS = {1010: "Monster Slayer offered", 1011: "rock troll fights after the first win, plus one"}
 
-# Outputs of graphs that are no quest node, with the orens the server takes for them (StoryEngine.PriceOf): the reply's
-# gold is a change the client adds (QuestEndRequestNode → PlayerData.AddGold). Client: Lothar's s01hq03_map_payment sends
-# "payment" with no facts and queues the map (node 399); Community (the maintainer's walkthrough): the map costs 500 coins.
-PRICES = {"payment": 500}
+# Node outputs ("<node key>.<output>") with the orens the server takes the first time one is reached, when the player has
+# them (StoryEngine.PriceOf): the reply's gold is a change the client adds (QuestEndRequestNode → PlayerData.AddGold).
+# Client: Lothar's dialogue offers the map only with 500 orens (Get Player Gold, Math Condition) and sets f118 = 1, his
+# graph then queues the map (node 399), and the map's graph sends "map_bought" unless the map was earned (f116 >= 2 or
+# f154 >= 2: "map"). Nothing starts s01hq03_map_payment ("payment"). Community (the maintainer's walkthrough): 500 coins.
+PRICES = {"s01hq01_map.map_bought": 500}
 
 
 def node(key, graph, poi=None, kind="poi", show="", root="", band=None, near=None, place_of=None, node_id=None,
@@ -233,7 +235,7 @@ QUESTS = [
     # ── Sword in the Stone (s01hq01, "Miecz w skale"). Client: the map comes from the blacksmith quest (fact 46 = 1,
     # 172 = 1..4) and the graph that shows it is queued as node 399 (s01hq01_map); the journal's "Examine" button
     # (node 400) sets 46 = 2 and the stone (385) appears; the name is learnt at dusk and spoken at dawn
-    # (AstroCondition in the graph), then the golem is fought. Lothar also sells the map (s01hq03_map_payment, PRICES).
+    # (AstroCondition in the graph), then the golem is fought. Lothar also sells the map (the map's "map_bought", PRICES).
     # The client opens a queued node only if it already has it, and six graphs queue the map (Lothar's sale and payment,
     # the werewolf, his farewell and alarm, the new smith), some without a reply from the server in between: so the map
     # stands invisible beside the player from when Lothar can be met (after Good Money, f1001) until the quest starts.

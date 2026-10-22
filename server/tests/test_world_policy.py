@@ -138,10 +138,13 @@ class WorldPolicyTests(base.PrototypeTests):
         server = self.start('level-shared-world', env)
         clients = [self.client(server, identity=identity) for identity in identities]
         worlds = [self.map(client) for client in clients]
-        self.assertEqual(len(worlds[0]['monsters']), 54)  # Default18; sparse geometry is tested separately.
-        self.assertTrue(all(world == worlds[0] for world in worlds[1:]))
+        # As many monsters at every level, each within its player's level (Tuning spawns.levelGate: skulls 0/1/2/3 from
+        # levels 1/3/6/10); players of one level band share the same monsters.
         skulls = {s['monster_id']: s['skulls'] for s in base.WORLD['species']}
-        self.assertTrue(any(skulls[m['monster']] > 0 for m in worlds[0]['monsters']))
+        for world, most in zip(worlds, (0, 1, 2, 3)):
+            self.assertEqual(len(world['monsters']), 54)  # Default18; sparse geometry is tested separately.
+            self.assertTrue(all(skulls[m['monster']] <= most for m in world['monsters']))
+        self.assertTrue(any(skulls[m['monster']] > 0 for m in worlds[-1]['monsters']))
 
         # Select a comfortably live instance so reconnect/startup cannot straddle its expiration.
         target = max(worlds[0]['monsters'], key=lambda m: m['spawn_ms']//1000+m['ttl'])
@@ -152,14 +155,13 @@ class WorldPolicyTests(base.PrototypeTests):
         resumed = self.client(server, identity=identities[0])
         self.assertNotIn(target, self.map(resumed)['monsters'])
         self.assertEqual(resumed.rpc(41, Q(target['instance'])), b'\0')
-        self.assertIn(target, self.map(clients[-1])['monsters'])
-        late = self.client(server, identity=('SYNTHETIC_WORLD_LATE_LOGIN', ''))
+        late = self.client(server, identity=('SYNTHETIC_WORLD_LATE_LOGIN', ''))   # level 1 too: the same world
         self.assertIn(target, self.map(late)['monsters'])
 
         server.stop()
         server = self.start('level-shared-world', env)
         resumed = self.client(server, identity=identities[0])
-        other = self.client(server, identity=identities[-1])
+        other = self.client(server, identity=('SYNTHETIC_WORLD_LATE_LOGIN', ''))
         self.assertNotIn(target, self.map(resumed)['monsters'])
         self.assertIn(target, self.map(other)['monsters'])
         self.assertEqual(resumed.rpc(41, Q(target['instance'])), b'\0')
@@ -192,7 +194,9 @@ class WorldPolicyTests(base.PrototypeTests):
                     for place in cell['places']: place['biomes'] = [biome]
                 return result
             url, _ = self.playable_service(respond)
-            c = self.client(self.start('rarity-' + str(biome), dict(self.RECONSTRUCTED, Playable__Url=url)))
+            # Without the level gate (a level-one player meets only monsters without skulls).
+            c = self.client(self.start('rarity-' + str(biome), dict(self.RECONSTRUCTED, Playable__Url=url,
+                                                                     **self.tuned(**{'spawns.levelGate': 0}))))
             counts = dict.fromkeys((1, 2, 3), 0)
             for batch in range(5):
                 ids = [0x4704440000000000 + ((batch*64+k) << 34) for k in range(64)]

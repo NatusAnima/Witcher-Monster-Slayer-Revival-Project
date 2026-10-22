@@ -16,12 +16,14 @@ from osm_extract_index import (
     classify_area,
     clip_ring,
     clip_rings,
+    coast_side,
     create_schema,
     eta_seconds,
     pack_coordinates,
     pack_rings,
     parse_status,
     ring_area_m2,
+    sea_rings,
     skip_road,
     unpack_coordinates,
     unpack_rings,
@@ -188,6 +190,97 @@ class ExtractIndexTests(unittest.TestCase):
             FeatureIndex(self.path)
 
 
+def sea_share(areas, box):
+    """The share of a (south, west, north, east) box the sea areas cover, measured as a tile draws them (Mercator)."""
+    import math
+    def area(ring):
+        points = [(math.radians(lon), math.log(math.tan(math.pi / 4 + math.radians(lat) / 2))) for lat, lon in ring]
+        return abs(sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(points, points[1:] + points[:1]))) / 2
+    south, west, north, east = box
+    whole = area([(south, west), (south, east), (north, east), (north, west)])
+    return sum(area(rings[0]) - sum(area(hole) for hole in rings[1:]) for rings in areas) / whole
+
+
+class SeaTests(unittest.TestCase):
+    """OSM has no sea areas, only coastline ways with the land on their left; the reader makes the sea from them."""
+    BOX = (10.0, 20.0, 10.01, 20.01)  # south, west, north, east
+
+    def sea(self, lines, seaward=False):
+        return sea_rings(lines, self.BOX, lambda lat, lon: seaward)
+
+    def test_the_sea_lies_right_of_the_coastline(self):
+        east = [(10.005, 19.99), (10.005, 20.02)]
+        south_sea = self.sea([east])
+        self.assertEqual(len(south_sea), 1)
+        self.assertAlmostEqual(sea_share(south_sea, self.BOX), 0.5, delta=0.01)
+        self.assertTrue(all(lat <= 10.005 + 1e-9 for lat, _ in south_sea[0][0]))
+        north_sea = self.sea([east[::-1]])
+        self.assertTrue(all(lat >= 10.005 - 1e-9 for lat, _ in north_sea[0][0]))
+        # the same coast in two ways that meet inside the box
+        self.assertAlmostEqual(sea_share(self.sea([east[:1] + [(10.005, 20.004)], [(10.005, 20.004)] + east[1:]]), self.BOX),
+                               0.5, delta=0.01)
+
+    def test_a_peninsula_leaves_the_rest_of_the_box_to_the_sea(self):
+        # Land from the west edge, 0.6 x 0.6 of the box: east along its south side, north, then back west.
+        coast = [(10.002, 19.99), (10.002, 20.006), (10.008, 20.006), (10.008, 19.99)]
+        areas = self.sea([coast])
+        self.assertEqual(len(areas), 1)
+        self.assertAlmostEqual(sea_share(areas, self.BOX), 1 - 0.6 * 0.6, delta=0.01)
+
+    def test_islands_are_holes_and_a_box_without_coast_is_sea_or_land_as_a_whole(self):
+        island = [(10.004, 20.004), (10.004, 20.006), (10.006, 20.006), (10.006, 20.004), (10.004, 20.004)]  # land left
+        areas = self.sea([island], seaward=True)
+        self.assertEqual([len(rings) for rings in areas], [2])
+        self.assertAlmostEqual(sea_share(areas, self.BOX), 1 - 0.2 * 0.2, delta=0.01)
+        self.assertAlmostEqual(sea_share(self.sea([], seaward=True), self.BOX), 1.0, delta=1e-6)   # open sea
+        self.assertEqual(self.sea([], seaward=False), [])                                          # inland
+
+    def test_a_coastline_ending_inside_the_box_gives_no_sea(self):
+        # where the extract was cut the coast stops, and which side is the sea cannot be told
+        self.assertEqual(self.sea([[(10.005, 19.99), (10.005, 20.004)]], seaward=True), [])
+
+    def test_the_nearest_coast_says_which_side_a_point_is_on(self):
+        east = [(10.0, 20.0), (10.0, 20.01)]
+        self.assertTrue(coast_side([east], 9.999, 20.005)[1])     # south of a coast running east: the sea
+        self.assertFalse(coast_side([east], 10.001, 20.005)[1])
+        self.assertAlmostEqual(coast_side([east], 9.999, 20.005)[0], 110.5, delta=1)
+        self.assertIsNone(coast_side([], 10, 20))
+        # At a bend the point is nearest the vertex: east then north (a left turn) leaves the sea outside the corner,
+        # south-east of it; east then south (a right turn) keeps it inside, south-west.
+        left = [(10.0, 19.99), (10.0, 20.0), (10.01, 20.0)]
+        self.assertTrue(coast_side([left], 9.999, 20.001)[1])
+        self.assertFalse(coast_side([left], 10.001, 19.999)[1])
+        right = [(10.0, 19.99), (10.0, 20.0), (9.99, 20.0)]
+        self.assertTrue(coast_side([right[:2], right[1:]], 9.999, 19.999)[1])    # two ways meeting at the bend
+        self.assertFalse(coast_side([right], 9.999, 20.001)[1])
+
+    def test_the_index_serves_the_sea_of_its_coastline_and_covers_the_extracts_box(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        path = Path(directory.name) / "coast.sqlite"
+        db = sqlite3.connect(path)
+        create_schema(db)
+        coast = [(10.005, 19.9), (10.005, 20.1)]   # running east: the sea south of it
+        db.execute("INSERT INTO coastlines VALUES (?,?)", (1, pack_coordinates(coast)))
+        db.execute("INSERT INTO coastlines_rtree VALUES (?,?,?,?,?)", (1, 19.9, 20.1, 10.005, 10.005))
+        db.execute("INSERT INTO ways VALUES (?,?,?,?,?,?)", (2, "road", "residential", None, None,
+                                                             pack_coordinates([(10.02, 20.0), (10.03, 20.01)])))
+        db.execute("INSERT INTO ways_rtree VALUES (?,?,?,?,?)", (2, 20.0, 20.01, 10.02, 10.03))
+        db.executemany("INSERT INTO meta VALUES (?,?)", [("schema", SCHEMA_VERSION), ("bounds", "19.8,9.8,20.2,10.2")])
+        db.commit()
+        db.close()
+        index = FeatureIndex(path)
+        self.addCleanup(index.db.close)
+        self.assertTrue(index.covers(9.9, 19.95, 9.91, 19.96))   # past the last road, inside the extract
+
+        def sea(south, west, north, east):
+            areas = [e["rings"] for e in index.document(south, west, north, east)["elements"] if e.get("osm_area") == "sea"]
+            return sea_share(areas, (south, west, north, east))
+        self.assertAlmostEqual(sea(*self.BOX), 0.5, delta=0.01)
+        self.assertAlmostEqual(sea(9.98, 20.0, 9.99, 20.01), 1.0, delta=1e-6)   # 1.5 km out: all sea
+        self.assertEqual(sea(10.02, 20.0, 10.03, 20.01), 0)                     # inland
+
+
 class ProgressTests(unittest.TestCase):
     def test_eta_waits_for_five_percent_then_extrapolates(self):
         self.assertIsNone(eta_seconds(100, 110, 1100, 5.0))  # 1% of the features phase: too early to say
@@ -219,6 +312,28 @@ class BuildMonaco(unittest.TestCase):
             if os.name != "nt":
                 self.assertFalse((Path(tmp) / "file.sqlite.nodes").exists(), "the temporary node file is removed")
             self.assertEqual(FeatureIndex(Path(tmp) / "file.sqlite").meta["schema"], SCHEMA_VERSION)
+
+    def test_the_sea_comes_from_the_coastline(self):
+        import math
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            with contextlib.redirect_stdout(io.StringIO()):
+                stats = build_index(MONACO, Path(tmp) / "monaco.sqlite")
+            self.assertGreater(stats["coastlines"], 0)
+            index = FeatureIndex(Path(tmp) / "monaco.sqlite")
+            try:
+                def sea(lat, lon):  # the share of the z17 tile there that is sea
+                    z = 17
+                    x = int((lon + 180) / 360 * (1 << z))
+                    y = int((1 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2 * (1 << z))
+                    box = tile_bounds(z, x, y)
+                    elements = index.document(*box, clip=box, mercator=True)["elements"]
+                    return sea_share([e["rings"] for e in elements if e.get("osm_area") == "sea"], box)
+                self.assertGreater(sea(43.730, 7.440), 0.99)         # off Monte Carlo
+                self.assertGreater(sea(43.700, 7.450), 0.99)         # 5 km out, no coast in the tile
+                self.assertEqual(sea(43.7310, 7.4120), 0)            # the Exotic Garden, up on the cliff
+                self.assertTrue(0.2 < sea(43.7347, 7.4225) < 0.8)    # Port Hercule: the harbour's water between quays
+            finally:
+                index.db.close()
 
 
 if __name__ == "__main__":

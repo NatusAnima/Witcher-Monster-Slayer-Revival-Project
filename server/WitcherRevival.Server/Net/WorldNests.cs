@@ -33,15 +33,22 @@ public static class WorldNests
     public const int Default = 1, DefaultClear = 2, Lured = 3, LuredClear = 4, NotAllowed = 5;
 
     // Client GameConfigData defaults; sent as game_configuration rows too.
-    public const int PlayerMinimalLevel = 10, DailyLimit = 3, ClearingExp = 500;
+    public const int PlayerMinimalLevel = 10, DailyLimit = 3;
+
+    // The original game (DualShockers, 20 Jul 2021): "50 coins and up to 580 XP (300 XP for beating the monsters, 250 XP
+    // for clearing the Nemeton and 30 XP for a perfect parry and perfect critical)": each monster pays a won fight's base
+    // experience (Reconstruction.FightExp) and clearing 250; all of it scaled by Tuning nests.expPercent (Revival 200)
+    // and exp.percent. The nest window and the nestClearingExp row show the same scaled clearing value.
+    public const int VanillaClearingExp = 250;
+    public static int ClearingExp => Exp(VanillaClearingExp);
+
+    public static int Exp(int amount) => (int)Math.Min(int.MaxValue / 8, (long)amount *
+        (long)WorldTuning.Current.Get(WorldTuning.NestExpPercent) / 100 * (long)WorldTuning.Current.Get(WorldTuning.ExpPercent) / 100);
 
     // Community: 50 gold per clear, the first three clears of a day. The dashboard's Tuning page changes it (the nest
     // window shows the server's number, so the two never disagree).
     public const int BountyGold = 50;
     public static int Bounty => (int)WorldTuning.Current.Get(WorldTuning.NestGold);
-
-    // Authored: experience for each monster by rarity; three common monsters and the clearing give 575.
-    public static int RarityExp(int rarity) => rarity switch { <= 1 => 25, 2 => 50, _ => 100 };
 
     public const int ItemTypeLure = 5;   // Client Lure.GetItemType.
 

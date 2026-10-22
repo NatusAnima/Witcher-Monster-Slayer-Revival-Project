@@ -8,13 +8,43 @@ namespace WitcherRevival.Server.Net;
 public static class Reconstruction
 {
     // ── Levels ──────────────────────────────────────────────────────────────────────────────
-    // Community (search summary of the Witcher wiki XP page, unverified): level 1→2 needs 1000 XP and
-    // every further level 1000 more than the previous one. Community (DualShockers, 20 Jul 2021):
-    // "usually around five" skill points per level-up. The client derives the level from these rows.
+    // Two experience tables (Tuning xp.vanillaCurve, fixed for the process: the client reads the level_ups rows once).
+    // Revival: level 1→2 needs 1000 XP and every further level 1000 more than the previous one. Vanilla: the Witcher
+    // wiki's XP page, the system "sprzed aktualizacji 1.2" (before update 1.2) as its Polish page says: XP per level
+    // 1000…5000 (+500) to level 10, 6000…10000 to 15, 12000…20000 to 20, 25000…45000 to 25, 55000…95000 to 30, then
+    // 120k 145k 170k 195k 220k and 270k 345k 445k 570k 700k (level 40 at 3,877,000 in all). Community (DualShockers,
+    // 20 Jul 2021): "usually around five" skill points per level-up. The client derives the level from these rows.
     public const int MaxLevel = 40;              // Authored cap; community skill gates reach level 35.
     public const int SkillPointsPerLevel = 5;
 
-    public static int ExpThreshold(int level) => 1000 * (level - 1) * level / 2;
+    private static readonly int[] VanillaSteps =
+    [
+        1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 6000, 7000, 8000, 9000, 10000, 12000, 14000, 16000, 18000,
+        20000, 25000, 30000, 35000, 40000, 45000, 55000, 65000, 75000, 85000, 95000, 120000, 145000, 170000, 195000,
+        220000, 270000, 345000, 445000, 570000, 700000,
+    ];
+
+    /// <summary>Whether this process uses the original table (Tuning xp.vanillaCurve, read when the world loads).</summary>
+    public static bool VanillaCurve { get; set; }
+
+    public static int ExpThreshold(int level) => ExpThreshold(level, VanillaCurve);
+
+    public static int ExpThreshold(int level, bool vanilla) =>
+        vanilla ? VanillaSteps.Take(Math.Clamp(level - 1, 0, MaxLevel - 1)).Sum() : 1000 * (level - 1) * level / 2;
+
+    /// <summary>Experience earned under one table, moved to the other so the level and the progress towards the next
+    /// level stay the same (no level jumps, no skill points gained or lost).</summary>
+    public static int ConvertExp(int exp, bool fromVanilla, bool toVanilla)
+    {
+        if (fromVanilla == toVanilla) return exp;
+        int level = 1;
+        while (level < MaxLevel && exp >= ExpThreshold(level + 1, fromVanilla)) level++;
+        if (level == MaxLevel) return ExpThreshold(MaxLevel, toVanilla) + (exp - ExpThreshold(MaxLevel, fromVanilla));
+        double progress = (exp - ExpThreshold(level, fromVanilla)) /
+                          (double)(ExpThreshold(level + 1, fromVanilla) - ExpThreshold(level, fromVanilla));
+        int from = ExpThreshold(level, toVanilla), to = ExpThreshold(level + 1, toVanilla);
+        return Math.Min(to - 1, from + (int)Math.Floor(progress * (to - from)));
+    }
 
     public static int LevelForExp(int exp)
     {
@@ -113,8 +143,20 @@ public static class Reconstruction
     public sealed record EffectRow(int Id, string Name, int Type);
     public sealed record ItemEffect(int ItemId, int EffectId, int Power, int ApplyTime);
 
-    private const int Utility = 2, Combat = 1, OnStart = 1, OnDeflecting = 5, OnLowHealth = 12,
-        OnPerfectFinisher = 15, OnSkillUnlock = 18, OnPreStart = 23;
+    private const int Utility = 2, Combat = 1, OnStart = 1, OnAttack = 2, OnDeflecting = 5, OnLowHealth = 12,
+        OnPerfectFinisher = 15, OnSkillUnlock = 18, OnTargetSet = 22, OnPreStart = 23;
+
+    /// <summary>The apply time of an effect that works from the start of a fight. Client: Player.Construct (0x18B7064)
+    /// applies OnStart before the fight has a target and before the critical hit meter (AdrenalineModule, added by a
+    /// player-brain patch from NotifyTargetSet) exists, so the effects that read either return without a change: the
+    /// family oils (TryToImproveAttacksAgainstFamily 0x1B0487C), the oil skills (SwordModule.HasUsedProperOil) and the
+    /// meter effects (ImproveMinimumAdrenaline 0x1B03014 and the others). Player.NotifyTargetSet (0x18BA58C) applies
+    /// OnTargetSet once per fight, after both exist. TryDealFireDamage (58) builds DealFireDamage(100, power) (GetEffect
+    /// 0x194EB28), a chance of 100 fire damage to the target when it is applied, so it rolls on every sword hit (OnAttack,
+    /// SwordModule.DealSwordDamage).</summary>
+    public static int FightStart(int effect) =>
+        effect == 58 ? OnAttack :
+        effect is 4 or 15 or 22 or 23 or 27 or 28 or >= 29 and <= 39 or 56 or 59 or 80 ? OnTargetSet : OnStart;
 
     public static readonly IReadOnlyList<EffectRow> Effects = new EffectRow[]
     {
@@ -173,6 +215,10 @@ public static class Reconstruction
                 "fleet_footed" => (3, 2 * skill.Rank, OnStart),
                 "anatomical_knowledge" => (6, 2 * skill.Rank, OnStart),
                 "lightning_reflexes" => (7, 5 * skill.Rank, OnStart),
+                // Hit Reflection: "a perfect parry reflects #0% of damage back". ImproveDeflect adds to
+                // SwordModifiers.DeflectModifier, the share SwordModule.DealDeflectDamage sends back; the unlock (50) alone
+                // reflected 0. 30 is the later wiki table's value (the pre-1.2 one gives none).
+                "hit_deflection" => (82, 30, OnStart),
                 "counterattack" => (5, 5 * skill.Rank, OnDeflecting),
                 // Effect 8 uses milliseconds; 1000 is displayed and applied as one second.
                 "crippling_strike" => (8, 1000, OnPerfectFinisher),
@@ -207,7 +253,8 @@ public static class Reconstruction
                 _ => null,
             };
             if (bonus is { } numeric)
-                yield return new ItemEffect(skill.Id, numeric.Effect, numeric.Power, numeric.Time);
+                yield return new ItemEffect(skill.Id, numeric.Effect, numeric.Power,
+                    numeric.Time == OnStart ? FightStart(numeric.Effect) : numeric.Time);
             if (bySlug.TryGetValue(skill.Slug, out int effect))
                 yield return new ItemEffect(skill.Id, effect, 1, OnSkillUnlock);
             if (skill.Id is 54 or 58)
@@ -256,8 +303,8 @@ public static class Reconstruction
     };
 
     public static IEnumerable<ItemEffect> OilEffects() => Oils.SelectMany(oil => oil.EffectId == 0
-        ? Enumerable.Range(29, 11).Select(effect => new ItemEffect(oil.Id, effect, oil.Power, OnStart))
-        : new[] { new ItemEffect(oil.Id, oil.EffectId, oil.Power, OnStart) });
+        ? Enumerable.Range(29, 11).Select(effect => new ItemEffect(oil.Id, effect, oil.Power, FightStart(effect)))
+        : new[] { new ItemEffect(oil.Id, oil.EffectId, oil.Power, FightStart(oil.EffectId)) });
 
     // Item effects. Client: DataManager.LoadPotions/LoadEquipment put each item's effects, in row order, into
     // its description (LocalizationHelper.ReplaceEffects: tag #n = effect n's GetPower(), formatted "0.##"),
@@ -273,7 +320,9 @@ public static class Reconstruction
         new ItemEffect(205, 76, 10, OnStart),
         new ItemEffect(201, 41, 33, OnStart),   // Thunderbolt: +33 % melee damage (ImproveAttackPower).
         new ItemEffect(202, 40, 50, OnStart),   // Swift: +50 % maximum vitality (ImproveHealth).
-        new ItemEffect(203, 59, 25, OnStart),   // Blizzard: partly filled critical hit meter; 25 % is Authored.
+        // Blizzard: "instantly gain some critical hit meter charge when entering combat": GenerateAdrenaline (as Razor Focus)
+        // adds its power in points to the meter (AdrenalineModule.GainAdrenaline 0x1AFD550, capped at 100); 25 is Authored.
+        new ItemEffect(203, 4, 25, FightStart(4)),
         new ItemEffect(204, 17, 30, OnStart),   // Tawny Owl: sign cooldown -30 %.
         new ItemEffect(206, 18, 75, OnStart),   // Cat: +75 % damage at night.
         new ItemEffect(207, 19, 75, OnStart),   // Squall: +75 % damage during precipitation.
@@ -344,10 +393,10 @@ public static class Reconstruction
     public static Gear? SwordById(int id) => Swords.FirstOrDefault(s => s.Id == id);
 
     public static IEnumerable<ItemEffect> ArmorEffects() =>
-        Armors.SelectMany(a => a.Effects.Select(e => new ItemEffect(a.Id, e.Effect, e.Power, e.Effect == 61 ? OnPreStart : OnStart)));
+        Armors.SelectMany(a => a.Effects.Select(e => new ItemEffect(a.Id, e.Effect, e.Power, e.Effect == 61 ? OnPreStart : FightStart(e.Effect))));
 
     public static IEnumerable<ItemEffect> SwordEffects() =>
-        Swords.SelectMany(s => s.Effects.Select(e => new ItemEffect(s.Id, e.Effect, e.Power, OnStart)));
+        Swords.SelectMany(s => s.Effects.Select(e => new ItemEffect(s.Id, e.Effect, e.Power, FightStart(e.Effect))));
 
     /// <summary>Experience bonus in percent (effect 65, IncreaseExperience) of the given equipment.</summary>
     public static int ExperienceBonus(IEnumerable<Gear?> gear) =>
@@ -615,12 +664,14 @@ public static class Reconstruction
     // Community pre-1.2 sources: pinned wiki bestiary revision554267 plus TouchTapPlay1Aug2021:
     // cumulative common3/50/150, rare2/10/30, legendary1/2/6. The client consumes incremental thresholds.
     // The wiki's legendary "another" wording is ambiguous; the contemporary guide supplies explicit totals.
-    public static IReadOnlyList<int> KnowledgeThresholds(int monsterId) => WorldBestiary.Of(monsterId)?.Rarity switch
+    /// <summary>The kills each bestiary tier needs after the previous one, from the dashboard's cumulative kills by rarity
+    /// (Tuning bestiary.*: Revival 3/25/100, 2/10/20, 1/2/4; Vanilla, before update 1.2, 3/50/150, 2/10/30, 1/2/6).</summary>
+    public static IReadOnlyList<int> KnowledgeThresholds(int monsterId)
     {
-        2 => new[] { 2, 8, 20 },
-        3 => new[] { 1, 1, 4 },
-        _ => new[] { 3, 47, 100 },
-    };
+        string rarity = WorldBestiary.Of(monsterId)?.Rarity switch { 2 => "rare", 3 => "legendary", _ => "common" };
+        int[] total = Enumerable.Range(1, 3).Select(tier => (int)WorldTuning.Current.Get(WorldTuning.Bestiary(rarity, tier))).ToArray();
+        return new[] { total[0], total[1] - total[0], total[2] - total[1] };
+    }
     public const int KnowledgeTierSkillPoints = 1;
     public static int KnowledgeTier(int monsterId, int kills)
     {
@@ -769,20 +820,20 @@ public static class Reconstruction
         return result;
     }
 
-    /// <summary>The items a level-up grants, as (kind, id, count). Client: LevelUpWindow.LoadData (0x17D4B38) counts
-    /// repeated ids as amounts and, with no item at all, never calls the base LoadData, so the window waits forever
-    /// on a dimmed map; every level therefore grants something. Community (DualShockers, 20 Jul 2021; TouchTapPlay,
-    /// 29 Jul 2021): a level-up brings rewards and about five skill points, without a published list. The items are
-    /// Authored: alchemy basics every level and a bomb every fifth level.</summary>
+    /// <summary>The items a level-up grants, as (kind, id, count), from the active preset's reward tables (the Rewards
+    /// page; Vanilla is the wiki's pre-1.2 list). Client: LevelUpWindow.LoadData (0x17D4B38) counts repeated ids as
+    /// amounts and, with no item at all, never calls the base LoadData, so the window waits forever on a dimmed map;
+    /// every level therefore grants something (a Swallow when the table lists nothing).</summary>
     public static IReadOnlyList<(string Kind, int Id, int Count)> LevelRewards(int level)
     {
-        var items = new List<(string, int, int)>
-        {
-            (ItemKinds.Ingredients, 103, 3), (ItemKinds.Ingredients, 101, 2), (ItemKinds.Potions, SwallowPotionId, 1),
-        };
-        if (level % 5 == 0) items.Add((ItemKinds.Bombs, BasicBombId, 1));
+        var items = (WorldTuning.Current.Rewards.Levels.GetValueOrDefault(level)?.Items ?? [])
+            .Select(i => (i.Kind, i.Id, i.Amount)).ToList();
+        if (items.Count == 0) items.Add((ItemKinds.Potions, SwallowPotionId, 1));
         return items;
     }
+
+    /// <summary>The orens a level-up grants (the Rewards page).</summary>
+    public static int LevelGold(int level) => WorldTuning.Current.Rewards.Levels.GetValueOrDefault(level)?.Gold ?? 0;
 
     /// <summary>Adds experience and gold; every level gained adds its skill points.</summary>
     public static LocalProfileStore.PlayerState WithExp(LocalProfileStore.PlayerState player, int exp, int gold = 0)
@@ -821,6 +872,16 @@ public static class Reconstruction
     // when an applied oil matches the enemy's family and has exp_matching (SwordModule.GrantOilXP).
     // See server/connection/combat-system-review/EVIDENCE.md §3b and §5.
     public static int BaseExp(int difficulty) => difficulty switch { <= 1 => 100, 2 => 250, _ => 600 };
+
+    /// <summary>The base experience of a won fight. World monsters: by rarity, common 100, rare 250, legendary 600 (the
+    /// original game: DualShockers and Gamepressure, v1.1: "Rare ones offering 250 and Legendary 600"), or with Tuning
+    /// xp.baseByRarity 0 by the skulls the game shows (0 → 100, 1 → 175, 2 → 250, 3 → 600). Story monsters outside the
+    /// world bestiary keep their row's difficulty tier.</summary>
+    public static int FightExp(int monsterId, int difficulty) => WorldBestiary.Of(monsterId) is not { } species
+        ? BaseExp(difficulty)
+        : WorldTuning.Current.On(WorldTuning.ExpByRarity)
+            ? species.Rarity switch { <= 1 => 100, 2 => 250, _ => 600 }
+            : species.Skulls switch { <= 0 => 100, 1 => 175, 2 => 250, _ => 600 };
 
     // Difficulty tiers (difficulties rows; the slug names the client's characters/difficulty/tier_<n>.asset).
     // Client: when a fight graph leaves EnemyMaxHp and EnemyDamage unset, as the map template fightgraph does,
@@ -1019,9 +1080,29 @@ public static class ReconstructionRows
         // Player modifiers of the season 1 graphs (PlayerModifier: id, slug; see Reconstruction.PlayerModifiers), and the
         // dashboard's debug modifiers with their effects (PlayerService.DebugModifiers; gameplay never grants them).
         rows["player_modifiers"] = [.. StoryEngine.ModifierRows(), .. PlayerService.DebugModifiers.Select(m =>
-            J(new Dictionary<string, object> { ["id"] = m.Id, ["slug"] = m.Slug }))];
-        rows["player_modifier_to_effect"] = PlayerService.DebugModifiers.Select(m =>
-            ItemEffectRow(new Reconstruction.ItemEffect(m.Id, m.Effect, PlayerService.DebugModifierPower, 1))).ToArray();
+            J(new Dictionary<string, object> { ["id"] = m.Id, ["slug"] = m.Slug })), .. TrinketBuffs.ModifierRows().Select(m =>
+            J(new Dictionary<string, object> { ["id"] = m.Modifier, ["slug"] = m.Slug })), .. Consumables.All.Select(c =>
+            J(new Dictionary<string, object> { ["id"] = c.Modifier, ["slug"] = c.ModifierSlug }))];
+        // Summoning scrolls (SummonScrolls; the shop sells them, so their rows are always there), all with the basic scroll's
+        // cooldown modifier 13. Native LoadSummoningScrolls requires the modifier. ID13 is in the original GUI blacklist;
+        // empty effects are accepted by LoadPlayerModifiers and do not invent a combat buff.
+        rows["summoning_scrolls"] = SummonScrolls.All.Select(s => J(new Dictionary<string, object>
+            { ["id"] = s.Id, ["slug"] = s.Slug, ["priority"] = s.Id, ["duration"] = 500 })).ToArray();
+        rows["summoning_scrolls_player_modifiers"] = SummonScrolls.All.Select(s => J(new Dictionary<string, object>
+            { ["summoning_scroll_id"] = s.Id, ["player_modifier_id"] = 13 })).ToArray();
+        rows["player_modifiers"] = [.. rows["player_modifiers"], J(new Dictionary<string, object> { ["id"] = 13, ["slug"] = "summoning_scroll_basic" })];
+        // Consumables (Consumables): each with its modifier; a consumable without the link is skipped by the client
+        // (DataManager.LoadConsumables 0x17C7C68). The boosters' effects feed the description's #0; the server pays them.
+        rows["consumables"] = Consumables.All.Select(c => J(new Dictionary<string, object>
+            { ["id"] = c.Id, ["slug"] = c.Slug, ["priority"] = c.Id, ["duration"] = c.Duration })).ToArray();
+        rows["consumables_player_modifiers"] = Consumables.All.Select(c => J(new Dictionary<string, object>
+            { ["consumable_id"] = c.Id, ["player_modifier_id"] = c.Modifier })).ToArray();
+        rows["player_modifier_to_effect"] = [.. PlayerService.DebugModifiers.Select(m =>
+            ItemEffectRow(new Reconstruction.ItemEffect(m.Id, m.Effect, PlayerService.DebugModifierPower, 1))),
+            .. TrinketBuffs.ModifierRows().Select(m =>
+            ItemEffectRow(new Reconstruction.ItemEffect(m.Modifier, m.Effect, m.Power, Reconstruction.FightStart(m.Effect)))),
+            .. Consumables.All.Where(c => c.Effect is not null).Select(c =>
+            ItemEffectRow(new Reconstruction.ItemEffect(c.Modifier, c.Effect!.Value, c.Power, 1)))];
         // Native pack type and slug; numeric id and rewards are explicit LAB policy.
         rows["packs_types"] = [J(new Dictionary<string, object>
         { ["id"] = SocialService.PackId, ["slug"] = "pack_herbalist", ["priority"] = 1 })];
@@ -1143,5 +1224,6 @@ public static class ReconstructionRows
 public static class ItemKinds
 {
     public const string Potions = "potions", Bombs = "bombs", Oils = "oils", Ingredients = "ingredients",
-        SensesPotions = "senses_potions", Lures = "lures";
+        SensesPotions = "senses_potions", Lures = "lures", SummoningScrolls = "summoning_scrolls", Consumables = "consumables",
+        Swords = "swords", Armors = "armors";
 }

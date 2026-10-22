@@ -91,7 +91,7 @@ class DistanceTaskTests(base.PrototypeTests):
         first,second=list(self.daily(c)[0])[:2]
         c.rpc(27,I(120))
         wallet=self.player_info(c)['gold']
-        self.assertEqual(self.claim(c,first),(0,first,wallet+50,1))
+        self.assertEqual(self.claim(c,first),(0,first,wallet+100,1))   # Revival pays dailies twice their gold
         self.assertNotIn(first,self.daily(c)[0])
         # a protected profile counts only the server's own fixes
         world=self.directory/'world';world.mkdir()
@@ -99,8 +99,8 @@ class DistanceTaskTests(base.PrototypeTests):
         (world/'distance-policy.json').write_text('{"mode":"protected"}')
         server.stop();server,c=self.task_server(daily=definitions,extra={'World__Directory':str(world)})
         self.assertEqual(movement_ack(c.rpc(2001,movement_hello()))['mode'],1)
-        self.assertEqual(self.claim(c,second),(1,second,wallet+50,1))
-        self.assertEqual(self.player_info(c)['gold'],wallet+50)
+        self.assertEqual(self.claim(c,second),(1,second,wallet+100,1))
+        self.assertEqual(self.player_info(c)['gold'],wallet+100)
 
     def test_distance_daily_is_since_issue_and_lifetime_trinket_uses_total(self):
         definitions=[dict(id=10100+i,slug='on_the_path',type=3,target=300,gold=50) for i in range(4)]

@@ -14,22 +14,29 @@ namespace WitcherRevival.Server.Net;
 /// (GetMonsterInstances 87) when a monster expires; its senses plates last as long as the monster.
 ///
 /// Which monster: the client has no rule of its own (EVIDENCE.md §16), so the server decides, as the original
-/// did. The species are the world bestiary (<see cref="WorldBestiary"/>), with the occurrences the client's own
-/// bestiary shows (MONSTERS/OCCURANCE/*, INFO_2 of each monster):
+/// did. The species are the world bestiary (<see cref="WorldBestiary"/>) with their occurrences: the Witcher wiki's
+/// Monster Slayer bestiary (Tuning spawns.wikiOccurrences, the default) or the client's own 1.1.116 texts
+/// (MONSTERS/OCCURANCE/*, INFO_2 of each monster); both use the game's own phrases:
 ///   - place: URBAN ("near human settlements": an urban or cropland place), NON_URBAN ("prefers to avoid human
 ///     settlements": not urban), FOREST (green areas: forest, shrubland, savanna, grassland), WATER (wetland or
-///     water); FOREST and WATER are alternatives; NEUTRAL2 ("common in all natural environment types"): anywhere;
+///     water); FOREST and WATER are alternatives; NEUTRAL2 ("common in all natural environment types"): any place but
+///     an urban one (a park or path inside a town is grassland, so they may border streets but never stand on them;
+///     Tuning spawns.naturalAwayFromBuildings 0: anywhere); NEUTRAL1 (no data) and NEUTRAL3 (the whole continent):
+///     anywhere. While it rains, a WATER and RAIN species may stand on any non-urban place (Tuning spawns.rainRoaming;
+///     the wiki's contracts: "Drowners spawn near water or during rain");
 ///   - DAY ("most commonly found during the day") and NIGHT ("nocturnally active"): not in the other half of the
 ///     day; the twilight between them (sun 6° either side of the horizon) suits both;
 ///   - FULL_MOON_ONLY and FOG_ONLY: only then;
-///   - DAWN, DUSK, D_AND_D, NOON, MIDNIGHT, RAIN, FOG, FULL_MOON ("increased activity"): triple weight while they
-///     hold, for every rarity.
+///   - DAWN, DUSK, D_AND_D, FOG, FULL_MOON ("increased activity"): weight × Tuning spawns.boost (3) while they hold;
+///     NOON, MIDNIGHT, RAIN ("significantly increased activity"): × spawns.strongBoost (6). Boosts multiply.
 /// The sun and moon are those over the cell at the monster's mid-life; rain and fog come from WorldWeather.
 /// New generations draw rarity first with authored category weights 88/18/3, independently of pool size.
 /// Species within that category have equal base weight, with the above environmental boosts. In four of six
 /// shares, common draws prefer eligible zero-skull species; rare/legendary draws use the full eligible category.
+/// With Tuning spawns.levelGate the species above the player's level (<see cref="MinPlayerLevel"/>) leave the pools,
+/// so a level-1 player meets no skulled monster; the count stays, an empty rarity falls back to commons.
 /// Before a configured activation instant the exact previous per-species lottery and beginner restrictions apply.
-/// Player-level gates remain separate in the personal Aura draw. Density is bounded by available safe places.
+/// Density is bounded by available safe places.
 /// A slot remains empty when its places cannot support a matching species; habitat rules still apply.
 /// </summary>
 public static class WorldSpawns
@@ -50,13 +57,17 @@ public static class WorldSpawns
     public const int Forest = 1, Shrubland = 2, Savanna = 3, Grassland = 4, Wetland = 5, Cropland = 6, Urban = 7,
         Barren = 9, Water = 10;
 
-    /// <summary>Authored eligibility for personal Aura summons, not ordinary world visibility.</summary>
+    /// <summary>The least player level that meets a species (Aura summons always; world monsters with the level gate).</summary>
     public static int MinPlayerLevel(WorldBestiary.Species species) =>
         species.Skulls switch { <= 0 => 1, 1 => 3, 2 => 6, _ => 10 };
 
     public static int Weight(WorldBestiary.Species species) => species.Rarity switch { 1 => 10, 2 => 3, _ => 1 };
 
-    private static bool Has(WorldBestiary.Species species, string tag) => species.Tags.Contains(tag);
+    /// <summary>The occurrences in use: the wiki's, or with Tuning spawns.wikiOccurrences 0 the client's own.</summary>
+    public static string[] TagsOf(WorldBestiary.Species species) =>
+        species.ClientTags is { } client && !WorldTuning.Current.On(WorldTuning.WikiOccurrences) ? client : species.Tags;
+
+    private static bool Has(WorldBestiary.Species species, string tag) => TagsOf(species).Contains(tag);
 
     /// <summary>The sky and weather over a cell at a moment.</summary>
     public sealed record Conditions(bool Day, bool Night, bool Dawn, bool Dusk, bool Noon, bool Midnight, bool FullMoon,
@@ -65,26 +76,42 @@ public static class WorldSpawns
     /// <summary>Whether a species may stand on a place (its biomes) under the given conditions.</summary>
     public static bool Fits(WorldBestiary.Species species, int[] biomes, Conditions sky)
     {
+        var tuning = WorldTuning.Current;
+        bool urban = biomes.Contains(Urban);
         if (Has(species, "URBAN") && !biomes.Any(b => b is Urban or Cropland)) return false;
-        if (Has(species, "NON_URBAN") && biomes.Contains(Urban)) return false;
+        if (Has(species, "NON_URBAN") && urban) return false;
+        if (Has(species, "NEUTRAL2") && urban && tuning.On(WorldTuning.NaturalAwayFromBuildings)) return false;
         bool forest = Has(species, "FOREST"), water = Has(species, "WATER");
-        if ((forest || water) && !((forest && biomes.Any(b => b is Forest or Shrubland or Savanna or Grassland)) ||
-                                   (water && biomes.Any(b => b is Wetland or Water))))
+        bool roams = water && sky.Rain && !urban && Has(species, "RAIN") && tuning.On(WorldTuning.RainRoaming);
+        if ((forest || water) && !roams && !((forest && biomes.Any(b => b is Forest or Shrubland or Savanna or Grassland)) ||
+                                             (water && biomes.Any(b => b is Wetland or Water))))
             return false;
         if ((Has(species, "DAY") && sky.Night) || (Has(species, "NIGHT") && sky.Day)) return false;
         return !(Has(species, "FULL_MOON_ONLY") && !sky.FullMoon) && !(Has(species, "FOG_ONLY") && !sky.Fog);
     }
 
-    private static readonly (string Tag, Func<Conditions, bool> Holds)[] Boosts =
+    // "Increased activity" (Strong false) and "significantly increased activity" (Strong true), as the client words them.
+    private static readonly (string Tag, bool Strong, Func<Conditions, bool> Holds)[] Boosts =
     {
-        ("DAWN", sky => sky.Dawn), ("DUSK", sky => sky.Dusk), ("D_AND_D", sky => sky.Dawn || sky.Dusk),
-        ("NOON", sky => sky.Noon), ("MIDNIGHT", sky => sky.Midnight), ("RAIN", sky => sky.Rain),
-        ("FOG", sky => sky.Fog), ("FULL_MOON", sky => sky.FullMoon),
+        ("DAWN", false, sky => sky.Dawn), ("DUSK", false, sky => sky.Dusk), ("D_AND_D", false, sky => sky.Dawn || sky.Dusk),
+        ("NOON", true, sky => sky.Noon), ("MIDNIGHT", true, sky => sky.Midnight), ("RAIN", true, sky => sky.Rain),
+        ("FOG", false, sky => sky.Fog), ("FULL_MOON", false, sky => sky.FullMoon),
     };
 
     private static bool Boosted(WorldBestiary.Species species, Conditions sky) =>
         Boosts.Any(b => Has(species, b.Tag) && b.Holds(sky));
 
+    /// <summary>How much likelier a species is now: every boost that holds multiplies (rain at dusk: 6 × 3).</summary>
+    public static int BoostOf(WorldBestiary.Species species, Conditions sky)
+    {
+        int boost = (int)WorldTuning.Current.Get(WorldTuning.Boost), strong = (int)WorldTuning.Current.Get(WorldTuning.StrongBoost);
+        int factor = 1;
+        foreach (var b in Boosts)
+            if (Has(species, b.Tag) && b.Holds(sky)) factor *= b.Strong ? strong : boost;
+        return factor;
+    }
+
+    /// <summary>The lottery before the balanced draw existed (pre-activation generations only): ×3 when any boost holds.</summary>
     public static int WeightUnder(WorldBestiary.Species species, Conditions sky) =>
         Weight(species) * (Boosted(species, sky) ? 3 : 1);
 
@@ -107,9 +134,13 @@ public static class WorldSpawns
             var easy = pool.Where(s => s.Skulls == 0).ToList();
             if (easy.Count > 0) pool = easy;
         }
-        int roll = rng.Next(pool.Sum(s => rules.Weight(s.MonsterId) * (Boosted(s, sky) ? 3 : 1)));
-        return pool.First(s => (roll -= rules.Weight(s.MonsterId) * (Boosted(s, sky) ? 3 : 1)) < 0);
+        int roll = rng.Next(pool.Sum(s => rules.Weight(s.MonsterId) * BoostOf(s, sky)));
+        return pool.First(s => (roll -= rules.Weight(s.MonsterId) * BoostOf(s, sky)) < 0);
     }
+
+    /// <summary>Whether the level gate lets a player of [level] meet a species (null: no player, no gate).</summary>
+    public static bool Allowed(WorldBestiary.Species species, int? level) =>
+        level is not int l || !WorldTuning.Current.On(WorldTuning.LevelGate) || MinPlayerLevel(species) <= l;
 
     public sealed record Spawn(long InstanceId, int MonsterId, int Difficulty, string PlaceId, ulong CellId,
         long SpawnTimeMs, int Ttl);
@@ -131,11 +162,12 @@ public static class WorldSpawns
         return parts.Length == 4 && parts[0] == "lab" && long.TryParse(parts[2], out long epoch) ? epoch : null;
     }
 
-    /// <summary>The living monsters of one cell at a moment, one per slot, the same for every player and request
-    /// (seeded by cell, slot and the slot's generation; weatherAt gives the weather the generation was drawn under).</summary>
+    /// <summary>The living monsters of one cell at a moment, one per slot, the same for every player of one level band
+    /// and request (seeded by cell, slot and the slot's generation; weatherAt gives the weather the generation was drawn
+    /// under; [playerLevel] applies the level gate).</summary>
     public static List<Spawn> ForCell(PlayableLocations.Cell cell, long nowSeconds, Func<long, int>? weatherAt = null,
         int monsterSlotsPerCell = DefaultMonsterSlotsPerCell, long balanceFromUnixSeconds = 0,
-        Func<long, WorldBalance.Rules>? balanceAt = null)
+        Func<long, WorldBalance.Rules>? balanceAt = null, int? playerLevel = null)
     {
         if (monsterSlotsPerCell is < MonstersPerCell or > MaxMonsterSlotsPerCell) throw new ArgumentOutOfRangeException(nameof(monsterSlotsPerCell));
         if (balanceFromUnixSeconds < 0) throw new ArgumentOutOfRangeException(nameof(balanceFromUnixSeconds));
@@ -162,7 +194,7 @@ public static class WorldSpawns
             var used = new HashSet<string>();
             foreach (var place in share.OrderBy(_ => rng.Next()).ToList())
             {
-                var options = WorldBestiary.All.Where(s => Fits(s, place.Biomes, sky) &&
+                var options = WorldBestiary.All.Where(s => Fits(s, place.Biomes, sky) && Allowed(s, playerLevel) &&
                     (balanced || slot >= BeginnerSlotsPerCell || s.Skulls == 0)).ToList();
                 if (options.Count == 0) continue;
                 WorldBestiary.Species? species;
@@ -190,7 +222,7 @@ public static class WorldSpawns
                 var extraRng = new Random((int)(extraSeed ^ (extraSeed >> 32)));
                 foreach (var place in share.Where(p => !used.Contains(p.Id)).OrderBy(_ => extraRng.Next()))
                 {
-                    var options = WorldBestiary.All.Where(s => Fits(s, place.Biomes, sky) &&
+                    var options = WorldBestiary.All.Where(s => Fits(s, place.Biomes, sky) && Allowed(s, playerLevel) &&
                         (balanced || slot >= BeginnerSlotsPerCell || s.Skulls == 0)).ToList();
                     if (options.Count == 0) continue;
                     WorldBestiary.Species? species;

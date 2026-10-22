@@ -9,7 +9,12 @@ import { startGps } from './gps.js';
 const CONFIG = {
   gameHost: '127.0.0.1',  // IPv4 literal of the server, as the phone reaches it
   gamePort: 4253,
+  httpPort: 18080,  // the server's HTTP port (ServerService.HTTP_PORT)
+  tilePort: 18082,  // the tile service (ServerService.TILE_PORT)
   oldHosts: /(^|\.)(thewitchermonsterslayer|spokko)\.com$/,  // the original servers; resolved to gameHost instead
+  // The hosts of the game's connection test and of its NTP clock (see the "offline play" stage), resolved to gameHost
+  // too, so that no lookup waits for a network that is not there.
+  offlineHosts: /^((google|facebook)\.com|time\.(google|windows|apple)\.com|[0-9]\.pool\.ntp\.org)$/,
   rewrite: [  // URL prefix -> replacement, applied to every UnityWebRequest
     ['https://gatekeeper.cloud.thewitchermonsterslayer.com', 'http://127.0.0.1:18080'],  // news
     ['https://vectortile.googleapis.com', 'http://127.0.0.1:18082'],                     // OSM map tiles
@@ -43,11 +48,12 @@ const resolved = new Set();
 Interceptor.attach(libc.getExportByName('getaddrinfo'), {
   onEnter(args) {
     const host = args[0].isNull() ? null : args[0].readCString();
+    const ours = host !== null && (CONFIG.oldHosts.test(host) || CONFIG.offlineHosts.test(host));
     if (host && !resolved.has(host)) {
       resolved.add(host);
-      log('dns', host, CONFIG.oldHosts.test(host) ? '-> ' + CONFIG.gameHost : '(unchanged)');
+      log('dns', host, ours ? '-> ' + CONFIG.gameHost : '(unchanged)');
     }
-    if (host && CONFIG.oldHosts.test(host)) args[0] = serverHost;
+    if (ours) args[0] = serverHost;
   },
 });
 const serverIp = CONFIG.gameHost.split('.').map(Number);
@@ -141,7 +147,19 @@ const RVA = {
   port_clear: 0x3201b98,        // XNode.NodePort.ClearConnections
   port_connect: 0x3204ab4,      // XNode.NodePort.Connect(NodePort)
   object_name: 0x290ef4c,       // UnityEngine.Object.get_name
+  internet_reachability: 0x271e790,  // UnityEngine.Application.get_internetReachability: NotReachable 0, carrier 1, LAN 2
+  connection_test_from_host: 0x1a412b4,  // ConnectionTest.FromHost(string, int): the TCP tests of ConnectionTester.RunTest
+  time_sync_run: 0x189d3c0,     // TimeSyncTask.Run: one NTP request, its milliseconds since 1900 (0 when none answered)
+  login_window_show: 0x17ae78c,      // LoginWindowAdapter.Show(bool gameStarted): the sign-in window
+  settings_login_info: 0x1819b48,    // SettingsWindow.UpdateLoginInfo: shows the settings' sign-in part by the login state
+  game_object_set_active: 0x23fdd80,  // UnityEngine.GameObject.SetActive(bool)
+  component_game_object: 0x272a59c,   // UnityEngine.Component.get_gameObject
+  // I2.Loc.LocalizationManager.GetTranslation(Term, FixForRTL, maxLineLengthForRTL, ignoreRTLnumbers, applyParameters,
+  // localParametersRoot, overrideLanguage): every game text goes through it (ScriptLocalization, Localize,
+  // DataManager.Translate); a missing term returns null.
+  get_translation: 0x1c933d8,
 };
+const callbacks = [];  // NativeCallbacks given to Interceptor.replace, kept from the garbage collector
 
 // Asset paths the client asks for that 1.1.116 ships elsewhere. The reward popup is only under
 // ui/windows/events/; without the fix it never loads and the dimmed map stays locked.
@@ -153,6 +171,10 @@ const ASSET_KEY_FIXES = [
 // [name, rva, original hex, patched hex].
 // Each is applied only over its exact original bytes; branches inside are relative to the same address.
 const NATIVE_FIXES = [
+  // The shop sells bags only while the inventory holds fewer than 1000 items (PlayerInventory.CanExpandInventory:
+  // cmp w8, #1000); the server's largest bag is a dashboard setting (Tuning inventory.maxSize), so the client's limit
+  // becomes 4095 and the server decides.
+  ['bag limit', 0x1A0E060, '1fa10f71', '1ffd3f71'],
   // LAB 18 coin preview: each gold reward preview gets its own item as sprite owner. Without it, opening
   // contracts/events throws "PlayerInventory ... still didn't release previous resource" and hangs.
   ['coin preview', 0x1A0D084,
@@ -293,6 +315,68 @@ function install(m) {
         },
       });
     });
+    // Offline play. Before the game starts, PreGameConditionsModule.CheckNetworkAvailability (0x199F464) wants Android to
+    // report a network, then a TCP connection to a known host (ConnectionTester.KNOWN_HOSTS: google.com and facebook.com,
+    // port 80); and SyncedTime lets the player in only after an NTP answer (HandleTimeSyncRequests 0x19B0D40). Without the
+    // internet neither comes and the game never starts. The server is on this phone: the phone counts as on a local
+    // network, the connection tests reach the server, and the game's clock is the phone's, which the server keeps too.
+    stage('offline play', () => {
+      const said = new Set();
+      const once = (...parts) => {
+        if (said.has(parts[0])) return;
+        said.add(parts[0]);
+        log('offline play:', ...parts);
+      };
+      Interceptor.attach(m.base.add(RVA.internet_reachability), {
+        onLeave(ret) {
+          if (ret.toInt32() !== 0) return;
+          once('no network on the phone', '-> local network');
+          ret.replace(ptr(2));
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.connection_test_from_host), {
+        onEnter(args) {
+          const host = read(args[0]);
+          if (host === CONFIG.gameHost) return;
+          once('connection test ' + host, '-> the server');
+          args[0] = str(CONFIG.gameHost);
+          args[1] = ptr(CONFIG.httpPort);
+        },
+      });
+      // Run answers NTP milliseconds, counted from 1900: HandleTimeSyncRequests adds -2208988800000 (x28, 0x19B0DD4) before
+      // FromUnixTimeMilliseconds. A plain Unix time put the game's clock in 1956, before every monster's window.
+      const clock = new NativeCallback(() => {
+        once('clock', 'the phone\'s, not NTP');
+        return int64(Date.now() + 2208988800000);
+      }, 'int64', ['pointer', 'pointer']);
+      callbacks.push(clock);
+      Interceptor.replace(m.base.add(RVA.time_sync_run), clock);
+    });
+    // No Google sign-in once the game runs: it only linked accounts of the original servers. LoginWindowAdapter.Show opens the
+    // sign-in window, in the game (gameStarted) after a failed silent sign-in or from the settings; the settings show their
+    // sign-in part (SettingsWindow._loginParent +0xF0, _signInText +0x138) by the login state (UpdateLoginInfo, also when the
+    // window opens). The window before the game starts is left as it is.
+    stage('no sign-in window', () => {
+      const show = m.base.add(RVA.login_window_show);
+      const original = new NativeFunction(show, 'void', ['pointer', 'bool', 'pointer']);
+      const skip = new NativeCallback((adapter, gameStarted, info) => {
+        if (!gameStarted) return original(adapter, gameStarted, info);
+        log('sign-in window not shown');
+      }, 'void', ['pointer', 'bool', 'pointer']);
+      callbacks.push(skip);
+      Interceptor.replace(show, skip);
+      const setActive = new NativeFunction(m.base.add(RVA.game_object_set_active), 'void', ['pointer', 'bool', 'pointer']);
+      const gameObjectOf = new NativeFunction(m.base.add(RVA.component_game_object), 'pointer', ['pointer', 'pointer']);
+      Interceptor.attach(m.base.add(RVA.settings_login_info), {
+        onEnter(args) { this.window = args[0]; },
+        onLeave() {
+          const part = this.window.add(0xf0).readPointer();   // _loginParent
+          if (!part.isNull()) setActive(part, false, NULL);
+          const text = this.window.add(0x138).readPointer();  // _signInText
+          if (!text.isNull()) setActive(gameObjectOf(text, NULL), false, NULL);
+        },
+      });
+    });
     // Graph wiring fixed in 1.2: Will o' the Wisp's stump and catch graphs (the only ones in 1.1.116) hang their next step on
     // LoadEnviroNode's "ResultNode" port instead of "NextNode", so the graph stops on the loaded background (logcat: "Load
     // Enviro ... doesn't have following node connected", a black screen). Before the game reads the node's next port, any
@@ -354,10 +438,92 @@ function install(m) {
         },
       });
     });
+    // Texts the server supplies: the bestiary's occurrences from the wiki, the trinkets' bonuses, the weather items' names.
+    // A term is looked up only when its length is one of theirs, since some windows ask for texts every frame.
+    stage('texts', () => {
+      Interceptor.attach(m.base.add(RVA.get_translation), {
+        onEnter(args) {
+          this.term = !args[0].isNull() && textLengths.has(args[0].add(0x10).readS32()) ? read(args[0]) : null;
+        },
+        onLeave(ret) {
+          const text = this.term && TEXTS.get(this.term);
+          if (!text) return;
+          ret.replace(str(text.replace !== undefined ? text.replace : (read(ret) || '') + text.append));
+        },
+      });
+      setTimeout(loadTexts, 0);  // off the game's start; the game reads its static texts after the login
+    });
   }
   log('hooks installed');
+  stage('map tiles', () => setTimeout(freshTiles, 0));  // off the game's start; the map comes seconds later
   stage('gps', () => startGps(m, log));
   stage('diagnostics', startDiagnostics);
+}
+
+// Map tiles. The game keeps every tile it was sent on disk (Google.Maps/Feature in its cache) and never asks for one again,
+// so after a new map (rebuilt, another region, or tiles sent before the map was built) it kept drawing the old ones. The tile
+// service names the map its tiles come from (/health "map"); when that differs from the one the cache was filled from, the
+// cached tiles go, before the game shows the map.
+function freshTiles() {
+  Java.perform(() => {
+    try {
+      const JFile = Java.use('java.io.File');
+      const cache = Java.use('android.app.ActivityThread').currentApplication().getExternalCacheDir().getPath() + '/Google.Maps';
+      const health = Java.cast(Java.use('java.net.URL').$new('http://' + CONFIG.gameHost + ':' + CONFIG.tilePort + '/health')
+        .openConnection(), Java.use('java.net.HttpURLConnection'));
+      health.setConnectTimeout(1000);
+      health.setReadTimeout(1000);
+      const reader = Java.use('java.io.BufferedReader').$new(Java.use('java.io.InputStreamReader').$new(health.getInputStream()));
+      const map = JSON.parse(String(reader.readLine())).map;
+      reader.close();
+      let kept = null;
+      try {
+        kept = File.readAllText(cache + '/revival-map');
+      } catch (e) {
+        // not recorded yet
+      }
+      if (!map || map === kept) return;
+      let removed = 0;
+      const remove = file => {
+        const inside = file.listFiles();
+        if (inside !== null) for (let i = 0; i < inside.length; i++) remove(inside[i]);
+        if (file.delete()) removed++;
+      };
+      remove(JFile.$new(cache + '/Feature'));
+      JFile.$new(cache).mkdirs();
+      File.writeAllText(cache + '/revival-map', map);
+      log('map tiles: a new map,', removed, 'cached files removed');
+    } catch (e) {
+      log('map tiles: not checked -', e.message);
+    }
+  });
+}
+
+// The server's texts (GET /revival/texts on the game server: {"replace": {term: text}, "append": {term: text}}), which follow
+// the dashboard's settings: Revival's bestiary occurrences and trinket bonuses, the weather items' names.
+const TEXTS = new Map();
+let textLengths = new Set();
+function loadTexts() {
+  Java.perform(() => {
+    try {
+      const connection = Java.cast(Java.use('java.net.URL').$new('http://' + CONFIG.gameHost + ':' + CONFIG.httpPort +
+        '/revival/texts').openConnection(), Java.use('java.net.HttpURLConnection'));
+      connection.setConnectTimeout(1000);
+      connection.setReadTimeout(2000);
+      const reader = Java.use('java.io.BufferedReader').$new(
+        Java.use('java.io.InputStreamReader').$new(connection.getInputStream(), 'UTF-8'));
+      let body = '';
+      for (let line = reader.readLine(); line !== null; line = reader.readLine()) body += line;
+      reader.close();
+      const texts = JSON.parse(body);
+      for (const term of Object.keys(texts.replace || {})) TEXTS.set(term, { replace: texts.replace[term] });
+      for (const term of Object.keys(texts.append || {})) TEXTS.set(term, { append: texts.append[term] });
+      textLengths = new Set(Array.from(TEXTS.keys(), term => term.length));
+      log('texts:', TEXTS.size, 'from the server');
+    } catch (e) {
+      log('texts: not loaded -', e.message);
+    }
+  });
 }
 
 // Diagnostics for bug reports. Nothing here runs on a hot or a crashing path: a heartbeat every 10 s (a missing one is the

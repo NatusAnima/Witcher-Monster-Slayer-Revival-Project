@@ -32,7 +32,10 @@ public sealed class LocalProfileStore : IDisposable
     /// bought once; Sensed maps monsters revealed by the witcher senses to the Unix second they leave; Modifiers
     /// holds the expiring player modifiers added by story graphs; LevelAnnounced is the last level announced to
     /// the client with a LevelUp push; HerbRespawns maps gathered herbs to the Unix second they grow back; Debug marks a
-    /// profile the dashboard's debug tools changed. Older files have none of them.</summary>
+    /// profile the dashboard's debug tools changed; Head is the chosen head (customization_heads id); Fight is the encounter
+    /// in progress (so its end still pays after a server restart); LevelShown is the last level whose LevelUp window
+    /// reached the game (a lost one is sent again after the next boot); Curve is the experience table Exp was earned
+    /// under (1 the original game's, else this project's; Reconstruction.ConvertExp). Older files have none of them.</summary>
     public sealed record PlayerState(int Exp, int Gold, int SkillPoints, List<int> Skills,
         Dictionary<string, Dictionary<int, int>> Items, List<string> Granted, string? Name = null, byte Gender = 0,
         Dictionary<int, int>? Kills = null, List<SummonedMonsters.Group>? Summons = null,
@@ -42,7 +45,13 @@ public sealed class LocalProfileStore : IDisposable
         Dictionary<long, long>? Sensed = null, List<ModifierState>? Modifiers = null, int? LevelAnnounced = null,
         Dictionary<long, long>? HerbRespawns = null, NestDay? Nests = null, StoryProgress? Story = null,
         EquipmentState? Equipment = null, Dictionary<long, TransactionRecord>? Transactions = null,
-        TaskEngine.State? Tasks = null, AuraUsage? Aura = null, DistanceState? Distance = null, bool? Debug = null);
+        TaskEngine.State? Tasks = null, AuraUsage? Aura = null, DistanceState? Distance = null, bool? Debug = null,
+        int? Head = null, FightState? Fight = null, int? LevelShown = null, int? Curve = null);
+
+    /// <summary>An encounter in progress: a world, summoned or nest fight (Kind "world", "summoned", "nest"), its monster
+    /// (or the nest), and the Unix second after which it no longer pays.</summary>
+    public sealed record FightState(string Kind, long InstanceId, int MonsterId, int Difficulty, long Ends,
+        WorldNests.Nest? Nest = null);
 
     /// <summary>Earned metres from legacy RPC27 or validated companion segments after protection. Old reconstructed saves
     /// start at zero: the former constant 15000 was never earned progress. Recent random request IDs

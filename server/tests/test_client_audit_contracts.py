@@ -65,11 +65,13 @@ class AuditContracts(base.PrototypeTests):
         self.assertEqual(c.rpc(24),b'\1'+I(0))
 
     def test_audit_bestiary_rarity_thresholds_and_preexisting_claims(self):
-        server,c=self.reconstructed();c.rpc(3);c.rpc(3);server.stop()
+        # The original game's tiers (before update 1.2): the Vanilla preset. Revival's are in test_rebalance.
+        vanilla=dict(self.RECONSTRUCTED,**self.tuned('vanilla'))
+        server,c=self.reconstructed(env=self.tuned('vanilla'));c.rpc(3);c.rpc(3);server.stop()
         path=self.profile_file('test-fresh');state=json.loads(path.read_text())
         player=state['Player'];player['Kills']={'2':149,'101':29,'103':5}
         player['KnowledgeClaimed']={'2':2,'101':2,'103':2}
-        path.write_text(json.dumps(state));server=self.start('test-fresh',self.RECONSTRUCTED);c=self.client(server)
+        path.write_text(json.dumps(state));server=self.start('test-fresh',vanilla);c=self.client(server)
         for monster in [2,101,103]: self.assertEqual(c.rpc(65,I(monster)),b'\0'+I(-1)+I(0))
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata') as response:
             data=json.loads(gzip.decompress(response.read()))
@@ -78,14 +80,14 @@ class AuditContracts(base.PrototypeTests):
             self.assertEqual([rows[i] for i in (1,2,3)],expected)
         server.stop();state=json.loads(path.read_text());points=state['Player']['SkillPoints']
         state['Player']['Kills']={'2':150,'101':30,'103':6};path.write_text(json.dumps(state))
-        server=self.start('test-fresh',self.RECONSTRUCTED);c=self.client(server)
+        server=self.start('test-fresh',vanilla);c=self.client(server)
         for monster in [2,101,103]:
             self.assertEqual(c.rpc(65,I(monster)),b'\1'+I(monster)+I(1))
             self.assertEqual(c.rpc(65,I(monster)),b'\0'+I(-1)+I(0))
         self.assertEqual(json.loads(path.read_text())['Player']['SkillPoints'],points+3)
         # Previously awarded tiers and points survive; changing balance is not a retroactive clawback.
         server.stop();state=json.loads(path.read_text());state['Player']['Kills']['2']=100;path.write_text(json.dumps(state))
-        server=self.start('test-fresh',self.RECONSTRUCTED);c=self.client(server)
+        server=self.start('test-fresh',vanilla);c=self.client(server)
         self.assertEqual(c.rpc(65,I(2)),b'\0'+I(-1)+I(0))
         saved=json.loads(path.read_text())['Player']
         self.assertEqual(saved['KnowledgeClaimed']['2'],3);self.assertEqual(saved['SkillPoints'],points+3)

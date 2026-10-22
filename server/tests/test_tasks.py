@@ -75,7 +75,7 @@ class TaskTests(base.PrototypeTests):
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             results = list(pool.map(lambda client: self.claim(client, task), [c, other]))
         self.assertEqual(sum(r[0] == 0 for r in results), 1)
-        expected = before + next(d['gold'] for d in self.kills(1) if d['id'] == task)
+        expected = before + 2 * next(d['gold'] for d in self.kills(1) if d['id'] == task)   # Revival: tasks.goldPercent 200
         self.assertEqual(self.player_info(c)['gold'], expected)
         self.assertNotEqual(self.claim(c, task)[0], 0)
         remaining = self.daily(c)[0]
@@ -359,7 +359,7 @@ class TaskTests(base.PrototypeTests):
         self.assertTrue(all(row['value4'] == -1 for row in combat))
         self.assertEqual(next(row for row in combat if row['id'] == 12002)['value1'], 0)
         self.assertIn(20, base.decode_batch(c.rpc(115)))
-        self.assertEqual(data['summoning_scrolls'], [dict(id=2, slug='summoning_scroll_basic', priority=0, duration=500)])
+        self.assertIn(dict(id=2, slug='summoning_scroll_basic', priority=2, duration=500), data['summoning_scrolls'])
         modifier_ids = {m['id'] for m in data['player_modifiers']}
         self.assertTrue(all(row['player_modifier_id'] in modifier_ids for row in data['summoning_scrolls_player_modifiers']))
 

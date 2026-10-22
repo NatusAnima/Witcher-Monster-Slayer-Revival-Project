@@ -127,7 +127,9 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual(self.inventory(a)['packs'], {1: 2})
 
     def test_social_capacity_refusal_keeps_unopened_gift(self):
-        server, a, b = self.social_server(); self.pair(a, b); server, a, b = self.seed_packs(server, full=True)
+        # A 200-item bag (the original start), filled to 199 by seed_packs.
+        server, a, b = self.social_server(**self.tuned(**{'inventory.startSize': 200}))
+        self.pair(a, b); server, a, b = self.seed_packs(server, full=True)
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid))[0], 1)
         self.assertEqual(b.rpc(107, Q(self.aid))[0], 0)
         self.assertEqual(self.friends(b)[1][self.aid]['received'][2], 0)

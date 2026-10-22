@@ -6,7 +6,7 @@ import threading
 import time
 import unittest
 
-from osm_live_sidecar import GridCanarySource, LiveTileServer, fetch_key, tile_bounds
+from osm_live_sidecar import GridCanarySource, LiveTileServer, LocalIndexSource, fetch_key, tile_bounds
 from test_osm_live_codec import decode_features, document
 
 TILE = (17, 70000, 42000)
@@ -61,6 +61,16 @@ class LiveSidecarTests(unittest.TestCase):
         self.assertEqual(health["feature_routing"], "any_valid_xyz")
         self.assertEqual(health["attribution"], "© OpenStreetMap contributors")
         self.assertGreaterEqual(server.request_queue_size, 1024)
+
+    def test_health_names_the_map_the_tiles_come_from(self):
+        # The game keeps every tile on disk; its hook drops them when this changes (a rebuilt or another map).
+        class Index:
+            def __init__(self, timestamp):
+                self.meta = {"source_file": "monaco-latest.osm.pbf", "source_timestamp": timestamp, "coastlines": "24"}
+        health = lambda source: json.loads(self.get(self.start(source)[0], "/health")[1])
+        maps = [health(LocalIndexSource(Index(timestamp)))["map"] for timestamp in ("2026-10-01T00:00:00Z", "2026-10-02T00:00:00Z")]
+        self.assertNotEqual(maps[0], maps[1])
+        self.assertIsNone(health(FakeSource())["map"])
 
     def test_any_address_is_served_with_place_ids(self):
         server, events = self.start(FakeSource())

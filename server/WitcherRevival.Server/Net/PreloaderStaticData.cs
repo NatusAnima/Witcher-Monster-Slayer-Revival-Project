@@ -391,6 +391,10 @@ public static class PreloaderStaticData
         },
     };
 
+    /// <summary>The ids of the customization_heads rows (SetCustomizationHead keeps only these).</summary>
+    internal static readonly HashSet<int> HeadIds = ContentOverrides["customization_heads"]
+        .Select(row => System.Text.Json.JsonDocument.Parse(row).RootElement.GetProperty("id").GetInt32()).ToHashSet();
+
     /// <summary>The DataContract JSON the client will deserialize into a Container.</summary>
     public static string BuildContainerJson(bool emptyObject = false, DrivingWarningSettings? drivingWarningSettings = null,
         TaskCatalog.Catalog? tasks = null, SkillBalancePolicy? policy = null)

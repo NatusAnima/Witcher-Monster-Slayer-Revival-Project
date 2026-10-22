@@ -175,7 +175,7 @@ class CandidateTests(unittest.TestCase):
             a, b = anchor.latlng(x * scale, y * scale)
             points[cell] = dict(id=f'synthetic-{cell}', lat=a, lng=b, biomes=[pl.GRASSLAND], kind='path')
         service = pl.PlayableLocations(None)
-        service.cell = lambda cell, epoch: [points[cell]] if cell in points else []
+        service.cell = service.points = lambda cell, epoch: [points[cell]] if cell in points else []
         self.assertLess(pl._distance_m(*points.values()), 5)
         for epoch in range(12):
             together = service.payload([self.cell, other], epoch)
@@ -231,6 +231,31 @@ class TuningTests(unittest.TestCase):
             self.save(json.dumps({"schemaVersion": 1, "values": {"places.woods": woods, "places.parks": parks}}))
             service.tuning._checked = 0
             self.assertEqual(count(), expected)
+
+    def test_a_nemeton_keeps_its_spot_every_day_and_whatever_the_place_mix(self):
+        cell = s2cells.cell_of(10, 20, pl.CELL_LEVEL)
+        proj = pl.Projection(*s2cells.center(cell))
+        wood = [proj.latlng(x, y) for x, y in [(-250, -250), (250, -250), (250, 100), (-250, 100)]]
+        park = [proj.latlng(x, y) for x, y in [(-250, 150), (250, 150), (250, 280), (-250, 280)]]
+
+        class Index:
+            def covers(self, *args): return True
+            def document(self, *args, clip=None):
+                return {"elements": [dict(type="area", kind="forest", rings=[wood]), dict(type="area", kind="park", rings=[park])]}
+
+        service = pl.PlayableLocations(Index(), None, self.path)
+        def nest(epoch):
+            row = service.payload([cell], epoch)[str(cell)]
+            spot, = [p for p in row["places"] if p["id"] == row["nest_place_id"]]
+            # the game shows it only on a place of the reply; the day's places keep the spacing from it
+            self.assertEqual(spot["id"], f"lab-{cell:016x}-{epoch}-{pl.PLACEMENT_VERSION * 1000 + 999}")
+            self.assertTrue(all(pl._distance_m(p, spot) >= pl.MIN_SPACING_M for p in row["places"] if p is not spot))
+            return spot["lat"], spot["lng"]
+        spot = nest(123)
+        self.assertEqual(nest(124), spot)
+        self.save(json.dumps({"schemaVersion": 1, "values": {"places.woods": 0, "places.parks": 25}}))
+        service.tuning._checked = 0
+        self.assertEqual(nest(125), spot)
 
 
 class CacheTests(unittest.TestCase):

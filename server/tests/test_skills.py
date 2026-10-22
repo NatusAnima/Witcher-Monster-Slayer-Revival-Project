@@ -130,10 +130,11 @@ class SkillTests(base.PrototypeTests):
                 ranked = [s for s in skills.values() if s['slug'] == slug]
                 self.assertTrue(all(any(r['item_id'] == s['id'] and effects[r['effect_id']]['effect_type_id'] == 1
                                         for r in rows) for s in ranked))
-        # Resolve uses an explicitly authored minimum floor, not an unsafe loss modifier stacked with armor.
+        # Resolve uses an explicitly authored minimum floor, not an unsafe loss modifier stacked with armor, applied once the
+        # fight's critical hit meter exists (OnTargetSet).
         for skill, power in [(17, 10), (18, 20), (19, 30)]:
             self.assertEqual([r for r in rows if r['item_id'] == skill],
-                             [{'item_id': skill, 'effect_id': 59, 'power': power, 'effect_apply_type_id': 1}])
+                             [{'item_id': skill, 'effect_id': 59, 'power': power, 'effect_apply_type_id': 22}])
 
     def test_skills_level_gate_and_cross_prerequisite_on_later_rank(self):
         server, c, _ = self.seed([1, 2, 3, 31], points=20, exp=105000)  # Synthetic level 15, missing Igni.

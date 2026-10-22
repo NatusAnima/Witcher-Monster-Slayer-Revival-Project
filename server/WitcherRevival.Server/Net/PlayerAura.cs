@@ -70,11 +70,13 @@ public sealed partial class PlayerService
             int level = Reconstruction.LevelForExp(p.Exp);
             var sky = WorldSpawns.Sky(anchor.Place.Lat, anchor.Place.Lng, DateTimeOffset.FromUnixTimeSeconds(now),
                 weather.ForGeneration(anchor.Cell.Id, anchor.Cell.Lat, anchor.Cell.Lng, now / WorldSpawns.LifetimeSeconds));
+            // The world's own draw (rarity, balance weights, boosts); the Aura always keeps to the player's level.
             var choices = WorldBestiary.All.Where(s => WorldSpawns.MinPlayerLevel(s) <= level &&
                 WorldSpawns.Fits(s, anchor.Place.Biomes, sky)).ToArray();
             if (choices.Length == 0) return Refused();
-            int roll = RandomNumberGenerator.GetInt32(choices.Sum(s => WorldSpawns.WeightUnder(s, sky)));
-            var species = choices.First(s => (roll -= WorldSpawns.WeightUnder(s, sky)) < 0);
+            var species = WorldSpawns.DrawBalanced(choices, sky, new Random(RandomNumberGenerator.GetInt32(int.MaxValue)),
+                preferBeginner: false, world.Balance.Read().At(now));
+            if (species is null) return Refused();
             var group = summons.TrySummonAura(now, skillBalance.WitcherAuraLifetimeSeconds,
                 checked((int)Math.Round(anchor.Place.Lng * AuraCoordinateScale)),
                 checked((int)Math.Round(anchor.Place.Lat * AuraCoordinateScale)),

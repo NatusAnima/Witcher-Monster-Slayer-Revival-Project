@@ -102,7 +102,8 @@ class DebugTests(unittest.TestCase):
         with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=3) as response:
             data = json.loads(gzip.decompress(response.read()))
         self.assertEqual({(r['item_id'], r['effect_id'], r['power'], r['effect_apply_type_id'])
-                          for r in data['player_modifier_to_effect']}, {(901, 40, 100000, 1), (902, 41, 100000, 1)})
+                          for r in data['player_modifier_to_effect'] if r['item_id'] in (901, 902)},
+                         {(901, 40, 100000, 1), (902, 41, 100000, 1)})
         self.assertLessEqual({901, 902}, {r['id'] for r in data['player_modifiers']})
         self.assertEqual(client.rpc(90, I(901) + I(0))[4:8], I(1))           # gameplay cannot add them
         self.assertEqual(self.debug(profile, action='invincible', on=True)[0], 200)

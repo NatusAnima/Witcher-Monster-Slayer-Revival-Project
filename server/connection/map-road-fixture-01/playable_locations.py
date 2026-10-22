@@ -477,21 +477,31 @@ class PlayableLocations:
         clip_box = (box[0] - dlat, box[1] - dlng, box[2] + dlat, box[3] + dlng)
         return self.index.document(*box, clip=clip_box)
 
-    def cell(self, cell_id: int, epoch: int) -> list[dict]:
-        if s2cells.level(cell_id) != CELL_LEVEL:
-            raise ValueError("unsupported cell level")
+    def _rules(self, epoch: int):
+        """The epoch's scheduled policy (None for the default draw), its cache key, and the tuning."""
         # Epoch zero is a transactional request for current quest-relocation geometry.
         # Dated epochs remain immutable and reproducible, including after restarts.
         from_epoch, policy = self.policy.at(int(time.time() // 86400) if epoch == 0 else epoch)
         active = policy if from_epoch else None
-        key = json.dumps(active, sort_keys=True, separators=(",", ":"))
-        tuning = self.tuning.values()
+        return active, json.dumps(active, sort_keys=True, separators=(",", ":")), self.tuning.values()
+
+    def points(self, cell_id: int, epoch: int) -> list[dict]:
+        """The cell's candidate points under the epoch's rules, before the day's draw."""
+        if s2cells.level(cell_id) != CELL_LEVEL:
+            raise ValueError("unsupported cell level")
+        active, key, tuning = self._rules(epoch)
         clearance = self.clearance(active, tuning)
         def geometry():
             document = self.document(cell_id)
             return candidates(document, cell_id, active, clearance=clearance) if document is not None else []
+        return self._raw.get((key, clearance, cell_id), geometry)
+
+    def cell(self, cell_id: int, epoch: int) -> list[dict]:
+        if s2cells.level(cell_id) != CELL_LEVEL:
+            raise ValueError("unsupported cell level")
+        active, key, tuning = self._rules(epoch)
         return self._sampled.get((key, tuple(sorted(tuning.items())), cell_id, epoch),
-            lambda: sample(self._raw.get((key, clearance, cell_id), geometry), cell_id, epoch, active, tuning))
+            lambda: sample(self.points(cell_id, epoch), cell_id, epoch, active, tuning))
 
     @staticmethod
     def clearance(active, tuning):
@@ -550,17 +560,19 @@ class PlayableLocations:
                     attribution="© OpenStreetMap contributors")
 
     def nest_candidate(self, cell_id: int, epoch: int):
-        """A potential nemeton anchor, independent of request order and player."""
-        points = self.cell(cell_id, epoch)
+        """A potential nemeton anchor, independent of request order and player: one of the cell's candidate points, chosen
+        by its position alone, so the same every day and whatever the place mix draws (a rebuilt map can move it)."""
+        points = self.points(cell_id, epoch)
         def rank(point):
-            return hashlib.sha256(f"nest-v2:{point['id']}".encode()).digest()
+            return hashlib.sha256(f"nest-v3:{point['lat']:.6f},{point['lng']:.6f}".encode()).digest()
         return min(points, key=rank) if points else None
 
     def nest_place(self, cell_id: int, epoch: int):
+        """The cell's nemeton anchor, unless a neighbour's anchor of higher priority stands within the nest spacing."""
         candidate = self.nest_candidate(cell_id, epoch)
         if candidate is None:
             return None
-        priority = lambda cid: (hashlib.sha256(f"nest-v2:{epoch}:{cid}".encode()).digest(), cid)
+        priority = lambda cid: (hashlib.sha256(f"nest-v3:{cid}".encode()).digest(), cid)
         own_priority = priority(cell_id)
         for neighbor in s2cells.neighbors(cell_id):
             if priority(neighbor) >= own_priority:
@@ -568,12 +580,24 @@ class PlayableLocations:
             other = self.nest_candidate(neighbor, epoch)
             if other and _distance_m(candidate, other) < NEST_SPACING_M:
                 return None
-        return candidate['id']
+        return candidate
 
     def payload(self, ids: list[int], epoch: int) -> dict:
         self.policy.refresh()
-        return {str(i): {"center": [round(v, 6) for v in s2cells.center(i)],
-                         "places": self.cell(i, epoch), "nest_place_id": self.nest_place(i, epoch)} for i in ids}
+        active, _, tuning = self._rules(epoch)
+        spacing = active["spacingMeters"] if active else tuning["places.spacing"]
+        cells = {}
+        for i in ids:
+            places = self.cell(i, epoch)
+            nest = self.nest_place(i, epoch)
+            if nest is not None:
+                # The game shows a nemeton only on a place of the cell's reply: the anchor joins the day's places, under the
+                # day's id format (WorldSpawns.CellOf/EpochOf read it), and the places too close to it give way.
+                nest = dict(nest, id=f"lab-{i:016x}-{epoch}-{PLACEMENT_VERSION * 1000 + 999}")
+                places = [p for p in places if _distance_m(p, nest) >= spacing] + [nest]
+            cells[str(i)] = {"center": [round(v, 6) for v in s2cells.center(i)], "places": places,
+                             "nest_place_id": nest and nest["id"]}
+        return cells
 
 
 def _distance_m(a: dict, b: dict) -> float:

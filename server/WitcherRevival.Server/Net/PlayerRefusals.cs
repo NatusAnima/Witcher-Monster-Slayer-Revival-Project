@@ -54,6 +54,8 @@ public sealed partial class PlayerService
                 if (req.Method == M_CraftItem) { craft.WriteInt(0); craft.WriteInt(0); }
                 return craft.ToArray();
             case 47 or 48 or 49 or 50 or 51 or 71 or 100 or 109 or 118: return new byte[9];
+            // UseConsumable: Success 0; the client unblocks its input whatever the answer (OnUseConsumableResponse 0x18BF908).
+            case M_UseConsumable: return new byte[9];
             case M_AddPlayerModifier: return Fields(false, 4, 1, 0, 0, 0);
             case M_RemovePlayerModifier: return Fields(false, 1, 0);
             case M_SetName or M_ThrowBomb or M_AddSkillPoints or M_GetTransactionStatus or M_GetLastSummoningSkillUsageTime:
@@ -62,6 +64,8 @@ public sealed partial class PlayerService
             case M_SummonLocalMonsters or M_CancelCrafting or M_SetFacts:
             case M_LoadCells or M_PrepareToCombat or M_EncounterMonster or M_BuyAutoEquipItems or M_UseOilPotions:
                 return new byte[1];
+            // EndNestCombat: Success 0, which OnEndNestCombatResponse (0x17F0284) takes; unanswered, the game waits for good.
+            case M_EndNestCombat: return new byte[1];
             case M_RelocateQuest: return new byte[13];
             default: return null;
         }

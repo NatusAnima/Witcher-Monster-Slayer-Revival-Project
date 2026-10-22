@@ -144,7 +144,7 @@ public sealed class SocialService : IDisposable
             {
                 string other = edge.From == profile ? edge.To : edge.From; var p = Player(other);
                 b.WriteLong(state.Players[other]); b.WriteInt(edge.Accepted ? 0 : edge.From == profile ? 1 : 2);
-                b.WriteString(p?.Name ?? "Unnamed"); b.WriteByte(p?.Gender ?? 0); b.WriteInt(1);
+                b.WriteString(p?.Name ?? "Unnamed"); b.WriteByte(p?.Gender ?? 0); b.WriteInt(p?.Head ?? 1);   // HeadId
                 b.WriteInt(Reconstruction.LevelForExp(p?.Exp ?? 0));
                 WriteGift(b, state.Gifts.GetValueOrDefault(Direction(profile, other)));
                 WriteGift(b, state.Gifts.GetValueOrDefault(Direction(other, profile)));

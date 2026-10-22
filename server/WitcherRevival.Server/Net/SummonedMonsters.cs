@@ -18,7 +18,7 @@ public sealed class SummonedMonsters
     private readonly object _gate = new();
     private readonly List<Group> _groups;
     private readonly Action<IReadOnlyList<Group>> _save;
-    private long? _encountered;
+    private Monster? _encountered;   // kept itself: its group may leave (Expire) before the fight ends
 
     /// <param name="saved">Groups restored from the profile.</param>
     /// <param name="save">Receives the groups after every change.</param>
@@ -67,14 +67,14 @@ public sealed class SummonedMonsters
 
     /// <summary>Creates a paid group only when its owner can atomically save the group, item debit and modifier.
     /// A fresh request cannot reuse an active paid group: the client would debit another scroll on success.</summary>
-    public Group? TrySummonOwned(int now, int longitude, int latitude, IEnumerable<(int MonsterId, int Difficulty)> monsters,
+    public Group? TrySummonOwned(int scrollId, int now, int longitude, int latitude, IEnumerable<(int MonsterId, int Difficulty)> monsters,
         Func<Group, IReadOnlyList<Group>, bool> commit)
     {
         lock (_gate)
         {
             Expire(now);
-            if (_groups.Any(g => g.ItemType == 16 && g.ItemId == 2)) return null;
-            var group = new Group(16, 2, now - 1, now + 499, longitude, latitude,
+            if (_groups.Any(g => g.ItemType == SummonScrolls.ItemType && g.ItemId == scrollId)) return null;
+            var group = new Group(SummonScrolls.ItemType, scrollId, now - 1, now + 499, longitude, latitude,
                 monsters.Select(m => new Monster(m.MonsterId, m.Difficulty, NewInstanceId(), true)).ToList());
             if (!commit(group, [.. _groups, group])) return null;
             _groups.Add(group);
@@ -100,40 +100,38 @@ public sealed class SummonedMonsters
         }
     }
 
+    /// <summary>The monster being fought, if any.</summary>
+    public Monster? Encountered { get { lock (_gate) return _encountered; } }
+
     /// <summary>Marks a living monster as the one being fought.</summary>
     public bool Encounter(long instanceId, int now)
     {
         lock (_gate)
         {
             Expire(now);
-            bool alive = _groups.SelectMany(group => group.Monsters).Any(m => m.InstanceId == instanceId && m.Alive);
-            _encountered = alive ? instanceId : null;
-            return alive;
+            _encountered = _groups.SelectMany(group => group.Monsters).FirstOrDefault(m => m.InstanceId == instanceId && m.Alive);
+            return _encountered is not null;
         }
     }
 
-    /// <summary>Ends the current fight. A win marks the monster defeated; returns the fought monster.</summary>
+    /// <summary>Ends the current fight. A win marks the monster defeated (while its group is there); returns the fought
+    /// monster.</summary>
     public Monster? EndEncounter(bool win)
     {
         lock (_gate)
         {
-            if (_encountered is not long id) return null;
+            if (_encountered is not { } fought) return null;
             _encountered = null;
-            for (int i = 0; i < _groups.Count; i++)
+            for (int i = 0; win && i < _groups.Count; i++)
             {
-                var monster = _groups[i].Monsters.FirstOrDefault(m => m.InstanceId == id && m.Alive);
-                if (monster is null) continue;
-                if (win)
+                if (!_groups[i].Monsters.Any(m => m.InstanceId == fought.InstanceId && m.Alive)) continue;
+                _groups[i] = _groups[i] with
                 {
-                    _groups[i] = _groups[i] with
-                    {
-                        Monsters = _groups[i].Monsters.Select(m => m.InstanceId == id ? m with { Alive = false } : m).ToList(),
-                    };
-                    Save();
-                }
-                return monster;
+                    Monsters = _groups[i].Monsters.Select(m => m.InstanceId == fought.InstanceId ? m with { Alive = false } : m).ToList(),
+                };
+                Save();
             }
-            return null;
+            return fought;
         }
     }
 

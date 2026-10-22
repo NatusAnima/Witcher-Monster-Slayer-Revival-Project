@@ -45,6 +45,33 @@ var rainRare = Species(5, 2, 2, "RAIN");
 int boosted = Enumerable.Range(0, 4).Count(ticket =>
     WorldSpawns.DrawBalanced(new[] {rare, rainRare}, rainy, new Tickets(88, ticket), false) == rainRare);
 Check(boosted == 3, "environment multiplier applies within category");
+
+// The occurrence rules (the Witcher wiki's bestiary and the client's phrases; the Tuning defaults).
+var night = clear with { Day = false, Night = true };
+var twilight = clear with { Day = false, Dusk = true };
+var natural = Species(10, 1, 0, "NEUTRAL2");
+Check(!WorldSpawns.Fits(natural, new[] {7}, clear) && WorldSpawns.Fits(natural, new[] {4}, clear) &&
+      WorldSpawns.Fits(natural, new[] {9}, clear), "all natural environments: never on urban ground, a town's park is grassland");
+Check(WorldSpawns.Fits(Species(11, 1, 0, "NEUTRAL3"), new[] {7}, clear), "the whole continent: anywhere");
+var drowner = Species(12, 1, 0, "WATER", "NON_URBAN", "RAIN");
+Check(WorldSpawns.Fits(drowner, new[] {10}, clear) && !WorldSpawns.Fits(drowner, new[] {4}, clear) &&
+      WorldSpawns.Fits(drowner, new[] {4}, rainy) && !WorldSpawns.Fits(drowner, new[] {7}, rainy), "rain lets water monsters roam, never into towns");
+Check(!WorldSpawns.Fits(Species(13, 1, 0, "WATER"), new[] {4}, rainy), "only a rain monster roams");
+var dayOnly = Species(14, 1, 0, "DAY"); var nightOnly = Species(15, 1, 0, "NIGHT");
+Check(!WorldSpawns.Fits(dayOnly, new[] {4}, night) && WorldSpawns.Fits(dayOnly, new[] {4}, twilight) &&
+      !WorldSpawns.Fits(nightOnly, new[] {4}, clear) && WorldSpawns.Fits(nightOnly, new[] {4}, twilight), "day and night, twilight suits both");
+var moonOnly = Species(16, 1, 0, "FULL_MOON_ONLY");
+Check(!WorldSpawns.Fits(moonOnly, new[] {4}, night) && WorldSpawns.Fits(moonOnly, new[] {4}, night with { FullMoon = true }), "full moon only");
+var duskRain = Species(17, 1, 0, "RAIN", "DUSK");
+Check(WorldSpawns.BoostOf(duskRain, clear) == 1 && WorldSpawns.BoostOf(duskRain, rainy) == 6 &&
+      WorldSpawns.BoostOf(duskRain, twilight with { Rain = true }) == 18 &&
+      WorldSpawns.BoostOf(Species(18, 1, 0, "NOON"), clear with { Noon = true }) == 6 &&
+      WorldSpawns.BoostOf(Species(19, 1, 0, "FOG"), clear with { Fog = true }) == 3 &&
+      WorldSpawns.BoostOf(Species(20, 1, 0, "D_AND_D"), twilight) == 3, "increased ×3, significantly ×6, boosts multiply");
+var gated = new[] { Species(21, 1, 0), Species(22, 1, 1), Species(23, 2, 2), Species(24, 3, 3) };
+Check(gated.Where(s => WorldSpawns.Allowed(s, 1)).Select(s => s.MonsterId).SequenceEqual(new[] {21}) &&
+      gated.Count(s => WorldSpawns.Allowed(s, 3)) == 2 && gated.Count(s => WorldSpawns.Allowed(s, 6)) == 3 &&
+      gated.All(s => WorldSpawns.Allowed(s, 10)) && gated.All(s => WorldSpawns.Allowed(s, null)), "the level gate by skulls (1/3/6/10)");
 Check(WorldSpawns.WeightUnder(common, clear) == 10 && WorldSpawns.WeightUnder(rare, clear) == 3 &&
       WorldSpawns.WeightUnder(legend, clear) == 1, "legacy and Aura lottery untouched");
 
@@ -57,7 +84,8 @@ foreach (int biome in new[] {1, 5, 7, 10}) foreach (int count in new[] {0, 4, 24
         historical.Add(WorldSpawns.ForCell(Cell(biome, count, at), at, _ => WorldWeather.Clear, slots, long.MaxValue));
 string legacyHash = Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(historical))).ToLowerInvariant();
 // Generated independently from the previous deployed DLL c84fc151... on these 108 synthetic inputs.
-Check(legacyHash == "04827d7b2e31b61e30c188bb4661a84573380b6b475003d0336df7fa18ab6020", "pre-activation byte-for-byte legacy compatibility");
+// The bestiary's data is in the hash: the wiki's tags, rarities and skulls (2026-10-22) moved it on purpose.
+Check(legacyHash == "f011a18286dd45ec2a0dea242fc5fa81a77960330fc3104c7205da628c2653b7", "pre-activation generations of this bestiary " + legacyHash);
 const long activation = 1790940000;
 foreach (int count in new[] {0, 4, 24}) foreach (long at in new[] {activation-1, activation, activation+900, activation+1800})
 {
@@ -80,8 +108,17 @@ foreach (int biome in new[] {1, 5, 7, 10}) foreach (int count in new[] {0, 4, 24
         balancedReference.Add(WorldSpawns.ForCell(Cell(biome, count, at), at, _ => WorldWeather.Clear, slots, 0,
             WorldBalance.Default.At));
 string balancedHash = Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(balancedReference))).ToLowerInvariant();
-Check(balancedHash == "bd31267020386e8443c3e105cda2121b571fdb7b652e864db8edb53bb44a6424",
-    "default policy preserves currently deployed 88:18:3 algorithm and IDs");
+// Moved with the wiki's bestiary and occurrence rules (2026-10-22), on purpose.
+Check(balancedHash == "dcf93acfb0fc3f47802a84884ddf84c90053718acc7450a8e20e98679ad17d50", "default policy keeps the 88:18:3 algorithm and IDs " + balancedHash);
+// A level-1 player meets no skulled monster and as many monsters as anyone.
+foreach (int biome in new[] {1, 4, 10})
+{
+    var cell = Cell(biome, 24, activation);
+    var low = WorldSpawns.ForCell(cell, activation, _ => WorldWeather.Clear, 18, 0, playerLevel: 1);
+    var anyone = WorldSpawns.ForCell(cell, activation, _ => WorldWeather.Clear, 18, 0);
+    Check(low.Count > 0 && low.Count == anyone.Count && low.All(s => WorldBestiary.Of(s.MonsterId)!.Skulls == 0),
+        $"level gate keeps the count on biome {biome}: {low.Count} of {anyone.Count}");
+}
 var categoryRules = new WorldBalance.Rules(2, 3, 1, []);
 var categoryCounts = new int[4];
 for (int ticket = 0; ticket < 6; ticket++)

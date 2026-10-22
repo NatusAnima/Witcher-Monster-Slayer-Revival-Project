@@ -87,7 +87,10 @@ RECONSTRUCTED_EMPTY_BEFORE = ('effects', 'skill_to_effect', 'oils', 'oil_to_effe
                               'bomb_recipe_ingredients', 'senses_potion_recipe_ingredients', 'shop_bundles', 'shop_bundle_items',
                               'shop_bundles_layout_group_name_categories', 'auto_equip_items_prices',
                               # Oren packs priced in real money (Economy.OrenPacks).
-                              'inapp_prices', 'inapp_price_shops', 'packs_types')
+                              'inapp_prices', 'inapp_price_shops', 'packs_types',
+                              # Summoning scrolls and consumables (SummonScrolls, Consumables; 0.3.0).
+                              'summoning_scrolls', 'summoning_scrolls_player_modifiers', 'consumables',
+                              'consumables_player_modifiers')
 # Container arrays added after the inherited sample (always empty so far); the client needs the keys.
 ADDED_CONTAINER_ARRAYS = ('shop_bundles_availability', 'shop_bundles_availability_data', 'daily_quest_contracts',
                           'daily_quest_rewards', 'event_rewards')
@@ -103,6 +106,7 @@ SEASON1 = json.loads(next(path for path in (ROOT / 'WitcherRevival.Server/Story/
 WORLD = json.loads(next(path for path in (ROOT / 'WitcherRevival.Server/Story/world-bestiary.json',
                                           Path(__file__).resolve().parent / 'world-bestiary.json')
                         if path.exists()).read_text())
+SPECIES_BY_ID = {s['monster_id']: s for s in WORLD['species']}
 RECONSTRUCTED_MONSTERS = {10, 11, 12, 13, 14, 15, 16} | {m['id'] for m in SEASON1['monsters']} | \
     {m['id'] for m in WORLD['monsters']}
 # Devourer (tutorial exam); wraith, wraith_lvl2, gargoyle (A Joint Venture); endrega worker, warrior and drone (Good
@@ -572,9 +576,18 @@ class PrototypeTests(unittest.TestCase):
     RECONSTRUCTED = {'LocalProfile__NewProfileMode': 'reconstructed'}
     TUT_GHOUL, TUT_WITCHER, TUT_EXAM = 512475750302797027, 1271842437439635223, 1152921521786716389
 
-    def reconstructed(self, profile='test-fresh'):
-        server = self.start(profile, self.RECONSTRUCTED)
+    def reconstructed(self, profile='test-fresh', env=None):
+        server = self.start(profile, dict(self.RECONSTRUCTED, **(env or {})))
         return server, self.client(server)
+
+    def tuned(self, preset='revival', **values):
+        # The world folder's tuning: a built-in preset (Revival, Vanilla) with some of its values changed.
+        folder = self.directory / 'world'
+        folder.mkdir(exist_ok=True)
+        (folder / 'tuning.json').write_text(json.dumps({'schemaVersion': 2, 'preset': preset, 'values': values}))
+        if not (folder / 'world.json').exists():   # a configured world folder must hold the world policy too
+            (folder / 'world.json').write_text(json.dumps({'schemaVersion': 1, 'monsterSlotsPerCell': 18}))
+        return {'World__Directory': str(folder)}
 
     def player_info(self, c):
         r = Reader(c.rpc(3))
@@ -585,7 +598,7 @@ class PrototypeTests(unittest.TestCase):
         r = Reader(c.rpc(5))
         maps = [r.facts() for _ in range(9)]
         return {'ingredients': maps[0], 'bombs': maps[1], 'potions': maps[2], 'oils': maps[3], 'lures': maps[4],
-                'senses': maps[5], 'scrolls': maps[8], 'bag': r.integer()}
+                'senses': maps[5], 'consumables': maps[6], 'scrolls': maps[8], 'bag': r.integer()}
 
     def test_reconstructed_profile_starts_at_level_one_in_the_tutorial(self):
         server, c = self.reconstructed()
@@ -672,8 +685,15 @@ class PrototypeTests(unittest.TestCase):
         server, c = self.reconstructed()
         self.assertEqual(c.rpc(29, S('Geralt')), b'\1' + I(0))
         self.assertEqual(c.rpc(46, b'\1'), b'\1' + I(1))
+        # The chosen head is kept (it went back to head 1 at the next start); only a head of the static data rows is.
+        self.assertEqual(c.rpc(28, I(3)), b'\1' + I(3))
+        self.assertEqual(c.rpc(28, I(9)), b'\0' + I(3))
         info = self.player_info(c)
-        self.assertEqual((info['name'], info['gender']), ('Geralt', 1))
+        self.assertEqual((info['name'], info['gender'], info['head']), ('Geralt', 1, 3))
+        server.stop()
+        server = self.start('test-fresh', self.RECONSTRUCTED)
+        c = self.client(server)
+        self.assertEqual((self.player_info(c)['head'], self.player_info(c)['gender']), (3, 1))
         self.assertEqual(c.rpc(29, S('')), b'\0' + I(0))
         c.rpc(57, self.completion_body({}, instance=self.TUT_WITCHER, output='exam'))
         self.assertEqual(c.rpc(39, I(402)), b'\1' + I(1))
@@ -736,7 +756,8 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.rpc(113, Q(ghoul)), b'\0')    # Defeated monsters cannot be fought again.
         listed, = self.summoned_groups(Reader(c.rpc(112)))
         self.assertEqual([alive for _, _, alive in listed['monsters']], [0, 1, 1])
-        self.assertEqual(Reader(c.rpc(7)).facts(), {1: 1})
+        # The drowner the player lost to stays in the bestiary with no kill, as the game shows it from the fight's start.
+        self.assertEqual(Reader(c.rpc(7)).facts(), {1: 1, 3: 0})
         # No encounter: nothing is granted.
         self.assertEqual(sum(v for k, v in self.combat_end(Reader(c.rpc(114, body(True)))).items() if k != 'loot'), 0)
         self.assertEqual(c.rpc(117), b'\1' + I(0))   # The summoning skill was never used.
@@ -749,7 +770,9 @@ class PrototypeTests(unittest.TestCase):
         # and its living monsters can still be fought.
         restarted = self.start('test-fresh', self.RECONSTRUCTED)
         c = self.client(restarted)
-        self.assertEqual(self.summoned_groups(Reader(decode_batch(c.rpc(115))[112])), [listed])
+        batch = decode_batch(c.rpc(115))
+        self.assertEqual(self.summoned_groups(Reader(batch[112])), [listed])
+        self.assertEqual(Reader(batch[7]).facts(), {1: 1, 3: 0})   # still there after the restart
         self.assertEqual(c.rpc(113, Q(ghoul)), b'\0')
         self.assertEqual(c.rpc(113, Q(drowner)), b'\1')
         exp = self.player_info(c)['exp']
@@ -857,7 +880,7 @@ class PrototypeTests(unittest.TestCase):
         # Beating the griffin closes the prologue (reward once) and offers quest node 287, whose graph the
         # client queued; it starts "A Joint Venture" and is followed by no node yet.
         done = Reader(c.rpc(57, self.completion_body({109: 1}, instance=GRIFFIN, output='griffin_1'))).end_graph()
-        self.assertEqual((done['exp'], done['gold']), (250, 45))
+        self.assertEqual((done['exp'], done['gold']), (500, 100))   # Revival (Vanilla 250 and 45)
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
         self.assertEqual((quests['finished'], quests['tracked'], quests['active']), ([144, 145], 146, [146]))
         start, = done['nodes']
@@ -938,7 +961,7 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual({m: killed.get(m) for m in (9, 11, 13)}, {9: 1, 11: 2, 13: 1})
         # The figurine cutscene and Thorstein's dialog end the quest: 275 XP, no node left.
         result, _ = step('success_heart', {100: 4, 102: 3, 145: 2}, instance=5124756678394249457)
-        self.assertEqual((result['nodes'], result['exp'], result['gold']), ([], 275, 0))
+        self.assertEqual((result['nodes'], result['exp'], result['gold']), ([], 600, 150))   # Revival (Vanilla 275 XP)
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
         self.assertEqual((quests['finished'], quests['tracked'], quests['active']), ([144, 145, 146], -1, []))
         self.assertEqual(step('success', instance=5124756678394249457)[0]['exp'], 0)
@@ -971,7 +994,8 @@ class PrototypeTests(unittest.TestCase):
                  3: {r['id'] for r in data['potions']}, 4: {r['id'] for r in data['oils']},
                  5: {r['id'] for r in data['lures']}, 6: {r['id'] for r in data['senses_potions']},
                  8: {r['id'] for r in data['armors']}, 9: {r['id'] for r in data['swords']},
-                 12: {r['id'] for r in data['brewers']}, 10: {1}, 11: {1}}         # 10: gold, 11: a bag (ItemTypeIds)
+                 12: {r['id'] for r in data['brewers']}, 10: {1}, 11: {1},         # 10: gold, 11: a bag (ItemTypeIds)
+                 16: {r['id'] for r in data['summoning_scrolls']}, 7: {r['id'] for r in data['consumables']}}
         self.assertEqual((len(items[1]), len(items[12])), (13, 3))
         # Client ints only: time_coefficient is a percentage (AlchemyRecipeSlot.GetCraftingTimeText).
         self.assertEqual({r['slug']: r['time_coefficient'] for r in data['brewers']},
@@ -1120,7 +1144,8 @@ class PrototypeTests(unittest.TestCase):
     def test_bags_grow_the_inventory_and_a_full_one_leaves_loot_behind(self):
         # The client's bag bundles 95-99 (Bag, Small pouch, Medium-sized pouch, Spacious pouch, Set of saddlebags): bought
         # once, their bag item (type 11) adds its amount to the inventory size; the client counts every stack and station.
-        server, c = self.reconstructed()
+        start200 = self.tuned(**{'inventory.startSize': 200})   # the original starting bag (Revival starts at 400)
+        server, c = self.reconstructed(env=start200)
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata', timeout=1) as response:
             data = json.loads(gzip.decompress(response.read()))
         bundles = {r['id']: r for r in data['shop_bundles']}
@@ -1139,7 +1164,7 @@ class PrototypeTests(unittest.TestCase):
         saved['Player']['Gold'] = 1000
         saved['Player']['Items'].setdefault('ingredients', {})['101'] = free - 3
         path.write_text(json.dumps(saved))
-        server, c = self.reconstructed()
+        server, c = self.reconstructed(env=start200)
         self.assertEqual(used(), 197)
         # The summoned ghoul's three ingredients just fit; the drowner's are left behind, its experience is not.
         r = Reader(c.rpc(111, I(16) + I(1) + I(16925168) + I(52406374))); r.byte()
@@ -1281,10 +1306,12 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(self.locations_by_cell(c.rpc(40, I(0)))['cells'], {})
         # Ordinary world visibility does not depend on XP: a level-one witcher gets the same
         # monsters, identities, difficulty and lifetime as a level-ten witcher.
+        # A level-one witcher meets as many monsters, none with skulls (Tuning spawns.levelGate).
         young = self.client(server, identity=('SYNTHETIC_DEVICE_YOUNG', ''))
         seen = self.locations_by_cell(young.rpc(40, request))
         shared = monsters
-        self.assertEqual(seen['monsters'], shared)
+        self.assertEqual(len(seen['monsters']), len(shared))
+        self.assertTrue(all(SPECIES_BY_ID[m['monster']]['skulls'] == 0 for m in seen['monsters']))
         self.assertEqual((seen['herbs'], seen['nests']), (world['herbs'], world['nests']))
         # An expired monster's place asks for the cell's current monsters.
         target = shared[0] if shared else monsters[0]
@@ -1296,7 +1323,7 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.rpc(41, Q(12345)), b'\0')
         self.assertEqual(c.rpc(41, Q(target['instance'])), b'\1')
         won = self.combat_end(Reader(c.rpc(8, b'\1' + I(13) + I(0) * 13 + b'\0')))
-        base = {1: 100, 2: 250, 3: 600}[water[target['monster']]]                 # by the row's difficulty
+        base = {1: 100, 2: 250, 3: 600}[SPECIES_BY_ID[target['monster']]['rarity']]   # by rarity
         self.assertEqual((won['base'], won['first']), (base, 100))
         self.assertTrue(won['loot'])
         self.assertEqual(self.inventory(c)['ingredients'], dict(collections.Counter(won['loot'])))
@@ -1386,6 +1413,8 @@ class PrototypeTests(unittest.TestCase):
     @staticmethod
     def nest_combat(win, nest, bomb=0, details=((), (), ())):
         def block(values):
+            if values is None:      # a fight not reached: the client sends an empty array (EndLostNestFightNode)
+                return I(0)
             values = list(values) + [0] * (13 - len(values))
             return I(len(values)) + b''.join(I(v) for v in values)
         return (b'\1' if win else b'\0') + Q(nest) + I(bomb) + b''.join(block(d) for d in details)
@@ -1411,7 +1440,7 @@ class PrototypeTests(unittest.TestCase):
         # Below level 10 a nest answers NotAllowed (5); unknown nests are refused.
         first = nests[0]['instance']
         locked = self.nest_state(c.rpc(52, Q(first)))
-        self.assertEqual((locked['state'], locked['limit'], locked['gold'], locked['exp']), (5, 3, 50, 500))
+        self.assertEqual((locked['state'], locked['limit'], locked['gold'], locked['exp']), (5, 3, 100, 500))   # Revival
         self.assertIsNone(self.nest_state(c.rpc(52, Q(12345))))
         # Level 10 (45000 XP) with two basic bombs and some baits.
         server.stop()
@@ -1435,10 +1464,14 @@ class PrototypeTests(unittest.TestCase):
         self.assertIsNone(self.nest_end(c.rpc(53, self.nest_combat(True, nests[1]['instance']))))
         # A lost run spends the thrown bomb and changes nothing else.
         c.rpc(52, Q(first))
-        lost = self.nest_end(c.rpc(53, self.nest_combat(False, first, 401, ((0,) * 12 + (1,), (), ()))))
+        lost = self.nest_end(c.rpc(53, self.nest_combat(False, first, 401, ((0,) * 12 + (1,), None, None))))
         self.assertEqual(lost, dict(gold=0, rarity=0, first=0, attacks=0, oil=0, duration=0, parries=0, clearing=0,
                                     boosted=0, loot=[]))
         self.assertEqual(self.inventory(c)['bombs'], {401: 1})
+        # The bestiary keeps the monster of the fight reached (no kill), not the boss never met.
+        kills = server.state()['player']['kills']
+        self.assertEqual(kills.get(str(monsters[0])), 0)
+        self.assertNotIn(str(monsters[2]), kills)
         self.assertEqual(self.nest_state(c.rpc(52, Q(first)))['state'], 1)
         c.rpc(52, Q(first))
         # A won run: 50 gold, 25 XP per common monster, 100 per new kind, 15 per perfect attack (Details[1]) and
@@ -1446,13 +1479,15 @@ class PrototypeTests(unittest.TestCase):
         # monsters; the nest becomes DefaultClear.
         before = self.player_info(c)
         won = self.nest_end(c.rpc(53, self.nest_combat(True, first, 401, ((0, 2) + (0,) * 8 + (1,), (), (0,) * 11 + (1,)))))
+        # Revival pays nests twice the original: each monster its fight's base by rarity (100/250/600), clearing 250.
         kinds = len(set(monsters))
+        rarity = 2 * sum({1: 100, 2: 250, 3: 600}[SPECIES_BY_ID[m]['rarity']] for m in monsters)
         self.assertEqual((won['gold'], won['rarity'], won['first'], won['attacks'], won['oil'], won['parries'], won['clearing']),
-                         (50, 75, 100 * kinds, 30, 50, 15, 500))
+                         (100, rarity, 200 * kinds, 60, 100, 30, 500))
         self.assertTrue(len(won['loot']) >= 6)
         after = self.player_info(c)
-        self.assertEqual(after['gold'] - before['gold'], 50)
-        self.assertEqual(after['exp'] - before['exp'], 75 + 100 * kinds + 30 + 50 + 15 + 500)
+        self.assertEqual(after['gold'] - before['gold'], 100)
+        self.assertEqual(after['exp'] - before['exp'], rarity + 200 * kinds + 60 + 100 + 30 + 500)
         state = server.state()['player']
         for monster in set(monsters):
             self.assertEqual(state['kills'][str(monster)], monsters.count(monster))
@@ -1469,14 +1504,16 @@ class PrototypeTests(unittest.TestCase):
         self.assertLessEqual(set(lured['monsters'][:2]), {1, 3, 10})
         self.assertEqual(self.inventory(c)['lures'], {502: 1})
         self.assertEqual(self.nest_state(c.rpc(52, Q(first)))['monsters'], lured['monsters'])
-        self.assertEqual(self.nest_end(c.rpc(53, self.nest_combat(True, first)))['gold'], 50)
+        self.assertEqual(self.nest_end(c.rpc(53, self.nest_combat(True, first)))['gold'], 100)
         done = self.nest_state(c.rpc(52, Q(first)))
         self.assertEqual((done['state'], done['wins'], done['iteration']), (4, 2, 2))
         c.rpc(75, I(1501) + Q(1))                                        # not enough gold is fine either way
         self.assertIsNone(self.nest_state(c.rpc(18, Q(first) + I(501))))  # LuredClear: no more bait today
-        # The bonus is paid for the first three clears of the day only; the experience is not limited.
+        # The bonus is paid for the first three clears of the day only; the experience is not limited. Without a bomb
+        # equipped the game sends BombId -1, which went unanswered (the game waited for the reply for good).
         c.rpc(52, Q(nests[1]['instance']))
-        self.assertEqual(self.nest_end(c.rpc(53, self.nest_combat(True, nests[1]['instance'])))['gold'], 50)
+        self.assertEqual(self.nest_end(c.rpc(53, self.nest_combat(True, nests[1]['instance'], -1)))['gold'], 100)
+        self.assertEqual(c.rpc(53, b'\1'), b'\0')   # a request the server cannot read is refused, not left unanswered
         c.rpc(52, Q(nests[2]['instance']))
         fourth = self.nest_end(c.rpc(53, self.nest_combat(True, nests[2]['instance'])))
         self.assertEqual((fourth['gold'], fourth['clearing']), (0, 500))
@@ -1511,7 +1548,7 @@ class PrototypeTests(unittest.TestCase):
                          {'nestClearingExp': '500', 'nestDailyLimit': '3', 'nestPlayerMinimalLevel': '10',
                           'inventoryIncrement': '50'})
         baits = [row['shop_bundle_id'] for row in data['shop_bundles_layout_group_name_categories']
-                 if row['layout_group_name_sub_category'] == 'Baits']
+                 if row['layout_group_name_sub_category'] == 'Baits' and row['shop_bundle_id'] < 5000]   # scrolls from 5000
         self.assertEqual(baits, [1000 + i for i in sold])
         prices = {row['id']: row['gold_price'] for row in data['shop_bundles']}
         self.assertTrue(all(prices[b] == 200 for b in baits))
@@ -1660,9 +1697,9 @@ class PrototypeTests(unittest.TestCase):
         done = Reader(c.rpc(57, self.completion_body({53: 4, 1000: 1, 1001: 1, 1003: 1, 102: 4}, instance=result['nodes'][0]['instance'],
                                                     output='scholar_02'))).end_graph()
         # Nothing of Good Money is left; Lothar's map (Sword in the Stone) now waits invisible beside the player.
-        self.assertEqual((done['exp'], done['gold'], [n['node'] for n in done['nodes']]), (250, 40, [399]))
+        self.assertEqual((done['exp'], done['gold'], [n['node'] for n in done['nodes']]), (600, 150, [399]))   # Revival
         after = self.player_info(c)
-        self.assertEqual((after['exp'] - before['exp'], after['gold'] - before['gold']), (250, 40))
+        self.assertEqual((after['exp'] - before['exp'], after['gold'] - before['gold']), (600, 150 + 100))   # + level 2's orens
         quests = decode_finished_quests(decode_batch(c.rpc(115))[70])
         self.assertEqual((quests['finished'], quests['tracked'], quests['active']), ([144, 145, 146, 149], -1, []))
         # Facts 1001 and 1003 open Pride Ain't Cheap, What Lurks in the Nemeta and The Dark Side of the Full Moon; Monster
@@ -1671,7 +1708,7 @@ class PrototypeTests(unittest.TestCase):
                          {16160, 292, 301, 18360, 289})
         state = server.state()['player']
         self.assertEqual((state['kills']['14'], state['kills']['15']), (3, 1))
-        self.assertEqual(state['exp'], 100 * 3 + 250 + 250)
+        self.assertEqual(state['exp'], 100 * 3 + 250 + 600)   # the fights, then Revival's ending (Vanilla 250)
         # An output the node does not have changes nothing.
         unknown = Reader(c.rpc(57, self.completion_body({}, instance=result['nodes'][0]['instance'], output='nope'))).end_graph()
         self.assertEqual((unknown['exp'], [n['node'] for n in unknown['nodes']]), (0, [399]))
@@ -1997,6 +2034,27 @@ class PrototypeTests(unittest.TestCase):
         wolven = [(row['effect_id'], row['power']) for row in data['armor_to_effect'] if row['item_id'] == 3]
         self.assertEqual(wolven, [(71, 50)])
 
+    def test_target_and_meter_effects_wait_for_the_fight_target(self):
+        # Player.Construct (0x18B7064) applies OnStart (1) before the fight has a target or a critical hit meter: the family
+        # oils, the oil skills and the meter effects found neither and did nothing. NotifyTargetSet applies OnTargetSet (22).
+        waiting = {4, 15, 22, 23, 27, 28, *range(29, 40), 56, 59, 80}
+        with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=1) as response:
+            data = json.loads(gzip.decompress(response.read()))
+        for table in ('armor_to_effect', 'sword_to_effect', 'potion_to_effect', 'oil_to_effect', 'skill_to_effect'):
+            for row in data[table]:
+                with self.subTest(table=table, item=row['item_id'], effect=row['effect_id']):
+                    self.assertFalse(row['effect_id'] in waiting and row['effect_apply_type_id'] == 1)
+        necrophage = [(row['effect_id'], row['effect_apply_type_id']) for row in data['oil_to_effect'] if row['item_id'] == 302]
+        self.assertEqual(necrophage, [(29, 22)])
+        blizzard = [(row['effect_id'], row['power'], row['effect_apply_type_id']) for row in data['potion_to_effect']
+                    if row['item_id'] == 203]
+        self.assertEqual(blizzard, [(4, 25, 22)])
+        # Hit Reflection reflects 30 % of a perfectly parried hit (ImproveDeflect; the unlock alone reflected nothing), and the
+        # Melltith sword's fire chance rolls on every hit (OnAttack 2): DealFireDamage strikes the target, absent at OnStart.
+        rows = lambda table, item: sorted((r['effect_id'], r['power'], r['effect_apply_type_id']) for r in data[table] if r['item_id'] == item)
+        self.assertEqual(rows('skill_to_effect', 6), [(50, 1, 18), (82, 30, 1)])
+        self.assertEqual(rows('sword_to_effect', 15), [(58, 15, 2)])
+
     def test_dashboard_tuning_sets_fight_rewards_and_herbs(self):
         # world/tuning.json is what the dashboard saves; the server reads it again about once a second, here it is there from the start
         folder = self.directory / 'tuning-world'
@@ -2100,7 +2158,9 @@ class PrototypeTests(unittest.TestCase):
                 self.assertLessEqual({int(i) for i in items}, ids)
         for row in SEASON1['monsters']:
             self.assertEqual(monsters[row['id']]['slug'], row['slug'])
-        self.assertEqual([m['id'] for m in data['player_modifiers']], [1, 2, 3, 4, 5, 6, 7, 8, 901, 902])  # 901-902: debug tools
+        # 901-902: debug tools; 921-926: trinket attack bonuses; 911-915: consumables; 13: the scrolls' cooldown
+        self.assertEqual([m['id'] for m in data['player_modifiers']],
+                         [1, 2, 3, 4, 5, 6, 7, 8, 901, 902, 921, 922, 923, 924, 925, 926, 911, 912, 913, 914, 915, 13])
 
     def test_season1_original_output_alias_rows_preserve_donor_rows_and_edges(self):
         with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=1) as response:
@@ -2207,7 +2267,8 @@ class PrototypeTests(unittest.TestCase):
                   for r in (100, 150, 200, 250, 300, 400, 500, 600, 700) for k in range(8)]
         url, _ = self.playable_service(lambda ids, epoch: {
             i: {'center': list(origin), 'places': places if n == 0 else []} for n, i in enumerate(ids)})
-        env = dict(self.RECONSTRUCTED, Playable__Url=url)
+        # The story's own rewards are Vanilla's table (Revival's is tested in test_rebalance); the level table stays Revival's.
+        env = dict(self.RECONSTRUCTED, Playable__Url=url, **self.tuned('vanilla', **{'xp.vanillaCurve': 0}))
         server = self.start('test-season1-all', env)
         c = self.client(server)
         c.rpc(3); c.rpc(3)
@@ -2427,9 +2488,9 @@ class PrototypeTests(unittest.TestCase):
         c = self.client()
         expected = [
             ('8fea850a4b5174628d926c5067becec59236924032325393e29cbff43a7da67b',
-             'cb033edf0259a880d300db37ffbe6796ca7d8d1c744a5b010a7b6afe68a0bf09'),
+             '146fbc0e1126a468f25ab5611577221eb37964c7185cba696d5caf692fc8e79a'),
             ('395fead97e90114ba697f1375275fc53cdd24cd0abbe919c0882a3f589284694',
-             '0113b9446c9f3e22be8425b127217cb5a54acd16771d9c12f693a5bc062873c7')]
+             '1aaa122dc66bb6fd9c68c5a17ea475d2b8f3fda04208a0ec940acbba8d05812a')]
         for phase, hashes in enumerate(expected):
             if phase: response = Reader(c.rpc(57, self.completion_body())).end_graph()
             raw = [c.rpc(60), c.rpc(115)]
@@ -2743,7 +2804,7 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(sorted(row['effect_id'] for row in data['oil_to_effect'] if row['item_id'] == basic['id']),
                          list(range(29, 40)))
         hybrid = next(row for row in data['oils'] if row['slug'] == 'oil_hybrid')
-        self.assertIn({'item_id': hybrid['id'], 'effect_id': 32, 'power': 100, 'effect_apply_type_id': 1}, data['oil_to_effect'])
+        self.assertIn({'item_id': hybrid['id'], 'effect_id': 32, 'power': 100, 'effect_apply_type_id': 22}, data['oil_to_effect'])
         thresholds = [row['exp_threshold'] for row in data['level_ups']]
         self.assertEqual(thresholds[:4], [0, 1000, 3000, 6000])
         self.assertEqual(thresholds, sorted(thresholds))
@@ -2828,7 +2889,7 @@ class PrototypeTests(unittest.TestCase):
         previous[3] = previous_player_name(previous[3])
         previous[60] = previous_thorstein(previous[60])
         restored = I(len(previous)) + b''.join(I(method) + payload for method, payload in previous.items())
-        self.assertEqual(hashlib.sha256(restored).hexdigest(), 'c925c2f09455fdc61b7bbbf600493684fd16fac80b80a29c3ccf65942c3d3684')
+        self.assertEqual(hashlib.sha256(restored).hexdigest(), '0708025aaee2abb8d91b51939585638f8138d94059dc06dc5fa6234b616adc54')
         # A following nonempty weekly payload catches accidental success-path padding.
         weekly = bytes([1]) + I(20260924) + I(701) + I(2) + I(11) + I(22)
         synthetic = I(2) + I(122) + standalone + I(94) + weekly
@@ -2955,8 +3016,9 @@ class PrototypeTests(unittest.TestCase):
                 lines.insert(d['level'] - 1, d['content'])
                 levels[d['level']] = d['threshold']
             self.assertEqual(lines, [f'MONSTERS/DESCRIPTIONS/{key}/INFO_{n}' for n in range(1, 6)])
-            self.assertEqual(levels, {1: {1:3,2:47,3:100}, 2: {1:2,2:8,3:20},
-                                      3: {1:1,2:1,3:4}}.get(row['rarity'], {1:3,2:47,3:100}))
+            # Revival's tiers (Tuning bestiary.*): common 3/25/100, rare 2/10/20, legendary 1/2/4 kills in all.
+            self.assertEqual(levels, {1: {1:3,2:22,3:75}, 2: {1:2,2:8,3:10},
+                                      3: {1:1,2:1,3:2}}.get(row['rarity'], {1:3,2:22,3:75}))
             self.assertTrue(vulnerable.get(row['id']), row['slug'])
             self.assertLessEqual(set(vulnerable[row['id']]), types)
         self.assertEqual(len({d['id'] for d in data['monster_descriptions']}), len(data['monster_descriptions']))
@@ -2972,7 +3034,7 @@ class PrototypeTests(unittest.TestCase):
         server, c = self.reconstructed()
         c.rpc(3)
         self.assertEqual(c.pushes, [])                             # a new profile starts at level 1, announced
-        # Story rewards reach level 2 (1000 XP): the griffin's 250 and a wraith's 250 do not, the gargoyle king's 600 does.
+        # Story rewards reach level 2 (1000 XP): the griffin's 500 and a wraith's 250 do not, the gargoyle king's 600 does.
         # The level is pushed after that response as an Api RESPONSE with message id 0, no acknowledgement and method 31:
         # [int Level] + 13 lists with one id per unit. The window never finishes loading without an item, so every level
         # grants its rewards (added to the inventory).
@@ -2983,14 +3045,15 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.pushes, [])
         c.rpc(57, self.completion_body({}, instance=GRIFFIN, output='gargoyle'))
         c.rpc(3)
-        lists = [I(1) + I(205)] + [I(0)] * 9 + [I(5) + I(103) * 3 + I(101) * 2] + [I(0)] * 2
+        # Revival's level 2 (the Rewards page): Thunderbolt ×5, basic oil ×3, basic bomb ×2 and 100 orens.
+        lists = [I(5) + I(201) * 5, I(2) + I(401) * 2, I(3) + I(301) * 3] + [I(0)] * 10
         self.assertEqual(c.pushes, [(31, I(2) + b''.join(lists))])
         after = self.inventory(c)
-        self.assertEqual(after['ingredients'].get(103, 0) - before['ingredients'].get(103, 0), 3)
-        self.assertEqual(after['potions'].get(205, 0) - before['potions'].get(205, 0), 1)
+        self.assertEqual(after['oils'].get(301, 0) - before['oils'].get(301, 0), 3)
+        self.assertEqual(after['potions'].get(201, 0) - before['potions'].get(201, 0), 5)
         c.rpc(3)
         self.assertEqual(len(c.pushes), 1)                          # announced once
-        self.assertEqual(server.state()['player']['exp'], 1100)
+        self.assertEqual(server.state()['player']['exp'], 1350)
         # The level-up window's CheckInApp (101) is answered true, so no in-app offer opens.
         self.assertEqual(c.rpc(101), b'\1')
         # Several levels at once are pushed in order, also after a restart of the client.
@@ -3007,7 +3070,7 @@ class PrototypeTests(unittest.TestCase):
         c.rpc(8, b'\1' + I(13) + I(0) * 13 + b'\0')                # a fight without an encounter grants nothing
         c.rpc(3)
         self.assertEqual([body[:4] for _, body in c.pushes], [I(3), I(4)])
-        self.assertTrue(all(body[4:8] == I(1) for _, body in c.pushes))         # one Swallow each
+        self.assertTrue(all(body[4:12] == I(5) + I(201) for _, body in c.pushes))   # five Thunderbolts each
         # Legacy profiles are never pushed.
         legacy = self.client()
         legacy.rpc(3); legacy.rpc(3)
@@ -3043,7 +3106,7 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.rpc(90, I(99) + I(3600)), I(4) + I(1) + I(99) + I(0) + I(0))
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata', timeout=1) as response:
             rows = json.loads(gzip.decompress(response.read()))['player_modifiers']
-        self.assertEqual(rows[:-2], [{'id': m['id'], 'slug': m['slug']} for m in SEASON1['modifiers']])  # then the debug tools' two
+        self.assertEqual(rows[:len(SEASON1['modifiers'])], [{'id': m['id'], 'slug': m['slug']} for m in SEASON1['modifiers']])
         self.assertEqual({row['id']: row['slug'] for row in rows}[7], 's01_12h')
         # Vesemir's remedy (modifier 7) lasts the graph's 12 h, like the node it gates.
         r = Reader(c.rpc(90, I(7) + I(43200)))
@@ -3145,9 +3208,9 @@ class PrototypeTests(unittest.TestCase):
         # or change any of the 20 inline responses or active node payloads.
         expected = [
             ('8fea850a4b5174628d926c5067becec59236924032325393e29cbff43a7da67b',
-             '95cc85d643cd210bc99797d278e5809861eb0f9090407ca116ee999832ca7eec'),
+             'e4a5c600ec18646d101a7bdc4d3b6822f85d78db9c2eddda9e865ed6e05e8a2a'),
             ('395fead97e90114ba697f1375275fc53cdd24cd0abbe919c0882a3f589284694',
-             '70958482d2eece541d0bc83bb2b80397153cb297c8c9d7d795027d221a5aca86'),
+             '65ab7131f345d2afa01442a6e6e30dbd5e2316bafbfaa6e2ca832360403ead4c'),
         ]
         client = self.client()
         for phase, hashes in enumerate(expected):

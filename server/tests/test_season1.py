@@ -103,20 +103,27 @@ class Season1Tests(base.PrototypeTests):
         self.assertIn(GIVER[152], self.givers(c))   # The Sins of Our Fathers is offered
 
     def test_season1_lothar_sells_the_map_once(self):
+        # Lothar's dialogue sells the map only with 500 orens; the map's graph then sends "map_bought", which takes them once.
+        # Nothing starts his "payment" graph, so its output costs nothing.
         server, c = self.season('test-map', GOOD_MONEY_DONE, gold=600)
         node, = Reader(c.rpc(60)).quest()['nodes']
-        # Lothar's payment graph sends "payment" (no node, no facts): the reply takes 500 orens and still holds the map,
-        # which the game opens because the graph queued it.
-        paid = Reader(c.rpc(57, self.completion_body({}, instance=0, output='payment'))).end_graph()
-        self.assertEqual((paid['gold'], [n['node'] for n in paid['nodes']]), (-500, [NODE['s01hq01_map']]))
-        self.assertEqual(server.state()['player']['gold'], 100)
-        # Without enough orens nothing is taken.
+        buy = self.completion_body({46: 1, 10158: 1, 222: 0}, instance=node['instance'], output='map_bought')
         self.assertEqual(Reader(c.rpc(57, self.completion_body({}, instance=0, output='payment'))).end_graph()['gold'], 0)
+        bought = Reader(c.rpc(57, buy)).end_graph()
+        self.assertEqual(bought['gold'], -500)
         self.assertEqual(server.state()['player']['gold'], 100)
         # The map's graph starts Sword in the Stone and sets fact 46, so the map leaves and Lothar stops selling it.
-        started = Reader(c.rpc(57, self.completion_body({46: 1, 10158: 1}, instance=node['instance'], output='map'))).end_graph()
-        self.assertNotIn(NODE['s01hq01_map'], [n['node'] for n in started['nodes']])
+        self.assertNotIn(NODE['s01hq01_map'], [n['node'] for n in bought['nodes']])
         self.assertIn(158, server.state()['player']['story']['started'])
+        # Sent again it takes nothing, and the map earned instead ("map") is free.
+        self.assertEqual(Reader(c.rpc(57, buy)).end_graph()['gold'], 0)
+        free = self.completion_body({46: 1, 10158: 1, 190: 0, 222: 0}, instance=node['instance'], output='map')
+        self.assertEqual(Reader(c.rpc(57, free)).end_graph()['gold'], 0)
+        self.assertEqual(server.state()['player']['gold'], 100)
+        # Without the orens nothing is taken (the dialogue would not have offered the sale).
+        server, c = self.season('test-map-poor', GOOD_MONEY_DONE, gold=300)
+        self.assertEqual(Reader(c.rpc(57, buy)).end_graph()['gold'], 0)
+        self.assertEqual(server.state()['player']['gold'], 300)
 
     def test_season1_mushrooms_appear_beside_the_walking_player_for_a_day(self):
         now = int(time.time())

@@ -1,0 +1,3755 @@
+{
+ "fetched": "2026-10-22",
+ "pages": {
+  "en": {
+   "api": "https://witcher.fandom.com/api.php",
+   "page": "The_Witcher_Monster_Slayer_bestiary",
+   "revision": 580603
+  },
+  "pl": {
+   "api": "https://witcher.fandom.com/pl/api.php",
+   "page": "Bestiariusz_w_grze_Wiedźmin:_Pogromca_Potworów",
+   "revision": 235511
+  }
+ },
+ "species": {
+  "alghoul": {
+   "en": {
+    "name": "Alghoul",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements. Increased activity around dusk.",
+    "tags": [
+     "URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Alghul",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Wzmożona aktywność o zmierzchu",
+    "tags": [
+     "URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "alp": {
+   "en": {
+    "name": "Alp",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be found near human settlements. Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Alp",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "arachnomorph": {
+   "en": {
+    "name": "Arachnomorph",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Arachnomorf",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "archespore": {
+   "en": {
+    "name": "Archespore",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Archespor",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności w czasie opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "barghest": {
+   "en": {
+    "name": "Barghest",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Barghest",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "basilisk_lvl1": {
+   "en": {
+    "name": "Basilisk",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bazyliszek",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "bloedzuiger": {
+   "en": {
+    "name": "Bloedzuiger",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bloedzuiger",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nekkerwarrior_lvl2": {
+   "en": {
+    "name": "Carnage Nekker",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Common in all natural environment types.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Nekker rzeźnik",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "chort_lvl1": {
+   "en": {
+    "name": "Chort",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Increased activity around dawn.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Czart",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzmożona aktywność w okolicy świtu.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "arachas": {
+   "en": {
+    "name": "Common Arachas",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Krabopająk pospolity",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów. Wzmożona aktywność o świcie.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cyclop": {
+   "en": {
+    "name": "Cyclops",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Cyklop",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "knight_dark": {
+   "en": {
+    "name": "Dark Knight",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "<br/>Can be found near human settlements.<br/> Most commonly found during the day.",
+    "tags": [
+     "URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Mroczny rycerz",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "drowner": {
+   "en": {
+    "name": "Drowner",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Utopiec",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "ekima": {
+   "en": {
+    "name": "Ekimmara",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ekimma",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "endriagaspikey": {
+   "en": {
+    "name": "Endrega Drone",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Most commonly found during the day.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Endriaga truteń",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "endriagaworker": {
+   "en": {
+    "name": "Endrega Worker",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Most commonly found during the day.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Endriaga robotnica",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "bies_lvl1": {
+   "en": {
+    "name": "Fiend",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bies",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "fleder": {
+   "en": {
+    "name": "Fleder",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements.<br/>Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Fleder",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "fogling_lvl1": {
+   "en": {
+    "name": "Foglet",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Mglak",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "forktail": {
+   "en": {
+    "name": "Forktail",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Widłogon",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gargoyle": {
+   "en": {
+    "name": "Gargoyle",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Prefers to avoid human settlements.",
+    "tags": [
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Gargulec",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "garkain_lvl1": {
+   "en": {
+    "name": "Garkain",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be found near human settlements.<br/>Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Garkain",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "ghoul": {
+   "en": {
+    "name": "Ghoul",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ghul",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "toad": {
+   "en": {
+    "name": "Giant Toad",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.",
+    "tags": [
+     "WATER",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ropucha olbrzymia",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów. Wzmożona aktywność o świcie.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "golem_lvl1": {
+   "en": {
+    "name": "Golem",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "FOREST",
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Golem",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki, a także tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "FOREST",
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gravehag": {
+   "en": {
+    "name": "Grave hag",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Baba cmentarna",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "forktail_lvl2": {
+   "en": {
+    "name": "Green Forktail",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Widłogon zielony",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gryphon": {
+   "en": {
+    "name": "Griffin",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Gryf",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "harpy": {
+   "en": {
+    "name": "Harpy",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Harpia",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "arachas_lvl2": {
+   "en": {
+    "name": "Hermit Arachas",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity at dawn.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Krabopająk pustelnik",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów. Wzmożona aktywność o świcie.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "kikimore_lvl1": {
+   "en": {
+    "name": "Kikimore Worker",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Kikimora robotnica",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "bloedzuiger_lvl2": {
+   "en": {
+    "name": "Leecher",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Pijawiec",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nekker": {
+   "en": {
+    "name": "Nekker",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Common in all natural environment types.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Nekker",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nekkerwarrior": {
+   "en": {
+    "name": "Nekker Warrior",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Nekker wojownik",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nightwraith": {
+   "en": {
+    "name": "Nightwraith",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.<br/>Significantly increased activity around midnight.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT",
+     "MIDNIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Północnica",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia. Znaczny wzrost aktywności o północy.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT",
+     "MIDNIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "noonwraith": {
+   "en": {
+    "name": "Noonwraith",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.<br/>Significantly increased activity when the sun reaches its zenith.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY",
+     "NOON"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Południca",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia. Znaczny wzrost aktywności, gdy słońce znajduje się w zenicie.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY",
+     "NOON"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "fleder_lvl2": {
+   "en": {
+    "name": "Pale Fleder",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Can be found near human settlements.<br/>Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Fleder blady",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "ghoul_lvl2": {
+   "en": {
+    "name": "Pale-Faced Ghoul",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements.<br/>Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ghul bladolicy",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "pixie": {
+   "en": {
+    "name": "Pixie",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be found near human settlements.<br/>Increased activity at dawn.",
+    "tags": [
+     "URBAN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Skrzat",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Wzmożona aktywność o świcie.",
+    "tags": [
+     "URBAN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "arachasmorph": {
+   "en": {
+    "name": "Venomous Arachas",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Jadowity krabopająk",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "smalldraconid": {
+   "en": {
+    "name": "Rarasha",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Raraszek",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cavetroll": {
+   "en": {
+    "name": "Rock Troll",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Troll skalny",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "rotfiend_lvl1": {
+   "en": {
+    "name": "Rotfiend",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Zgnilec",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "arachas_lvl4": {
+   "en": {
+    "name": "Royal Arachas",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Krabopająk królewski",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "scolopendromorph_lvl1": {
+   "en": {
+    "name": "Scolopendromorph",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Skolopendromorf",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "sirenmorszczynka": {
+   "en": {
+    "name": "Sea witch",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Morszczynka",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów. Wzmożona aktywność o świcie.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "sharley": {
+   "en": {
+    "name": "Shaelmaar",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves, and meadows. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Nocturnally active.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szarlej",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi nocny tryb życia. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "sirenlamia": {
+   "en": {
+    "name": "Siren",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Syrena",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "spriggan": {
+   "en": {
+    "name": "Spriggan",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Nocturnally active.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Borowy",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "leshensdog": {
+   "en": {
+    "name": "Spriggan Hound",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ogar borowego",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "succubus_lvl1": {
+   "en": {
+    "name": "Succubus",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be found near human settlements.\nIncreased activity around dusk.",
+    "tags": [
+     "URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Sukkub",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Wzmożona aktywność o zmierzchu.",
+    "tags": [
+     "URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nekker_lvl2": {
+   "en": {
+    "name": "Swamp Nekker",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Nekker bagienny",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "fugas": {
+   "en": {
+    "name": "Sylvan",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Increased activity around dusk.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Silvan",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzmożona aktywność o świcie.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "bies_lvl2": {
+   "en": {
+    "name": "Tiger Fiend",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.<br/>Prefers to avoid human settlements.<br/>Increased activity at dusk.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bies tygrysi",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzmożona aktywność o zmierzchu.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "vodyanoi": {
+   "en": {
+    "name": "Vodnik",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.<br/>Increased activity around dawn.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wodnik",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów. Wzmożona aktywność o świcie.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wraith_lvl2": {
+   "en": {
+    "name": "Voiceless",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Milczący",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "waterhag": {
+   "en": {
+    "name": "Water Hag",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Baba wodna",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wererat": {
+   "en": {
+    "name": "Wild Wererat",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows.",
+    "tags": [
+     "FOREST"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szczurołak dziki",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Z reguły wybiera na swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki.",
+    "tags": [
+     "FOREST"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wererat_lvl2": {
+   "en": {
+    "name": "Wererat Warrior",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szczurołak bojownik",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "werewolf": {
+   "en": {
+    "name": "Werewolf",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.<br/>Can only be found during a full moon.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT",
+     "FULL_MOON_ONLY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wilkołak",
+    "rarity": 1,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia. Występuje jedynie w trakcie pełni.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT",
+     "FULL_MOON_ONLY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wicht": {
+   "en": {
+    "name": "Wight",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Common in all natural environment types.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wicht",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wraith": {
+   "en": {
+    "name": "Wraith",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Common in all natural environment types.<br/>Nocturnally active.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Upiór",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "scolopendromorph_lvl2": {
+   "en": {
+    "name": "Writher",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.<br/>Prefers to avoid human settlements.<br/>Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wij",
+    "rarity": 1,
+    "skulls": 2,
+    "occurrences": "Wybiera na swoje siedliska obszary zielone – puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Wzrost aktywności podczas opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wyvern_lvl1": {
+   "en": {
+    "name": "Wyvern",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Common in all natural environment types.<br/>Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wywerna",
+    "rarity": 1,
+    "skulls": 0,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "garkainalpha": {
+   "en": {
+    "name": "Alpha Garkain",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Nocturnally active. Can be found near human settlements.",
+    "tags": [
+     "NIGHT",
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Garkain alfa",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "banshee": {
+   "en": {
+    "name": "Beann'shie",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Nocturnally active.",
+    "tags": [
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Beann'shie",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "forktailblue": {
+   "en": {
+    "name": "Blue Forktail",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Widłogon siny",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "bruxa": {
+   "en": {
+    "name": "Bruxa",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bruxa",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Z reguły wybiera na swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gravehag_lvl2": {
+   "en": {
+    "name": "Burier",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Truchlica",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "knight_fire": {
+   "en": {
+    "name": "Calidus",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Can be found near human settlements. Most commonly found during the day.",
+    "tags": [
+     "URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Calidus",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cockatrice": {
+   "en": {
+    "name": "Cockatrice",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Kuroliszek",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "waterhagbilgehag": {
+   "en": {
+    "name": "Depth Lurker",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Baba głębinowa",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "devourer": {
+   "en": {
+    "name": "Devourer",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Nocturnally active.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Zjadarka",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "drownermucknixer": {
+   "en": {
+    "name": "Drowned Dead",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Topielec",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "endriagatailed_lvl2": {
+   "en": {
+    "name": "Endrega Charger",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Endriaga szarżownik",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Z reguły wybiera na swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "endriagatailed": {
+   "en": {
+    "name": "Endrega Warrior",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Endriaga wojownik",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Z reguły wybiera na swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cyclop_lvl2": {
+   "en": {
+    "name": "Farbaut",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "No precise data on the occurences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Farbaut",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "elementaldaored": {
+   "en": {
+    "name": "Fire Elemental",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Prefers to avoid human settlements.",
+    "tags": [
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Żywiołak ognia",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gernichora": {
+   "en": {
+    "name": "Gernichora",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Gernichora",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "dracolizard": {
+   "en": {
+    "name": "Gray Slyzard",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Oszluzg szary",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "harpy_lvl3": {
+   "en": {
+    "name": "Green Harpy",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Most commonly found during the day.",
+    "tags": [
+     "FOREST",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Harpia zielona",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cyclop_lvl3": {
+   "en": {
+    "name": "Grimnir",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "No precise data on the occurences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Grimnir",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego.",
+    "tags": [
+     "NEUTRAL2"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "grottore": {
+   "en": {
+    "name": "Grottore",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Nocturnally active.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Grotnik",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "chort_lvl2": {
+   "en": {
+    "name": "Howler",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Increased activity at dusk.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wyjec",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością o zmierzchu.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "headless_nobleman": {
+   "en": {
+    "name": "Headless Nobleman",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements. Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szlachcic bez głowy",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "foglingignisfatuus": {
+   "en": {
+    "name": "Ignis Fatuus",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ignis Fatuus",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "katakan": {
+   "en": {
+    "name": "Katakan",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Nocturnally active. Can be found near human settlements.",
+    "tags": [
+     "NIGHT",
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Katakan",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "kikimore_lvl2": {
+   "en": {
+    "name": "Kikimore Warrior",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "RAIN",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Kikimora wojownik",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "lessun": {
+   "en": {
+    "name": "Leshen",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Leszy",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "leshensdog_lvl2": {
+   "en": {
+    "name": "Leshen Hound",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ogar leszego",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "likho": {
+   "en": {
+    "name": "Liho",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Nocturnally active.",
+    "tags": [
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Licho",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "lycantrop": {
+   "en": {
+    "name": "Lycanthrope",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Nocturnally active. Increased activity during a full moon. Prefers to avoid human settlements.",
+    "tags": [
+     "NIGHT",
+     "FULL_MOON",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Likantrop",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia. Gatunek występujący jedynie w trakcie pełni.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT",
+     "FULL_MOON_ONLY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cavetroll_lvl3": {
+   "en": {
+    "name": "Magma Troll",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Most commonly found during the day.",
+    "tags": [
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Troll magmowy",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nekkerwarrior_lvl3": {
+   "en": {
+    "name": "Nekker Shaman",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Most commonly found during the day.",
+    "tags": [
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Nekker szaman",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "succubus_lvl2": {
+   "en": {
+    "name": "Night Succubus",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements. Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Sukkub nocy",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nightwraith_lvl2": {
+   "en": {
+    "name": "Nightmare",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Significantly increased activity around midnight.",
+    "tags": [
+     "MIDNIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Zmora nocna",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia. Znaczny wzrost aktywności w okolicy północy.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT",
+     "MIDNIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "rotfiend_lvl2": {
+   "en": {
+    "name": "Putrifier",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "No precise data on the occurences. Nocturnally active.",
+    "tags": [
+     "NEUTRAL1",
+     "NIGHT"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Stęchlec",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "foglingtangalore": {
+   "en": {
+    "name": "Royal Foglet",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Mglak królewski",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "nekker_lvl3": {
+   "en": {
+    "name": "Royal Nekker",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Most commonly found during the day.",
+    "tags": [
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Nekker królewski",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wyvernroyal": {
+   "en": {
+    "name": "Royal Wyvern",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "No precise data on the occurences. Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL1",
+     "DAY"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wywerna królewska",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "sharley_lvl2": {
+   "en": {
+    "name": "Russet Shaelmaar",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain. Nocturnally active.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szarlej rdzawy",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów. Prowadzi nocny tryb życia.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "scurver": {
+   "en": {
+    "name": "Scurver",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Parszywiec",
+    "rarity": 2,
+    "skulls": 1,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cockatriceshrieker": {
+   "en": {
+    "name": "Shrieker",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "No precise data on the occurences. Most commonly found during the day.",
+    "tags": [
+     "NEUTRAL1",
+     "DAY"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Skrzekacz",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "alghoul_lvl2": {
+   "en": {
+    "name": "Spotted Alghoul",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Alghul plamisty",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "hiver_lvl2": {
+   "en": {
+    "name": "Stinger",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Can be found near human settlements. Most commonly found during the day.",
+    "tags": [
+     "URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Żądlica",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "golem_lvl2": {
+   "en": {
+    "name": "Stone Golem",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "No precise data on the occurences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Kamienny golem",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "striga": {
+   "en": {
+    "name": "Striga",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Nocturnally active. Increased activity during a full moon.",
+    "tags": [
+     "NIGHT",
+     "FULL_MOON"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Strzyga",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "fugas_lvl2": {
+   "en": {
+    "name": "Sylvan Dearg",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Silvan Dearg",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "archespore_lvl2": {
+   "en": {
+    "name": "Vizimian Archespore",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Archespor wyzimski",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Z reguły wybiera na swoje siedliska obszary zielone - puszcze, lasy, zagainiki czy łąki. Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "FOREST",
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "noonwraith_lvl2": {
+   "en": {
+    "name": "Wailwraith",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Significantly increased activity when the sun reaches its zenith. No precise data on the occurences.",
+    "tags": [
+     "NOON",
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Żałobnica",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Znaczny wzrost aktywności, gdy słońce znajduje się w zenicie.",
+    "tags": [
+     "NEUTRAL2",
+     "NOON"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wererat_treasure": {
+   "en": {
+    "name": "Wererat Gatherer",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Can be found near human settlements. Increased activity in fog. <br/>Increased activity around dawn. <br/>Increased activity around dusk.",
+    "tags": [
+     "URBAN",
+     "FOG",
+     "DAWN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szczurołak zbieracz",
+    "rarity": 2,
+    "skulls": 2,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle. Gatunek cechujący się wzmożoną aktywnością w okolicy świtu. Gatunek cechujący się wzmożoną aktywnością o zmierzchu.",
+    "tags": [
+     "URBAN",
+     "FOG",
+     "DAWN",
+     "DUSK"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "ancientlessun": {
+   "en": {
+    "name": "Ancient Leshen",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Starożytny leszy",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gryphonarch": {
+   "en": {
+    "name": "Archgriffin",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Archegryf",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wyverngold": {
+   "en": {
+    "name": "Copper Wyvern",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Wywerna miedziana",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniny we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "elementaldaoearth": {
+   "en": {
+    "name": "D'ao",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Common in all natural environment types. Increased activity in fog.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "D´ao",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "djinn": {
+   "en": {
+    "name": "D'jinni",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "No precise data on the occurences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "D'jinni",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "sharley_lvl3": {
+   "en": {
+    "name": "Dung Shaelmaar",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Significantly increased activity during precipitation, such as rain. Nocturnally active.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "RAIN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Szarlej gnojarz",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Występuje w pobliżu siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów. Prowadzi nocny tryb życia.",
+    "tags": [
+     "FOREST",
+     "URBAN",
+     "RAIN",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "harpyerynia": {
+   "en": {
+    "name": "Erynia",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Most commonly found during the day.",
+    "tags": [
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Erynia",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "frightener": {
+   "en": {
+    "name": "Frightener",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "No precise data on the occurrences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Przeraza",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "katakan_lvl4": {
+   "en": {
+    "name": "Golden Katakan",
+    "rarity": 3,
+    "skulls": null,
+    "occurrences": "Can be found near human settlements. Increased activity in fog. Nocturnally active.",
+    "tags": [
+     "URBAN",
+     "FOG",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Katakan złocisty",
+    "rarity": 3,
+    "skulls": null,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "FOG",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "dracolizardmatriarch": {
+   "en": {
+    "name": "Graphite Slyzard",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Nocturnally active. No precise data on the occurrences.",
+    "tags": [
+     "NIGHT",
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Oszluzg grafitowy",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "gravehagmourntart": {
+   "en": {
+    "name": "Grim Hag",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Kościucha",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "URBAN",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "hym": {
+   "en": {
+    "name": "Hym",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Nocturnally active. Can be found near human settlements.",
+    "tags": [
+     "NIGHT",
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Him",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi nocny tryb życia.",
+    "tags": [
+     "URBAN",
+     "FOG",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "golemice": {
+   "en": {
+    "name": "Ice Elemental",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain.",
+    "tags": [
+     "WATER",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Żywiołak lodu",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "icegiant": {
+   "en": {
+    "name": "Ice Giant",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Lodowy gigant",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "NEUTRAL2",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "cavetroll_lvl2": {
+   "en": {
+    "name": "Ice Troll",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Significantly increased activity during precipitation, such as rain. Most commonly found during the day.",
+    "tags": [
+     "RAIN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Troll lodowy",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Odnotowuje się wzrost aktywności w czasie opadów. Prowadzi dzienny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "RAIN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "garkain_lvl3": {
+   "en": {
+    "name": "Mottled Garkain",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Can be found near human settlements.",
+    "tags": [
+     "URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Garkain pstry",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Występuje w pobliżu siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "URBAN",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wraithpenitant": {
+   "en": {
+    "name": "Penitent",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Nocturnally active.",
+    "tags": [
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Pokutnik",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "noonwraith_plague": {
+   "en": {
+    "name": "Plague Maiden",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Significantly increased activity when the sun reaches its zenith.",
+    "tags": [
+     "NOON"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Morowa dziewica",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Znaczny wzrost aktywności, gdy słońce znajduje się w zenicie.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "NOON"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "sandcrab": {
+   "en": {
+    "name": "Sandcrab",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Pazurnica",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "basiliskwhite": {
+   "en": {
+    "name": "Silver Basilisk",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Most commonly found during the day.",
+    "tags": [
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bazyliszek srebrny",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "waterhagabaya": {
+   "en": {
+    "name": "Swamp Hag",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "RAIN",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Bagiennica",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "chort_lvl3": {
+   "en": {
+    "name": "Tarry Chort",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Usually found in green areas - old-growth forests, woods, groves and meadows. Prefers to avoid human settlements. Most commonly found during the day.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "DAY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Czart smolisty",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Z reguły wybiera za swoje siedliska obszary zielone - puszcze, lasy, zagajniki czy łąki. Zazwyczaj unika siedlisk ludzkich. Gatunek cechujący się wzmożoną aktywnością we mgle. Gatunek cechujący się wzmożoną aktywnością w okolicy świtu.",
+    "tags": [
+     "FOREST",
+     "NON_URBAN",
+     "FOG",
+     "DAWN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "caretaker": {
+   "en": {
+    "name": "Tormented",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "No precise data on the occurrences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Umęczony",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "wererat_yellow": {
+   "en": {
+    "name": "Thundster",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Common in all natural environment types. Increased activity in fog.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Gromik",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "ulfhedinn": {
+   "en": {
+    "name": "Ulfhedinn",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Increased activity during full moon. Prefers to avoid human settlements. No precise data on the occurrences.",
+    "tags": [
+     "FULL_MOON",
+     "NON_URBAN",
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ulfhedinn",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi nocny tryb życia. Gatunek występujący jedynie w trakcie pełni.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "NIGHT",
+     "FULL_MOON_ONLY"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "originalvampire": {
+   "en": {
+    "name": "Unseen Elder",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "No precise data on the occurrences.",
+    "tags": [
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Ukryty",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "drowner_lvl2": {
+   "en": {
+    "name": "Water Devil",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Can be most easily found in wetlands such as swamps, as well as in the vicinity of rivers and other bodies of water. Significantly increased activity during precipitation, such as rain. Prefers to avoid human settlements.",
+    "tags": [
+     "WATER",
+     "RAIN",
+     "NON_URBAN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Diabeł wodny",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Zwykle zamieszkuje tereny podmokłe, bagna oraz okolice rzek i innych zbiorników wodnych. Zazwyczaj unika siedlisk ludzkich. Odnotowuje się wzrost aktywności w czasie opadów.",
+    "tags": [
+     "WATER",
+     "NON_URBAN",
+     "RAIN"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  },
+  "striga_albino": {
+   "en": {
+    "name": "White Striga",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Nocturnally active. No precise data on the occurrences.",
+    "tags": [
+     "NIGHT",
+     "NEUTRAL1"
+    ],
+    "no_data": true,
+    "unmatched": []
+   },
+   "pl": {
+    "name": "Strzyga biała",
+    "rarity": 3,
+    "skulls": 3,
+    "occurrences": "Gatunek rozpowszechniony we wszystkich typach środowiska naturalnego. Gatunek cechujący się wzmożoną aktywnością we mgle. Prowadzi nocny tryb życia.",
+    "tags": [
+     "NEUTRAL2",
+     "FOG",
+     "NIGHT"
+    ],
+    "no_data": false,
+    "unmatched": []
+   }
+  }
+ },
+ "unmatched_rows": {
+  "en": [
+   "Common Echinops",
+   "Common Weremole",
+   "Fungoid",
+   "Hiver",
+   "Scareman",
+   "Adumbrual Brukolak",
+   "Bloody Fields",
+   "Liliaceous Archespore",
+   "Nekker Bonecrusher",
+   "Runic Gargoyle",
+   "Russet Fungoid",
+   "Ekhidna",
+   "Greater Gernichora",
+   "Harrower",
+   "Mulcher",
+   "Swarm Mother"
+  ],
+  "pl": [
+   "Echinops pospolity",
+   "Hubnik zwyczajny",
+   "Kretołak pospolity",
+   "Rojnica",
+   "Strach na Ludzi",
+   "Archespor Liliowy",
+   "Brukołak Cienisty",
+   "Gargulec runiczny",
+   "Hubnik rdzawy",
+   "Krwawe Pola",
+   "Nekker łamignat",
+   "Echidna",
+   "Gernichora Wielka",
+   "Matka Roju",
+   "Sadownik",
+   "Siewca"
+  ]
+ }
+}

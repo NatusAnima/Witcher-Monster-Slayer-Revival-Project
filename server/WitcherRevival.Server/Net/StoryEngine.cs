@@ -67,7 +67,7 @@ public static class StoryEngine
     /// <summary>A player modifier of the season 1 graphs.</summary>
     public sealed record Modifier(int Id, string Slug);
 
-    /// <param name="Prices">Orens the server takes for an output of a graph that is no quest node (Lothar's map).</param>
+    /// <param name="Prices">Orens the server takes for a node's output, by "node key.output" (Lothar's map).</param>
     private sealed record Data(List<Quest> Quests, List<Node> Nodes, List<Output> Outputs, List<Modifier> Modifiers,
         List<JsonElement> Monsters, Dictionary<string, int[]> Vulnerabilities, Dictionary<string, List<JsonElement>> Walks,
         Dictionary<string, int>? Prices = null);
@@ -100,8 +100,9 @@ public static class StoryEngine
     }
 
     public static Quest? QuestById(int id) => Quests.FirstOrDefault(q => q.Id == id);
-    /// <summary>The orens an output of a graph that is no quest node costs (season1_quests.py PRICES).</summary>
-    public static int? PriceOf(string output) => Story.Prices?.TryGetValue(output, out int price) == true ? price : null;
+    /// <summary>The orens a node's output costs (season1_quests.py PRICES).</summary>
+    public static int? PriceOf(Node node, string output) =>
+        Story.Prices?.TryGetValue($"{node.Key}.{output}", out int price) == true ? price : null;
     public static Node? NodeById(int id) => Nodes.FirstOrDefault(n => n.Id == id);
     public static Node? NodeByKey(string key) => Nodes.FirstOrDefault(n => n.Key == key);
     /// <summary>A quest's walk-through in order (the tests' "check the map" steps left out).</summary>

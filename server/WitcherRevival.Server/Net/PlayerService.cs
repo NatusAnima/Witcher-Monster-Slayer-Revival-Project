@@ -22,7 +22,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private const int M_GetPlayerInfo = 3, M_GetInventory = 5, M_GetEquipment = 9;
     private const int M_GetDailyContracts = 20, M_GetLocationsByCell = 40;
     private const int M_GetSensedMonsters = 43, M_GetCurrentObjective = 61;
-    private const int M_GetWeather = 67, M_GetDailyShopBundles = 79;
+    private const int M_GetWeather = 67, M_GetDailyShopBundles = 79, M_UseConsumable = 99;
     private const int M_GetOneTimeShopBundles = 83, M_GetExpiringEffects = 85;
     private const int M_LoadCells = 88, M_GetPlayerModifiers = 91, M_AddPlayerModifier = 90, M_RemovePlayerModifier = 92;
     private const int M_LevelUp = 31, M_CheckInApp = 101, M_GatherHerb = 19;
@@ -47,7 +47,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private static readonly Dictionary<int, string?> DropMethods = new()
     {
         [47] = ItemKinds.Potions, [48] = ItemKinds.Bombs, [49] = ItemKinds.Oils, [50] = ItemKinds.Lures,
-        [51] = ItemKinds.SensesPotions, [71] = ItemKinds.Ingredients, [100] = null, [109] = SocialService.PackItems, [118] = null,
+        [51] = ItemKinds.SensesPotions, [71] = ItemKinds.Ingredients, [100] = ItemKinds.Consumables, [109] = SocialService.PackItems,
+        [118] = null,
     };
     private const int M_SummonLocalMonsters = 111, M_GetSummonedMonsters = 112;
     private const int M_EncounterSummonedMonster = 113, M_CombatEndSummonedMonster = 114;
@@ -55,10 +56,11 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private const int M_GetLastSummoningSkillUsageTime = 117;
     private const int M_CombatEnd = 8, M_EncounterMonster = 41, M_GetMonsterInstances = 87;
 
-    // World monsters generated for the current windows (WorldSpawns), by instance id, and the one being fought.
+    // World monsters generated for the current windows (WorldSpawns), by instance id, and the one being fought (kept
+    // itself: a map request during the fight drops a spawn whose window has ended from worldSpawns).
     private readonly object worldGate = new();
     private readonly Dictionary<long, WorldSpawns.Spawn> worldSpawns = new();
-    private long? worldEncountered;
+    private WorldSpawns.Spawn? worldEncountered;
 
     // Reconstructed profiles keep summoned groups, with their point, across server restarts.
     private readonly PlayableLocations playable = new(cfg["Playable:Url"]);
@@ -117,8 +119,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
 
         // Client: ClientWorker.HandleRetries (0x1931EE8) re-sends every unanswered request with the same bytes and
         // request id every ClientSettings.RetryIntervalSeconds (7 s). A request that changes the profile is answered
-        // once; its repeat gets the same response without being settled again.
-        if (ReplayedResponse(req) is { } replay)
+        // once; its repeat gets the same response without being settled again, also while the first is still running.
+        if (await ReplayedResponseAsync(req) is { } replay)
         {
             await FrameCodec.WriteAsync(stream, Ch_Api, ApiProtocol.BuildResponse(req.Id, req.Method, replay), ct);
             log.LogInformation("  TX  Api response Method={Method} Id={Id} replayed", req.Method, req.Id);
@@ -129,6 +131,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // without a verified refusal body stays unanswered rather than getting an invented one (the client asks
         // again after ClientSettings.RetryIntervalSeconds). Frame, envelope and write errors still end the session.
         var achievementsBefore = profiles.Snapshot().Player?.Tasks?.Achievements.Keys.ToHashSet() ?? [];
+        int? expBefore = profiles.Snapshot().Player?.Exp;
+        if (req.Method == M_GetInitialPlayerData) ConvertExpCurve();
         byte[] methodPayload;
         Admin.MapObservation.Snapshot? observedMap = null;
         try
@@ -143,6 +147,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 M_GetPlayerInfo => BuildGetPlayerInfoPayload(),
                 M_GetInventory => BuildGetInventoryPayload(),
                 M_GetWeather => BuildGetWeatherResponse(req),
+                M_UseConsumable => HandleUseConsumable(req),
                 M_GetLocationsByCell => BuildGetLocationsByCellResponse(req, out observedMap),
                 M_GetMonsterInstances => BuildGetMonsterInstancesResponse(req),
                 M_EncounterMonster => HandleEncounterMonster(req),
@@ -173,7 +178,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 M_DistanceTraveled => HandleDistanceTraveled(req),
                 2001 => HandleMovement(req, movementSession, f.Data),
                 M_EquipArmor or M_EquipSword or M_EquipSteelSword or M_EquipSilverSword => HandleEquip(req),
-                M_SetCustomizationHead => BuildIntResponse(true, ReadIntParam(req, fallback: 1)), // echo head id
+                M_SetCustomizationHead => HandleSetCustomizationHead(req),
                 M_SetTutorialFinished => BuildIntResponse(true, 1),  // request has NO payload (dump.cs 602627)
                 M_AcquireSkill => HandleAcquireSkill(req),
                 M_TrackQuest => HandleTrackQuest(req),
@@ -215,6 +220,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             if ((TaskMutations.Contains(req.Method) || req.Method == 125 ? TaskRefusal(req) : RefusalFor(req)) is not { } refusal)
             {
                 log.LogWarning("  Api request unanswered Method={Method} Id={Id} reason={Reason}", req.Method, req.Id, ex.GetType().Name);
+                Abandon(req);
                 return;
             }
             log.LogWarning("  Api request refused Method={Method} Id={Id} reason={Reason}", req.Method, req.Id, ex.GetType().Name);
@@ -226,18 +232,28 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         await FrameCodec.WriteAsync(stream, Ch_Api, payload, ct);
         if (observedMap is not null) Admin.MapObservation.Record(profiles.ProfileId, observedMap);
         log.LogInformation("  TX  Api response Method={Method} Id={Id} ({Len}B)", req.Method, req.Id, payload.Length);
-        foreach (int level in LevelsToAnnounce(push: ExpMethods.Contains(req.Method)))
+        bool booted;
+        lock (pushGate) booted = bootedSessions.Contains(movementSession) && req.Method != M_ResolveRewards;
+        foreach (int level in LevelsToAnnounce(push: ExpMethods.Contains(req.Method) || booted))
         {
             var push = ApiProtocol.BuildResponse(0, M_LevelUp, BuildLevelUpPush(level), ack: Array.Empty<long>());
             await FrameCodec.WriteAsync(stream, Ch_Api, push, ct);
+            LevelShown(level);   // only once the window is on its way: a lost one goes out again after the next boot
             log.LogInformation("  TX  Api push LevelUp level={Level} ({Len}B)", level, push.Length);
         }
+        // The game adds a reply's experience itself, and one quest reply can reach two waiting quest nodes
+        // (QuestEndRequestNode takes any EndBehaviourGraph reply), so the total it shows is set from the saved one.
+        if (ExpMethods.Contains(req.Method) && profiles.Snapshot().Player?.Exp != expBefore)
+            lock (pushGate) pendingPushes.Add(M_GetPlayerInfo);
         // RPC25 carries only the trophy ID. Bootstrap/reconciliation uses the timestamped RPC24 map.
         if (req.Method is 8 or 114 or 53 or 57 or 78 or 19 or 27 or 64 or 68 or 2001)
             foreach (int id in (profiles.Snapshot().Player?.Tasks?.Achievements.Keys.AsEnumerable() ?? []).Except(achievementsBefore))
             {
                 var trophy = new ByteBuffer(); trophy.WriteInt(id);
                 await FrameCodec.WriteAsync(stream, Ch_Api, ApiProtocol.BuildResponse(0, 25, trophy.ToArray(), ack: []), ct);
+                // Its bonus: an attack modifier, the permanent station or bag slots show without a restart (TrinketBuffs).
+                if (TrinketBuffs.All.Any(b => b.Trinket == id))
+                    lock (pushGate) pendingPushes.UnionWith([M_GetPlayerModifiers, 69, M_GetInventory]);
             }
         await DrainPushesAsync(stream, req.Method, movementSession, ct);   // the dashboard's debug tools (PlayerDebug)
     }
@@ -249,18 +265,32 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         M_PrepareToCombat, M_UseOilPotions, M_ClaimMonsterKnowledgeReward, M_UseLure, M_GatherHerb, M_ThrowBomb,
         M_CraftItem, M_CancelCrafting, M_ClaimRecipe, M_BuyShopBundle, M_BuyShopInAppBundle, M_FinishCrafting, M_BuyAutoEquipItems,
         M_AcquireSkill, M_AddSkillPoints, M_ResolveRewards, M_AddPlayerModifier, M_SummonLocalMonsters,
-        47, 48, 49, 50, 51, 71, 109, M_RelocateQuest,
+        47, 48, 49, 50, 51, 71, 100, 109, M_RelocateQuest, M_UseConsumable,
     ];
     private static readonly TimeSpan ReplayWindow = TimeSpan.FromMinutes(15);
     private readonly Dictionary<(int Method, long Id), (DateTime At, byte[] Payload)> settled = new();
 
-    private byte[]? ReplayedResponse(ApiProtocol.ApiRequest req)
+    private readonly Dictionary<(int Method, long Id), TaskCompletionSource<byte[]?>> inflight = new();
+
+    // A retry can arrive on a reconnected socket while the first request is still running; it waits for that answer
+    // instead of running the handler again (which would find the encounter or reward used up and answer nothing paid).
+    private async Task<byte[]?> ReplayedResponseAsync(ApiProtocol.ApiRequest req)
     {
         if (IsAuraRequest(req)) return null; // Aura validates its persisted nonce and payload together.
         if (!SettledMethods.Contains(req.Method)) return null;
+        Task<byte[]?> first;
         lock (settled)
-            return settled.TryGetValue((req.Method, req.Id), out var hit) && DateTime.UtcNow - hit.At < ReplayWindow
-                ? hit.Payload : null;
+        {
+            if (settled.TryGetValue((req.Method, req.Id), out var hit) && DateTime.UtcNow - hit.At < ReplayWindow) return hit.Payload;
+            if (!inflight.TryGetValue((req.Method, req.Id), out var running))
+            {
+                inflight[(req.Method, req.Id)] = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                return null;
+            }
+            first = running.Task;
+        }
+        try { return await first.WaitAsync(TimeSpan.FromSeconds(30)); }
+        catch (TimeoutException) { return null; }
     }
 
     private void RememberResponse(ApiProtocol.ApiRequest req, byte[] payload)
@@ -273,7 +303,15 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             foreach (var key in settled.Where(e => now - e.Value.At >= ReplayWindow).Select(e => e.Key).ToList())
                 settled.Remove(key);
             settled[(req.Method, req.Id)] = (now, payload);
+            if (inflight.Remove((req.Method, req.Id), out var waiting)) waiting.TrySetResult(payload);
         }
+    }
+
+    /// <summary>A request that got no answer: a retry waiting for it runs the handler itself.</summary>
+    private void Abandon(ApiProtocol.ApiRequest req)
+    {
+        lock (settled)
+            if (inflight.Remove((req.Method, req.Id), out var waiting)) waiting.TrySetResult(null);
     }
 
     // Level-ups are pushed only after the requests that grant experience (CombatEnd 8, CombatEndSummonedMonster
@@ -282,35 +320,54 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     // opens (seen on LAB 16 when a push followed LoadCells).
     private static readonly HashSet<int> ExpMethods = [M_CombatEnd, M_CombatEndSummonedMonster, M_EndBehaviourGraph, M_EndNestCombat];
 
-    /// <summary>The levels a reconstructed profile has reached since the last LevelUp push, in order, with their
-    /// rewards added to the inventory; empty unless <paramref name="push"/>. A profile without the mark (new or
-    /// older files) gets its current level on its first request, so levels gained before this push existed are not
-    /// replayed.</summary>
+    /// <summary>The levels whose LevelUp window the game has not had yet, in order; empty unless <paramref name="push"/>.
+    /// Each level's rewards (items and orens, the Rewards page) are added once, when it is reached (LevelAnnounced); its
+    /// window is marked shown only once the push is written (LevelShown), so a window lost with a dying connection
+    /// goes out again after the next boot. A profile without the marks (new or older files) gets its current level on
+    /// its first request, so levels gained before these pushes existed are not replayed.</summary>
     private List<int> LevelsToAnnounce(bool push)
     {
-        var levels = new List<int>();
-        if (profiles.Snapshot().Player is not { } current ||
-            current.LevelAnnounced is int known && (!push || known >= Reconstruction.LevelForExp(current.Exp)))
-            return levels;
-        profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
+        if (profiles.Snapshot().Player is not { } current) return [];
+        int level = Reconstruction.LevelForExp(current.Exp);
+        if (current.LevelAnnounced is int known && (!push || known >= level && (current.LevelShown ?? known) >= known)) return [];
+        var snapshot = profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
         {
-            int level = Reconstruction.LevelForExp(player.Exp);
-            if (player.LevelAnnounced is int from)
-                for (int next = from + 1; next <= level; next++)
-                {
-                    levels.Add(next);
-                    AddItems(player, Reconstruction.LevelRewards(next));
-                }
-            return player with { LevelAnnounced = level };
+            int reached = Reconstruction.LevelForExp(player.Exp);
+            if (player.LevelAnnounced is not int from) return player with { LevelAnnounced = reached, LevelShown = reached };
+            int gold = 0;
+            for (int next = from + 1; next <= reached; next++)
+            {
+                AddItems(player, Reconstruction.LevelRewards(next));
+                gold += Reconstruction.LevelGold(next);
+            }
+            return player with { LevelAnnounced = Math.Max(from, reached), LevelShown = player.LevelShown ?? from, Gold = player.Gold + gold };
         });
-        return levels;
+        if (!push || snapshot.Player is not { LevelAnnounced: int announced } after) return [];
+        return Enumerable.Range((after.LevelShown ?? announced) + 1, Math.Max(0, announced - (after.LevelShown ?? announced))).ToList();
+    }
+
+    private void LevelShown(int level) => profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
+        player.LevelShown is int shown && shown >= level ? null : player with { LevelShown = level });
+
+    /// <summary>Experience earned under the other table (Tuning xp.vanillaCurve changed) moves to this one at boot, keeping
+    /// the level and the progress to the next level.</summary>
+    private void ConvertExpCurve()
+    {
+        int curve = Reconstruction.VanillaCurve ? 1 : 0;
+        if (profiles.Snapshot().Player is not { } current || (current.Curve ?? 0) == curve) return;
+        profiles.UpdatePlayer(new Dictionary<int, int>(), null, player => player with
+        {
+            Exp = Reconstruction.ConvertExp(player.Exp, (player.Curve ?? 0) == 1, curve == 1), Curve = curve,
+        });
+        log.LogInformation("  Experience moved to the {Curve} level table: {Before} -> {After} (level {Level})",
+            curve == 1 ? "original" : "Revival", current.Exp, profiles.Snapshot().Player!.Exp, Reconstruction.LevelForExp(current.Exp));
     }
 
     // LevelUpResponse list order (Factory.Deserialize 0x1E78330), by the item kinds this server keeps.
     private static readonly string?[] LevelUpLists =
     [
-        ItemKinds.Potions, ItemKinds.Bombs, ItemKinds.Oils, ItemKinds.Lures, null, null, null, null, ItemKinds.SensesPotions, null,
-        ItemKinds.Ingredients, null, null,
+        ItemKinds.Potions, ItemKinds.Bombs, ItemKinds.Oils, ItemKinds.Lures, null, null, null, null, ItemKinds.SensesPotions,
+        ItemKinds.Consumables, ItemKinds.Ingredients, null, ItemKinds.SummoningScrolls,
     ];
 
     /// <summary>LevelUp (31) is a server push: an Api RESPONSE message with TypeMessage [long 0][int 31] and no
@@ -433,7 +490,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         Part(7);
         if (snapshot.Player is not null)
         {
-            WriteItemMap(b, Reconstruction.AllKills(snapshot.Player, snapshot.Facts));  // Reconstructed profiles: won fights per monster id.
+            // Reconstructed profiles: won fights per monster id, and 0 for a monster fought but never beaten
+            // (BestiaryKnowledge.FillInitialData 0x183F02C makes an entry of each pair).
+            WriteItemMap(b, Reconstruction.AllKills(snapshot.Player, snapshot.Facts), zeros: true);
         }
         else
         {
@@ -655,8 +714,18 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             code = weather.Code(lat, lng);
             if (float.IsFinite(lat) && float.IsFinite(lng)) Volatile.Write(ref weatherSpot, new Spot(lat, lng));
         }
+        return WeatherPayload(code);
+    }
+
+    /// <summary>The weather reply for a code: a weather item's while it lasts, and the quest sky's mask on top (hook.js).</summary>
+    private byte[] WeatherPayload(int code)
+    {
+        if (ForcedWeather(profiles.Snapshot().Player) is { } forced) code = forced.Code;
         int mask = Volatile.Read(ref sky);
-        log.LogInformation("  GetWeather code={Code} source={Source} sky={Sky}", code, weather.Enabled ? "open-meteo" : "none", mask);
+        // where the answer came from: observed now, cached, an older value kept after a failed look, or the Clear fallback
+        var answered = weather.LastAnswered;
+        log.LogInformation("  GetWeather code={Code} source={Source} value={Value} sky={Sky}", code, answered?.Source ?? "none",
+            answered?.ValueStatus ?? "none", mask);
         var b = new ByteBuffer();
         b.WriteInt(mask < 0 ? code : code + 16 * (1 + mask));
         return b.ToArray();
@@ -763,13 +832,18 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private List<WorldSpawns.Spawn> CurrentSpawns(LocalProfileStore.Profile snapshot,
         IEnumerable<PlayableLocations.Cell> cells, long now)
     {
-        // Ordinary world encounters are shared across player levels; kills remain personal.
+        // World monsters are shared by the players of one level band (Tuning spawns.levelGate); kills remain personal.
         var killed = snapshot.Player?.KilledInstances ?? new Dictionary<long, long>();
         int monsterSlots = world.Read().MonsterSlotsPerCell;
         var balance = world.Balance.Read();
+        int? level = snapshot.Player is { } player ? Reconstruction.LevelForExp(player.Exp) : null;
+        // A weather item's weather draws the generations that start while it lasts; those already out keep theirs.
+        var forced = ForcedWeather(snapshot.Player);
         var spawns = cells.SelectMany(cell => WorldSpawns.ForCell(cell, now,
-                generation => weather.ForGeneration(cell.Id, cell.Lat, cell.Lng, generation), monsterSlots,
-                world.SpawnBalanceFromUnixSeconds, balance.At))
+                generation => forced is { } f && generation * WorldSpawns.LifetimeSeconds >= f.Start - WorldSpawns.LifetimeSeconds &&
+                              generation * WorldSpawns.LifetimeSeconds < f.Expire
+                    ? f.Code : weather.ForGeneration(cell.Id, cell.Lat, cell.Lng, generation), monsterSlots,
+                world.SpawnBalanceFromUnixSeconds, balance.At, level))
             .Where(spawn => !killed.ContainsKey(spawn.InstanceId)).ToList();
         lock (worldGate)
         {
@@ -812,7 +886,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                     .ToDictionary(r => r.Key, r => r.Value);
                 if (respawns.ContainsKey(id)) return null;
                 long period = WorldHerbs.Respawn;
-                var gathered = Fit(player, WorldHerbs.Loot(id, (now + period) / period));
+                var gathered = Fit(player, Looted(WorldHerbs.Loot(id, (now + period) / period),
+                    100 + TrinketBuffs.Amount(player, TrinketBuffs.Kind.Herbs) + Boost(player, Consumables.IngredientsScroll)));
                 if (gathered.Count == 0) return null;   // a full bag leaves the herb for later, as the client does
                 respawn = now + period;
                 respawns[id] = respawn;
@@ -889,6 +964,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             nestEncountered = nest?.InstanceId;
         }
         long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        if (nest is not null) SaveFight(new("nest", nest.InstanceId, nest.Boss, 0, now + 86_400, nest));
         var today = TodaysNests(player, now);
         int state = nest is null ? 0
             : Reconstruction.LevelForExp(player!.Exp) < WorldNests.PlayerMinimalLevel ? WorldNests.NotAllowed
@@ -933,6 +1009,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 return player with { Nests = after };
             });
         lock (worldGate) if (after is not null) nestEncountered = id;
+        if (after is not null && nest is not null) SaveFight(new("nest", nest.InstanceId, nest.Boss, 0, DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 86_400, nest));
         log.LogInformation("  UseLure lure={Lure} result={Result}", lureId, after is null ? "refused" : "lured");
         return after is null ? new byte[] { 0 } : NestStateResponse(nest, after, WorldNests.Lured);
     }
@@ -951,7 +1028,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var r = new ByteBuffer(req.Data);
         bool win = r.ReadByte() != 0;
         long id = (long)r.ReadULong();
-        int bombId = checked((int)r.ReadUInt());
+        int bombId = r.ReadInt();   // -1 without a bomb equipped (GetNestRewardsNode / EndLostNestFightNode.EnterNode)
         var details = new int[3][];
         for (int fight = 0; fight < 3; fight++)
         {
@@ -970,6 +1047,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             if (nestEncountered == id && worldNests.TryGetValue(id, out var found)) nest = found;
             nestEncountered = null;
         }
+        nest ??= SavedFight("nest", id)?.Nest;   // after a server restart or a dashboard profile operation
+        var facts = profiles.Snapshot().Facts;
         long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         bool success = false;
         int gold = 0, rarityExp = 0, firstExp = 0, attackExp = 0, oilExp = 0, parryExp = 0, clearingExp = 0, boostedExp = 0;
@@ -986,35 +1065,50 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 int state = progress?.State ?? WorldNests.Default;
                 success = nest is not null && Reconstruction.LevelForExp(player.Exp) >= WorldNests.PlayerMinimalLevel &&
                           state is WorldNests.Default or WorldNests.Lured;
-                if (!success || !win) return spent || success && TasksEnabled ? player : null;
+                if (!success || !win)
+                {
+                    // A lost run keeps the monsters of the fights it reached in the bestiary, as the game does (it sends an
+                    // empty details array for a fight not reached, EndLostNestFightNode.EnterNode 0x17EBD34).
+                    bool seen = false;
+                    if (success)
+                        foreach (var (monster, fight) in (progress?.Monsters ?? nest!.Monsters).Zip(details))
+                            if (fight.Length > 0) seen |= player.Kills!.TryAdd(monster, 0);
+                    return spent || seen || player.Fight is not null || success && TasksEnabled ? player with { Fight = null } : null;
+                }
                 var monsters = progress?.Monsters ?? nest!.Monsters;
                 var kills = player.Kills!;
                 foreach (int monster in monsters)
                 {
                     var species = WorldNests.SpeciesOf(monster);
-                    rarityExp += Exp(WorldNests.RarityExp(species?.Rarity ?? 1));
-                    if (kills.GetValueOrDefault(monster) == 0) firstExp += Exp(Reconstruction.FirstKillExp);
+                    rarityExp += WorldNests.Exp(Reconstruction.FightExp(monster, species?.Difficulty ?? 1));
+                    if (Reconstruction.AllKills(player, facts).GetValueOrDefault(monster) == 0) firstExp += WorldNests.Exp(Reconstruction.FirstKillExp);
                     kills[monster] = kills.GetValueOrDefault(monster) + 1;
                     loot.AddRange(Economy.FightLoot(monster, species?.Difficulty ?? 1));
                 }
-                loot = Fit(player, Looted(loot));
-                attackExp = Exp(Reconstruction.CriticalHitExp * Sum(Reconstruction.DetailPerfectAttacks));
-                parryExp = Exp(Reconstruction.PerfectParryExp * Sum(Reconstruction.DetailPerfectParries));
-                oilExp = Exp(Reconstruction.ProperOilExp * Count(Reconstruction.DetailUsedProperOil));
-                clearingExp = Exp(WorldNests.ClearingExp);
-                boostedExp = rarityExp * Reconstruction.ExperienceBonus(Worn(player)) / 100;   // equipment (effect 65)
-                gold = today.Wins < WorldNests.DailyLimit ? WorldNests.Bounty : 0;
+                loot = Fit(player, Looted(loot, LootPercent(player)));
+                attackExp = WorldNests.Exp(Reconstruction.CriticalHitExp * Sum(Reconstruction.DetailPerfectAttacks));
+                parryExp = WorldNests.Exp(Reconstruction.PerfectParryExp * Sum(Reconstruction.DetailPerfectParries));
+                oilExp = WorldNests.Exp(Reconstruction.ProperOilExp * Count(Reconstruction.DetailUsedProperOil));
+                clearingExp = WorldNests.ClearingExp;
+                boostedExp = rarityExp * ExpBonusPercent(player, nest!.Boss) / 100;   // equipment (effect 65) and boosts
+                gold = today.Wins < WorldNests.DailyLimit
+                    ? WorldNests.Bounty * (100 + TrinketBuffs.Amount(player, TrinketBuffs.Kind.NestGold)) / 100 : 0;
                 AddItems(player, loot.Select(item => (ItemKinds.Ingredients, item, 1)));
                 var nests = new Dictionary<long, LocalProfileStore.NestProgress>(today.Nests)
                 {
                     [nest!.InstanceId] = new(state == WorldNests.Default ? WorldNests.DefaultClear : WorldNests.LuredClear,
                         (progress?.Clears ?? 0) + 1, progress?.Monsters),
                 };
-                return Reconstruction.WithExp(player with { Nests = today with { Wins = today.Wins + 1, Nests = nests } },
+                return Reconstruction.WithExp(player with { Nests = today with { Wins = today.Wins + 1, Nests = nests }, Fight = null },
                     rarityExp + firstExp + attackExp + oilExp + parryExp + clearingExp + boostedExp, gold);
             }, taskActionFactory: () => success ? new TaskEngine.Action(53, details) : null);
-        log.LogInformation("  EndNestCombat win={Win} known={Known} result={Result} gold={Gold} exp={Exp}", win, nest is not null,
-            success ? (win ? "cleared" : "lost") : "refused", gold, rarityExp + firstExp + attackExp + oilExp + parryExp + clearingExp + boostedExp);
+        var after = profiles.Snapshot().Player;
+        log.LogInformation("  EndNestCombat win={Win} known={Known} result={Result} gold={Gold} exp={Exp} (monsters {Monsters}, new {First}, " +
+            "perfect hits {Attack}, oil {Oil}, parries {Parry}, clearing {Clearing}, bonus {Boosted}; nests at {Nests}%, fights at {Fights}%) " +
+            "total={Total} level={Level}", win, nest is not null, success ? (win ? "cleared" : "lost") : "refused", gold,
+            rarityExp + firstExp + attackExp + oilExp + parryExp + clearingExp + boostedExp, rarityExp, firstExp, attackExp, oilExp,
+            parryExp, clearingExp, boostedExp, world.Tuning.Get(WorldTuning.NestExpPercent), world.Tuning.Get(WorldTuning.ExpPercent),
+            after?.Exp, after is null ? null : Reconstruction.LevelForExp(after.Exp));
         var b = new ByteBuffer();
         b.WriteByte(success ? (byte)1 : (byte)0);
         if (!success) return b.ToArray();
@@ -1090,8 +1184,11 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         {
             alive = worldSpawns.TryGetValue(id, out var spawn) && killed?.ContainsKey(id) != true &&
                     spawn.SpawnTimeMs / 1000 + spawn.Ttl > DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            worldEncountered = alive ? id : null;
+            worldEncountered = alive ? spawn : null;
         }
+        var fought = worldEncountered;
+        SaveFight(fought is null ? null
+            : new("world", fought.InstanceId, fought.MonsterId, fought.Difficulty, fought.SpawnTimeMs / 1000 + fought.Ttl));
         log.LogInformation("  EncounterMonster alive={Alive}", alive);
         return ApiProtocol.Boolean(alive);
     }
@@ -1101,18 +1198,22 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private byte[] HandleCombatEnd(ApiProtocol.ApiRequest req)
     {
         var end = ReadCombatEnd(req);
-        WorldSpawns.Spawn? spawn = null;
+        WorldSpawns.Spawn? spawn;
         lock (worldGate)
         {
-            if (worldEncountered is long id && worldSpawns.TryGetValue(id, out var found)) spawn = found;
+            spawn = worldEncountered;
             worldEncountered = null;
         }
         long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        return CombatEndPayload("CombatEnd", end, spawn is null ? null : (spawn.MonsterId, spawn.Difficulty), player =>
+        // After a server restart (or a dashboard profile operation) the encounter comes back from the profile.
+        var fight = spawn is null ? SavedFight("world") : null;
+        long? id = spawn?.InstanceId ?? fight?.InstanceId, ends = spawn is null ? fight?.Ends : spawn.SpawnTimeMs / 1000 + spawn.Ttl;
+        (int, int)? monster = spawn is not null ? (spawn.MonsterId, spawn.Difficulty) : fight is not null ? (fight.MonsterId, fight.Difficulty) : null;
+        return CombatEndPayload("CombatEnd", end, monster, player =>
         {
             var killed = player.KilledInstances!;
             foreach (long expired in killed.Where(k => k.Value <= now).Select(k => k.Key).ToList()) killed.Remove(expired);
-            killed[spawn!.InstanceId] = spawn.SpawnTimeMs / 1000 + spawn.Ttl;
+            killed[id!.Value] = ends!.Value;
         });
     }
 
@@ -1307,7 +1408,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private void WritePlayerModifiers(ByteBuffer b, LocalProfileStore.Profile snapshot)
     {
         var live = LiveModifiers(snapshot.Player, DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-            .Where(m => m.Id != 13 || tasks.Catalog is not null).ToList();
+            .Where(m => m.Id != 13 || tasks.Catalog is not null).Concat(TrinketBuffs.Modifiers(snapshot.Player)).ToList();
         b.WriteInt(0);
         b.WriteInt(live.Count);
         foreach (var m in live) { b.WriteInt(m.Id); b.WriteInt(m.Start); b.WriteInt(Expiry(m)); }
@@ -1457,7 +1558,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         b.WriteString(player?.Name ?? UnnamedPlayer);
         b.WriteInt(player?.Gold ?? 5000);  // Gold (legacy: ID contract)
         b.WriteInt(player?.Exp ?? 4500);   // Exp (legacy: demonstration value)
-        b.WriteInt(1);                     // Head (id 1 = head_caucasian_1 in static data)
+        b.WriteInt(player?.Head ?? 1);     // Head (customization_heads; 1 = head_caucasian_1), its model by the gender
         // Reconstructed profiles report the tutorial as finished once its fact 3 is set (tut_gravehag/tut_exit).
         bool tutorialFinished = player is null
             ? cfg.GetValue("Player:TutorialFinished", false)
@@ -1479,6 +1580,18 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, player => player with { Name = name });
         log.LogInformation("  SetName accepted length={Length}", name.Length);
         return BuildIntResponse(true, 0);
+    }
+
+    /// <summary>SetCustomizationHead (28): IntRequest [int Head]; IntResponse echoing it. Reconstructed profiles keep a
+    /// head of the customization_heads rows: GetPlayerInfo (3) sends it back at every start (it reverted to head 1).</summary>
+    private byte[] HandleSetCustomizationHead(ApiProtocol.ApiRequest req)
+    {
+        int head = ReadIntParam(req, fallback: 1);
+        var player = profiles.Snapshot().Player;
+        if (player is null) return BuildIntResponse(true, head);
+        if (!PreloaderStaticData.HeadIds.Contains(head)) return BuildIntResponse(false, player.Head ?? 1);
+        profiles.UpdatePlayer(new Dictionary<int, int>(), null, p => p with { Head = head });
+        return BuildIntResponse(true, head);
     }
 
     /// <summary>SetGender (46): ByteRequest [byte]; IntResponse echoing the gender.</summary>
@@ -1525,7 +1638,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         var r = new ByteBuffer(req.Data);
         int itemType = r.ReadInt(), itemId = r.ReadInt(), longitude = r.ReadInt(), latitude = r.ReadInt();
         if (itemType == 13) return SummonWitcherAura(req.Id, itemId, longitude, latitude);
-        if (TasksEnabled && itemType == 16 && itemId == 2) return SummonOwnedScroll(longitude, latitude);
+        if (TasksEnabled && itemType == SummonScrolls.ItemType && SummonScrolls.ById(itemId) is { } scroll)
+            return SummonOwnedScroll(scroll, longitude, latitude);
         var b = new ByteBuffer();
         if (itemType != Reconstruction.SummoningScrollItemType || itemId != Reconstruction.TutorialSummoningScrollId)
         {
@@ -1547,7 +1661,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     /// (Factory 0x1E79A34). The request has no fields.</summary>
     private byte[] BuildGetSummonedMonstersResponse()
     {
-        var groups = summons.Active(UnixSeconds()).Where(g => TasksEnabled || g.ItemId != 2).ToList();
+        var groups = summons.Active(UnixSeconds())
+            .Where(g => TasksEnabled || g.ItemType != SummonScrolls.ItemType || SummonScrolls.ById(g.ItemId) is null).ToList();
         var b = new ByteBuffer();
         b.WriteInt(groups.Count);
         foreach (var group in groups) WriteSummonedGroup(b, group);
@@ -1579,6 +1694,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     {
         if (req.Data.Length != 8) throw new InvalidDataException("Invalid EncounterSummonedMonster payload.");
         bool alive = summons.Encounter(new ByteBuffer(req.Data).ReadLong(), UnixSeconds());
+        var fought = summons.Encountered;
+        SaveFight(fought is null ? null : new("summoned", fought.InstanceId, fought.MonsterId, fought.Difficulty, UnixSeconds() + 3600));
         log.LogInformation("  EncounterSummonedMonster alive={Alive}", alive);
         return ApiProtocol.Boolean(alive);
     }
@@ -1591,6 +1708,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private byte[] HandleCombatEndSummonedMonster(ApiProtocol.ApiRequest req)
     {
         var end = ReadCombatEnd(req);
+        if (summons.Encountered is null && SavedFight("summoned") is { } saved) summons.Encounter(saved.InstanceId, UnixSeconds());
         var monster = summons.EndEncounter(end.Won);
         return CombatEndPayload("CombatEndSummonedMonster", end, monster is null ? null : (monster.MonsterId, monster.Difficulty));
     }
@@ -1638,10 +1756,73 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private int Exp(int amount) =>
         (int)Math.Min(int.MaxValue / 8, (long)amount * (long)world.Tuning.Get(WorldTuning.ExpPercent) / 100);
 
-    /// <summary>The ingredients a won fight drops, as many as the dashboard says: 200 % doubles each, 150 % adds half of them by chance.</summary>
-    private List<int> Looted(List<int> loot)
+    /// <summary>The experience bonus of a won fight against [monsterId], in percent of its base: the worn equipment
+    /// (effect 65, a Dummy in the client, so the server pays it as BoostedExp) and the trinkets (TrinketBuffs).</summary>
+    private int ExpBonusPercent(LocalProfileStore.PlayerState player, int monsterId) => Reconstruction.ExperienceBonus(Worn(player)) +
+        TrinketBuffs.Amount(player, TrinketBuffs.Kind.Exp, WorldBestiary.FamilyOf(monsterId)) + Boost(player, Consumables.ExperienceScroll);
+
+    /// <summary>A booster's bonus in percent while its modifier lasts (the Experience and Ingredients Scrolls), else 0.</summary>
+    private static int Boost(LocalProfileStore.PlayerState? player, int consumable) =>
+        Consumables.ById(consumable) is { } item && LiveModifiers(player, DateTimeOffset.UtcNow.ToUnixTimeSeconds()).Any(m => m.Id == item.Modifier)
+            ? item.Power : 0;
+
+    /// <summary>The weather a weather item forces for this player while it lasts (one at a time), else null.</summary>
+    private static (int Code, int Start, int Expire)? ForcedWeather(LocalProfileStore.PlayerState? player) =>
+        LiveModifiers(player, DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            .Select(m => (Item: Consumables.All.FirstOrDefault(c => c.Weather is not null && c.Modifier == m.Id), m.Start, m.Expire))
+            .Where(x => x.Item is not null).Select(x => ((int, int, int)?)(x.Item!.Weather!.Value, x.Start, x.Expire)).FirstOrDefault();
+
+    /// <summary>UseConsumable (99), from the item window's Use button (InventoryItemWindow.UseConsumable 0x17D279C ->
+    /// PlayerModifiersModule.UseConsumable 0x18BF740): IntRequest [int consumableId]; reply [byte Success][int consumableId]
+    /// [int expiry, Unix seconds] (UseConsumableResponse.Factory 0x1E79604). On success the client takes one item off itself
+    /// (PlayerInventory.OnUseConsumableResponse 0x1A12B04) and adds the item's modifier as (expiry - duration, expiry)
+    /// (OnUseConsumableResponse 0x18BF908), keeping Use off while it lasts. A weather item ends another weather item's
+    /// modifier (pushed with GetPlayerModifiers, since the game shows what it has) and the weather comes at once (pushed).</summary>
+    private byte[] HandleUseConsumable(ApiProtocol.ApiRequest req)
     {
-        double percent = world.Tuning.Get(WorldTuning.LootPercent);
+        if (req.Data.Length != 4) throw new InvalidDataException("Invalid UseConsumable payload.");
+        int id = new ByteBuffer(req.Data).ReadInt(), now = UnixSeconds(), expiry = 0;
+        var item = Consumables.ById(id);
+        if (item is not null && profiles.Snapshot().Player is not null)
+            profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
+            {
+                var owned = player.Items.GetValueOrDefault(ItemKinds.Consumables);
+                var live = LiveModifiers(player, now);
+                if (owned?.GetValueOrDefault(id) is not > 0 || live.Any(m => m.Id == item.Modifier)) return null;
+                if (--owned[id] == 0) owned.Remove(id);
+                if (item.Weather is not null) live.RemoveAll(m => Consumables.All.Any(c => c.Weather is not null && c.Modifier == m.Id));
+                expiry = now + item.Duration;
+                live.Add(new LocalProfileStore.ModifierState(item.Modifier, now, expiry));
+                return player with { Modifiers = live };
+            });
+        log.LogInformation("  UseConsumable {Item} result={Result}", item?.Slug ?? id.ToString(), expiry > 0 ? "used" : "refused");
+        if (expiry > 0 && item!.Weather is not null) lock (pushGate) pendingPushes.UnionWith([M_GetPlayerModifiers, M_GetWeather]);
+        var b = new ByteBuffer(); b.WriteByte(expiry > 0 ? (byte)1 : (byte)0); b.WriteInt(id); b.WriteInt(expiry);
+        return b.ToArray();
+    }
+
+    /// <summary>How many ingredients a won fight drops, in percent: the dashboard's share and the trinkets' bonus.</summary>
+    private double LootPercent(LocalProfileStore.PlayerState player) =>
+        world.Tuning.Get(WorldTuning.LootPercent) + TrinketBuffs.Amount(player, TrinketBuffs.Kind.Ingredients) +
+        Boost(player, Consumables.IngredientsScroll);
+
+    /// <summary>Saves the encounter in progress (or none), so its end still pays after a server restart.</summary>
+    private void SaveFight(LocalProfileStore.FightState? fight)
+    {
+        if (profiles.Snapshot().Player is { } current && current.Fight != fight)
+            profiles.UpdatePlayer(new Dictionary<int, int>(), null, player => player with { Fight = fight });
+    }
+
+    /// <summary>The saved encounter of [kind] (and [id]), while it still pays.</summary>
+    private LocalProfileStore.FightState? SavedFight(string kind, long? id = null) =>
+        profiles.Snapshot().Player?.Fight is { } fight && fight.Kind == kind && (id is null || fight.InstanceId == id) &&
+        fight.Ends + 3600 > DateTimeOffset.UtcNow.ToUnixTimeSeconds() ? fight : null;
+
+    /// <summary>Loot scaled by [share] in percent (the dashboard's share of fight ingredients when not given): 200 % doubles each,
+    /// 150 % adds half of them by chance.</summary>
+    private List<int> Looted(List<int> loot, double? share = null)
+    {
+        double percent = share ?? world.Tuning.Get(WorldTuning.LootPercent);
         if (percent == 100) return loot;
         var scaled = new List<int>();
         foreach (int item in loot)
@@ -1662,12 +1843,13 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private byte[] CombatEndPayload(string label, CombatEndRequest end, (int MonsterId, int Difficulty)? monster,
         Action<LocalProfileStore.PlayerState>? record = null)
     {
-        int baseExp = 0, comboExp = 0, oilExp = 0, parryExp = 0, firstExp = 0, boostedExp = 0, packType = 0;
+        int baseExp = 0, comboExp = 0, oilExp = 0, parryExp = 0, firstExp = 0, boostedExp = 0, packType = 0, bonus = 0;
         var loot = new List<int>();
         var trollFacts = monster is { } troll ? TrollFight(troll.MonsterId, end.Won) : null;
+        var facts = profiles.Snapshot().Facts;
         if (monster is { } fought && end.Won)
         {
-            baseExp = Exp(Reconstruction.BaseExp(fought.Difficulty));
+            baseExp = Exp(Reconstruction.FightExp(fought.MonsterId, fought.Difficulty));
             comboExp = Exp(Reconstruction.CriticalHitExp * end.Detail(Reconstruction.DetailPerfectAttacks));
             parryExp = Exp(Reconstruction.PerfectParryExp * end.Detail(Reconstruction.DetailPerfectParries));
             oilExp = end.Detail(Reconstruction.DetailUsedProperOil) > 0 ? Exp(Reconstruction.ProperOilExp) : 0;
@@ -1677,27 +1859,40 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 {
                     var before = player with { Kills = new(player.Kills!) };
                     var kills = player.Kills!;
-                    if (kills.GetValueOrDefault(fought.MonsterId) == 0) firstExp = Exp(Reconstruction.FirstKillExp);
+                    // The game's own "new monster" check reads its bestiary, which counts the story's fights too.
+                    if (Reconstruction.AllKills(player, facts).GetValueOrDefault(fought.MonsterId) == 0)
+                        firstExp = Exp(Reconstruction.FirstKillExp);
                     kills[fought.MonsterId] = kills.GetValueOrDefault(fought.MonsterId) + 1;
                     record?.Invoke(player);
-                    loot = Looted(Economy.FightLoot(fought.MonsterId, fought.Difficulty));
+                    loot = Looted(Economy.FightLoot(fought.MonsterId, fought.Difficulty), LootPercent(player));
                     // Equipment effects the client leaves to the server (Dummy classes): experience from the kill
                     // (65, reported as BoostedExp) and a chance of extra alchemy ingredients (Reconstruction.ExtraIngredientEffect).
                     var worn = Worn(player);
-                    boostedExp = baseExp * Reconstruction.ExperienceBonus(worn) / 100;
+                    bonus = ExpBonusPercent(player, fought.MonsterId);
+                    boostedExp = baseExp * bonus / 100;
                     if (Random.Shared.Next(100) < Reconstruction.ExtraIngredientChance(worn)) loot.AddRange(loot.Skip(2).DefaultIfEmpty(Economy.Tissue));
                     loot = Fit(player, loot);
                     AddItems(player, loot.Select(id => (ItemKinds.Ingredients, id, 1)));
                     var after = Reconstruction.WithExp(player, baseExp + comboExp + oilExp + parryExp + firstExp + boostedExp);
-                    return social is null ? after : SocialPolicy.AwardCombatPack(cfg, before, after, out packType);
+                    return (social is null ? after : SocialPolicy.AwardCombatPack(cfg, before, after, out packType)) with { Fight = null };
                 }, new TaskEngine.Action(label == "CombatEnd" ? 8 : 114, [end.Details]));
             }
         }
-        if (monster is not null && !end.Won && (TasksEnabled || trollFacts is not null))
-            profiles.UpdatePlayer(trollFacts ?? new Dictionary<int, int>(), null, player => player,
+        // The game lists a monster in its bestiary from the fight's start (FightNode.EnterNode 0x17EE928 adds it with no kill),
+        // so a lost or fled fight keeps it with 0 kills, and it is still there after a restart.
+        if (monster is { } seen && !end.Won && profiles.Snapshot().Player is not null)
+            profiles.UpdatePlayer(trollFacts ?? new Dictionary<int, int>(), null, player =>
+                {
+                    bool added = player.Kills!.TryAdd(seen.MonsterId, 0);
+                    return added || player.Fight is not null || TasksEnabled || trollFacts is not null ? player with { Fight = null } : null;
+                },
                 new TaskEngine.Action(label == "CombatEnd" ? 8 : 114, [end.Details]));
-        log.LogInformation("  {Label} win={Win} surrendered={Surrendered} monster={Monster} exp={Exp}",
-            label, end.Win, end.Surrendered, monster?.MonsterId, baseExp + comboExp + oilExp + parryExp + firstExp + boostedExp);
+        var saved = profiles.Snapshot().Player;
+        log.LogInformation("  {Label} win={Win} surrendered={Surrendered} monster={Monster} exp={Exp} (base {Base}, perfect hits {Combo}, " +
+            "oil {Oil}, parries {Parry}, new monster {First}, bonus {Bonus}% = {Boosted}; fights at {Percent}%) total={Total} level={Level}",
+            label, end.Win, end.Surrendered, monster?.MonsterId, baseExp + comboExp + oilExp + parryExp + firstExp + boostedExp,
+            baseExp, comboExp, oilExp, parryExp, firstExp, bonus, boostedExp, world.Tuning.Get(WorldTuning.ExpPercent),
+            saved?.Exp, saved is null ? null : Reconstruction.LevelForExp(saved.Exp));
         if (trollFacts is not null)
             log.LogInformation("  Monster Slayer trigger troll fights={Fights} offered={Offered}",
                 trollFacts[StoryEngine.TrollFightsFact], trollFacts.ContainsKey(StoryEngine.TrollTriggerFact));
@@ -1731,16 +1926,16 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         WriteItemMap(b, items?.GetValueOrDefault(ItemKinds.Oils));
         WriteItemMap(b, items?.GetValueOrDefault(ItemKinds.Lures));
         WriteItemMap(b, items?.GetValueOrDefault(ItemKinds.SensesPotions));
-        WriteItemMap(b, null); // consumables
+        WriteItemMap(b, items?.GetValueOrDefault(ItemKinds.Consumables)); // consumables (Consumables)
         WriteItemMap(b, items?.GetValueOrDefault(SocialService.PackItems));
         WriteItemMap(b, tasks.Catalog is null ? null : items?.GetValueOrDefault("summoning_scrolls"));
         b.WriteInt(Economy.BagSize(player));                     // BagSize
         return b.ToArray();
     }
 
-    private static void WriteItemMap(ByteBuffer b, IReadOnlyDictionary<int, int>? map)
+    private static void WriteItemMap(ByteBuffer b, IReadOnlyDictionary<int, int>? map, bool zeros = false)
     {
-        var rows = map?.Where(pair => pair.Value > 0).OrderBy(pair => pair.Key).ToList() ?? new();
+        var rows = map?.Where(pair => pair.Value > 0 || zeros && pair.Value == 0).OrderBy(pair => pair.Key).ToList() ?? new();
         b.WriteInt(rows.Count);
         foreach (var (id, count) in rows) { b.WriteInt(id); b.WriteInt(count); }
     }
@@ -1833,8 +2028,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         {
             // Reconstructed profiles: tutorial stages, then the prologue stages; one-time rewards per output.
             string? nextStage = Reconstruction.NextStage(profiles.Snapshot().QuestStage, outputName) ?? prologueStage;
-            var reward = Reconstruction.RewardFor(outputName);
             string key = Reconstruction.RewardKey(outputName);
+            // The quest endings on the Rewards page pay the active preset's amounts; the prologue's fights their own.
+            var reward = world.Tuning.Rewards.For(RewardTables.PrologueKey + key)?.ToReward() ?? Reconstruction.RewardFor(outputName);
             string? reached = Reconstruction.CompletedStoryNode(outputName);
             snapshot = profiles.UpdatePlayer(facts, nextStage, player =>
             {
@@ -1845,16 +2041,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                     marked = true;
                 }
                 if (reward is null || player.Granted.Contains(key)) return marked ? player : null;
-                granted = reward;
+                granted = reward with { Exp = reward.Exp * (100 + Boost(player, Consumables.ExperienceScroll)) / 100 };
                 player.Granted.Add(key);
-                foreach (var (kind, map) in reward.Items)
-                {
-                    if (!player.Items.TryGetValue(kind, out var owned)) player.Items[kind] = owned = new Dictionary<int, int>();
-                    foreach (var (id, count) in map) owned[id] = owned.GetValueOrDefault(id) + count;
-                }
-                return Reconstruction.WithExp(player, reward.Exp, reward.Gold);
+                return Reconstruction.WithExp(GrantItems(player, reward.Items), granted.Exp, reward.Gold);
             });
-            log.LogInformation("  Method 57 reward={Reward}", granted is null ? "none" : "granted");
+            log.LogInformation("  Method 57 reward={Reward}", granted is null ? "none"
+                : $"granted {granted.Exp} exp, {granted.Gold} orens, items {ItemList(granted.Items)}");
         }
         snapshot = CaughtUp(snapshot);
         log.LogInformation("  Method 57 synthetic quest stage={Stage}", snapshot.QuestStage ?? "legacy");
@@ -1873,76 +2065,95 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // BestiaryEntries: the monsters of a story fight, once with its reward (Reconstruction.OutputKills).
         WriteItemMap(b, granted is null ? null : Reconstruction.OutputKills(outputName, snapshot.Facts));
         b.WriteInt(0); // ingredients
-        b.WriteInt(0); // Armors
-        b.WriteInt(0); // Swords
+        WriteGear(b, granted?.Items);   // Armors, Swords
         b.WriteInt(0); // ExpiringQuestNodeInstances (after rewards in RPC57)
         return b.ToArray();
     }
 
     /// <summary>EndBehaviourGraph (57) after "A Joint Venture" (StoryEngine): saves the facts; for a season 1 node
     /// (by instance, or a journal button by output name) it starts or finishes the quest, records the output and,
-    /// the first time the output is reached, grants its experience, gold and items and counts its monsters. An output
-    /// of a graph that is no quest node may cost orens (StoryEngine.PriceOf: Lothar's map). The
+    /// the first time the output is reached, grants its experience, gold and items and counts its monsters, and takes
+    /// its price when the player has it (StoryEngine.PriceOf: Lothar's map, "map_bought"). The
     /// response has the same layout as for the prologue: the active nodes, then Exp and Gold (deltas the client
     /// adds; an endpoint output shows them in the quest-completed window), the item maps and BestiaryEntries.</summary>
     private byte[] StoryEndBehaviourGraph(long instanceId, string outputName, Dictionary<int, int> facts)
     {
         StoryEngine.Step? step = null;
+        Reconstruction.Reward? granted = null;
         int paid = 0;
         var snapshot = profiles.UpdatePlayer(facts, null, player =>
         {
             var progress = player.Story ?? LocalProfileStore.StoryProgress.Empty;
-            if (StoryEngine.Resolve(progress, instanceId, outputName) is not { } node)
-            {
-                if (StoryEngine.PriceOf(outputName) is not int price || player.Gold < price) return null;
-                paid = price;
-                return player with { Gold = player.Gold - price };
-            }
+            if (StoryEngine.Resolve(progress, instanceId, outputName) is not { } node) return null;
             step = StoryEngine.Advance(progress, node, outputName, StoryNow(progress));
             if (step is null) return null;
             // UpdatePlayer saves the facts after this change, so the ending's own facts join the client's.
             foreach (var (fact, value) in step.Facts) facts[fact] = value;
             player = player with { Story = step.Progress };
             if (!step.FirstTime) return player;
+            if (StoryEngine.PriceOf(node, outputName) is int price && player.Gold >= price)
+            {
+                paid = price;
+                player = player with { Gold = player.Gold - price };
+            }
             foreach (var (monster, kills) in step.Output.Kills)
                 player.Kills![monster] = player.Kills.GetValueOrDefault(monster) + kills;
-            var gear = EquipmentOf(player);
-            foreach (var (kind, map) in step.Output.Items)
-            {
-                // Swords and armours join the equipment (GetEquipment 9); other items the inventory.
-                if (kind == "swords") { gear = gear with { Swords = [.. gear.Swords, .. map.Keys.Where(id => !gear.Swords.Contains(id))] }; continue; }
-                if (kind == "armors") { gear = gear with { Armors = [.. gear.Armors, .. map.Keys.Where(id => !gear.Armors.Contains(id))] }; continue; }
-                if (!player.Items.TryGetValue(kind, out var owned)) player.Items[kind] = owned = new Dictionary<int, int>();
-                foreach (var (id, count) in map) owned[id] = owned.GetValueOrDefault(id) + count;
-            }
-            if (step.Output.Items.ContainsKey("swords") || step.Output.Items.ContainsKey("armors")) player = player with { Equipment = gear };
-            return Reconstruction.WithExp(player, step.Output.Exp, step.Output.Gold);
+            // A quest ending on the Rewards page pays the active preset's amounts; other outputs (fights, coin notices
+            // a graph announces) the story's own.
+            granted = world.Tuning.Rewards.For(RewardTables.KeyOf(step.Output))?.ToReward()
+                      ?? new Reconstruction.Reward(step.Output.Exp, step.Output.Gold, step.Output.Items);
+            granted = granted with { Exp = granted.Exp * (100 + Boost(player, Consumables.ExperienceScroll)) / 100 };
+            return Reconstruction.WithExp(GrantItems(player, granted.Items), granted.Exp, granted.Gold);
         });
-        var granted = step is { FirstTime: true } ? step.Output : null;
+        if (step is not { FirstTime: true }) granted = null;
         log.LogInformation("  Method 57 story node={Node} output={Output} result={Result} reward={Reward}",
             step?.Node.Key ?? "unknown", SafeGraphOutputForLog(outputName),
-            step is null ? paid > 0 ? $"paid {paid}" : "facts only" : step.Output.Endpoint ? "quest finished" : "recorded",
-            granted is null ? "none" : "granted");
+            step is null ? "facts only" : (step.Output.Endpoint ? "quest finished" : "recorded") + (paid > 0 ? $", paid {paid}" : ""),
+            granted is null ? "none" : $"granted {granted.Exp} exp, {granted.Gold} orens, items {ItemList(granted.Items)}");
         var b = new ByteBuffer(); b.WriteByte(1);
         WriteStory(b, snapshot);
         b.WriteInt(granted?.Exp ?? 0);
-        b.WriteInt(granted?.Gold ?? -paid);
+        b.WriteInt((granted?.Gold ?? 0) - paid);
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Potions));
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Bombs));
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Oils));
         WriteItemMap(b, granted?.Items.GetValueOrDefault(ItemKinds.Lures));
         b.WriteInt(0); // senses potions
-        WriteItemMap(b, granted?.Kills);   // BestiaryEntries
+        WriteItemMap(b, granted is null ? null : step!.Output.Kills);   // BestiaryEntries
         b.WriteInt(0); // ingredients
-        foreach (string kind in new[] { "armors", "swords" })   // Armors, Swords: id lists the client adds to its storage
-        {
-            var ids = granted?.Items.GetValueOrDefault(kind)?.Keys.ToList() ?? new List<int>();
-            b.WriteInt(ids.Count);
-            foreach (int id in ids) b.WriteInt(id);
-        }
+        WriteGear(b, granted?.Items);   // Armors, Swords
         b.WriteInt(0); // ExpiringQuestNodeInstances
         return b.ToArray();
     }
+
+    /// <summary>Adds a reward's items: swords and armours join the equipment (GetEquipment 9), the rest the inventory.</summary>
+    private static LocalProfileStore.PlayerState GrantItems(LocalProfileStore.PlayerState player,
+        Dictionary<string, Dictionary<int, int>> items)
+    {
+        var gear = EquipmentOf(player);
+        foreach (var (kind, map) in items)
+        {
+            if (kind == ItemKinds.Swords) { gear = gear with { Swords = [.. gear.Swords, .. map.Keys.Where(id => !gear.Swords.Contains(id))] }; continue; }
+            if (kind == ItemKinds.Armors) { gear = gear with { Armors = [.. gear.Armors, .. map.Keys.Where(id => !gear.Armors.Contains(id))] }; continue; }
+            if (!player.Items.TryGetValue(kind, out var owned)) player.Items[kind] = owned = new Dictionary<int, int>();
+            foreach (var (id, count) in map) owned[id] = owned.GetValueOrDefault(id) + count;
+        }
+        return items.ContainsKey(ItemKinds.Swords) || items.ContainsKey(ItemKinds.Armors) ? player with { Equipment = gear } : player;
+    }
+
+    // The quest reply's armour and sword id lists, which the client adds to its storage.
+    private static void WriteGear(ByteBuffer b, Dictionary<string, Dictionary<int, int>>? items)
+    {
+        foreach (string kind in new[] { ItemKinds.Armors, ItemKinds.Swords })
+        {
+            var ids = items?.GetValueOrDefault(kind)?.Keys.ToList() ?? new List<int>();
+            b.WriteInt(ids.Count);
+            foreach (int id in ids) b.WriteInt(id);
+        }
+    }
+
+    private static string ItemList(Dictionary<string, Dictionary<int, int>> items) =>
+        items.Count == 0 ? "none" : string.Join(", ", items.SelectMany(k => k.Value.Select(i => $"{k.Key} {i.Key} x{i.Value}")));
 
     /// <summary>The story clock: now, moved on by the local test endpoint's offset.</summary>
     private static long StoryNow(LocalProfileStore.StoryProgress progress) =>
@@ -2178,7 +2389,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         int gold = profiles.Snapshot().Player?.Gold ?? 0;
         string outcome = "refused";
         // Oren packs are bought with real money only (76), never with orens.
-        if (Economy.BundleById(bundleId) is { InAppPrice: null } bundle && profiles.Snapshot().Player is not null)
+        if (Economy.BundleById(bundleId) is { InAppPrice: null } bundle && Economy.Offered(bundle) && profiles.Snapshot().Player is not null)
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             int price = Economy.PriceOf(bundle, now);
@@ -2325,6 +2536,13 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             ?? new List<LocalProfileStore.BrewerState>();
         if (!brewers.Any(b => b.InstanceId == Economy.BasicBrewerInstance))
             brewers.Insert(0, new LocalProfileStore.BrewerState(Economy.BasicBrewerInstance, Economy.BasicBrewer.Id, -1, Idle, 0));
+        // The season journal's trinket: a second unlimited station while trinket bonuses are on (an idle one goes when off).
+        if (TrinketBuffs.Station(player))
+        {
+            if (!brewers.Any(b => b.InstanceId == TrinketBuffs.StationInstance))
+                brewers.Insert(1, new LocalProfileStore.BrewerState(TrinketBuffs.StationInstance, Economy.BasicBrewer.Id, -1, Idle, 0));
+        }
+        else brewers.RemoveAll(b => b.InstanceId == TrinketBuffs.StationInstance && b.WorkingRecipe == Idle);
         return brewers;
     }
 
@@ -2650,7 +2868,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // one left outside the loaded area or out of the player's sight (the player moved away) gets a new place.
         var area = playable.Area;
         var known = saved.GetValueOrDefault(key);
-        if (known is not null &&
+        bool tooFar = known is not null && TooFar(known);
+        if (known is not null && !tooFar &&
             !(node.Giver && profiles.Snapshot().Player?.Story?.Started.Contains(node.Quest) != true &&
                 (known.CellId is ulong cell && area.Count > 0 && !area.Contains(cell) || OutOfSight(known))))
             return known;
@@ -2662,8 +2881,21 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             .Select(other => saved.GetValueOrDefault(other)).OfType<LocalProfileStore.StoryPlace>().ToList();
         var near = node.Near is null ? null : StoryEngine.NodeByKey(node.Near) is { } anchor ? StoryPlaceOf(anchor) : null;
         if (node.Near is not null && near is null) return null;
-        return ChooseStoryPlace(key, node.Min, node.Max, near, taken) ?? known;
+        return ChooseStoryPlace(key, node.Min, node.Max, near, taken, fresh: tooFar) ?? known;
     }
+
+    /// <summary>The quest place caps (Tuning quests.softCap and quests.hardCap; the hard one is never below the soft one).</summary>
+    private (double Soft, double Hard) QuestCaps()
+    {
+        double soft = world.Tuning.Get(WorldTuning.QuestSoftCap);
+        return (soft, Math.Max(soft, world.Tuning.Get(WorldTuning.QuestHardCap)));
+    }
+
+    /// <summary>A saved quest place farther than the hard cap from where the player is known to be (GPS or the weather's
+    /// position; with neither nothing is too far) is chosen again, with a new id: the game keeps a place id it has.</summary>
+    private bool TooFar(LocalProfileStore.StoryPlace place) =>
+        playable.Area is { Count: > 0 } area && playable.Cells(area, 0) is { Count: > 0 } cells && PlayerPositionIn(cells) is { } at &&
+        PlayableLocations.Distance(at.Lat, at.Lng, place.Lat, place.Lng) > QuestCaps().Hard;
 
     // Client: PoiSettings.questOnMapHideDistance (season1_story.py GIVER_DISTANCE); a giver farther from the player is not drawn.
     private const double GiverHideDistance = 350;
@@ -2694,8 +2926,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             // Spots of the quest's other nodes are kept apart; earlier quests' spots may be reused.
             var taken = Reconstruction.JointVentureAll.Where(other => other.Key != node.Key)
                 .Select(other => saved.GetValueOrDefault(other.Key)).OfType<LocalProfileStore.StoryPlace>().ToList();
-            var place = saved.GetValueOrDefault(node.Key) ?? ChooseStoryPlace(node.Key, node.MinDistance, node.MaxDistance,
-                node.Near is null ? null : saved.GetValueOrDefault(node.Near), taken);
+            var known = saved.GetValueOrDefault(node.Key);
+            var place = known is not null && !TooFar(known) ? known : ChooseStoryPlace(node.Key, node.MinDistance, node.MaxDistance,
+                node.Near is null ? null : saved.GetValueOrDefault(node.Near), taken, fresh: known is not null) ?? known;
             if (place is not null) view.Add((node, place));
             else log.LogWarning("  Story node {Node} has no place yet (no area loaded)", node.Key);
         }
@@ -2734,16 +2967,19 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         if (snapshot.Player is not { } player || snapshot.QuestStage is not { } stage ||
             Reconstruction.StoryDistance(stage) is not { } band)
             return null;
-        if (player.StoryPlaces?.GetValueOrDefault(stage) is { } saved) return saved;
-        return ChooseStoryPlace(stage, band.Min, band.Max, near: null, taken: []);
+        var saved = player.StoryPlaces?.GetValueOrDefault(stage);
+        if (saved is not null && !TooFar(saved)) return saved;
+        return ChooseStoryPlace(stage, band.Min, band.Max, near: null, taken: [], fresh: saved is not null) ?? saved;
     }
 
     /// <summary>Chooses and saves a pedestrian-safe place for a story stage or node: a playable place of the
     /// loaded area in the distance band around the player's GPS position, else the area's centre (or around
-    /// <paramref name="near"/>), away from the places already taken. A node that belongs beside another one
-    /// falls back to that one's point. Null when no area is loaded or no place fits.</summary>
+    /// <paramref name="near"/>), away from the places already taken, and within the soft cap of the player (else the
+    /// hard cap; with no place in the band there, the places within the hard cap nearest the band, so a chained step or
+    /// a long band never lands farther). A node that belongs beside another one falls back to that one's point. Null
+    /// when no area is loaded or no place fits. [fresh] gives the place a new id.</summary>
     private LocalProfileStore.StoryPlace? ChooseStoryPlace(string key, double min, double max,
-        LocalProfileStore.StoryPlace? near, IReadOnlyCollection<LocalProfileStore.StoryPlace> taken)
+        LocalProfileStore.StoryPlace? near, IReadOnlyCollection<LocalProfileStore.StoryPlace> taken, bool fresh = false)
     {
         var area = playable.Area;
         var cells = area.Count == 0 ? null : playable.Cells(area, epoch: 0);
@@ -2755,8 +2991,16 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 lng = near?.Lng ?? player?.Lng ?? cells.Average(c => c.Lng);
             // Authored spacing: separate spots for separate goals; a companion node may stand closer.
             double spacing = near is null ? 100 : 40;
-            var band = cells.SelectMany(c => c.Places).Where(p =>
-                PlayableLocations.Distance(lat, lng, p.Lat, p.Lng) is var d && d >= min && d <= max).ToList();
+            double fromLat = player?.Lat ?? cells.Average(c => c.Lat), fromLng = player?.Lng ?? cells.Average(c => c.Lng);
+            var (soft, hard) = QuestCaps();
+            var all = cells.SelectMany(c => c.Places).ToList();
+            var band = all.Where(p => PlayableLocations.Distance(lat, lng, p.Lat, p.Lng) is var d && d >= min && d <= max).ToList();
+            var inReach = band.Where(p => PlayableLocations.Distance(fromLat, fromLng, p.Lat, p.Lng) <= soft).ToList();
+            if (inReach.Count == 0) inReach = band.Where(p => PlayableLocations.Distance(fromLat, fromLng, p.Lat, p.Lng) <= hard).ToList();
+            if (inReach.Count == 0)
+                inReach = all.Where(p => PlayableLocations.Distance(fromLat, fromLng, p.Lat, p.Lng) <= hard)
+                    .OrderBy(p => Math.Abs(PlayableLocations.Distance(lat, lng, p.Lat, p.Lng) - min)).Take(5).ToList();
+            band = inReach;
             options = band.Where(p => taken.All(t => PlayableLocations.Distance(t.Lat, t.Lng, p.Lat, p.Lng) >= spacing)).ToList();
             // A crowded band still gets a spot, shared with another node if need be.
             if (options.Count == 0) options = band;
@@ -2769,7 +3013,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
             var pool = open.Count > 0 ? open : options;
             var pick = pool[Random.Shared.Next(pool.Count)];
             ulong cell = cells!.First(c => c.Places.Contains(pick)).Id;
-            place = new LocalProfileStore.StoryPlace($"lab-story-{key}", pick.Lat, pick.Lng, pick.Biomes, cell);
+            place = new LocalProfileStore.StoryPlace(fresh ? $"lab-story-{key}-{Guid.NewGuid():N}" : $"lab-story-{key}",
+                pick.Lat, pick.Lng, pick.Biomes, cell);
         }
         else if (near is not null) place = near with { Id = $"lab-story-{key}" };
         else return null;
@@ -2844,7 +3089,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // same request, otherwise its revision guard can turn a successful retry into a refusal.
         lock (settled)
         {
-            if (ReplayedResponse(req) is { } replay) return replay;
+            if (settled.TryGetValue((req.Method, req.Id), out var hit) && DateTime.UtcNow - hit.At < ReplayWindow) return hit.Payload;
             var response = RelocateQuest(new ByteBuffer(req.Data).ReadLong());
             RememberResponse(req, response);
             return response;

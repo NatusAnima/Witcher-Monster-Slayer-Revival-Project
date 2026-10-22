@@ -7,6 +7,7 @@
   const views = {
     engine: [L.m("Silnik"), L.m("STEROWANIE USŁUGĄ"), L.m("Uruchamianie, zatrzymywanie i wyniki operacji silnika gry.")],
     tuning: [L.m("Tuning"), L.m("YOUR OWN EXPERIENCE"), L.m("Simple values you can change to suit how you play. They are saved on this phone.")],
+    rewards: [L.m("Rewards"), L.m("WHAT THE GAME PAYS"), L.m("Quest endings, daily task items and level-up rewards of the preset in use.")],
     testers: [L.m("Testerzy"), L.m("DOSTĘP DO LAB"), L.m("Kody instalacji, terminy dostępu i przypisania profili.")],
     overview: [
       L.m("Pulpit operatora"),
@@ -94,6 +95,8 @@
     "distance-policy": L.m("Ochrona naliczania dystansu"),
     "profile-label": L.m("Etykieta operatora"),
     tuning: L.m("Tuning"),
+    "tuning-preset": L.m("Tuning preset"),
+    rewards: L.m("Rewards"),
     "profile-reset": L.m("Reset postępu"),
     "profile-copy": L.m("Kopiowanie postępu"),
     "profile-clock": L.m("Zegar fabuły"),
@@ -130,6 +133,7 @@
     ),
     "profile-label": L.m("Etykieta zmienia opis w panelu; nazwa w grze i postęp pozostają."),
     tuning: L.m("The settings are saved and apply as each one says; no restart is needed."),
+    rewards: L.m("The rewards are saved; quests, tasks and level-ups pay them from now on."),
     "profile-restore": L.m("Przywrócono zapis. Uruchom LAB ponownie."),
     "profile-reset": L.m("Postęp zresetowano. Uruchom LAB ponownie."),
     "profile-copy": L.m(
@@ -185,6 +189,7 @@
     speciesPage = 0,
     weatherData = null,
     tuningData = null,
+    rewardsData = null,
     catalogueData = null,
     mapData = null,
     mapContext = null, placementData = null, placementDraft = null, placementPreview = null,
@@ -1220,6 +1225,10 @@
       [tuningData, worldData] = await Promise.all([api("tuning"), api("world")]);
       renderTuning();
     },
+    rewards: async () => {
+      rewardsData = await api("rewards");
+      renderRewards();
+    },
     catalogue: async () => {
       catalogueData = await api("catalogue");
       renderCatalogueOptions();
@@ -1349,7 +1358,8 @@
   // while the player is in the game, and leaves a receipt in History.
   const debugKinds = [["ingredients", "Ingredients"], ["potions", "Potions"], ["oils", "Oils"], ["bombs", "Bombs"],
     ["lures", "Baits"], ["senses_potions", "Senses potions"], ["friend_packs", "Friend packs", "packs_types"],
-    ["summoning_scrolls", "Summoning scrolls"], ["swords", "Swords"], ["armors", "Armours"], ["brewers", "Stations"]];
+    ["summoning_scrolls", "Summoning scrolls"], ["consumables", "Consumables"], ["swords", "Swords"], ["armors", "Armours"],
+    ["brewers", "Stations"]];
   async function debugAction(p, body) {
     try {
       const result = await api("profiles/" + encodeURIComponent(p.id) + "/debug", { method: "POST", body: JSON.stringify(body) });
@@ -2178,6 +2188,13 @@
   };
   function renderTuning() {
     const d = tuningData, box = $("tuning-fields"), groups = new Map();
+    const select = $("tuning-preset"), active = d.presets.find((p) => p.id === d.preset);
+    select.replaceChildren(...d.presets.map((p) => L.option(p.builtIn ? L.join(p.name, L.m(" (built in)")) : p.name, p.id)));
+    select.value = d.preset;
+    $("tuning-preset-rename").disabled = $("tuning-preset-delete").disabled = !!active?.builtIn;
+    L.text($("tuning-preset-note"), active?.builtIn
+      ? L.m("Revival is this project's balance for casual play; Vanilla is the original game. Saving changes here makes a copy of your own.")
+      : L.m("Your own preset: changes are saved into it."));
     for (const s of d.definitions) groups.set(s.group, [...(groups.get(s.group) || []), s]);
     box.replaceChildren();
     // Monsters per map cell lives in world.json (the World page too) and is saved through that page's endpoint.
@@ -2202,8 +2219,8 @@
         input.required = true;
         input.value = d.values[s.key];
         label.append(input);
-        box.append(label, el("p", L.join(L.m(s.help), " ", L.m("Default: "), s.default, " ", L.m(s.unit), L.m(". Range: "), s.min,
-          "–", s.max, L.m(". Takes effect: "), L.m(s.applies)), "hint"));
+        box.append(label, el("p", L.join(L.m(s.help), " ", L.m("Revival: "), s.default, " ", L.m(s.unit), L.m(", Vanilla: "),
+          s.vanilla, L.m(". Range: "), s.min, "–", s.max, L.m(". Takes effect: "), L.m(s.applies)), "hint"));
       }
     }
     $("tuning-content").hidden = true;
@@ -3378,23 +3395,164 @@
         const saved = await api("world", { method: "PUT", body: JSON.stringify(next) });
         worldData.saved = { ...next, revision: saved.revision };
       }
-      const values = {};
+      const values = {}, active = tuningData.presets.find((p) => p.id === tuningData.preset);
       for (const input of $("tuning-fields").querySelectorAll("input[data-key]")) values[input.dataset.key] = Number(input.value);
-      const result = await api("tuning", {
-        method: "PUT",
-        body: JSON.stringify({ revision: tuningData.revision, document: { schemaVersion: 1, values } }),
-      });
+      const document = { schemaVersion: 2, values };
+      if (active?.builtIn) {
+        const name = window.prompt(String(L.m("Name your copy of this preset:")), String(L.join(active.name, L.m(" (my copy)"))));
+        if (name === null) return;
+        document.name = name;
+      }
+      const result = await api("tuning", { method: "PUT", body: JSON.stringify({ revision: tuningData.revision, document }) });
       tuningData = await api("tuning");
       await finish(result, "tuning-form", "tuning", tuningData);
       renderTuning();
     },
     "tuning",
   );
-  $("tuning-defaults").addEventListener("click", () => {
-    for (const s of tuningData?.definitions || []) $("tuning-" + s.key).value = s.default;
-    if (tuningData) $("tuning-world-density").value = 18;  // WorldSpawns.DefaultMonsterSlotsPerCell
-    markDirty("tuning-form");
+  // Presets act at once (no Save): choose one, copy, rename or delete. Unsaved edits on the page are dropped.
+  async function presetAction(run) {
+    if (dirtyForms.has("tuning-form") && !window.confirm(String(L.m("Drop the unsaved changes on this page?")))) {
+      renderTuning();
+      return;
+    }
+    try {
+      tuningData = await run();
+      dirtyForms.delete("tuning-form");
+      syncDraft();
+      renderTuning();
+      notice(L.m("Done. Each setting takes effect as its line says."));
+    } catch (e) {
+      notice(L.errorMessage(e) || String(e), true);
+      renderTuning();
+    }
+  }
+  $("tuning-preset").addEventListener("change", (e) => presetAction(() =>
+    api("tuning/active", { method: "PUT", body: JSON.stringify({ preset: e.target.value }) })));
+  $("tuning-preset-copy").addEventListener("click", () => {
+    const active = tuningData.presets.find((p) => p.id === tuningData.preset);
+    const name = window.prompt(String(L.m("Name of the new preset:")), String(L.join(active?.name || "", L.m(" (my copy)"))));
+    if (name !== null) presetAction(() => api("tuning/presets", { method: "POST", body: JSON.stringify({ from: tuningData.preset, name }) }));
   });
+  $("tuning-preset-rename").addEventListener("click", () => {
+    const active = tuningData.presets.find((p) => p.id === tuningData.preset);
+    const name = window.prompt(String(L.m("New name:")), active?.name || "");
+    if (name !== null) presetAction(() => api("tuning/presets/" + tuningData.preset, { method: "PUT", body: JSON.stringify({ name }) }));
+  });
+  $("tuning-preset-delete").addEventListener("click", () => {
+    const active = tuningData.presets.find((p) => p.id === tuningData.preset);
+    if (window.confirm(String(L.join(L.m("Delete the preset "), active?.name || "", L.m("? Revival is used instead.")))))
+      presetAction(() => api("tuning/presets/" + tuningData.preset, { method: "DELETE" }));
+  });
+
+  // ── Rewards page: the active preset's quest endings, daily task items and level-up rewards ──────
+  function itemText(items) {
+    return (items || []).map((i) => {
+      const known = rewardsData.catalog.items.find((c) => c.kind === i.kind && c.id === i.id);
+      const name = known ? known.slug : i.kind + ":" + i.id;
+      return i.amount > 1 ? name + " x" + i.amount : name;
+    }).join(", ");
+  }
+  function parseItems(text, where) {
+    const items = [];
+    for (const part of text.split(",").map((t) => t.trim()).filter(Boolean)) {
+      const m = /^(\S+?)(?:\s*[x×]\s*(\d+))?$/.exec(part);
+      const known = m && rewardsData.catalog.items.find((c) => c.slug === m[1] || c.kind + ":" + c.id === m[1]);
+      if (!known) throw new L.Error(L.join(where, L.m(": unknown item "), part));
+      items.push({ kind: known.kind, id: known.id, amount: m[2] ? Number(m[2]) : 1 });
+    }
+    return items;
+  }
+  function numberInput(value, min, max, field) {
+    const input = el("input");
+    Object.assign(input, { type: "number", min, max, step: 1, required: true, value });
+    input.dataset.field = field;
+    return input;
+  }
+  function itemsInput(items, field) {
+    const input = Object.assign(el("input"), { type: "text", value: itemText(items), className: "items" });
+    input.setAttribute("list", "rewards-items");
+    input.dataset.field = field;
+    return input;
+  }
+  function cells(row, ...inputs) {
+    for (const input of inputs) {
+      const cell = el("td");
+      cell.append(input);
+      row.append(cell);
+    }
+  }
+  function renderRewards(tables = rewardsData.rewards) {
+    const d = rewardsData;
+    L.text($("rewards-preset"), L.join(L.m("Preset in use: "), d.name, d.builtIn
+      ? L.m(". It is built in, so saving makes a copy of your own and uses it.") : L.m(".")));
+    $("rewards-items").replaceChildren(...d.catalog.items.map((i) => Object.assign(el("option"), { value: i.slug })));
+    const quests = $("rewards-quests");
+    quests.replaceChildren();
+    for (const g of d.catalog.groups) {
+      const q = tables.quests[g.keys[0]] || { exp: 0, gold: 0, slots: 0, items: [] }, row = el("tr");
+      row.dataset.keys = g.keys.join(" ");
+      row.dataset.label = g.quest + " · " + g.label;
+      row.append(el("td", g.quest), el("td", g.label));
+      cells(row, numberInput(q.exp, 0, 100000, "exp"), numberInput(q.gold, 0, 100000, "gold"),
+        numberInput(q.slots || 0, 0, 1000, "slots"), itemsInput(q.items, "items"));
+      quests.append(row);
+    }
+    $("rewards-daily-count").value = tables.dailyItems;
+    $("rewards-pool").replaceChildren(...tables.dailyPool.map(poolRow));
+    const levels = $("rewards-levels");
+    levels.replaceChildren();
+    for (let level = 2; level <= d.catalog.levels; level++) {
+      const r = tables.levels[level] || { gold: 0, items: [] }, row = el("tr");
+      row.dataset.level = level;
+      row.append(el("td", String(level)));
+      cells(row, numberInput(r.gold, 0, 100000, "gold"), itemsInput(r.items, "items"));
+      levels.append(row);
+    }
+    $("rewards-content").hidden = true;
+    $("rewards-form").hidden = false;
+  }
+  function poolRow(r) {
+    const row = el("tr"), remove = el("button", L.m("Remove"), "secondary");
+    remove.type = "button";
+    remove.addEventListener("click", () => { row.remove(); markDirty("rewards-form"); });
+    cells(row, itemsInput([{ ...r, amount: 1 }], "item"), numberInput(r.weight, 0, 10000, "weight"),
+      numberInput(r.minLevel || 1, 1, 40, "minLevel"), remove);
+    return row;
+  }
+  function collectRewards() {
+    const quests = {}, levels = {}, dailyPool = [];
+    const field = (row, name) => row.querySelector(`[data-field="${name}"]`).value;
+    for (const row of $("rewards-quests").querySelectorAll("tr")) {
+      const quest = { exp: Number(field(row, "exp")), gold: Number(field(row, "gold")), slots: Number(field(row, "slots")),
+        items: parseItems(field(row, "items"), row.dataset.label) };
+      for (const key of row.dataset.keys.split(" ")) quests[key] = quest;
+    }
+    for (const row of $("rewards-pool").querySelectorAll("tr")) {
+      const [item] = parseItems(field(row, "item"), L.m("Daily item"));
+      if (item) dailyPool.push({ kind: item.kind, id: item.id, weight: Number(field(row, "weight")), minLevel: Number(field(row, "minLevel")) });
+    }
+    for (const row of $("rewards-levels").querySelectorAll("tr"))
+      levels[row.dataset.level] = { gold: Number(field(row, "gold")), items: parseItems(field(row, "items"), L.join(L.m("Level "), row.dataset.level)) };
+    return { quests, dailyItems: Number($("rewards-daily-count").value), dailyPool, levels };
+  }
+  $("rewards-pool-add").addEventListener("click", () => {
+    $("rewards-pool").append(poolRow({ kind: "potions", id: 205, weight: 1, minLevel: 1 }));
+    markDirty("rewards-form");
+  });
+  $("rewards-load-revival").addEventListener("click", () => { renderRewards(rewardsData.revival); markDirty("rewards-form"); });
+  $("rewards-load-vanilla").addEventListener("click", () => { renderRewards(rewardsData.vanilla); markDirty("rewards-form"); });
+  submit(
+    "rewards-form",
+    async () => {
+      const rewards = collectRewards();
+      const result = await api("rewards", { method: "PUT", body: JSON.stringify({ revision: rewardsData.revision, rewards }) });
+      rewardsData = await api("rewards");
+      await finish(result, "rewards-form", "rewards", rewardsData);
+      renderRewards();
+    },
+    "rewards",
+  );
   submit(
     "weather-form",
     async () => {

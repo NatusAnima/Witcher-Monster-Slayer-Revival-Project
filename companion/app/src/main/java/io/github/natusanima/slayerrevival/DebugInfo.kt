@@ -228,7 +228,7 @@ object DebugInfo {
 
     /** Whether the server's loopback ports can be bound: when they can't and the server is stopped, another app holds them. */
     private fun ports() = listOf(ServerService.GAME_PORT, ServerService.HTTP_PORT, ServerService.TILE_PORT, ServerService.ADMIN_PORT,
-        ServerService.PLACEMENT_PORT, ServerService.LOG_PORT).joinToString { port ->
+        ServerService.PLACEMENT_PORT, ServerService.LOG_PORT, ServerService.WEATHER_PORT).joinToString { port ->
         "$port " + try {
             ServerSocket(port, 0, InetAddress.getByName("127.0.0.1")).close()
             "free"

@@ -15,10 +15,12 @@ namespace WitcherRevival.Server.Net;
 /// </summary>
 public static class WorldBestiary
 {
-    /// <summary>A species: its monsters row, name, family (monster_families id), the sheet's rarity (1 common,
-    /// 2 rare, 3 legendary) and skulls, the row's difficulty tier and the client's occurrence tags.</summary>
+    /// <summary>A species: its monsters row, name, family (monster_families id), rarity (1 common, 2 rare, 3 legendary)
+    /// and skulls (the wiki's, else the sheet's), the row's difficulty tier, the occurrence tags from the Witcher wiki
+    /// (wiki_bestiary.py; TagsSource says per category whether the English page, the Polish one or the client gave them)
+    /// and the client's own 1.1.116 tags (ClientTags; WorldSpawns.TagsOf picks one set by Tuning).</summary>
     public sealed record Species(int MonsterId, string Slug, string Name, int Family, int Rarity, int Skulls,
-        int Difficulty, string[] Tags);
+        int Difficulty, string[] Tags, string[]? ClientTags = null, Dictionary<string, string>? TagsSource = null);
 
     private sealed record Data(List<Species> Species, List<JsonElement> Monsters, Dictionary<string, int[]> Vulnerabilities);
 

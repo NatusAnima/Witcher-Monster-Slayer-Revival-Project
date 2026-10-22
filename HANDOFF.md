@@ -104,7 +104,8 @@ Phase 3 = central-server and later-content research).
   the PR merged (different SHA): close it by hand with a link to `6c1d73f`. Everything below is commit `0fbde39` (2026-10-10, not pushed).
 - **Weather:** the app and `restart.py` pass `--Weather:Url https://api.open-meteo.com/v1/forecast`. The runtime ships Alpine's `ca-certificates-bundle`
   as `etc/ca-certificates.crt`, and the server gets `SSL_CERT_FILE`. Tuning `weather.real` turns it off. Checked under qemu with the phone build: with only
-  the bundled roots Open-Meteo answered (rain); with no roots, Clear.
+  the bundled roots Open-Meteo answered (rain); with no roots, Clear. **Superseded in 0.3.0:** on the phone it never worked (no resolv.conf for
+  musl); the app now relays the request, see the 0.3.0 section.
 - **Alchemy "Add Station":** the client offers brewer ids 2 and 3 (`AlchemyBrewingPanel`: 1 infinite, 2 small, 3 big); ours were 1201-1203. Now 1/2/3;
   saves with 1201-1203 come back as 1-3 (`EnsureBrewers`); the bundles keep ids 2202/2203.
 - **Bags:** bundles 95-99, one-time, in Equipment → Items (the client has no bag group). The client texts give the names and sizes (Bag 50, Small pouch 50,
@@ -273,6 +274,8 @@ Uncommitted. From the maintainer's quest test on the 13:07 build and their list 
   - Six graphs queue the map (node 399), and the game opens a queued node only if it already has it. It never had it: 399 was
     served only at f46=1, which the map's own graph sets. So the map stands invisible beside the player from Good Money until
     Sword in the Stone starts.
+  - **Superseded in 0.3.0:** nothing starts `s01hq03_map_payment` ("payment"); the sale ends in the map graph's
+    `map_bought`, which now costs the 500 orens (see the 0.3.0 section). The two lines below were wrong.
   - Lothar's `s01hq03_map_payment` sends "payment" (no node): the server takes 500 orens (`PRICES`), and the reply's gold
     (−500) is a change the game adds.
   - The blacksmith graph's direct sale path (dialogue sets f118 = 1, then queue 399) needs no payment step.
@@ -392,6 +395,167 @@ Uncommitted. From the maintainer's quest test on the 13:07 build and their list 
   wrong or empty file wipes the progress and still says "restored"), the running server keeps the profile in memory and writes
   it back on its next save, and entry paths are not checked (zip slip inside the app's files). The 0.2.1 notes tell players
   to stop the server first.
+
+## 0.3.0 (2026-10-22): the eight field reports, weather and heads
+Uncommitted. Plan: `C:\Users\iyave\.claude\plans\here-are-some-issues-encapsulated-dream.md`. Version 0.3.0: hook.js changed (y), so
+every installed game is offered "Update the game". Causes were found in the 1.1.116 binary with capstone (`local/il2cpp116/in`,
+names from `script.json`); none of these is confirmed on a device yet.
+- **Oils and skills gave no bonus:** every effect went out at apply time 1 (OnStart). `Player.Construct` (0x18B7064) applies those
+  before the fight has a target or a critical-hit meter (`AdrenalineModule`, added from NotifyTargetSet), so the family oils
+  (`TryToImproveAttacksAgainstFamily` 0x1B0487C), the oil skills (`HasUsedProperOil`) and every meter effect returned without a
+  change. `Reconstruction.FightStart` gives effects 4, 15, 22, 23, 27, 28, 29-39, 56, 59, 80 apply time 22 (OnTargetSet, applied once per
+  fight by `Player.NotifyTargetSet` 0x18BA58C). Blizzard is now effect 4, 25 meter points (59 only keeps a floor). Static data only.
+  Guard: `test_target_and_meter_effects_wait_for_the_fight_target`. **Device check:** a ghoul falls faster with Necrophage Oil.
+- **Nemeton stuck after completion:** with no bomb equipped EndNestCombat (53) sends BombId −1, `checked((int)ReadUInt())` threw,
+  and 53 had no refusal, so the game waited for good. Now `ReadInt()`, and 53 is refused with `[0]` on any fault.
+- **Lothar's map was free:** nothing starts `s01hq03_map_payment` ("payment"); the sale ends in the map graph's `map_bought`
+  (node 399, output 1118; `map` is the earned hand-over, f116 ≥ 2 or f154 ≥ 2). `PRICES` is per node output
+  (`s01hq01_map.map_bought`: 500), taken the first time, only when the player has it (`StoryEngine.PriceOf(node, output)`); the
+  no-node price path is gone. Story JSON regenerated from `local/cache/story/` (only the prices changed); `story_audit.py` 0 errors.
+- **Nemeta moved every day:** `playable_locations.py` picks a cell's anchor from its raw candidates by a hash of the position
+  (`nest-v3`, no epoch), sends it every day as an extra place `lab-<cell>-<epoch>-5999`, and drops the day's places within the
+  spacing of it. Kind and monsters still change daily (`WorldNests.ForCell` unchanged): the maintainer's choice. A map rebuild can
+  move it. Story nemeta are givers and still follow the player (350 m).
+- **Bestiary entries vanished after a restart:** the game lists a monster from the fight's start (`FightNode.EnterNode` adds it
+  with 0 kills); the server saved only wins and RPC 7 dropped zeros. A lost or fled world or summoned fight, and the fights a lost
+  nemeton run reached (the client sends an empty details array for the rest), now keep `Kills[m] = 0`, and RPC 7 sends zeros.
+  `worldEncountered` and `SummonedMonsters` keep the encountered monster itself (a map request during a fight dropped expired
+  spawns, so the win was lost). Not covered: a server restart mid-fight, a lost story fight.
+- **Head reverted to the first one:** SetCustomizationHead (28) was only echoed and GetPlayerInfo always sent head 1. Now
+  `PlayerState.Head` (customization_heads ids 1-3), in RPC 3 and the friends list (`FriendData.HeadId`). The client also ships
+  `head_east_1` (male and female) with no row; not added.
+- **Weather never worked on the phone:** musl reads `/etc/resolv.conf`, which Android lacks, so the server's lookups went to
+  127.0.0.1 and every answer was Clear (all field logs: code 6; the log's `source=` only says a URL is set). The app relays
+  Open-Meteo (`ServerService.startWeatherRelay`, loopback 18095, the forecast path only) and the server gets
+  `--Weather:Url http://127.0.0.1:18095/v1/forecast`. The CA bundle and `SSL_CERT_FILE` left the runtime. `restart.py` (PC) still
+  asks Open-Meteo directly. **Device check:** the dashboard's weather `lastFetchOutcome` is success.
+- **No game without internet:** `PreGameConditionsModule.CheckNetworkAvailability` (0x199F464) needs `internetReachability` ≠
+  NotReachable, then TCP to `ConnectionTester.KNOWN_HOSTS` (google.com:80, facebook.com:80); `SyncedTime` sets Initialized and
+  unblocks input only after a non-zero NTP answer (`HandleTimeSyncRequests` 0x19B0D40). hook.js stage "offline play": reachability
+  0 → 2, `ConnectionTest.FromHost` non-loopback → 127.0.0.1:18080, `TimeSyncTask.Run` replaced by the phone's clock (the
+  server's too); `offlineHosts` (those and the NTP hosts) resolve to 127.0.0.1. **Device check in airplane mode.**
+  - **The first 0.3.0 install (12:23 build) showed no monsters:** `Run` answers NTP milliseconds counted from 1900, and
+    `HandleTimeSyncRequests` adds −2208988800000 (`x28`, 0x19B0DD4) before `FromUnixTimeMilliseconds`; the replacement gave
+    Unix milliseconds, so the game's clock stood in 1956, before every monster's window. It now answers `Date.now() + 2208988800000`.
+- **Device test 2026-10-22 (maintainer):** airplane mode, oils, Resolve, nemeta without a bomb and their fixed spot, the
+  bestiary, the head and the sea all work. Two follow-ups:
+  - **Hit Reflection ("Retribution") dealt no damage:** the skill (`hit_deflection`, 6) had only the unlock (50, which installs
+    the deflect); the reflected share is `SwordModifiers.DeflectModifier` (+0x108, +0x60), which only ImproveDeflect (82) raises
+    (`SwordModule.DealDeflectDamage` scales the incoming hit by it). Now (82, 30, OnStart): 30 % from the later wiki table (the
+    pre-1.2 one gives no number); the sword module exists at OnStart. Audit of every combat effect's `Apply` (module it reads,
+    with the generic `GetModule<T>` resolved through `.rela.dyn` and `ScriptMetadataMethod`): Sword, Health, Signs and Bomb3D
+    effects work at OnStart (`Player.Construct` builds those modules first); the meter effects needed OnTargetSet (done); and
+    TryDealFireDamage (58) builds `DealFireDamage(100, power)`, which strikes the caster's target, so at OnStart the Melltith
+    sword never burned: now OnAttack (2, applied by `SwordModule.DealSwordDamage` on every hit). Every skill description's `#0`
+    now has its effect row.
+  - **Weather "failed-clear-fallback":** the relay answers through `adb forward` in 0.1-0.16 s with Open-Meteo's JSON; the failure
+    was the airplane-mode test's, kept for the whole 15-minute period. A failed look is now retried after a minute
+    (`WorldWeather.FailedRetry`), the reason goes to server.log ("Weather fetch failed: ..."), and the GetWeather line shows
+    the answer's real `source`/`value` (observed, cached, stale-cache, fallback) instead of only "open-meteo".
+- **No Google sign-in in the game (maintainer, 2026-10-22):** hook.js stage "no sign-in window". `LoginWindowAdapter.Show`
+  (0x17AE78C) is skipped when `gameStarted` (after a failed silent sign-in, or from the settings); the window before the game is
+  unchanged. After `SettingsWindow.UpdateLoginInfo` (0x1819B48, also run by `OnInitialized`) the settings' `_loginParent` (+0xF0)
+  and `_signInText` (+0x138) are set inactive. **Device check:** no sign-in pop-up in the game, no sign-in part in the settings.
+- **The sea:** the builder keeps `natural=coastline` in a new `coastlines` table + R-tree and the extract's header box in
+  `meta["bounds"]` (`covers()` uses it). Maps built earlier have neither and work as before (no schema bump): players rebuild.
+  `FeatureIndex._document` adds water areas from `sea_rings`: the coastline cut to the box in Mercator and joined, the box edge
+  walked clockwise (the sea is right of a coastline), islands as holes, a box no coast crosses decided by the nearest coastline's
+  side (`coast_side`, within 50 km, else land), no sea where a coastline ends inside the box. Monaco: offshore tiles all sea, Port
+  Hercule 46 %, the Rock 47 %, 1-4 ms a tile. Placement sees the sea as water: points at the waterline and on piers go (Monaco's
+  casino cell 17 → 11 places).
+- **Old tiles after a new map:** the game keeps every tile on disk (`cache/Google.Maps/Feature`) and never asks again, so a
+  rebuilt or other region (or tiles sent before a map existed) kept the old look. The tile service names its map in `/health`
+  (`map`: codec version, source file, timestamp, coastlines); hook.js stage "map tiles" removes the cached tiles when it changes
+  (marker `Google.Maps/revival-map`). **Device check:** after a rebuild game.log shows `map tiles: a new map`.
+- **Tests (Windows, 2026-10-22):** full server suite 313: 20 fail, every one also failing at HEAD (`2847552`, checked in a scratch
+  worktree): the 18 Windows-only ones, and two that still level up and buy with the Final Exam's reward, which became nothing on
+  10-10 (`test_reconstructed_skill_purchase_checks_level_points_and_persists`, and `..._world_monsters_spawn_on_safe_places_...`
+  after its fight and herb parts): not fixed, they fail on Linux too. Map suite 75 (+ 2 Monaco tests with `local/venv`), `tools/client116`
+  tests, `story_audit.py` (0 errors, the same 4 warnings) and the hook bundle pass. New tests: the apply-time guard, nest `bomb=-1`, the
+  map sale, the head across a restart, zero-kill bestiary entries (summons, nemeta), nemeton spot across days and tuning, `SeaTests` (6),
+  Monaco's sea, the tile service's map name.
+- **Build 2026-10-22 12:23:** runtime rebuilt (no CA bundle; checked: sea, nest-v3, map name, both new hook stages, 0.3.0 notes in
+  `runtime.zip`), `local/release/witcher-monster-slayer-companion-app-0.3.0-arm64-v8a.apk` (versionCode 300, release key, `apksigner
+  verify` ok, the same certificate as 0.2.1). Installed on the Xiaomi 14:18 (`adb install -r`); the maintainer found no monsters
+  (the clock, above). Rebuilt 2026-10-22 ~14:50 with the clock fix, the sign-in removal and their notes: the same file name (verified,
+  same certificate). `...-0.3.0-clockfix-arm64-v8a.apk` is the clock fix alone, kept as a fallback. After installing: start the
+  server once, then "Update the game" (the hook changed again).
+
+## 0.3.0 rebalance (2026-10-22/23): presets, rewards, wiki spawns, XP, scrolls, consumables, trinkets
+Uncommitted, beside the field fixes above. Plan: `C:\Users\iyave\.claude\plans\we-are-working-on-breezy-trinket.md`.
+Maintainer's rule: **anything not vanilla is tunable**.
+- **Presets** (`Net/WorldTuning.cs`, `Admin/TuningRoutes.cs`, the Tuning page's preset bar):
+  - Revival (defaults) and Vanilla (each `Setting`'s `VanillaValue`) are built in and read-only; the player's own presets are
+    `world/presets/custom[-n].json` `{name, values, rewards}`.
+  - `world/tuning.json` is schema 2: the active preset and its resolved values (the placement service reads `places.*` as before).
+  - A v1 file becomes the preset "Custom" and stays active, so nobody's settings reset. Editing a built-in one forks a copy.
+  - Routes: `PUT /api/tuning`, `POST /api/tuning/presets`, `PUT|DELETE /api/tuning/presets/{id}`, `PUT /api/tuning/active`.
+  - New settings: spawns.* (wiki tags, natural off streets, boosts ×3/×6, rain roaming, level gate: all vanilla behaviour per the
+    maintainer), xp.baseByRarity, xp.vanillaCurve (Revival 0), nests.expPercent 200, nests.gold 100, tasks.goldPercent 200,
+    tasks.exp 200, inventory.startSize 400 / maxSize 2000, bestiary.* (Revival 3/25/100, 2/10/20, 1/2/4; Vanilla pre-1.2
+    3/50/150, 2/10/30, 1/2/6), quests.softCap/hardCap 800/1000, trinkets.buffs, shop.scrolls, shop.weatherItems.
+- **Rewards page** (`Net/Rewards.cs` `RewardTables`, `/api/rewards`, dashboard "Rewards"):
+  - Quest endings: `RewardTables.Groups`, keys `node.output` or `prologue.<key>`. Vanilla = the story file's and `RewardFor`'s
+    amounts (the wiki's v1.1). Revival = the plan's table.
+  - Daily pool: items per claim and weighted rows. Level-up rewards: levels 2-40 (Vanilla = the wiki's pre-1.2 list).
+    **Every level needs an item:** `LevelUpWindow` waits forever without one.
+  - Paid in `StoryEndBehaviourGraph` and the prologue branch (`GrantItems`, `WriteGear`). Mid-quest outputs (fights, coin
+    notices) keep the story's amounts. Quest bag slots come from reached outputs (`Economy.QuestSlots`).
+- **Spawns from the wiki** (`story-1.1.116/wiki_bestiary.py` + `wiki-bestiary.json` snapshot of EN rev 580603 / PL rev 235511):
+  - Sentences map to the client's own `MONSTERS/OCCURANCE/*` phrases (EN and PL; a few PL keywords). Per category EN wins,
+    then PL, then the client's tags.
+  - `world-bestiary.json` keeps `client_tags` and `tags_source`. 21 species changed tags, 8 rarity, 1 skulls.
+  - Rules in `WorldSpawns.Fits` and `BoostOf`. NEUTRAL2 never on urban ground (town parks are grassland). Rain lets WATER+RAIN
+    roam off water. Boosts multiply: increased ×3, significantly ×6.
+  - Level gate: `WorldSpawns.Allowed`, through `ForCell(playerLevel)`. The Aura now uses `DrawBalanced` with the balance rules.
+- **The bestiary's text:** `ClientTexts` (`GET /revival/texts`) serves INFO_2 overrides (term references, so translated),
+  trinket bonus lines, trinket modifier names and the weather charms' names. hook.js stage **"texts"** hooks
+  `I2.Loc.LocalizationManager.GetTranslation` (0x1C933D8) and fetches them at start.
+- **XP** (audit: the client adds exactly what the server saves; the field logs fit):
+  - `Reconstruction.FightExp`: by rarity 100/250/600; xp.baseByRarity 0 goes by skulls.
+  - Nests: vanilla amounts (base by rarity per monster, 250 clearing) × nests.expPercent.
+  - First-kill uses `AllKills`.
+  - `PlayerState.Fight` persists world, summoned and nest encounters across restarts.
+  - In-flight retries wait for the first reply (`ReplayedResponseAsync`, `inflight`).
+  - `LevelShown` re-sends a lost LevelUp window after the next boot; level-ups also pay the preset's orens.
+  - Push 3 after XP-granting replies (the client's `QuestEndRequestNode` double-apply).
+  - `xp.vanillaCurve` with `PlayerState.Curve` conversion at boot (level and progress kept); the curve is fixed per process.
+  - Every grant logs its parts.
+- **Trinket buffs** (`Net/TrinketBuffs.cs`, all 24 earnable): herbs, XP (+ attack vs family: player modifiers 921-926, effect
+  28+family at apply time 22, derived and not removable), ingredients, nest gold, bag slots, a second unlimited station
+  (instance 1020024).
+- **Summoning scrolls** (`Net/SummonScrolls.cs`, ids 2-17, client slugs and texts):
+  - Groups follow the descriptions, with the level gate (falling back a rarity) and FULL_MOON_ONLY.
+  - Rows are now always in static data (Reconstruction, not TaskCatalog).
+  - Shop bundles 5000+id under Alchemy → Baits.
+- **Consumables** (`Net/Consumables.cs`, type 7):
+  - Items: Experience Scroll (911, +100%, 30 min), Ingredients Scroll (912, +50%), Rain/Fog/Clear charms (913-915, 1 h; slugs
+    `interaction_booster`, `consumable_perfume`, `consumable_ringshaped_cracknel`, names from the hook).
+  - RPC 99 replies `[ok][id][expiry]`; RPC 100 drops.
+  - Weather: forced per player in RPC 67, and in the spawns for generations starting in the window. Push 91 and 67.
+- **Capacity:** `BagSize` = start + bags + quest slots + trinket slots, capped by inventory.maxSize. hook.js native fix **"bag
+  limit"** (`CanExpandInventory` 0x1A0E060 `cmp w8,#1000` → `#4095`).
+- **Quest distance:** `ChooseStoryPlace` keeps places within the soft cap of the player, then the hard cap, then the nearest within
+  it. `TooFar` re-chooses a saved place more than the hard cap from a known position, with a new place id.
+- **Tests:**
+  - `test_rebalance.py` (10, only its own: `load_tests`), `test_spawn_probe.py` (runs `tests/world_spawn_probe` with the new
+    rule checks and re-pinned hashes), presets and Rewards in `test_tuning.py`.
+  - Pins updated on purpose: Revival amounts, bag 400 (the boot-batch hashes: verified that only the bag size moved them),
+    static rows.
+  - Season 1 playthrough and the pre-1.2 bestiary audit run on the Vanilla preset (`PrototypeTests.tuned`). The 88/18/3 test
+    runs with the level gate off.
+  - Full suite (Windows): 327 tests, only the 20 known failures (16 Windows-only errors, file modes, the failed-save case and the two Final Exam tests; the world-spawn one now gets as far as its Final Exam purchase); `tools/client116` tests and the hook bundle pass.
+- **Build 2026-10-23 00:49:** runtime rebuilt (its hook has the texts stage and the bag limit; its notes have the rebalance), then
+  `local/release/witcher-monster-slayer-companion-app-0.3.0-arm64-v8a.apk` (`apksigner verify` ok, the same certificate). The
+  field-fix build of 10-22 18:54 is kept as `...-0.3.0-fixes-arm64-v8a.apk`. **Installed on the Xiaomi 2026-10-23 00:54** at the
+  maintainer's request (`adb install -r`, data kept; versionCode 300). The hook changed, so the app offers "Update the game".
+- **Device checks still open:**
+  - the texts stage (bestiary line in EN and PL, trinket Bonus lines, charm names);
+  - the effects-panel icons of modifiers 911-926;
+  - a 0-kill bestiary tier (equal cumulative values);
+  - pushes 3, 5, 67, 69 and 91 taken live;
+  - a bag over 1000;
+  - the Use button on consumables.
 
 ## Current State (2026-10-05)
 **The client:**
