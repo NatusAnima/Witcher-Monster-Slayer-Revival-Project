@@ -95,6 +95,13 @@ class DebugTests(unittest.TestCase):
         self.assertEqual([b['Type'] for b in self.saved(profile)['Player']['Brewers']].count(3), 2)
         self.assertEqual(self.debug(profile, action='item', kind='brewers', item=1, amount=1)[0], 400)    # the basic one is unique
         self.assertTrue(self.pushed(client, 69))
+        # a trinket is earned at once (From Vizima to Beauclair: its bag slots) and can be taken back
+        self.assertEqual(self.debug(profile, action='item', kind='trinkets', item=20011, amount=1)[0], 200)
+        self.assertIn('20011', self.saved(profile)['Player']['Tasks']['Achievements'])
+        self.assertTrue(self.pushed(client, 24))
+        self.assertEqual(self.debug(profile, action='item', kind='trinkets', item=20011, amount=-1)[0], 200)
+        self.assertNotIn('20011', self.saved(profile)['Player']['Tasks']['Achievements'])
+        self.assertEqual(self.debug(profile, action='item', kind='trinkets', item=1, amount=1)[0], 400)
 
     def test_invincibility_and_one_hit_kills_are_debug_modifiers_only(self):
         self.restart(Admin__DebugTools='true')

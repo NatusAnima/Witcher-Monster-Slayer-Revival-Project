@@ -168,6 +168,15 @@ public sealed partial class PlayerService
                         brewers.Remove(gone);
                     return p with { Brewers = brewers };
                 }, [69], $"{verb} {Math.Abs(amount)} of station {id}.");
+            case "trinkets":   // earned at once (or forgotten), with its bonus (TrinketBuffs); its task may earn it again
+                if (tasks.Catalog is not { } catalog || catalog.Trinkets.Trinkets.All(t => t.Id != id))
+                    throw new ArgumentException("Unknown trinket (the tasks are off or it does not exist).");
+                return (p =>
+                {
+                    var state = p.Tasks is null ? tasks.Refresh(p, catalog, tasks.Now) : TaskEngine.Copy(p.Tasks);
+                    if (amount > 0) state.Achievements.TryAdd(id, (int)tasks.Now); else state.Achievements.Remove(id);
+                    return p with { Tasks = state };
+                }, [24, M_GetPlayerModifiers, 69, M_GetInventory], $"{verb} trinket {id}.");
             default:
                 bool known = kind switch
                 {

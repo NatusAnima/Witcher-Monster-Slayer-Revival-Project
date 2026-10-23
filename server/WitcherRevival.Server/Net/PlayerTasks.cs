@@ -13,10 +13,11 @@ public sealed partial class PlayerService
     /// The lifetime is the client default 500 s.</summary>
     private byte[] SummonOwnedScroll(SummonScrolls.Scroll scroll, int longitude, int latitude)
     {
-        int level = Reconstruction.LevelForExp(profiles.Snapshot().Player?.Exp ?? 0);
+        // No level gate: a scroll summons the rarity it names (a legendary one at level 2 too); a rarity falls back only
+        // when the family has none (or only full-moon ones, away from the full moon).
         bool fullMoon = WorldSpawns.Sky(0, 0, DateTimeOffset.UtcNow, WorldWeather.Clear).FullMoon;
         var eligible = WorldBestiary.All.Where(s => (scroll.Family is null || s.Family == scroll.Family) &&
-            WorldSpawns.Allowed(s, level) && (fullMoon || !WorldSpawns.TagsOf(s).Contains("FULL_MOON_ONLY"))).ToList();
+            (fullMoon || !WorldSpawns.TagsOf(s).Contains("FULL_MOON_ONLY"))).ToList();
         WorldBestiary.Species? Pick(params int[] rarities)
         {
             for (int fallback = 0; fallback < 3; fallback++)

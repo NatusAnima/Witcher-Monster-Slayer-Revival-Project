@@ -35,7 +35,7 @@ import time
 import placement_policy
 from urllib.parse import parse_qs, urlparse
 
-from osm_extract_index import FeatureIndex
+from osm_extract_index import FeatureIndex, open_indexes
 import s2cells
 
 WALK_CLASSES = {"footway", "path", "pedestrian", "cycleway", "bridleway", "track"}
@@ -665,12 +665,12 @@ def make_handler(service: PlayableLocations):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--index", type=Path, required=True)
+    parser.add_argument("--index", type=Path, action="append", required=True, help="a feature index, once per map area")
     parser.add_argument("--port", type=int, default=18093)
     parser.add_argument("--policy", type=Path, help="Shared world/placement-policy.json schedule")
     parser.add_argument("--tuning", type=Path, help="The dashboard's world/tuning.json (place mix, places per cell, spacing, street clearance)")
     args = parser.parse_args()
-    service = PlayableLocations(FeatureIndex(args.index), args.policy, args.tuning)
+    service = PlayableLocations(open_indexes(args.index), args.policy, args.tuning)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service))
     print(f"playable locations on 127.0.0.1:{args.port}", flush=True)
     server.serve_forever()

@@ -76,7 +76,7 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual(self.notices(b)[0], [self.aid])
         self.assertEqual(a.rpc(104, Q(self.bid)), b'\0' + Q(self.bid))
         self.assertEqual(b.rpc(105, Q(self.aid)), b'\1' + Q(self.aid))
-        self.assertEqual(self.friends(a)[1], {})
+        self.assertEqual(set(self.friends(a)[1]), {self.aid})                 # only yourself (Tuning friends.self)
         self.pair(a, b)
         self.assertEqual(self.notices(a)[1], [self.bid])
         self.assertEqual(self.notices(a)[1], [])
@@ -85,7 +85,31 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual(self.friends(a)[0], self.aid)
         self.assertEqual(self.friends(a)[1][self.bid]['status'], 0)
         self.assertEqual(b.rpc(108, Q(self.aid)), b'\1' + Q(self.aid))
-        self.assertEqual(self.friends(a)[1], {})
+        self.assertEqual(set(self.friends(a)[1]), {self.aid})
+
+    def test_yourself_in_the_friends_list_opens_packs(self):
+        server, a, b = self.social_server()
+        own, friends = self.friends(a)
+        self.assertEqual((friends[own]['status'], friends[own]['sent'], friends[own]['received']), (0, (0, 0, 1), (0, 0, 1)))
+        for method in (103, 104, 105, 108):                                   # nothing else takes your own id
+            self.assertEqual(a.rpc(method, Q(own))[0], 0)
+        server, a, b = self.seed_packs(server)
+        before = self.inventory(a)['ingredients'].get(101, 0)
+        self.assertEqual(a.rpc(106, I(1) + Q(own)), b'\1' + I(1) + Q(own))
+        self.assertEqual(a.rpc(106, I(1) + Q(own))[0], 0)                      # the last one is still unopened
+        self.assertEqual(self.friends(a)[1][own]['sent'], (0, 1, 0))            # day 0: the game's countdown never waits
+        self.assertEqual(self.notices(a)[2], [own])
+        self.assertEqual(a.rpc(107, Q(own)), b'\1' + Q(own) + I(1) + I(101) + I(5))
+        self.assertEqual(a.rpc(106, I(1) + Q(own))[0], 1)                      # the same day again, once opened
+        self.assertEqual(a.rpc(107, Q(own))[0], 1)
+        self.assertEqual((self.inventory(a)['packs'], self.inventory(a)['ingredients'][101]), ({1: 1}, before + 10))
+        # Vanilla: the original list, and your own id is refused
+        server.stop()
+        self.social_env.update(self.tuned('vanilla'))
+        server = self.start('social-a', self.social_env)
+        a = self.client(server)
+        self.assertNotIn(own, self.friends(a)[1])
+        self.assertEqual(a.rpc(106, I(1) + Q(own))[0], 0)
 
     def test_social_gift_once_replay_restart_and_no_unowned_send(self):
         server, a, b = self.social_server(); self.pair(a, b)

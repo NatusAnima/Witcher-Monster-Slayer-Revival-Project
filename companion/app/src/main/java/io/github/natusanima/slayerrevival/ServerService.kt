@@ -127,8 +127,10 @@ class ServerService : Service() {
                 val dir = File(state, name)
                 if (!dir.isDirectory) File(rt, "defaults/$name").copyRecursively(dir)
             }
-            // the update's own notes for What's new, replaced every time (NewsFeed shows them before the owner's news)
-            File(rt, "defaults/news/release.json").copyTo(File(state, "news/release.json"), overwrite = true)
+            // the update's own notes for What's new (release.json and release.<language>.json), replaced every time (NewsFeed
+            // shows them before the owner's news)
+            File(rt, "defaults/news").listFiles { f -> f.name.startsWith("release") && f.name.endsWith(".json") }
+                ?.forEach { it.copyTo(File(state, "news/${it.name}"), overwrite = true) }
             // trinkets only ever gain rows (the server refuses a changed or missing one) and the dashboard never edits
             // them, so each update's new trinkets replace the copy too
             File(rt, "defaults/tasks/trinkets.json").copyTo(File(state, "tasks/trinkets.json"), overwrite = true)
@@ -171,14 +173,14 @@ class ServerService : Service() {
         }
     }
 
-    /** Starts the tile and placement services on the chosen map; false if no map is chosen yet. */
+    /** Starts the tile and placement services on every map area; false if there is none yet. */
     private fun startMap(rt: File, world: File): Boolean {
-        val index = Maps.selected(this) ?: return false
+        val indexes = Maps.all(this).flatMap { listOf("--index", "$it") }.ifEmpty { return false }
         val maps = File(rt, "maps/map-road-fixture-01")
         val python = mapOf("PYTHONHOME" to "$rt/python", "PYTHONUNBUFFERED" to "1")
         start("tiles", "libpython.so", listOf("$maps/osm_live_sidecar.py", "--bind", "127.0.0.1",
-            "--port", "$TILE_PORT", "--index", "$index", "--cache-dir", "$cacheDir/tiles", "--offline"), python)
-        start("placement", "libpython.so", listOf("$maps/playable_locations.py", "--index", "$index",
+            "--port", "$TILE_PORT") + indexes + listOf("--cache-dir", "$cacheDir/tiles", "--offline"), python)
+        start("placement", "libpython.so", listOf("$maps/playable_locations.py") + indexes + listOf(
             "--port", "$PLACEMENT_PORT", "--policy", "$world/placement-policy.json",
             "--tuning", "$world/tuning.json"), python)
         return true
@@ -191,7 +193,8 @@ class ServerService : Service() {
         else -> "Running"
     })
 
-    /** A map was built while the server runs: its tile and placement services start again, on the new map. The game's server stays up. */
+    /** A map area was built or deleted while the server runs: its tile and placement services start again, on the areas there are
+     *  now. The game's server stays up. */
     private fun restartMap() {
         while (synchronized(lock) { launching } && !stopping) Thread.sleep(500) // a start in progress finishes first
         val old = synchronized(lock) {

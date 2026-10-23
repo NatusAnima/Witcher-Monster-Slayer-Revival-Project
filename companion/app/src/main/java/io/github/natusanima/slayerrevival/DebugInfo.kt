@@ -221,7 +221,7 @@ object DebugInfo {
             "${size(File(it.applicationInfo?.sourceDir ?: "").length())} base" } ?: "not installed") + "\n")
         append("Client built for: ${ClientBuildService.builtFor(context)}, built and waiting to install: ${ClientBuildService.resumable(context)}\n")
         append("Setup: signed in to Google ${PlayAccount.signedIn(context)}, extra data downloaded ${PackDownloadService.complete(context)}, ")
-        append("map ${Maps.selected(context)?.let { "${Maps.name(context, it)} (${size(it.length())})" } ?: "none"}\n")
+        append("map areas ${Maps.all(context).joinToString { "${Maps.name(context, it)} (${size(it.length())})" }.ifEmpty { "none" }}\n")
         append("Map: ${MapService.status ?: "not started"}\n")
         append("Server: ${ServerService.status}; ports ${ports()}\n")
     }

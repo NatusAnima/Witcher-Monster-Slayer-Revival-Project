@@ -10,20 +10,28 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.Formatter
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.DateFormat
+import java.util.Date
 import kotlin.concurrent.thread
 
-/** Lists Geofabrik's OpenStreetMap extracts; MapService downloads the chosen one and builds its map. */
+/**
+ * The player's map areas (Update, Delete) and Geofabrik's OpenStreetMap extracts to add one: MapService downloads the chosen
+ * extract and builds its map. The server's map services use every area at once.
+ */
 class RegionActivity : Activity() {
     class Region(val id: String, val name: String, val parent: String, val url: String) {
         override fun toString() = "$name $parent" // what the search matches, word by word
@@ -31,6 +39,7 @@ class RegionActivity : Activity() {
 
     private lateinit var status: TextView
     private lateinit var search: EditText
+    private lateinit var areas: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,14 +50,23 @@ class RegionActivity : Activity() {
             fitsSystemWindows = true
         }
         root.addView(TextView(this).apply {
-            text = "Choose your region"
+            text = "Map areas"
             textSize = 24f
             typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
         })
         root.addView(TextView(this).apply {
-            text = "The map comes from OpenStreetMap, in regional extracts made by Geofabrik. Pick the smallest " +
-                "region that covers where you play: big regions take long to download and build."
+            text = "The game uses all your areas at once. Playing across a border? Add the region next door too.\n" +
+                "Maps come from OpenStreetMap, in regional extracts made by Geofabrik. Pick the smallest region that covers " +
+                "where you play: big regions take long to download and build."
             setPadding(0, pad / 2, 0, pad / 2)
+        })
+        areas = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        root.addView(areas)
+        root.addView(TextView(this).apply {
+            text = "Add an area"
+            textSize = 18f
+            typeface = Typeface.create(Typeface.SERIF, Typeface.BOLD)
+            setPadding(0, pad, 0, 0)
         })
         search = EditText(this).apply {
             hint = "Search, for example Poland or United Kingdom"
@@ -90,6 +108,53 @@ class RegionActivity : Activity() {
                 })
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showAreas()
+    }
+
+    /** The areas on this phone, each with Update (when its Geofabrik link is known) and Delete. */
+    private fun showAreas() {
+        areas.removeAllViews()
+        for (index in Maps.all(this)) {
+            val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+            row.addView(TextView(this).apply {
+                text = "${Maps.name(this@RegionActivity, index)}\n${Formatter.formatShortFileSize(this@RegionActivity, index.length())}, " +
+                    "built ${DateFormat.getDateInstance().format(Date(index.lastModified()))}"
+            }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+            Maps.url(this, index)?.let { url ->
+                row.addView(Button(this).apply {
+                    text = "Update"
+                    setOnClickListener { measure(Region(Maps.id(index), Maps.name(this@RegionActivity, index), "", url)) }
+                })
+            }
+            row.addView(Button(this).apply {
+                text = "Delete"
+                setOnClickListener { delete(index) }
+            })
+            areas.addView(row)
+        }
+    }
+
+    private fun delete(index: File) {
+        val name = Maps.name(this, index)
+        AlertDialog.Builder(this)
+            .setTitle(name)
+            .setMessage("Delete the map of $name? Its monsters and places go until you add it again.")
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton("Delete") { _, _ ->
+                if (MapService.running) {
+                    Toast.makeText(this, "A map is being built. Wait for it, or cancel it first.", Toast.LENGTH_LONG).show()
+                } else {
+                    Maps.remove(this, index)
+                    EventLog.write(this, "map", "deleted the area $name")
+                    ServerService.reloadMap(this)
+                    showAreas()
+                }
+            }
+            .show()
     }
 
     /** Geofabrik's regions that have an .osm.pbf extract, ordered as a tree: "Europe", "Europe › Germany", … */
@@ -160,7 +225,8 @@ class RegionActivity : Activity() {
     private fun confirm(region: Region, bytes: Long) {
         fun size(b: Long) = Formatter.formatShortFileSize(this, b)
         val free = filesDir.usableSpace
-        val old = Maps.selected(this)
+        val old = File(Maps.dir(this), "${region.id}-features.sqlite").takeIf { it.isFile } // this area's map, which a build updates
+        val others = Maps.all(this) - listOfNotNull(old).toSet()
         val memory = ActivityManager.MemoryInfo().also { getSystemService(ActivityManager::class.java).getMemoryInfo(it) }
         // the node index in RAM takes ~3.7x the extract at its peak: when that does not fit, the slower mode keeps it on disk
         val lowMemory = Maps.peakMemory(bytes) > memory.availMem
@@ -176,7 +242,8 @@ class RegionActivity : Activity() {
             append("Free space: ${size(free)}; the build needs about ${size(need)}\n")
             append("Time to build: ${Maps.buildTime(bytes)} on a phone (a guess; the build shows the real time once it is going)\n\n")
             append("The map is built on this phone. The screen can go off, but keep this app in the recent apps screen.")
-            if (old != null) append(" It replaces your current map, ${Maps.name(this@RegionActivity, old)}.")
+            if (old != null) append(" It updates your map of ${Maps.name(this@RegionActivity, old)}.")
+            if (others.isNotEmpty()) append(" The game uses it with your other areas: ${Maps.names(this@RegionActivity, others)}.")
             if (lowMemory) {
                 append("\n\nThis region is big for this phone's memory, so the map is built in a slower mode that keeps its working data " +
                     "on disk (about ${size(bytes * 2)} more).")

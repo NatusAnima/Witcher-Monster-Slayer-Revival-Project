@@ -198,6 +198,28 @@ class NewsTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, 400)
         caught.exception.close()
 
+    def test_release_notes_follow_the_players_language(self):
+        # release.<language>.json: the same notes translated; the player's language, then its base language, then English
+        self.write('release', feed('Revival 9.9.9', 900))
+        self.write('release.de', feed('Revival 9.9.9 auf Deutsch', 900))
+        self.write('release.pt', feed('Revival 9.9.9 em português', 900))
+        self.write('en', feed('English'))
+        titles = {language: self.get('/news/' + language)[0]['news_list'][0]['title'] for language in ('de', 'pt-br', 'pl', 'en')}
+        self.assertEqual(titles, {'de': 'Revival 9.9.9 auf Deutsch', 'pt-br': 'Revival 9.9.9 em português',
+                                  'pl': 'Revival 9.9.9', 'en': 'Revival 9.9.9'})
+
+    def test_packaged_release_notes_are_translated_alike(self):
+        news = Path(__file__).resolve().parents[1] / 'WitcherRevival.Server' / 'news'
+        english = json.loads((news / 'release.json').read_text(encoding='utf-8'))['news_list'][0]
+        for language in ('pl', 'de', 'es', 'it', 'fr', 'ru', 'pt', 'ja'):
+            with self.subTest(language=language):
+                item = json.loads((news / f'release.{language}.json').read_text(encoding='utf-8'))['news_list'][0]
+                self.assertEqual({k: item[k] for k in ('id', 'group_id', 'date', 'image_url', 'title')},
+                                 {k: english[k] for k in ('id', 'group_id', 'date', 'image_url', 'title')})
+                self.assertEqual(item['content'].count('\n- '), english['content'].count('\n- '))   # the same items
+                self.assertNotIn('<', item['content'])
+                self.assertNotEqual(item['content'], english['content'])
+
     def test_default_packaged_feed_is_available(self):
         other = Server(self.directory, 'synthetic-packaged-news')
         self.addCleanup(other.stop)

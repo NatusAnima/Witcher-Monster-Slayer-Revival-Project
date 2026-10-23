@@ -3934,3 +3934,14 @@ dialog .facts {
 .debug-row input { width: 9rem; }
 .debug-row select { max-width: 100%; }
 .debug-badge { color: var(--danger, #a44239); font-weight: 600; }
+/* Rewards: a list of items wraps in its box; on a phone each row is a card with its column names (labelCells). */
+#view-rewards textarea.items { min-width: 14rem; min-height: 0; line-height: 1.4; }
+@media (max-width: 650px) {
+  #view-rewards .table-wrap { overflow: visible; border: 0; }
+  #view-rewards table, #view-rewards tbody, #view-rewards tr, #view-rewards td { display: block; }
+  #view-rewards thead { display: none; }
+  #view-rewards tr { border: 1px solid var(--line); margin: 0 0 12px; padding: 6px 12px; }
+  #view-rewards td { padding: 4px 0; border: 0; }
+  #view-rewards td:before { content: attr(data-label); display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  #view-rewards textarea.items { min-width: 0; }
+}

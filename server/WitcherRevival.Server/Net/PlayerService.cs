@@ -1350,16 +1350,29 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         int id = r.ReadInt(), amount = r.ReadInt();
         if (r.RemainingToRead != 0) throw new InvalidDataException("Unsupported drop payload shape.");
         bool dropped = false;
+        // Tuning inventory.openPacks: a pack "dropped" from the inventory is opened (hook.js names the button Open): the
+        // herbs a friend would get for it (Social:GiftIngredientAmount Herba each), if the bag holds them. The game takes
+        // the packs off itself; the herbs come with an inventory push.
+        bool open = kind == SocialService.PackItems && WorldTuning.Current.On(WorldTuning.OpenPacks);
+        int herbs = open ? cfg.GetValue("Social:GiftIngredientAmount", 5) * Math.Max(0, amount) : 0;
         if (kind is not null && amount > 0 && profiles.Snapshot().Player is not null)
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
             {
                 if (!player.Items.TryGetValue(kind, out var owned) || owned.GetValueOrDefault(id) < amount) return null;
+                if (open && SocialPolicy.Occupied(player) - amount + herbs > Economy.BagSize(player)) return null;
                 owned[id] -= amount;
                 if (owned[id] == 0) owned.Remove(id);
+                if (open)
+                {
+                    if (!player.Items.TryGetValue(ItemKinds.Ingredients, out var ingredients)) player.Items[ItemKinds.Ingredients] = ingredients = [];
+                    ingredients[Economy.Herba] = ingredients.GetValueOrDefault(Economy.Herba) + herbs;
+                }
                 dropped = true;
                 return player;
             });
-        log.LogInformation("  Drop method={Method} result={Result} amount={Amount}", req.Method, dropped, amount);
+        if (open && dropped) lock (pushGate) pendingPushes.Add(M_GetInventory);
+        log.LogInformation("  Drop method={Method} result={Result} amount={Amount}{Opened}", req.Method, dropped, amount,
+            open ? $" opened: +{herbs} herba" : "");
         var b = new ByteBuffer();
         b.WriteByte(dropped ? (byte)1 : (byte)0);
         b.WriteInt(id);
@@ -2471,7 +2484,8 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         bool granted = false;
         string outcome = "refused";
         int gold = profiles.Snapshot().Player?.Gold ?? 0;
-        if (Economy.OrenPackOf(bundleId) is { } pack && profiles.Snapshot().Player is not null)
+        if (Economy.OrenPackOf(bundleId) is { } pack && profiles.Snapshot().Player is not null &&
+            WorldTuning.Current.On(WorldTuning.ShopOrenPacks))
         {
             long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>

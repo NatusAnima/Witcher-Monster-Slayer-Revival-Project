@@ -12,6 +12,7 @@ import unittest
 from osm_extract_index import (
     SCHEMA_VERSION,
     FeatureIndex,
+    FeatureIndexes,
     build_index,
     classify_area,
     clip_ring,
@@ -27,6 +28,7 @@ from osm_extract_index import (
     skip_road,
     unpack_coordinates,
     unpack_rings,
+    open_indexes,
 )
 from osm_live_sidecar import LocalIndexSource, tile_bounds
 
@@ -188,6 +190,58 @@ class ExtractIndexTests(unittest.TestCase):
         db.close()
         with self.assertRaises(ValueError):
             FeatureIndex(self.path)
+
+
+def make_area(path: Path, west: float, east: float, stamp: str, ways, park_osm: int):
+    """An extract's index with its own box (west..east, 52..53) and a park as row 7, as each file numbers its own."""
+    db = sqlite3.connect(path)
+    create_schema(db)
+    for way_id, points in ways:
+        db.execute("INSERT INTO ways VALUES (?,?,?,?,?,?)", (way_id, "road", "residential", None, None, pack_coordinates(points)))
+        lats, lons = [p[0] for p in points], [p[1] for p in points]
+        db.execute("INSERT INTO ways_rtree VALUES (?,?,?,?,?)", (way_id, min(lons), max(lons), min(lats), max(lats)))
+    middle = (west + east) / 2
+    park = [[(52.5, middle - 0.1), (52.5, middle + 0.1), (52.6, middle + 0.1), (52.6, middle - 0.1)]]
+    db.execute("INSERT INTO areas VALUES (?,?,?,?,?)", (7, park_osm, "park", None, pack_rings(park)))
+    db.execute("INSERT INTO areas_rtree VALUES (?,?,?,?,?)", (7, middle - 0.1, middle + 0.1, 52.5, 52.6))
+    db.executemany("INSERT INTO meta VALUES (?,?)", [("schema", SCHEMA_VERSION), ("source_timestamp", stamp),
+                                                    ("source_file", path.stem), ("bounds", f"{west},52.0,{east},53.0")])
+    db.commit()
+    db.close()
+
+
+class AreasTests(unittest.TestCase):
+    """Several map areas at once (the companion's map areas): neighbours answer as one map."""
+
+    def test_neighbours_answer_as_one_map(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        west, east = Path(directory.name) / "west.sqlite", Path(directory.name) / "east.sqlite"
+        border = (1, [(52.5, 16.95), (52.5, 17.05)])   # a street over the border, in both extracts
+        make_area(west, 16.0, 17.0, "2026-10-01T00:00:00Z", [border], 111)
+        make_area(east, 17.0, 18.0, "2026-10-20T00:00:00Z", [border, (2, [(52.7, 17.4), (52.71, 17.41)])], 222)
+        one, alone = open_indexes([west]), FeatureIndex(west)
+        both = open_indexes([west, east])
+        for index in (one, alone, *both.parts):
+            self.addCleanup(index.db.close)   # before the folder goes (Windows keeps open files)
+        self.assertIsInstance(one, FeatureIndex)
+        self.assertIsInstance(both, FeatureIndexes)
+        straddle = (52.4, 16.9, 52.8, 17.6)
+        self.assertFalse(alone.covers(*straddle))
+        self.assertTrue(both.covers(*straddle))
+        self.assertFalse(both.covers(52.4, 17.9, 52.8, 18.1))           # past the last extract
+        document = both.document(52.0, 16.0, 53.0, 18.0)
+        self.assertEqual(sorted(e["id"] for e in document["elements"] if e["type"] == "way"), [1, 2])
+        parks = {e["id"]: e["osm_area"] for e in document["elements"] if e["type"] == "area"}
+        self.assertEqual(parks, {7: 111, "1-7": 222})
+        # the oldest date for the dashboard; another set of areas names another map for the tile cache
+        self.assertEqual(both.meta["source_timestamp"], "2026-10-01T00:00:00Z")
+        self.assertNotEqual(both.meta["source_file"], alone.meta["source_file"])
+        # a clipped query cuts each extract's areas at its own border
+        clipped = both.document(52.45, 16.85, 52.65, 17.15, clip=(52.45, 16.85, 52.65, 17.15))
+        for area in (e for e in clipped["elements"] if e["type"] == "area"):
+            lons = [lon for ring in area["rings"] for _, lon in ring]
+            self.assertTrue(max(lons) <= 17.0 if area["osm_area"] == 111 else min(lons) >= 17.0)
 
 
 def sea_share(areas, box):

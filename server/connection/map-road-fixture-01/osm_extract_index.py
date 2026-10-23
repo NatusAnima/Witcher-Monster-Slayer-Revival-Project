@@ -695,6 +695,62 @@ class FeatureIndex:
         return False
 
 
+class FeatureIndexes:
+    """Several indexes (the player's map areas, often neighbours) answering as one FeatureIndex for the services.
+
+    A box is covered when every point of a grid over it lies in some extract. A document joins each extract's part of the
+    box: its areas and sea cut at its own bounds (neighbours' pieces meet at the border; where extracts overlap both are
+    drawn), each road once. Area ids after the first extract's get the extract's number, as each file counts its own.
+    """
+
+    def __init__(self, paths):
+        self.parts = [FeatureIndex(Path(p)) for p in paths]
+        metas = [part.meta for part in self.parts]
+        self.meta = dict(metas[0])
+        for key in ("roads", "areas", "water_lines"):
+            values = [m.get(key) for m in metas]
+            if all(str(v).isdigit() for v in values):
+                self.meta[key] = sum(int(v) for v in values)
+        # names the map for the tile cache (osm_live_sidecar): another set of areas is another map
+        self.meta["source_file"] = "+".join(f"{m.get('source_file')}@{m.get('source_timestamp')}" for m in metas)
+        self.meta["source_timestamp"] = min((m["source_timestamp"] for m in metas if m.get("source_timestamp")), default=None)
+        self.meta["coastlines"] = "+".join(str(m.get("coastlines", "-")) for m in metas)
+        self.bounds = (min(p.bounds[0] for p in self.parts), max(p.bounds[1] for p in self.parts),
+                       min(p.bounds[2] for p in self.parts), max(p.bounds[3] for p in self.parts))
+
+    def covers(self, south: float, west: float, north: float, east: float) -> bool:
+        # ponytail: a 5×5 grid, so a gap between extracts narrower than a quarter of the box goes unseen; extracts are far
+        # larger than a tile or a cell and Geofabrik's neighbours overlap, so none is expected
+        steps = [i / 4 for i in range(5)]
+        return all(any(p.bounds[0] <= lon <= p.bounds[1] and p.bounds[2] <= lat <= p.bounds[3] for p in self.parts)
+                   for lat in (south + (north - south) * f for f in steps) for lon in (west + (east - west) * f for f in steps))
+
+    def document(self, south: float, west: float, north: float, east: float, clip=None, mercator=False) -> dict:
+        elements, roads = [], set()
+        for n, part in enumerate(self.parts):
+            p_west, p_east, p_south, p_north = part.bounds
+            box = (max(south, p_south), max(west, p_west), min(north, p_north), min(east, p_east))
+            if box[0] > box[2] or box[1] > box[3]:
+                continue
+            outer = clip if clip is not None else (south, west, north, east)
+            cut = (max(outer[0], p_south), max(outer[1], p_west), min(outer[2], p_north), min(outer[3], p_east))
+            for element in part.document(*box, clip=cut, mercator=mercator)["elements"]:
+                if element["type"] == "way":
+                    if element["id"] in roads:
+                        continue
+                    roads.add(element["id"])
+                elif n:
+                    element["id"] = f"{n}-{element['id']}"
+                elements.append(element)
+        return {"elements": elements, "osm3s": {"timestamp_osm_base": self.meta.get("source_timestamp")}}
+
+
+def open_indexes(paths):
+    """The map the services read: one index as itself, several as FeatureIndexes."""
+    paths = [Path(p) for p in paths]
+    return FeatureIndex(paths[0]) if len(paths) == 1 else FeatureIndexes(paths)
+
+
 HighwayIndex = FeatureIndex  # Earlier name used by the sidecar and tests.
 
 

@@ -106,7 +106,7 @@ class SetupActivity : Activity() {
         }
         page.addView(card, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { bottomMargin = px(12) })
         steps = listOf("Check this phone", "Install the game, version 1.1.116", "Sign in to Google", "Download the extra data",
-            "Build and install the playable client", "Choose your map region", "Play").mapIndexed { i, title -> Step(card, i + 1, title) }
+            "Build and install the playable client", "Choose your map areas", "Play").mapIndexed { i, title -> Step(card, i + 1, title) }
         page.addView(button("Send a report") { DebugInfo.share(this) },
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
         page.addView(text(12f, MUTED).apply {
@@ -136,7 +136,7 @@ class SetupActivity : Activity() {
         val libraries = game != null && GameFiles.hasLibraries(game) // not the base APK alone
         val viaPlay = game != null && !ours && installedByPlay()
         val packs = PackDownloadService.complete(this)
-        val region = Maps.selected(this)
+        val areas = Maps.all(this)
         val free = filesDir.usableSpace
         val wifi = getSystemService(ConnectivityManager::class.java).let {
             it.getNetworkCapabilities(it.activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
@@ -146,7 +146,7 @@ class SetupActivity : Activity() {
         val gameDone = ours || built || (game != null && game.longVersionCode == MainActivity.GAME_VERSION && libraries)
         val signedIn = PlayAccount.signedIn(this)
         val packsDone = packs || ours || built
-        val done = listOf(roomy, gameDone, signedIn || packsDone, packsDone, ours, region != null)
+        val done = listOf(roomy, gameDone, signedIn || packsDone, packsDone, ours, areas.isNotEmpty())
         val current = done.indexOfFirst { !it }.let { if (it < 0) 6 else it }
         fun at(i: Int) = i == current
 
@@ -243,13 +243,13 @@ class SetupActivity : Activity() {
             MapService.running -> steps[5].show(false, at(5), MapService.status ?: "Starting", "Cancel", MapService.progress) {
                 startService(Intent(this, MapService::class.java).setAction(MapService.CANCEL))
             }
-            unfinished != null -> steps[5].show(region != null, at(5), (Maps.failure(this) ?: MapService.status?.takeIf { it.startsWith("Cancelled") }
+            unfinished != null -> steps[5].show(areas.isNotEmpty(), at(5), (Maps.failure(this) ?: MapService.status?.takeIf { it.startsWith("Cancelled") }
                 ?: "The map of ${unfinished.name} did not finish: Android may have closed the app. What is downloaded is kept.") +
                 " Tap Send a report below if it keeps happening.", "Try again", label2 = "Choose another region", onClick2 = choose) {
                 MapService.start(this, unfinished)
             }
-            region != null -> steps[5].show(true, at(5), "${Maps.name(this, region)}, ${size(region.length())} on this phone.",
-                "Change region", onClick = choose)
+            areas.isNotEmpty() -> steps[5].show(true, at(5), "${Maps.names(this, areas)}, ${size(areas.sumOf { it.length() })} on " +
+                "this phone.", "Map areas", onClick = choose)
             else -> steps[5].show(false, at(5), "The map comes from OpenStreetMap. Pick the region you play in: the app " +
                 "downloads it from Geofabrik and builds the map on this phone." + (MapService.status?.let { "\n\n$it" } ?: ""),
                 "Choose region", onClick = choose)

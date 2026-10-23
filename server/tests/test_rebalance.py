@@ -151,11 +151,11 @@ class RebalanceTests(TaskTests):
         group, = self.summoned_groups(r)
         self.assertEqual(len(group['monsters']), 5)
         self.assertTrue(all(SPECIES[m[0]]['family'] == 2 for m in group['monsters']))         # 5 random draconids
-        # A legendary scroll at level 1 keeps to the level gate: a monster without skulls.
+        # A legendary scroll summons a legendary at level 1 too: the level gate is the world's, a scroll names its rarity.
         r = Reader(c.rpc(111, I(16) + I(4) + I(1000000) + I(1000000)))
         self.assertEqual(r.byte(), 1)
         group, = self.summoned_groups(r)
-        self.assertEqual([SPECIES[m[0]]['skulls'] for m in group['monsters']], [0])
+        self.assertEqual([SPECIES[m[0]]['rarity'] for m in group['monsters']], [3])
         self.assertEqual(self.inventory(c)['scrolls'], {})
         # The shop sells them (Alchemy, beside the baits), one at a time.
         bundles = {b['id']: b for b in self.static(server)['shop_bundles']}
@@ -185,10 +185,29 @@ class RebalanceTests(TaskTests):
         self.assertEqual(c.rpc(99, I(4))[0], 1)
         self.assertEqual(c.rpc(67, where), I(5))                                               # fog replaces it
         live = modifiers(c.rpc(91))
-        self.assertIn(914, live)
-        self.assertNotIn(913, live)
+        self.assertIn(22, live)                                                                # the original fog modifier id
+        self.assertNotIn(12, live)
         consumables = {r['id']: r for r in self.static(server)['consumables']}
         self.assertEqual((consumables[1]['slug'], consumables[1]['duration']), ('xp_booster', 1800))
+
+    def test_packs_open_from_the_inventory(self):
+        server, c = self.reconstructed()
+        self.saved_profile(c)
+        server.stop()
+        self.edit('test-fresh', lambda p: p.update(Items=dict(p['Items'], friend_packs={'1': 3})))
+        server, c = self.reconstructed()
+        herba = self.inventory(c)['ingredients'].get(101, 0)
+        self.assertEqual(c.rpc(109, I(1) + I(2)), b'\1' + I(1) + I(2))                        # Remove, named Open: two packs
+        self.assertEqual(self.inventory(c)['ingredients'].get(101, 0), herba + 10)             # a friend's 5 Herba each
+        with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:
+            self.assertEqual(json.loads(response.read())['replace']['REVIVAL/OPEN_PACK']['en'], 'Open')
+        # Vanilla: Remove throws the pack away, and the button keeps its name
+        server.stop()
+        server, c = self.reconstructed(env=self.world('vanilla'))
+        self.assertEqual(c.rpc(109, I(1) + I(1)), b'\1' + I(1) + I(1))
+        self.assertEqual(self.inventory(c)['ingredients'].get(101, 0), herba + 10)
+        with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:
+            self.assertNotIn('REVIVAL/OPEN_PACK', json.loads(response.read())['replace'])
 
     def test_the_hook_texts_follow_the_preset(self):
         server, c = self.task_server(self.kills(1))
@@ -197,9 +216,18 @@ class RebalanceTests(TaskTests):
         silver = texts['replace']['MONSTERS/DESCRIPTIONS/BASILISKWHITE/INFO_2']
         self.assertEqual(silver, '[0{**UI/PANELS/BESTIARY/OCCURANCE**}0]: ' + ''.join(
             f'**MONSTERS/OCCURANCE/{t}**\n' for t in SPECIES[110]['tags']))
-        self.assertIn('Bonus: +20% experience and +20% attack against draconids',
-                      texts['append']['ACHIEVEMENTS/DESCRIPTIONS/TROPHY_LIZARD_SLAYER'])
-        self.assertEqual(texts['replace']['ITEMS/NAMES/CONSUMABLES/INTERACTION_BOOSTER'], 'Rain Charm')
+        # the server's own texts come in the game's nine languages
+        lizard = texts['append']['ACHIEVEMENTS/DESCRIPTIONS/TROPHY_LIZARD_SLAYER']
+        self.assertEqual(set(lizard), {'en', 'pl', 'de', 'es', 'it', 'fr', 'ru', 'pt', 'ja'})
+        self.assertEqual(lizard['en'], '\nBonus: +20% experience and +20% attack against draconids')
+        self.assertEqual(lizard['pl'], '\nPremia: +20% doświadczenia i +20% do ataku przeciw drakonidom')
+        self.assertEqual(texts['replace']['NOTIFICATIONS/EFFECT/TROPHY_LIZARD_SLAYER']['de'],
+                         'Echsenschlächter: +20 % Angriff gegen Drakoniden')
+        self.assertEqual(texts['replace']['ITEMS/NAMES/CONSUMABLES/INTERACTION_BOOSTER']['en'], 'Rain Charm')
+        self.assertEqual(texts['replace']['REVIVAL/OPEN_PACK_HEADER']['fr'], 'Voulez-vous ouvrir cet <nobr>objet :</nobr> <nobr>#0 ?</nobr>')
+        for term, text in list(texts['replace'].items()) + list(texts['append'].items()):
+            if isinstance(text, dict):
+                self.assertTrue(all(text.values()), term)
         server.stop()
         server, c = self.task_server(self.kills(1), extra=self.world('vanilla', **{'spawns.wikiOccurrences': 0}))
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:

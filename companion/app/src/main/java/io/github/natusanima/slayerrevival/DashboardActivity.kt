@@ -3,6 +3,7 @@ package io.github.natusanima.slayerrevival
 import android.app.Activity
 import android.os.Bundle
 import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -22,6 +23,7 @@ class DashboardActivity : Activity() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             webViewClient = WebViewClient()
+            webChromeClient = WebChromeClient() // without one, confirm() and prompt() answer No/null and show nothing
         }
         setContentView(FrameLayout(this).apply {
             fitsSystemWindows = true

@@ -35,7 +35,8 @@ public sealed class WorldTuning
         Boost = "spawns.boost", StrongBoost = "spawns.strongBoost", RainRoaming = "spawns.rainRoaming", LevelGate = "spawns.levelGate",
         ExpByRarity = "xp.baseByRarity", VanillaCurve = "xp.vanillaCurve", QuestSoftCap = "quests.softCap",
         QuestHardCap = "quests.hardCap", TrinketBuffs = "trinkets.buffs", ShopScrolls = "shop.scrolls",
-        ShopWeatherItems = "shop.weatherItems";
+        ShopWeatherItems = "shop.weatherItems", ShopOrenPacks = "shop.orenPacks", OpenPacks = "inventory.openPacks",
+        SelfFriend = "friends.self";
 
     /// <summary>Bestiary knowledge thresholds by rarity (common, rare, legendary): the cumulative kills of tiers 1-3.</summary>
     public static string Bestiary(string rarity, int tier) => $"bestiary.{rarity}{tier}";
@@ -132,6 +133,14 @@ public sealed class WorldTuning
         new(MaxBag, "Inventory", "Largest bag",
             "The most items the inventory can ever hold, with every bag and quest reward.", "The next game start.",
             2000, 1000, 4000, 50, "items", 1000),
+        new(OpenPacks, "Inventory", "Open packs from the inventory",
+            "1 lets a player open their own herbalist's packs (5 Herba each): the inventory's Remove button for a pack reads " +
+            "Open. 0 keeps the original game's packs, which are only sent to friends (Remove throws them away).",
+            "At once; the button's name at the next game start.", 1, 0, 1, 1, Switch, 0),
+        new(SelfFriend, "Inventory", "Yourself in the friends list",
+            "1 lists every player first among their own friends, so a pack can be sent to yourself and opened there (a backup to " +
+            "Open in the inventory; one at a time, any day). 0 keeps the original game's list.",
+            "At once; the game shows it when its friends list refreshes.", 1, 0, 1, 1, Switch, 0),
         BestiarySetting("common", 1, 3, 3), BestiarySetting("common", 2, 25, 50), BestiarySetting("common", 3, 100, 150),
         BestiarySetting("rare", 1, 2, 2), BestiarySetting("rare", 2, 10, 10), BestiarySetting("rare", 3, 20, 30),
         BestiarySetting("legendary", 1, 1, 1), BestiarySetting("legendary", 2, 2, 2), BestiarySetting("legendary", 3, 4, 6),
@@ -153,6 +162,9 @@ public sealed class WorldTuning
         new(ShopWeatherItems, "Shop", "Weather items in the shop",
             "1 sells the weather items (rain, fog, clear skies for an hour) for orens. Items already owned can always be used.",
             StaticApply, 1, 0, 1, 1, Switch, 0),
+        new(ShopOrenPacks, "Shop", "Gold coin packs in the shop",
+            "1 keeps the original game's packs of orens (bought for real money there, free here). The game never offers them " +
+            "when a purchase costs more than the wallet holds.", StaticApply, 0, 0, 1, 1, Switch, 1),
     };
 
     /// <summary>The running server's settings, for code that has no access to the service (the herb rules are static). Revival

@@ -158,6 +158,24 @@ const RVA = {
   // localParametersRoot, overrideLanguage): every game text goes through it (ScriptLocalization, Localize,
   // DataManager.Translate); a missing term returns null.
   get_translation: 0x1c933d8,
+  modifiers_gui_update: 0x1822ca8,  // PlayerModifiersGUI.UpdatePlayerModifiersGUI: the map's effects panel (_modifiersSettings +0x20)
+  modifier_slot_init: 0x18224b8,    // PlayerModifierGUISlot.Initialize(preset, modifier, effectName): one effect's icon and frame
+  item_management_load: 0x17d31e0,  // ItemManagementWindow.LoadData(data): the inventory's count-and-Remove window (data.Item +0x10)
+  component_transform: 0x272a55c,   // UnityEngine.Component.get_transform
+  game_object_transform: 0x23fdc20,  // UnityEngine.GameObject.get_transform
+  transform_parent: 0x31c9a8c,      // UnityEngine.Transform.get_parent
+  transform_find: 0x31cb12c,        // UnityEngine.Transform.Find(string): a child by name
+  transform_sibling_index: 0x31cb094,  // UnityEngine.Transform.GetSiblingIndex
+  transform_child_count: 0x31caf44, // UnityEngine.Transform.get_childCount
+  transform_get_child: 0x31cb5e8,   // UnityEngine.Transform.GetChild(int)
+  game_object_component_by_name: 0x23fd290,  // UnityEngine.GameObject.GetComponent(string)
+  tmp_get_text: 0x19b97bc,          // TMPro.TMP_Text.get_text
+  tmp_set_text: 0x19b97c4,          // TMPro.TMP_Text.set_text
+  current_language_code: 0x1c8eb68,  // I2.Loc.LocalizationManager.get_CurrentLanguageCode (static): "en", "pl", "pt-BR"…
+  alchemy_slot_click: 0x18c99e0,    // AlchemyItemSlot.OnClick: an inventory slot tapped (its item +0x80) opens the info window
+  alchemy_slot_management: 0x18c9f18,  // AlchemyItemSlot.OnManagementPressed: the slot's count window (ItemManagementWindow)
+  inventory_item_load: 0x17d14b8,   // InventoryItemWindow.LoadData(data): an item's info window (data.Item +0x10)
+  inventory_item_friends: 0x17d2a0c,  // InventoryItemWindow.OpenFriendsPanel: a pack's one button, Send
 };
 const callbacks = [];  // NativeCallbacks given to Interceptor.replace, kept from the garbage collector
 
@@ -175,6 +193,11 @@ const NATIVE_FIXES = [
   // cmp w8, #1000); the server's largest bag is a dashboard setting (Tuning inventory.maxSize), so the client's limit
   // becomes 4095 and the server decides.
   ['bag limit', 0x1A0E060, '1fa10f71', '1ffd3f71'],
+  // No "buy more orens" offer: when the wallet cannot pay, the shop's purchase window and the fight's quick buy open
+  // GoldOfferWindow with the shop's packs of orens (bought for real money in the original); with no pack in the shop it
+  // throws and leaves the shop dimmed (Economy.cs). Their not-enough branch returns instead (each method's own epilogue).
+  ['no gold offer: shop', 0x181A2DC, '086c01d0730e40f9b41640b908a945f9', 'fd7b42a9f44f41a9f657c3a8c0035fd6'],
+  ['no gold offer: quick buy', 0x1814864, '486c0190730e40f908a945f9000140f9', 'fd7b42a9f44f41a9f50743f8c0035fd6'],
   // LAB 18 coin preview: each gold reward preview gets its own item as sprite owner. Without it, opening
   // contracts/events throws "PlayerInventory ... still didn't release previous resource" and hangs.
   ['coin preview', 0x1A0D084,
@@ -354,8 +377,9 @@ function install(m) {
     });
     // No Google sign-in once the game runs: it only linked accounts of the original servers. LoginWindowAdapter.Show opens the
     // sign-in window, in the game (gameStarted) after a failed silent sign-in or from the settings; the settings show their
-    // sign-in part (SettingsWindow._loginParent +0xF0, _signInText +0x138) by the login state (UpdateLoginInfo, also when the
-    // window opens). The window before the game starts is left as it is.
+    // account section by the login state (UpdateLoginInfo, also when the window opens): the heading "--- ACCOUNT ---" and the
+    // "Login" block (its title, the user id, the sign-in buttons in _loginParent +0xF0, the logout button). All of it goes;
+    // _signInText +0x138 too. The window before the game starts is left as it is.
     stage('no sign-in window', () => {
       const show = m.base.add(RVA.login_window_show);
       const original = new NativeFunction(show, 'void', ['pointer', 'bool', 'pointer']);
@@ -367,13 +391,39 @@ function install(m) {
       Interceptor.replace(show, skip);
       const setActive = new NativeFunction(m.base.add(RVA.game_object_set_active), 'void', ['pointer', 'bool', 'pointer']);
       const gameObjectOf = new NativeFunction(m.base.add(RVA.component_game_object), 'pointer', ['pointer', 'pointer']);
+      const transformOf = new NativeFunction(m.base.add(RVA.game_object_transform), 'pointer', ['pointer', 'pointer']);
+      const parentOf = new NativeFunction(m.base.add(RVA.transform_parent), 'pointer', ['pointer', 'pointer']);
+      const childNamed = new NativeFunction(m.base.add(RVA.transform_find), 'pointer', ['pointer', 'pointer', 'pointer']);
+      const siblingIndex = new NativeFunction(m.base.add(RVA.transform_sibling_index), 'int', ['pointer', 'pointer']);
+      const childAt = new NativeFunction(m.base.add(RVA.transform_get_child), 'pointer', ['pointer', 'int', 'pointer']);
+      const objectName = new NativeFunction(m.base.add(RVA.object_name), 'pointer', ['pointer', 'pointer']);
+      let said = false;
       Interceptor.attach(m.base.add(RVA.settings_login_info), {
         onEnter(args) { this.window = args[0]; },
         onLeave() {
+          const hidden = [];
+          const hide = (gameObject) => {
+            if (gameObject.isNull()) return;
+            setActive(gameObject, false, NULL);
+            hidden.push(read(objectName(gameObject, NULL)));
+          };
           const part = this.window.add(0xf0).readPointer();   // _loginParent
-          if (!part.isNull()) setActive(part, false, NULL);
+          if (!part.isNull()) {
+            hide(part);
+            const login = parentOf(transformOf(part, NULL), NULL);                 // "Login"
+            if (!login.isNull()) {
+              hide(gameObjectOf(login, NULL));
+              const content = parentOf(login, NULL);
+              let heading = content.isNull() ? NULL : childNamed(content, str('--- ACCOUNT ---'), NULL);
+              const at = siblingIndex(login, NULL);   // else the section's heading, which comes just before it
+              if (heading.isNull() && !content.isNull() && at > 0) heading = childAt(content, at - 1, NULL);
+              if (!heading.isNull()) hide(gameObjectOf(heading, NULL));
+            }
+          }
           const text = this.window.add(0x138).readPointer();  // _signInText
-          if (!text.isNull()) setActive(gameObjectOf(text, NULL), false, NULL);
+          if (!text.isNull()) hide(gameObjectOf(text, NULL));
+          if (!said) log('settings: hidden', hidden.join(', ') || 'nothing');
+          said = true;
         },
       });
     });
@@ -440,18 +490,149 @@ function install(m) {
     });
     // Texts the server supplies: the bestiary's occurrences from the wiki, the trinkets' bonuses, the weather items' names.
     // A term is looked up only when its length is one of theirs, since some windows ask for texts every frame.
+    // Texts by language are {"en": …, "pl": …}: the game's language code before any "-" picks one, else English.
     stage('texts', () => {
+      const languageCode = new NativeFunction(m.base.add(RVA.current_language_code), 'pointer', ['pointer']);
+      language = () => (read(languageCode(NULL)) || 'en').toLowerCase().split('-')[0];
       Interceptor.attach(m.base.add(RVA.get_translation), {
         onEnter(args) {
           this.term = !args[0].isNull() && textLengths.has(args[0].add(0x10).readS32()) ? read(args[0]) : null;
         },
         onLeave(ret) {
-          const text = this.term && TEXTS.get(this.term);
+          const text = this.term && TEXTS.get((packWindow && PACK_TERMS[this.term]) || this.term);
           if (!text) return;
-          ret.replace(str(text.replace !== undefined ? text.replace : (read(ret) || '') + text.append));
+          ret.replace(str(text.replace !== undefined ? pick(text.replace) : (read(ret) || '') + pick(text.append)));
         },
       });
       setTimeout(loadTexts, 0);  // off the game's start; the game reads its static texts after the login
+    });
+    // Effects-panel icons: an effect is drawn with the preset of its modifier id (PlayerModifiersSettings.ModifierGUIPresets,
+    // ids 1-12 and 15-24); any other id gets the default, which has no icon (a white square). The server's own modifiers
+    // borrow an original one: the trinkets' attack bonuses (921-926) the blacksmith's sword (1), the debug tools'
+    // invincibility (901) Maiden's Skin (16) and one-hit kills (902) Dead Honey (18).
+    stage('effect icons', () => {
+      const borrow = (id) => (id >= 921 && id <= 926 ? 1 : id === 901 ? 16 : id === 902 ? 18 : 0);
+      let presets = null;  // modifier id -> its ModifierGUIPreset
+      Interceptor.attach(m.base.add(RVA.modifiers_gui_update), {
+        onEnter(args) {
+          if (presets) return;
+          const settings = args[0].add(0x20).readPointer();
+          const list = settings.isNull() ? NULL : settings.add(0x18).readPointer();  // List<ModifierGUIPreset>
+          if (list.isNull()) return;
+          presets = {};
+          const items = list.add(0x10).readPointer();
+          for (let i = 0; i < list.add(0x18).readS32(); i++) {
+            const preset = items.add(0x20 + i * 8).readPointer();
+            if (!preset.isNull()) presets[preset.add(0x10).readS32()] = preset;   // ModifierId; Icon +0x18, Frame +0x20
+          }
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.modifier_slot_init), {
+        onEnter(args) {
+          const id = args[2].isNull() ? 0 : args[2].add(0x18).readS32();   // ExpiringPlayerModifier.Id
+          const preset = presets && presets[borrow(id)];
+          if (preset && (args[1].isNull() || args[1].add(0x18).readPointer().isNull())) args[1] = preset;   // only for the empty default
+        },
+      });
+    });
+    // Packs opened from the inventory (Tuning inventory.openPacks; the server sends REVIVAL/OPEN_PACK and _HEADER only then):
+    // - a pack's info window (InventoryItemWindow) has one button, Send, which opens the friends panel (OpenFriendsPanel): it
+    //   reads Open and opens the pack's count window instead, as the inventory slot's management button does
+    //   (AlchemyItemSlot.OnManagementPressed on the slot tapped last, AlchemyItemSlot.OnClick); the friends panel still sends;
+    // - the count window (ItemManagementWindow) drops packs with DropFriendPack 109, which the server opens. While it shows a
+    //   pack its question and button read as opening (PACK_TERMS in the texts stage; the button's label is also set after
+    //   LoadData and given back for other items, as the window is reused).
+    stage('open packs', () => {
+      const fn = (rva, ret, args) => new NativeFunction(m.base.add(rva), ret, args);
+      const packClass = classFromName(images['Game.dll'], Memory.allocUtf8String('WitcherWorld.Modules.DataManager'),
+        Memory.allocUtf8String('Pack'));
+      if (packClass.isNull()) throw new Error('class Pack not found');
+      const gameObjectOf = fn(RVA.component_game_object, 'pointer', ['pointer', 'pointer']);
+      const transformOf = fn(RVA.component_transform, 'pointer', ['pointer', 'pointer']);
+      const childCount = fn(RVA.transform_child_count, 'int', ['pointer', 'pointer']);
+      const childAt = fn(RVA.transform_get_child, 'pointer', ['pointer', 'int', 'pointer']);
+      const componentNamed = fn(RVA.game_object_component_by_name, 'pointer', ['pointer', 'pointer', 'pointer']);
+      const getText = fn(RVA.tmp_get_text, 'pointer', ['pointer', 'pointer']);
+      const setText = fn(RVA.tmp_set_text, 'void', ['pointer', 'pointer', 'pointer']);
+      // the button's label: the first TextMeshProUGUI among its children and theirs
+      const label = (transform, depth) => {
+        for (let i = 0; i < childCount(transform, NULL); i++) {
+          const child = childAt(transform, i, NULL);
+          const text = componentNamed(gameObjectOf(child, NULL), str('TextMeshProUGUI'), NULL);
+          if (!text.isNull()) return text;
+          const deeper = depth > 0 ? label(child, depth - 1) : NULL;
+          if (!deeper.isNull()) return deeper;
+        }
+        return NULL;
+      };
+      const isPack = (item) => !item.isNull() && objectClass(item).equals(packClass);
+      const opening = () => TEXTS.get(OPEN_PACK);
+      const said = new Set();
+      const once = (what, ...parts) => {
+        if (!said.has(what)) log('open packs:', what, ...parts);
+        said.add(what);
+      };
+      // the info window
+      let tapped = NULL;  // the inventory slot tapped last
+      Interceptor.attach(m.base.add(RVA.alchemy_slot_click), { onEnter(args) { tapped = args[0]; } });
+      Interceptor.attach(m.base.add(RVA.inventory_item_load), {
+        onEnter(args) {
+          this.window = args[0];
+          this.item = args[1].isNull() ? NULL : args[1].add(0x10).readPointer();   // InventoryItemData.Item
+        },
+        onLeave() {
+          const open = opening();
+          const button = this.window.add(0x128).readPointer();                   // _actionButtonText
+          if (!open || button.isNull() || !isPack(this.item)) return;
+          setText(button, str(pick(open.replace)), NULL);
+          once('info window', 'Send reads', pick(open.replace));
+        },
+      });
+      const manage = fn(RVA.alchemy_slot_management, 'void', ['pointer', 'pointer']);
+      const friends = m.base.add(RVA.inventory_item_friends);
+      const sendOriginal = new NativeFunction(friends, 'void', ['pointer', 'pointer']);
+      const send = new NativeCallback((window, info) => {
+        try {
+          const data = window.add(0x78).readPointer();                            // Window<InventoryItemData>.Data
+          const item = data.isNull() ? NULL : data.add(0x10).readPointer();
+          if (opening() && isPack(item) && !tapped.isNull() && tapped.add(0x80).readPointer().equals(item)) {
+            once('open', 'the count window from the info window');
+            manage(tapped, NULL);
+            return;
+          }
+        } catch (e) {
+          once('error', e.message);
+        }
+        sendOriginal(window, info);
+      }, 'void', ['pointer', 'pointer']);
+      callbacks.push(send);
+      Interceptor.replace(friends, send);
+      // the count window
+      let own = null;  // the button's own text, put back for other items
+      Interceptor.attach(m.base.add(RVA.item_management_load), {
+        onEnter(args) {
+          this.window = args[0];
+          this.item = args[1].isNull() ? NULL : args[1].add(0x10).readPointer();   // ItemManagementData.Item
+          packWindow = !!opening() && isPack(this.item);
+        },
+        onLeave() {
+          packWindow = false;
+          const open = opening();
+          const button = this.window.add(0xb0).readPointer();                    // _removeButton
+          if (!open || button.isNull()) return;
+          const text = label(transformOf(button, NULL), 1);
+          if (text.isNull()) return;
+          const current = read(getText(text, NULL));
+          const word = pick(open.replace);
+          if (isPack(this.item) && current !== word) {
+            own = current;
+            setText(text, str(word), NULL);
+            once('count window', 'Remove reads', word);
+          } else if (!isPack(this.item) && current === word && own !== null) {
+            setText(text, str(own), NULL);
+          }
+        },
+      });
     });
   }
   log('hooks installed');
@@ -499,10 +680,21 @@ function freshTiles() {
   });
 }
 
-// The server's texts (GET /revival/texts on the game server: {"replace": {term: text}, "append": {term: text}}), which follow
-// the dashboard's settings: Revival's bestiary occurrences and trinket bonuses, the weather items' names.
+// The server's texts (GET /revival/texts on the game server: {"replace": {term: text}, "append": {term: text}}, a text being
+// one string or one by language), which follow the dashboard's settings: Revival's bestiary occurrences and trinket bonuses,
+// the weather items' names, a pack's Open texts.
 const TEXTS = new Map();
+// ClientTexts.OpenPackButton and OpenPackHeader: no game terms, only this hook asks for them
+const OPEN_PACK = 'REVIVAL/OPEN_PACK', OPEN_PACK_HEADER = 'REVIVAL/OPEN_PACK_HEADER';
+// The count window's throw-away texts, read as opening while it shows a pack (the open packs stage sets packWindow)
+const PACK_TERMS = { 'UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE_HEADER': OPEN_PACK_HEADER, 'UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE': OPEN_PACK };
+let packWindow = false;
 let textLengths = new Set();
+let language = () => 'en';  // the game's language (the texts stage asks I2)
+// A text that is the same in every language (a string), or one by language ({"en": …, "pl": …}).
+function pick(value) {
+  return typeof value === 'string' ? value : value[language()] || value.en;
+}
 function loadTexts() {
   Java.perform(() => {
     try {
@@ -518,7 +710,7 @@ function loadTexts() {
       const texts = JSON.parse(body);
       for (const term of Object.keys(texts.replace || {})) TEXTS.set(term, { replace: texts.replace[term] });
       for (const term of Object.keys(texts.append || {})) TEXTS.set(term, { append: texts.append[term] });
-      textLengths = new Set(Array.from(TEXTS.keys(), term => term.length));
+      textLengths = new Set([...TEXTS.keys(), ...Object.keys(PACK_TERMS)].map(term => term.length));
       log('texts:', TEXTS.size, 'from the server');
     } catch (e) {
       log('texts: not loaded -', e.message);

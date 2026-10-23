@@ -528,8 +528,8 @@ def main():
     parser.add_argument("--only-kinds", default="",
                         help="Diagnostic: comma-separated classes to keep (road, water_line, water, park, "
                              "forest, beach, building)")
-    parser.add_argument("--index", type=Path,
-                        help="SQLite feature index built by osm_extract_index.py; Overpass is the fallback")
+    parser.add_argument("--index", type=Path, action="append",
+                        help="SQLite feature index built by osm_extract_index.py, once per map area; Overpass is the fallback")
     parser.add_argument("--quiet", action="store_true", help="Emit only fetch and error events")
     parser.add_argument("--blocking", action="store_true",
                         help="Hold requests until a missing area is fetched (default: answer 503 at once)")
@@ -554,8 +554,8 @@ def main():
     source = OverpassSource(args.cache_dir, args.endpoint or DEFAULT_ENDPOINTS,
                             offline=args.offline, emit=emit)
     if args.index is not None:
-        from osm_extract_index import FeatureIndex
-        index = FeatureIndex(args.index)
+        from osm_extract_index import open_indexes
+        index = open_indexes(args.index)
         emit({"event": "osm_live_index", "roads": index.meta.get("roads"),
               "areas": index.meta.get("areas"), "water_lines": index.meta.get("water_lines"),
               "source_timestamp": index.meta.get("source_timestamp")})

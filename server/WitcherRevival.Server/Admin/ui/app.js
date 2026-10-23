@@ -1359,7 +1359,7 @@
   const debugKinds = [["ingredients", "Ingredients"], ["potions", "Potions"], ["oils", "Oils"], ["bombs", "Bombs"],
     ["lures", "Baits"], ["senses_potions", "Senses potions"], ["friend_packs", "Friend packs", "packs_types"],
     ["summoning_scrolls", "Summoning scrolls"], ["consumables", "Consumables"], ["swords", "Swords"], ["armors", "Armours"],
-    ["brewers", "Stations"]];
+    ["brewers", "Stations"], ["trinkets", "Trinkets", "achievements"]];
   async function debugAction(p, body) {
     try {
       const result = await api("profiles/" + encodeURIComponent(p.id) + "/debug", { method: "POST", body: JSON.stringify(body) });
@@ -3470,10 +3470,17 @@
     return input;
   }
   function itemsInput(items, field) {
-    const input = Object.assign(el("input"), { type: "text", value: itemText(items), className: "items" });
-    input.setAttribute("list", "rewards-items");
+    // one item (the daily pool) suggests names; a list is a box that wraps, so a long one shows whole on a phone
+    const input = field === "item" ? Object.assign(el("input"), { type: "text" }) : Object.assign(el("textarea"), { rows: 2 });
+    Object.assign(input, { value: itemText(items), className: "items" });
+    if (field === "item") input.setAttribute("list", "rewards-items");
     input.dataset.field = field;
     return input;
+  }
+  // Each cell carries its column's name, which a phone shows above it (style.css stacks the rows there).
+  function labelCells(body) {
+    const heads = [...body.closest("table").tHead.rows[0].cells].map((th) => th.textContent);
+    for (const row of body.rows) [...row.cells].forEach((cell, i) => { cell.dataset.label = heads[i] || ""; });
   }
   function cells(row, ...inputs) {
     for (const input of inputs) {
@@ -3509,6 +3516,7 @@
       cells(row, numberInput(r.gold, 0, 100000, "gold"), itemsInput(r.items, "items"));
       levels.append(row);
     }
+    for (const body of [quests, $("rewards-pool"), levels]) labelCells(body);
     $("rewards-content").hidden = true;
     $("rewards-form").hidden = false;
   }
@@ -3538,6 +3546,7 @@
   }
   $("rewards-pool-add").addEventListener("click", () => {
     $("rewards-pool").append(poolRow({ kind: "potions", id: 205, weight: 1, minLevel: 1 }));
+    labelCells($("rewards-pool"));
     markDirty("rewards-form");
   });
   $("rewards-load-revival").addEventListener("click", () => { renderRewards(rewardsData.revival); markDirty("rewards-form"); });
@@ -3843,7 +3852,9 @@
     }
   });
   for (const f of document.querySelectorAll("form"))
-    if (!["map-form", "gps-form", "balance-form", "engine-form"].includes(f.id)) f.addEventListener("input", () => markDirty(f.id));
+    // choosing a preset is no edit: it applies at once (presetAction)
+    if (!["map-form", "gps-form", "balance-form", "engine-form"].includes(f.id))
+      f.addEventListener("input", (e) => { if (e.target.id !== "tuning-preset") markDirty(f.id); });
   $("news-language").addEventListener("change", () => {
     if (
       viewDrafts("news").length &&

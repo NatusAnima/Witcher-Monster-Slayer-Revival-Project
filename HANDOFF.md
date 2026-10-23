@@ -525,11 +525,12 @@ Maintainer's rule: **anything not vanilla is tunable**.
   28+family at apply time 22, derived and not removable), ingredients, nest gold, bag slots, a second unlimited station
   (instance 1020024).
 - **Summoning scrolls** (`Net/SummonScrolls.cs`, ids 2-17, client slugs and texts):
-  - Groups follow the descriptions, with the level gate (falling back a rarity) and FULL_MOON_ONLY.
+  - Groups follow the descriptions with FULL_MOON_ONLY, but no level gate (round 2 below); a rarity falls back only when the
+    family has none.
   - Rows are now always in static data (Reconstruction, not TaskCatalog).
   - Shop bundles 5000+id under Alchemy → Baits.
 - **Consumables** (`Net/Consumables.cs`, type 7):
-  - Items: Experience Scroll (911, +100%, 30 min), Ingredients Scroll (912, +50%), Rain/Fog/Clear charms (913-915, 1 h; slugs
+  - Items: Experience Scroll (modifier 9, +100%, 30 min), Ingredients Scroll (11, +50%), Rain/Fog/Clear charms (12, 22, 17; 1 h; slugs
     `interaction_booster`, `consumable_perfume`, `consumable_ringshaped_cracknel`, names from the hook).
   - RPC 99 replies `[ok][id][expiry]`; RPC 100 drops.
   - Weather: forced per player in RPC 67, and in the spawns for generations starting in the window. Push 91 and 67.
@@ -551,11 +552,79 @@ Maintainer's rule: **anything not vanilla is tunable**.
   maintainer's request (`adb install -r`, data kept; versionCode 300). The hook changed, so the app offers "Update the game".
 - **Device checks still open:**
   - the texts stage (bestiary line in EN and PL, trinket Bonus lines, charm names);
-  - the effects-panel icons of modifiers 911-926;
+  - the effects-panel icons (round 2: original ids for consumables, the "effect icons" stage for 901/902/921-926);
   - a 0-kill bestiary tier (equal cumulative values);
   - pushes 3, 5, 67, 69 and 91 taken live;
   - a bag over 1000;
   - the Use button on consumables.
+
+## 0.3.0 field round 2 (2026-10-23): the maintainer's first device test of the rebalance
+- **Presets always showed Custom:** the preset `<select>` sits inside `tuning-form`, so choosing one marked the form dirty and
+  `presetAction` asked "Drop the unsaved changes?" with `window.confirm`. The phone's `DashboardActivity` WebView had no
+  `WebChromeClient`, so confirm() answered false (and prompt() null) without showing anything: the switch was undone, and Copy,
+  Rename and saving a built-in preset's copy did nothing. Fixed both (the select is no edit; `webChromeClient = WebChromeClient()`).
+- **"Bag capped at 1000":** most likely the migrated Custom preset (startSize 200) + all five bags (800) = 1000, kept by the
+  preset bug. Revival gives 400 + 800 = 1200: the >1000 device check is still open.
+- **Rewards page on a phone:** items are a wrapping textarea (the daily pool's one item keeps the datalist); at <=650px each row is
+  a card with column names (`labelCells`, `#view-rewards` in style.css).
+- **Trinkets in the debug tools:** item kind `trinkets` (catalogue table `achievements`) adds or removes
+  `Tasks.Achievements[id]`; pushes 24, 91, 69, 5.
+- **Legendary scroll gave a drowner at level 2:** the level gate emptied the legendary pool and the fallback went down to common.
+  Scrolls no longer use the level gate.
+- **White effect icons:** the panel draws a modifier with `PlayerModifiersSettings.ModifierGUIPresets` (sharedassets1 path 3341;
+  ids 1-8 the season buffs, 9-12 the boosters `consumable_01-04` = xp/alchemy/gathering/interaction, 15-24 the treats'
+  `modifier_*`); any other id gets the default preset, which has no icon. Consumables now use the original ids (9, 11, 12, 22,
+  17; live 911-915 modifiers in saves are ignored, they last an hour at most). hook.js stage **"effect icons"** lends presets:
+  921-926 → 1 (sword), 901 → 16, 902 → 18 (`PlayerModifiersGUI.UpdatePlayerModifiersGUI` 0x1822CA8 caches the presets,
+  `PlayerModifierGUISlot.Initialize` 0x18224B8 swaps the empty default).
+- **No oren packs, no "buy orens" offer:** Tuning `shop.orenPacks` (Revival 0, Vanilla 1) filters bundles 77-82 and refuses RPC 76.
+  Without packs `GoldOfferWindow` would throw, so hook.js native fixes **"no gold offer: shop/quick buy"** make the not-enough
+  branches of `ShopPurchaseWindow.TryPurchase` (0x181A2DC) and `RecommendedPreparationWindow.TryPurchase` (0x1814864) return
+  (each method's own epilogue). Short of orens, the purchase button now does nothing.
+- **Open packs from the inventory** (Tuning `inventory.openPacks`, Revival 1, Vanilla 0): the inventory slot's management window
+  (`ItemManagementWindow`, opened by `AlchemyItemSlot.OnManagementPressed`) drops packs with RPC 109; the server opens them
+  instead (`Social:GiftIngredientAmount` Herba each, refused when the bag can't hold them) and pushes 5. `ClientTexts` sends
+  `REVIVAL/OPEN_PACK` = "Open" while on; hook.js stage **"open packs"** relabels the window's Remove button
+  (`_removeButton` +0xB0, the first TextMeshProUGUI below it via `GameObject.GetComponent(string)`) while it shows a `Pack`, and
+  puts the button's own text back for other items.
+- **Several map areas at once:** `osm_extract_index.FeatureIndexes` / `open_indexes` (both services take `--index` once per area;
+  covers = a 5x5 grid in some extract, documents joined: each extract's areas and sea cut at its own bounds, roads once, area ids
+  of later extracts prefixed `n-`; `meta.source_file` names the set, so the tile cache drops on a change). Companion: `Maps.all`
+  (oldest first), names and links per file, `add`/`remove`; `ServerService.startMap` passes them all; `RegionActivity` is
+  "Map areas" (each area with Update when its link is known, Delete; the list adds one). A map from before is the first area.
+- **The settings' account section:** the "no sign-in window" stage hid only `_loginParent` (the sign-in buttons) and
+  `_signInText`; the rest of the section stayed (settings_window / Content: the heading "--- ACCOUNT ---", and "Login" with its
+  Title, UserIdTile and LogoutButton). It now hides the "Login" block (`_loginParent`'s parent) and the heading
+  (`Transform.Find` on Content), in `UpdateLoginInfo`.
+- **Device checks:** the effect icons, the Open label and the account section (hooks), the shop when short of orens, two map
+  areas.
+
+## 0.3.0 field round 3 (2026-10-23): Open in the pack's own window, the account heading, yourself as a friend, nine languages
+- **"Packs only have a Send button":** the pack's info window (`InventoryItemWindow`) has one button, Send (`OpenFriendsPanel`
+  0x17D2A0C opens the friends panel); the count window is behind the inventory slot's small management button. hook.js "open
+  packs" now also: labels that button with the server's Open text (`_actionButtonText` +0x128 after `LoadData` 0x17D14B8) and
+  replaces `OpenFriendsPanel`: for a pack it calls `AlchemyItemSlot.OnManagementPressed` (0x18C9F18) on the slot tapped last
+  (`AlchemyItemSlot.OnClick` 0x18C99E0; its item +0x80 must be the window's `Data.Item`, Window<T>.Data +0x78), which opens the
+  count window with the right count; anything else goes to the friends panel as before. While the count window shows a pack,
+  its question and button terms (`UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE_HEADER`, `MANAGEMENT_REMOVE`: "Do you want to throw away
+  this item: #0?", "Throw away") answer the server's `REVIVAL/OPEN_PACK_HEADER` / `REVIVAL/OPEN_PACK` (`packWindow`,
+  `PACK_TERMS`).
+- **Account heading still showing:** the name lookup is exact ("--- ACCOUNT ---", sibling 9 before Login 10 in settings_window /
+  Content), so the stage now also takes Login's preceding sibling and logs `settings: hidden <names>` once: the next report says
+  which objects went.
+- **Yourself in the friends list** (Tuning `friends.self`, Revival 1, Vanilla 0; `SocialService`): the list starts with your own
+  entry (no stored edge); 106/107 accept your own id (a gift to yourself needs only the last one opened, its day is sent as 0 so
+  the game's countdown never waits); 103/104/105/108 still refuse it. `ValidGift` allows sender == receiver.
+- **Nine languages** (I2Languages order en, pl, de, es, it, fr, ru, pt(-BR), ja):
+  - `Net/GameTexts.cs` holds every server text the game shows, worded with the game's own terms (family names, "gold coins",
+    "crafting station", the Spanish "santuario", trinket names); `TrinketBuffs.Line` builds the bonus lines from it.
+  - `/revival/texts` values are a string (bestiary lines: term references) or `{"en": …, "pl": …}`; hook.js `pick` uses
+    `LocalizationManager.get_CurrentLanguageCode` (0x1C8EB68) before any "-", else English.
+  - What's new: `news/release.<language>.json` beside the English `release.json` (same id and items;
+    `NewsFeed.ReleaseNotesFor`: the player's language, its base, English); the app copies every `release*.json` at start.
+    Change all nine together: test_news checks each translation keeps the English file's id, title and number of items.
+- **Device checks:** the info window's Open and the count window's texts in a few languages, yourself in the friends list,
+  `settings: hidden` in the report, What's new in another language.
 
 ## Current State (2026-10-05)
 **The client:**

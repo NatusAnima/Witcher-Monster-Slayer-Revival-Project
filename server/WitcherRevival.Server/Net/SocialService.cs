@@ -6,6 +6,9 @@ namespace WitcherRevival.Server.Net;
 
 /// <summary>Original 1.1.116 friends wire formats with reconstructed limits and rewards.
 /// A durable social intent plus a receipt in the one affected profile recovers a debit/grant after a crash.
+/// Tuning friends.self (Revival) lists every player first among their own friends, so a pack can be sent to yourself and
+/// opened (a backup to opening it in the inventory): no edge is stored for it, a gift to yourself needs only the last one
+/// opened (no day rule; its day is sent as 0, so the game's countdown never waits), and only 106 and 107 take your own id.
 /// Call outside registry/profile locks. Construction never calls the profile lookup delegate.</summary>
 public sealed class SocialService : IDisposable
 {
@@ -60,7 +63,7 @@ public sealed class SocialService : IDisposable
             throw new InvalidDataException("Invalid social state.");
         foreach (var id in s.Players.Keys) LocalProfileStore.CheckProfileId(id);
         bool Known(string id) => s.Players.ContainsKey(id);
-        bool ValidGift(Gift g) => Known(g.Sender) && Known(g.Receiver) && g.Sender != g.Receiver &&
+        bool ValidGift(Gift g) => Known(g.Sender) && Known(g.Receiver) &&
             g.Pack == PackId && g.Amount is >= 1 and <= 50 && g.Day >= 0 &&
             g.Receipt is { Length: > 0 and <= 128 } && !g.Receipt.Any(char.IsControl);
         if (s.Edges.Any(e => e.From == e.To || !Known(e.From) || !Known(e.To)) ||
@@ -139,16 +142,20 @@ public sealed class SocialService : IDisposable
             ObjectDisposedException.ThrowIf(disposed, this);
             Recover(); long self = Ensure(profile);
             var edges = state.Edges.Where(e => e.From == profile || e.To == profile).ToList();
-            var b = new ByteBuffer(); b.WriteLong(self); b.WriteInt(edges.Count);
-            foreach (var edge in edges)
+            bool withSelf = WorldTuning.Current.On(WorldTuning.SelfFriend);
+            var b = new ByteBuffer(); b.WriteLong(self); b.WriteInt(edges.Count + (withSelf ? 1 : 0));
+            void Write(string other, int relation)
             {
-                string other = edge.From == profile ? edge.To : edge.From; var p = Player(other);
-                b.WriteLong(state.Players[other]); b.WriteInt(edge.Accepted ? 0 : edge.From == profile ? 1 : 2);
+                var p = Player(other);
+                b.WriteLong(state.Players[other]); b.WriteInt(relation);
                 b.WriteString(p?.Name ?? "Unnamed"); b.WriteByte(p?.Gender ?? 0); b.WriteInt(p?.Head ?? 1);   // HeadId
                 b.WriteInt(Reconstruction.LevelForExp(p?.Exp ?? 0));
-                WriteGift(b, state.Gifts.GetValueOrDefault(Direction(profile, other)));
-                WriteGift(b, state.Gifts.GetValueOrDefault(Direction(other, profile)));
+                WriteGift(b, state.Gifts.GetValueOrDefault(Direction(profile, other)), other == profile);
+                WriteGift(b, state.Gifts.GetValueOrDefault(Direction(other, profile)), other == profile);
             }
+            if (withSelf) Write(profile, 0);
+            foreach (var edge in edges)
+                Write(edge.From == profile ? edge.To : edge.From, edge.Accepted ? 0 : edge.From == profile ? 1 : 2);
             b.WriteInt(0);
             // A full friend snapshot already tells the inviter which invitation was accepted.
             if (edges.Any(e => e.Accepted && e.From == profile && !e.NoticeDelivered))
@@ -159,8 +166,11 @@ public sealed class SocialService : IDisposable
             return b.ToArray(); // No unsolicited inventory deltas.
         }
     }
-    private static void WriteGift(ByteBuffer b, Gift? gift)
-    { b.WriteInt(gift?.Day ?? 0); b.WriteInt(gift?.Pack ?? 0); b.WriteByte(gift is null || gift.Claimed ? (byte)1 : (byte)0); }
+    private static void WriteGift(ByteBuffer b, Gift? gift, bool toSelf = false)
+    {
+        b.WriteInt(toSelf ? 0 : gift?.Day ?? 0); b.WriteInt(gift?.Pack ?? 0);
+        b.WriteByte(gift is null || gift.Claimed ? (byte)1 : (byte)0);
+    }
     public byte[] Notifications(string profile)
     {
         lock (gate)
@@ -198,8 +208,10 @@ public sealed class SocialService : IDisposable
             if (state.Operations.TryGetValue(key, out var done))
                 return done.Hash == hash ? Convert.FromBase64String(done.Response) : Refuse();
             string? other = state.Players.FirstOrDefault(pair => pair.Value == target).Key;
-            if (target == self || other is null || Player(profile) is null || Player(other) is null) return Refuse();
-            var edge = state.Edges.FirstOrDefault(e => Between(e, profile, other)); var next = Copy(); bool ok = false;
+            bool toSelf = target == self && req.Method is 106 or 107 && WorldTuning.Current.On(WorldTuning.SelfFriend);
+            if (target == self && !toSelf || other is null || Player(profile) is null || Player(other) is null) return Refuse();
+            var edge = toSelf ? new Edge(profile, profile, true) : state.Edges.FirstOrDefault(e => Between(e, profile, other));
+            var next = Copy(); bool ok = false;
             switch (req.Method)
             {
                 case 103:
@@ -221,7 +233,8 @@ public sealed class SocialService : IDisposable
                     break;
                 case 106:
                     var previous = state.Gifts.GetValueOrDefault(Direction(profile, other));
-                    if (edge is not { Accepted: true } || pack != PackId || previous is not null && (!previous.Claimed || previous.Day >= Day) ||
+                    if (edge is not { Accepted: true } || pack != PackId ||
+                        previous is not null && (!previous.Claimed || previous.Day >= Day && !toSelf) ||
                         Player(profile)!.Items.GetValueOrDefault(PackItems)?.GetValueOrDefault(pack) is not > 0) return Refuse();
                     var gift = new Gift(profile, other, Guid.NewGuid().ToString("N"), Day, pack, amount, false);
                     Save(next with { Pending = new(profile, other, req.Method, req.Id, hash, gift) });

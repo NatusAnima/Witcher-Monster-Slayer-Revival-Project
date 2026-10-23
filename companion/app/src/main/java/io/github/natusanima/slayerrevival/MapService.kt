@@ -110,7 +110,7 @@ class MapService : Service() {
             // a 1 GB extract can take longer than a fixed lock lasts
             release = keepAwake(this, "map", maxOf(2 * 3_600_000L, bytes / 1_048_576 * 8_000))
             val have = if (extract == null) bytes else part.length()
-            val need = Maps.diskNeeded(bytes, request.lowMemory, Maps.selected(this)?.length() ?: 0) - have
+            val need = Maps.diskNeeded(bytes, request.lowMemory, index.length()) - have
             if (filesDir.usableSpace < need) {
                 throw Failure("There is not enough free space for the map of ${request.name}: it needs about ${size(need)} more and " +
                     "this phone has ${size(filesDir.usableSpace)} free. Free up space and tap Try again (what is downloaded is kept), " +
@@ -124,7 +124,7 @@ class MapService : Service() {
             buildIndex(request, pbf, fresh, bytes)
             index.delete()
             if (!fresh.renameTo(index)) throw IOException("the new map could not replace the old one")
-            Maps.select(this, index, request.name)
+            Maps.add(this, index, request.name, request.url)
             pbf.delete()
             part.delete()
             saved.delete()

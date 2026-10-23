@@ -302,13 +302,13 @@ class MainActivity : Activity() {
         })
         toggle.text = if (server == "Stopped") "Start server" else "Stop server"
         dashboard.isEnabled = server.startsWith("Running")
-        val index = Maps.selected(this)
+        val areas = Maps.all(this)
         val unfinished = Maps.request(this) // a map was asked for and did not get built
         mapText.text = "Map: " + when {
             MapService.running -> MapService.status ?: "building"
             unfinished != null -> "the map of ${unfinished.name} did not finish: open the guided setup and tap Try again" +
-                (index?.let { " (the earlier map, ${Maps.name(this, it)}, still works)" } ?: "")
-            index != null -> Maps.name(this, index)
+                (if (areas.isEmpty()) "" else " (the other areas, ${Maps.names(this, areas)}, still work)")
+            areas.isNotEmpty() -> Maps.names(this, areas)
             else -> "none yet, choose it in the guided setup"
         }
         if (playing && server == "Running") {

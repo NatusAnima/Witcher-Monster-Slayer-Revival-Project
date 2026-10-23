@@ -985,7 +985,15 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(c.rpc(98, I(0) + I(1) + I(205) + I(301)), b'\0')
 
     def test_shop_and_crafting_from_purchase_to_claimed_potion(self):
-        server = self.start('test-economy', self.RECONSTRUCTED)
+        # Revival sells no packs of orens (Tuning shop.orenPacks); the switch brings the original game's back
+        revival = self.start('test-economy', self.RECONSTRUCTED)
+        with urllib.request.urlopen(f'http://127.0.0.1:{revival.http}/staticdata', timeout=1) as response:
+            bundles = json.loads(gzip.decompress(response.read()))['shop_bundles']
+        packs = [r['id'] for r in bundles if r['inapp_price_id'] is not None]
+        self.assertEqual(packs, [])
+        revival.stop()
+        shop = dict(self.RECONSTRUCTED, **self.tuned('revival', **{'shop.orenPacks': 1}))
+        server = self.start('test-economy', shop)
         c = self.client(server)
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata', timeout=1) as response:
             data = json.loads(gzip.decompress(response.read()))
@@ -1046,7 +1054,7 @@ class PrototypeTests(unittest.TestCase):
         profile = json.loads(path.read_text())
         profile['Player']['Gold'] = 300
         path.write_text(json.dumps(profile))
-        server = self.start('test-economy', self.RECONSTRUCTED)
+        server = self.start('test-economy', shop)
         c = self.client(server)
         self.assertEqual(self.player_info(c)['gold'], 300)
         deals = Reader(c.rpc(79)); self.assertEqual(deals.byte(), 1)
@@ -2158,9 +2166,10 @@ class PrototypeTests(unittest.TestCase):
                 self.assertLessEqual({int(i) for i in items}, ids)
         for row in SEASON1['monsters']:
             self.assertEqual(monsters[row['id']]['slug'], row['slug'])
-        # 901-902: debug tools; 921-926: trinket attack bonuses; 911-915: consumables; 13: the scrolls' cooldown
+        # 901-902: debug tools; 921-926: trinket attack bonuses; 9, 11, 12, 22, 17: consumables (the original ids, which
+        # the effects panel has icons for); 13: the scrolls' cooldown
         self.assertEqual([m['id'] for m in data['player_modifiers']],
-                         [1, 2, 3, 4, 5, 6, 7, 8, 901, 902, 921, 922, 923, 924, 925, 926, 911, 912, 913, 914, 915, 13])
+                         [1, 2, 3, 4, 5, 6, 7, 8, 901, 902, 921, 922, 923, 924, 925, 926, 9, 11, 12, 22, 17, 13])
 
     def test_season1_original_output_alias_rows_preserve_donor_rows_and_edges(self):
         with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=1) as response:

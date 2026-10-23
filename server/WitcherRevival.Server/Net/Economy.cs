@@ -202,9 +202,10 @@ public static class Economy
 
     // ── Oren packs ──────────────────────────────────────────────────────────────────────────
     // Client: the shop's GroupType has Gold (4) and ItemTypeIds.GOLD is 10. When the wallet cannot pay a bundle,
-    // ShopPurchaseWindow.TryPurchase (0x181A1A0) opens GoldOfferWindow, which lists the shop items whose first
-    // element is gold (OnInitialized 0x17D0404) and reads the last of them when none covers the deficit (LoadData
-    // 0x17CFF58): with no gold item it throws and leaves the shop dimmed. The client names bundles 77-82 "#0 gold
+    // ShopPurchaseWindow.TryPurchase (0x181A1A0) and the fight's quick buy (RecommendedPreparationWindow.TryPurchase)
+    // open GoldOfferWindow, which lists the shop items whose first element is gold (OnInitialized 0x17D0404) and reads
+    // the last of them when none covers the deficit (LoadData 0x17CFF58): with no gold item it throws and leaves the shop
+    // dimmed. hook.js ("no gold offer") makes both return instead, so the packs can leave the shop (Tuning shop.orenPacks). The client names bundles 77-82 "#0 gold
     // coins" (ITEMS/NAMES/BUNDLES/BUNDLE_77..82: a handful, a pouch, a chest, a small barrel, a fat sack, piles):
     // the original oren packs. They are priced in real money (shop_bundles.inapp_price_id -> inapp_prices,
     // inapp_price_shops by StoreType name, parsed in DataManager.LoadShop 0x17C2078). A client whose application id
@@ -291,8 +292,9 @@ public static class Economy
 
     public const int ScrollBundle = 5000, ConsumableBundle = 6000;
 
-    /// <summary>Whether the shop offers a bundle: scrolls and weather items only while the dashboard sells them.</summary>
+    /// <summary>Whether the shop offers a bundle: scrolls, weather items and oren packs only while the dashboard sells them.</summary>
     public static bool Offered(Bundle bundle) =>
+        (OrenPackOf(bundle.Id) is null || WorldTuning.Current.On(WorldTuning.ShopOrenPacks)) &&
         (!bundle.Items.Any(i => i.Type == SummonScrolls.ItemType) || WorldTuning.Current.On(WorldTuning.ShopScrolls)) &&
         (!bundle.Items.Any(i => i.Type == Consumables.ItemType) || WorldTuning.Current.On(WorldTuning.ShopWeatherItems));
 
