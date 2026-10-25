@@ -695,6 +695,21 @@
               <p class="hint">Orens and items each new level brings (skill points come as before).</p>
               <div class="table-wrap"><table><thead><tr><th scope="col">Level</th><th scope="col">Orens</th>
                 <th scope="col">Items</th></tr></thead><tbody id="rewards-levels"></tbody></table></div>
+              <h3>Packs</h3>
+              <label>Draws per pack<input type="number" id="rewards-pack-draws" min="1" max="5" step="1" required /></label>
+              <p class="hint">What a pack (one in every few won fights) holds when it is opened, from the inventory or as a
+                friend's gift: this many draws by weight from the list below, each giving between the least and the most of
+                its item; the same item drawn twice makes one stack. A friend's gift window shows the rarest stack, and the rest
+                arrive with it.</p>
+              <div class="table-wrap"><table><thead><tr><th scope="col">Item</th><th scope="col">Weight</th>
+                <th scope="col">Least</th><th scope="col">Most</th><th scope="col"></th></tr></thead>
+                <tbody id="rewards-pack"></tbody></table></div>
+              <button type="button" id="rewards-pack-add" class="secondary">Add an item</button>
+              <h3>Shop prices</h3>
+              <p class="hint">What each of Thorstein's offers costs in orens. The game reads its prices when it starts, so a change
+                applies from the next server and game start; the daily deals' discount is on the Tuning page.</p>
+              <div class="table-wrap"><table><thead><tr><th scope="col">Offer</th><th scope="col">Shop group</th>
+                <th scope="col">Vanilla</th><th scope="col">Price</th></tr></thead><tbody id="rewards-shop"></tbody></table></div>
               <datalist id="rewards-items"></datalist>
               <button type="submit">Save the rewards</button>
             </form>

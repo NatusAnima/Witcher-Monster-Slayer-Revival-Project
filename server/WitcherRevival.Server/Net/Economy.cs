@@ -27,6 +27,12 @@ public static class Economy
         _ => null,
     };
 
+    /// <summary>The client item type of an inventory kind (the inverse of KindOf), null for kinds that are not inventory items.</summary>
+    public static int? TypeOf(string kind) => new[]
+    {
+        TypeIngredient, TypeBomb, TypePotion, TypeOil, TypeLure, TypeSensesPotion, TypeFriendPack, SummonScrolls.ItemType, Consumables.ItemType,
+    }.Cast<int?>().FirstOrDefault(type => KindOf(type!.Value) == kind);
+
     // ── Ingredients ─────────────────────────────────────────────────────────────────────────
     // Client: ITEMS/NAMES/INGREDIENTS/<SLUG> and icon_ingredient_<slug> (alchemy_atlas). Ids take the first
     // hundred (item ids share one client storage across kinds). Remains follow monster_families ids.
@@ -195,7 +201,9 @@ public static class Economy
     // shows its item's name and icon, a larger one ITEMS/NAMES/BUNDLES/BUNDLE_<id> and icon_bundle_<id>, so
     // multi-item bundles keep client bundle ids; GroupType also has Baits. Community (TheGamer): stacks of 3 cost Thunderbolt/Falcon 30,
     // other potions 60, basic oil 75, family oils 150, basic bomb 150, other bombs 300. Other prices, the
-    // contents of packs and the discounts are Authored.
+    // contents of packs and the discounts are Authored. GoldPrice is the Vanilla price: the active preset's (Rewards page)
+    // is the one charged (Price). A nonzero DailyDiscount marks a bundle that can be a daily deal; the dashboard's
+    // shop.dailyDiscount is the discount.
     public sealed record Bundle(int Id, int GoldPrice, string Tab, string Group, string Layout,
         (int Type, int Item, int Amount)[] Items, int Priority, bool OneTime = false, int DailyDiscount = 25,
         int? InAppPrice = null);
@@ -275,18 +283,28 @@ public static class Economy
         foreach (var item in Consumables.All.Where(c => c.Price is not null))
             bundles.Add(Single(ConsumableBundle + item.Id, item.Price!.Value, "Alchemy", "Items", Consumables.ItemType, item.Id, 1, priority++)
                 with { DailyDiscount = 0 });
-        // Chests (client bundles 64 "A little something" and 65 "For professionals").
-        bundles.Add(new Bundle(64, 250, "Basic", "Packs", "TwoByOne", new[]
+        // Chests (client bundles 64-67: ITEMS/NAMES/BUNDLES/BUNDLE_<id>, its description and icon_bundle_<id>), a quarter
+        // below their parts (Authored; 64 and 65 cost more than their parts before 0.4.0). "Scrolls and bombs" holds
+        // scrolls, so it sells only with them (Offered).
+        bundles.Add(new Bundle(LittleSomething, 160, "Basic", "Packs", "TwoByOne", new[]
         {
             (TypePotion, 205, 2), (TypePotion, 201, 2), (TypeOil, 301, 2), (TypeBomb, 401, 2),
         }, priority++, DailyDiscount: 0));
-        bundles.Add(new Bundle(65, 900, "Basic", "Packs", "TwoByOne", new[]
+        bundles.Add(new Bundle(ForProfessionals, 490, "Basic", "Packs", "TwoByOne", new[]
         {
             (TypePotion, 205, 3), (TypePotion, 201, 3), (TypePotion, 203, 3), (TypeOil, 301, 3), (TypeBomb, 402, 3),
             (TypeIngredient, Tissue, 10), (TypeIngredient, Herba, 10), (TypeIngredient, Radix, 5),
         }, priority++, DailyDiscount: 0));
+        bundles.Add(new Bundle(ScrollsAndBombs, 675, "Basic", "Packs", "TwoByOne", new[]
+        {
+            (SummonScrolls.ItemType, SummonScrolls.Lesser, 2), (TypeBomb, 402, 3), (TypeBomb, 404, 3),
+        }, priority++, DailyDiscount: 0));
+        bundles.Add(new Bundle(SetOfBait, 750, "Basic", "Packs", "TwoByOne",
+            WorldNests.Lures.Where(l => l.Sold).Select(l => (TypeLure, l.Id, 1)).ToArray(), priority++, DailyDiscount: 0));
         return bundles;
     }
+
+    public const int LittleSomething = 64, ForProfessionals = 65, ScrollsAndBombs = 66, SetOfBait = 67;
 
     public static Bundle? BundleById(int id) => Bundles.FirstOrDefault(b => b.Id == id);
 
@@ -308,17 +326,32 @@ public static class Economy
         return pool.OrderBy(_ => rng.Next()).Take(3).OrderBy(id => id).ToList();
     }
 
+    // The prices and the daily discount the game was given at this server's start (StaticDataSnapshot): the game shows them
+    // until its next start, so a purchase is charged the same. Without a snapshot (tests building rows) the preset's own.
+    private static (IReadOnlyDictionary<int, int> Prices, int Discount)? frozen;
+
+    public static void FreezePrices() => frozen = (new Dictionary<int, int>(WorldTuning.Current.Rewards.Prices ?? []),
+        (int)WorldTuning.Current.Get(WorldTuning.ShopDailyDiscount));
+
+    /// <summary>A bundle's price in orens: the active preset's (the Rewards page), else its Vanilla price.</summary>
+    public static int Price(Bundle bundle) =>
+        (frozen?.Prices ?? WorldTuning.Current.Rewards.Prices)?.GetValueOrDefault(bundle.Id) is int price and > 0 ? price : bundle.GoldPrice;
+
+    /// <summary>The discount of a bundle that is today's daily deal, in percent.</summary>
+    public static int DealDiscount(Bundle bundle) =>
+        bundle.DailyDiscount > 0 ? frozen?.Discount ?? (int)WorldTuning.Current.Get(WorldTuning.ShopDailyDiscount) : 0;
+
     /// <summary>Gold price of a bundle now: the daily discount applies to today's daily deals.</summary>
     public static int PriceOf(Bundle bundle, long unixSeconds) =>
         DailyDeals(unixSeconds).Contains(bundle.Id)
-            ? bundle.GoldPrice * (100 - bundle.DailyDiscount) / 100
-            : bundle.GoldPrice;
+            ? Price(bundle) * (100 - DealDiscount(bundle)) / 100
+            : Price(bundle);
 
     /// <summary>Unit prices of the combat preparation's recommended purchase (auto_equip_items_prices):
     /// a third of the shop stack price, rounded up.</summary>
     public static IEnumerable<(int Type, int Item, int Price)> UnitPrices() => Bundles
         .Where(b => b.Items.Length == 1 && b.Items[0].Type is TypePotion or TypeOil or TypeBomb)
-        .Select(b => (b.Items[0].Type, b.Items[0].Item, (b.GoldPrice + b.Items[0].Amount - 1) / b.Items[0].Amount));
+        .Select(b => (b.Items[0].Type, b.Items[0].Item, (Price(b) + b.Items[0].Amount - 1) / b.Items[0].Amount));
 
     // ── Static data rows ────────────────────────────────────────────────────────────────────
     private static string J(object value) => System.Text.Json.JsonSerializer.Serialize(value);
@@ -346,7 +379,7 @@ public static class Economy
         var offered = Bundles.Where(Offered).ToList();
         rows["shop_bundles"] = offered.Select(b => J(new Dictionary<string, object?>
         {
-            ["id"] = b.Id, ["gold_price"] = b.GoldPrice, ["discount"] = 0, ["daily_discount"] = b.DailyDiscount,
+            ["id"] = b.Id, ["gold_price"] = Price(b), ["discount"] = 0, ["daily_discount"] = DealDiscount(b),
             ["permanent"] = 1, ["layout_priority"] = b.Priority, ["one_time"] = b.OneTime ? 1 : 0, ["dev"] = 0,
             ["inapp_price_id"] = b.InAppPrice, ["name"] = "", ["icon"] = "", ["description"] = "",
             ["layout_type"] = b.Layout, ["layout_underlay"] = "None",

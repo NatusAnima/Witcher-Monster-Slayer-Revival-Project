@@ -605,6 +605,7 @@ class FeatureIndex:
                                           "FROM ways_rtree").fetchone()  # west, east, south, north
         # Maps built before the coastline was kept have the roads' box above and no sea.
         self.coast = self.db.execute("SELECT 1 FROM sqlite_master WHERE name = 'coastlines'").fetchone() is not None
+        self.sea_cells: dict[tuple[int, int], bool] = {}   # _seaward's answers by SEA_CELL
 
     def covers(self, south: float, west: float, north: float, east: float) -> bool:
         b_west, b_east, b_south, b_north = self.bounds
@@ -664,8 +665,26 @@ class FeatureIndex:
             "SELECT c.coords FROM coastlines_rtree r JOIN coastlines c ON c.id = r.id "
             "WHERE r.max_lon >= ? AND r.min_lon <= ? AND r.max_lat >= ? AND r.min_lat <= ?", (west, east, south, north))]
 
+    # Every tile no coastline crosses asks which side it is on (up to four searches and a walk along the coast found, tens of
+    # milliseconds on a phone), so the answer is kept per grid cell no coastline's box reaches: all of such a cell lies on
+    # one side.
+    SEA_CELL = 0.05   # degrees (5.5 km north to south)
+
     def _seaward(self, lat: float, lon: float) -> bool:
         """Whether a point is on the sea side of its nearest coastline; land when none is within about 50 km."""
+        cell = (math.floor(lat / self.SEA_CELL), math.floor(lon / self.SEA_CELL))
+        if (known := self.sea_cells.get(cell)) is not None:
+            return known
+        side = self._nearest_side(lat, lon)
+        south, west = cell[0] * self.SEA_CELL, cell[1] * self.SEA_CELL
+        if self.db.execute("SELECT 1 FROM coastlines_rtree WHERE max_lon >= ? AND min_lon <= ? AND max_lat >= ? AND min_lat <= ? "
+                           "LIMIT 1", (west, west + self.SEA_CELL, south, south + self.SEA_CELL)).fetchone() is None:
+            if len(self.sea_cells) >= 100_000:
+                self.sea_cells.clear()
+            self.sea_cells[cell] = side
+        return side
+
+    def _nearest_side(self, lat: float, lon: float) -> bool:
         kx, ky = 111_320.0 * max(0.01, math.cos(math.radians(lat))), 110_540.0
 
         def gap(row):  # metres from the point to a way's box

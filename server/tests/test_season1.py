@@ -172,6 +172,41 @@ class Season1Tests(base.PrototypeTests):
         self.assertIn(GIVER[161], self.givers(c))
         self.assertEqual(Reader(base.decode_batch(c.rpc(115))[59]).facts()[1010], 1)   # the game learns it at start-up
 
+    def test_season1_each_candle_burns_out_and_counts(self):
+        # The lair lights a candle (15 = -1) with the 15-minute effect 4; nothing but an auto node starts the candle graph,
+        # which counts the candle (26) and puts it out, so the next can be lit. The node fires at the effect's end.
+        node = lambda key: next(n for n in SEASON1['nodes'] if n['key'] == key)
+        lair, candle = node('s01mq03_lair'), node('s01mq03_candle')
+        server, c = self.season('test-candles', {100: 4, 178: 1, 55: 1, 147: 1, 129: 3, 26: 1, 127: 1},
+                                story={'Started': [152]})
+        self.assertNotIn(candle['id'], [n['node'] for n in Reader(c.rpc(60)).quest()['nodes']])
+        r = Reader(c.rpc(90, I(4) + I(900)))
+        self.assertEqual([r.integer() for _ in range(3)], [4, 0, 4])
+        r.integer()
+        expires = r.integer()
+        lit = Reader(c.rpc(57, self.completion_body({15: -1}, instance=lair['instance'], output='candle_01'))).end_graph()
+        burning, = [n for n in lit['nodes'] if n['node'] == candle['id']]
+        self.assertEqual((burning['mode'], burning['place'], burning['instance']), (5, 'tut_thorstein', candle['instance']))
+        self.assertEqual(lit['expiry'], {candle['instance']: expires})
+        self.assertEqual(Reader(c.rpc(60)).quest()['expiry'], {candle['instance']: expires})
+        out = Reader(c.rpc(57, self.completion_body({15: 0, 26: 2, 194: 0}, instance=candle['instance'],
+                                                    output='candle_01'))).end_graph()
+        self.assertNotIn(candle['id'], [n['node'] for n in out['nodes']])
+        self.assertEqual((out['expiry'], server.state()['facts']['26']), ({}, 2))
+        # Not saved yet (the effect's request still on its way): the graph's own 15 minutes from now.
+        c.rpc(92, I(4))
+        lit = Reader(c.rpc(57, self.completion_body({15: -1}, instance=lair['instance'], output='candle_02'))).end_graph()
+        self.assertAlmostEqual(lit['expiry'][candle['instance']], time.time() + 900, delta=5)
+
+    def test_season1_thorsteins_shop_conversation_finds_him(self):
+        # The shop's Conversation only queues node 316 (Sins) or 452 (Intruder): the map node must have that id.
+        self.assertEqual((NODE['s01mq03_thorstein'], NODE['s01mq06_thorstein']), (316, 452))
+        server, c = self.season('test-thorstein', {100: 4, 178: 1, 55: 1, 147: 1, 129: 3}, story={'Started': [152]})
+        self.assertIn(316, [n['node'] for n in Reader(c.rpc(60)).quest()['nodes']])
+        # In the Intruder he talks once a frightener fight is won (f70 = 6), as the shop offers him from then.
+        server, c = self.season('test-thorstein-2', {100: 4, 31: 5, 162: 2, 59: 2, 70: 6}, story={'Started': [154]})
+        self.assertIn(452, [n['node'] for n in Reader(c.rpc(60)).quest()['nodes']])
+
     def test_season1_a_permanent_effect_shows_no_timer(self):
         server, c = self.reconstructed()
         r = Reader(c.rpc(90, I(2) + I(-1)))   # the curse: AddPlayerModifier with -1 seconds, until removed

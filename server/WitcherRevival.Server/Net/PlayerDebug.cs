@@ -71,10 +71,11 @@ public sealed partial class PlayerService
                 break;
             case "level":
                 int level = Within(r.Value, 1, Reconstruction.MaxLevel, "Level");
-                // Five skill points per level up or down; no LevelUp push or level rewards for levels set here.
+                // Five skill points per level up or down; no LevelUp push or level rewards for levels set here. The level
+                // counts as shown, so the next level reached in play gets its window (and a lowered one is not skipped).
                 change = p => p with
                 {
-                    Exp = Reconstruction.ExpThreshold(level), LevelAnnounced = level,
+                    Exp = Reconstruction.ExpThreshold(level), LevelAnnounced = level, LevelShown = level,
                     SkillPoints = Math.Max(0, p.SkillPoints + (level - Reconstruction.LevelForExp(p.Exp)) * Reconstruction.SkillPointsPerLevel),
                 };
                 (pushes, effect) = ([M_GetPlayerInfo, 63], $"Level set to {level}, with skill points to match.");
@@ -122,6 +123,22 @@ public sealed partial class PlayerService
         lock (pushGate) pendingPushes.UnionWith(pushes);
         log.LogInformation("Debug action={Action} revision={Revision} pushes={Pushes}", r.Action, saved.Revision, pushes.Length);
         return new DebugOutcome(saved.Revision, pushes, Live, effect);
+    }
+
+    /// <summary>The character's model, chosen on the dashboard (not a debug tool: the profile is not marked Debug): gender
+    /// (the client's Gender, 0 male, 1 female; SetGender 46 only comes from character creation) and head (customization_heads
+    /// 1-3). GetPlayerInfo (3) sends them at the game's next start; nothing is pushed, as the game builds the figure once.
+    /// <paramref name="backup"/> receives the profile before it, so History can restore it.</summary>
+    public DebugOutcome Character(int gender, int head, Action<LocalProfileStore.Profile> backup)
+    {
+        if (profiles.Snapshot().Player is null) throw new DebugRefusal("This profile uses the legacy format, which has no character.");
+        if (gender is not (0 or 1)) throw new ArgumentException("Gender is 0 (male) or 1 (female).");
+        if (!PreloaderStaticData.HeadIds.Contains(head)) throw new ArgumentException($"Head is one of {string.Join(", ", PreloaderStaticData.HeadIds.Order())}.");
+        var saved = profiles.DebugUpdate(p => p.Gender == gender && (p.Head ?? 1) == head ? null : p with { Gender = (byte)gender, Head = head },
+            backup, markDebug: false);
+        log.LogInformation("Character gender={Gender} head={Head} revision={Revision}", gender, head, saved.Revision);
+        return new DebugOutcome(saved.Revision, [], Live,
+            $"The character is now {(gender == 0 ? "male" : "female")} with head {head}. The game shows it at its next start.");
     }
 
     /// <summary>Whether a session of this player has finished booting, so queued pushes reach the game after its next reply.</summary>

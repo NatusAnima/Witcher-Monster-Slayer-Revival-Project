@@ -240,9 +240,16 @@ def main():
     bundle = Bundle((glob.glob(str(args.assetpacks / name / "*/*/assets/assetpack" / name)) or [str(args.assetpacks / name)])[0])
     graphs = {}
     for asset, pid in sorted(bundle.assets.items()):
-        if "/bgraphs/s01/" not in asset or bundle.objects[pid][0] != "BehaviourGraph":
+        # Thorstein's shop conversations (ShopKeeperModule.StartFullDialog) are graphs too: they queue the quest's own node
+        # (FireQueuedGraph finds it by id), so the audit checks those are served.
+        if "/bgraphs/s01/" in asset:
+            key = asset.split("/bgraphs/")[1][:-len(".asset")]
+        elif "/thorstein_in_shop/s01/" in asset:
+            key = "thorstein_in_shop/" + asset.split("/thorstein_in_shop/")[1][:-len(".asset")]
+        else:
             continue
-        key = asset.split("/bgraphs/")[1][:-len(".asset")]
+        if bundle.objects[pid][0] != "BehaviourGraph":
+            continue
         tree = bundle.objects[pid][1]
         graphs[key] = {"quest_node_id": tree.get("QuestNodeId", 0), "instance_id": tree.get("QuestNodeInstanceId", 0),
                        **Graph(bundle, pid).walk()}

@@ -38,16 +38,21 @@ public static class StoryEngine
     public sealed record Quest(int Id, string Code, string Name, string Journal, string Criteria, int Done = 0, bool Main = false);
 
     /// <param name="Display">How the client shows the node (PoiDisplayMode): 1 Normal, 4 Hunt (a search circle that shrinks as
-    /// the player nears and starts the graph there), 7 Collecting (beside the player after 200 m of walking).</param>
+    /// the player nears and starts the graph there), 5 Auto (starts its graph by itself at its time to fire), 7 Collecting
+    /// (beside the player after 200 m of walking).</param>
+    /// <param name="Timer">An Auto node's [effect id, seconds]: it fires when that player modifier ends (PlayerService
+    /// writes the time in ExpiringQuestNodeInstances).</param>
     public sealed record Node(int Id, int Quest, string Key, string Graph, string Poi, long Instance, string Kind,
-        string Root, string Show, double Min, double Max, string? Near, string? PlaceOf, int Copies, int Display = 1)
+        string Root, string Show, double Min, double Max, string? Near, string? PlaceOf, int Copies, int Display = 1,
+        int[]? Timer = null)
     {
+        public const int DisplayAuto = 5, DisplayCollecting = 7;
         [JsonIgnore] public bool Giver => Kind == "giver";
         [JsonIgnore] public bool Queued => Kind == "queued";
         [JsonIgnore] public bool Button => Kind == "button";
         [JsonIgnore] public bool OnMap => Kind is "poi" or "queued";
-        /// <summary>A map node with no place of its own: queued ones, and those the client places itself (Collecting).</summary>
-        [JsonIgnore] public bool BesidePlayer => Queued || Kind == "poi" && Display == 7;
+        /// <summary>A map node with no place of its own: queued ones, and those the client places itself (Collecting, Auto).</summary>
+        [JsonIgnore] public bool BesidePlayer => Queued || Kind == "poi" && Display is DisplayCollecting or DisplayAuto;
         public bool HasInstance(long instance) => instance >= Instance && instance < Instance + Copies;
     }
 

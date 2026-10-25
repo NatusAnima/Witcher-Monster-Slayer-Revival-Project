@@ -36,7 +36,12 @@ public sealed class WorldTuning
         ExpByRarity = "xp.baseByRarity", VanillaCurve = "xp.vanillaCurve", QuestSoftCap = "quests.softCap",
         QuestHardCap = "quests.hardCap", TrinketBuffs = "trinkets.buffs", ShopScrolls = "shop.scrolls",
         ShopWeatherItems = "shop.weatherItems", ShopOrenPacks = "shop.orenPacks", OpenPacks = "inventory.openPacks",
-        SelfFriend = "friends.self";
+        SelfFriend = "friends.self", ShopDailyDiscount = "shop.dailyDiscount", DeflectsAsParries = "xp.deflectsAsParries",
+        OilsMultiply = "combat.oilsMultiply", CollectingDistance = "quests.collectingDistance",
+        CollectingUntracked = "quests.collectingUntracked", IntruderAllEndings = "quests.intruderAllEndings";
+
+    /// <summary>The settings hook.js applies in the game (ClientTexts sends them with the texts at the game's start).</summary>
+    public static readonly string[] GameSettings = [OilsMultiply, CollectingDistance, CollectingUntracked, IntruderAllEndings];
 
     /// <summary>Bestiary knowledge thresholds by rarity (common, rare, legendary): the cumulative kills of tiers 1-3.</summary>
     public static string Bestiary(string rarity, int tier) => $"bestiary.{rarity}{tier}";
@@ -45,6 +50,7 @@ public sealed class WorldTuning
     private const string PlacesApply = "Places drawn from now on. Monsters already out stay for up to 30 minutes.";
     private const string SpawnApply = "Monsters drawn from now on. Monsters already out stay for up to 30 minutes.";
     private const string StaticApply = "The next server start and game start.";
+    private const string GameApply = "The next game start.";
     private const string Switch = "on/off";
 
     private static Setting Share(string ground, string label, string where, double share) => new("places." + ground, "Places",
@@ -99,6 +105,10 @@ public sealed class WorldTuning
             "1 uses the original game's experience table (level 10 at 27,000, level 40 at 3,877,000); 0 this project's (level 10 at " +
             "45,000, level 40 at 780,000). Your level stays as it is when you switch; only the experience to the next level changes.",
             StaticApply, 0, 0, 1, 1, Switch, 1),
+        new(DeflectsAsParries, "Experience", "Deflected blows count as perfect parries",
+            "1 pays the perfect-parry experience for blows deflected with Hit Reflection: once it is learnt, the game counts every " +
+            "perfect parry as a deflect, so it never paid for one. 0 keeps the original game's count.", "The next fight.",
+            1, 0, 1, 1, Switch, 0),
         new(ExpPercent, "Experience", "Experience from fights",
             "How much experience a won fight gives, as a share of the normal amount: 200 doubles it, 50 halves it.",
             "The next fight.", 100, 10, 1000, 5, "%"),
@@ -134,8 +144,8 @@ public sealed class WorldTuning
             "The most items the inventory can ever hold, with every bag and quest reward.", "The next game start.",
             2000, 1000, 4000, 50, "items", 1000),
         new(OpenPacks, "Inventory", "Open packs from the inventory",
-            "1 lets a player open their own herbalist's packs (5 Herba each): the inventory's Remove button for a pack reads " +
-            "Open. 0 keeps the original game's packs, which are only sent to friends (Remove throws them away).",
+            "1 lets a player open their own herbalist's packs (what they hold is on the Rewards page): the inventory's Remove " +
+            "button for a pack reads Open. 0 keeps the original game's packs, which are only sent to friends (Remove throws them away).",
             "At once; the button's name at the next game start.", 1, 0, 1, 1, Switch, 0),
         new(SelfFriend, "Inventory", "Yourself in the friends list",
             "1 lists every player first among their own friends, so a pack can be sent to yourself and opened there (a backup to " +
@@ -154,6 +164,20 @@ public sealed class WorldTuning
             "After Good Money, a player who has beaten a rock troll must lose this many fights to rock trolls before the troll " +
             "talks and offers Monster Slayer. The game shows the quest from its next start.",
             "The next lost fight.", 3, 1, 10, 1, "fights"),
+        new(CollectingDistance, "Story", "Walking between quest finds",
+            "How far you walk before the next find of a collecting quest appears beside you (the Great Mushrooming's mushrooms). " +
+            "The game counts walking in steps of 100 m, and only while it is open.", GameApply, 100, 100, 200, 100, "m", 200),
+        new(CollectingUntracked, "Story", "Quest finds without tracking the quest",
+            "1 shows a started collecting quest's finds (the Great Mushrooming's mushrooms) even while another quest is tracked; " +
+            "0 shows them only while that quest is the tracked one, as the original game did.", GameApply, 1, 0, 1, 1, Switch, 0),
+        new(IntruderAllEndings, "Story", "Intruder: every ending can be reached",
+            "1 lets the Intruder's full and bonus endings happen when you did not wait out the sorcerer's 24 hours: in the game's " +
+            "own data they need a choice that is never offered, so four of its eight endings can never be reached. 0 keeps the " +
+            "original data.", GameApply, 1, 0, 1, 1, Switch, 0),
+        new(OilsMultiply, "Combat", "Oils multiply the blow",
+            "1 makes an oil's bonus (33 % for the basic oil) multiply the whole blow, after weaknesses, potions and skills. 0 keeps " +
+            "the original game's sum: the oil adds its share of the sword's base damage, so on a blow already doubled by a " +
+            "weakness it shows as about 14 % more, and the oils' descriptions say so.", GameApply, 1, 0, 1, 1, Switch, 0),
         new(TrinketBuffs, "Trinkets", "Trinket bonuses",
             "1 gives each trinket a bonus (more herbs, experience, attack against a family, bag slots…), shown in its description; " +
             "0 keeps trinkets as keepsakes only.", "At once; the descriptions at the next game start.", 1, 0, 1, 1, Switch, 0),
@@ -165,6 +189,9 @@ public sealed class WorldTuning
         new(ShopOrenPacks, "Shop", "Gold coin packs in the shop",
             "1 keeps the original game's packs of orens (bought for real money there, free here). The game never offers them " +
             "when a purchase costs more than the wallet holds.", StaticApply, 0, 0, 1, 1, Switch, 1),
+        new(ShopDailyDiscount, "Shop", "Daily deals discount",
+            "How much cheaper the shop's three daily deals (potions, oils and bombs) are. The prices themselves are on the " +
+            "Rewards page.", StaticApply, 40, 0, 90, 5, "%", 25),
     };
 
     /// <summary>The running server's settings, for code that has no access to the service (the herb rules are static). Revival

@@ -56,14 +56,24 @@ public static class FrameCodec
         return new Frame(type, data);
     }
 
+    // One writer at a time per stream: a session answers some requests beside its queue (GameSocketService), and a frame is
+    // two writes, so two answers must not interleave.
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Stream, SemaphoreSlim> Writers = new();
+
     public static async Task WriteAsync(Stream s, byte type, byte[] payload, CancellationToken ct)
     {
         var header = new byte[5];
         header[0] = type;
         BinaryPrimitives.WriteInt32BigEndian(header.AsSpan(1, 4), payload.Length);
-        await s.WriteAsync(header, ct);
-        if (payload.Length > 0) await s.WriteAsync(payload, ct);
-        await s.FlushAsync(ct);
+        var writer = Writers.GetValue(s, _ => new SemaphoreSlim(1, 1));
+        await writer.WaitAsync(ct);
+        try
+        {
+            await s.WriteAsync(header, ct);
+            if (payload.Length > 0) await s.WriteAsync(payload, ct);
+            await s.FlushAsync(ct);
+        }
+        finally { writer.Release(); }
     }
 
     private static async Task<byte[]?> ReadExactAsync(Stream s, int n, CancellationToken ct,

@@ -5,8 +5,10 @@ namespace WitcherRevival.Server.Net;
 /// I2.Loc.LocalizationManager.GetTranslation with them), following the dashboard's settings: a monster's bestiary
 /// "Occurrence" line when the wiki's tags are in use (built from the game's own phrases, so one string serves every
 /// language), each trinket's bonus line and attack modifier name while trinket bonuses are on, the weather items' names and
-/// descriptions (they reuse the icons of unused consumables, whose own texts they replace), and a pack's Open texts while packs
-/// open from the inventory. Those are by language (GameTexts): {"en": …, "pl": …}.
+/// descriptions (they reuse the icons of unused consumables, whose own texts they replace), a pack's Open texts while packs
+/// open from the inventory, a line on the pack's description while it holds more than herbs and roots, and a line on each
+/// oil's description while oils keep the original sum (combat.oilsMultiply off). Those are by language (GameTexts):
+/// {"en": …, "pl": …}. "settings" carries the Tuning values hook.js applies in the game (WorldTuning.GameSettings).
 /// </summary>
 public static class ClientTexts
 {
@@ -41,6 +43,13 @@ public static class ClientTexts
             replace[OpenPackButton] = GameTexts.Open;
             replace[OpenPackHeader] = GameTexts.OpenHeader;
         }
-        return new { replace, append };
+        if ((WorldTuning.Current.Rewards.PackPool ?? []).Any(row => row.Weight > 0 &&
+            !(row.Kind == ItemKinds.Ingredients && row.Id is Economy.Herba or Economy.Radix)))
+            append["ITEMS/DESCRIPTIONS/PACKS/PACK_HERBALIST"] = GameTexts.RarerFinds.ToDictionary(p => p.Key, p => "\n" + p.Value);
+        if (!WorldTuning.Current.On(WorldTuning.OilsMultiply))
+            foreach (var oil in Reconstruction.Oils)
+                append[$"ITEMS/DESCRIPTIONS/OILS/{oil.Slug.ToUpperInvariant()}"] = GameTexts.OilBaseDamage.ToDictionary(p => p.Key, p => "\n" + p.Value);
+        var settings = WorldTuning.GameSettings.ToDictionary(key => key, WorldTuning.Current.Get);
+        return new { replace, append, settings };
     }
 }

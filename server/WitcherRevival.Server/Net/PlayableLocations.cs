@@ -75,6 +75,20 @@ public sealed class PlayableLocations
         }
     }
 
+    // The epoch-zero lookups of the reply being built on this thread (Lookups): a map reply checks the place of every story
+    // node against the same area, one HTTP lookup each before. The handlers are synchronous, so a thread holds one reply.
+    [ThreadStatic] private static Dictionary<string, IReadOnlyList<Cell>?>? lookups;
+
+    /// <summary>Until disposed, this thread's epoch-zero lookups of the same cells share one answer (one reply's worth).</summary>
+    public static IDisposable Lookups()
+    {
+        var outer = lookups;
+        lookups ??= new Dictionary<string, IReadOnlyList<Cell>?>();
+        return new Scope(() => lookups = outer);
+    }
+
+    private sealed class Scope(Action end) : IDisposable { public void Dispose() => end(); }
+
     /// <summary>Cells with their centres and places, or null when the service is off or unreachable.</summary>
     public IReadOnlyList<Cell>? Cells(IReadOnlyCollection<ulong> ids, long epoch)
     {
@@ -82,8 +96,14 @@ public sealed class PlayableLocations
         if (ids.Count > 64) throw new ArgumentOutOfRangeException(nameof(ids));
         string key = $"{_url}/cells?ids={string.Join(',', ids.Distinct().Order())}&epoch={epoch}";
         // Epoch zero is used to validate a quest destination against current placement data.
-        // Keep this transactional lookup fresh; ordinary dated map geometry may be shared briefly.
-        if (epoch == 0) return Fetch(key);
+        // Keep this transactional lookup fresh (shared only inside one reply: Lookups); ordinary dated map geometry may be
+        // shared briefly.
+        if (epoch == 0)
+        {
+            if (lookups is null) return Fetch(key);
+            if (!lookups.TryGetValue(key, out var fresh)) lookups[key] = fresh = Fetch(key);
+            return fresh;
+        }
         TaskCompletionSource<IReadOnlyList<Cell>?> pending;
         bool owner;
         lock (CacheGate)

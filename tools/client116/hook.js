@@ -134,7 +134,7 @@ const RVA = {
   init: 0x16d0afc, domain_get: 0x16d1258, domain_get_assemblies: 0x16d1264, assembly_get_image: 0x16d0c38,
   image_get_name: 0x16d17fc, class_from_name: 0x16d0c64, class_get_method_from_name: 0x16d0c8c,
   string_new: 0x16d15f4, string_chars: 0x16d15f0, string_length: 0x16d15ec, resolve_icall: 0x16d0c08,
-  object_get_class: 0x16d1558,
+  object_get_class: 0x16d1558, object_new: 0x16d1564, runtime_invoke: 0x16d15c4,
   create_http: 0x20a4a28,  // System.Net.WebRequest.CreateHttp(string); the overload with Uri has the same name and arity
   weather_response: 0x247a5f4,  // GetWeatherResponse.Factory.Deserialize: the reply with the weather code (+0x10)
   astro_condition: 0x17e1fac,   // AstroConditionNode.HasDesiredValue: the quests' full moon, sunrise, sunset and day checks
@@ -176,6 +176,24 @@ const RVA = {
   alchemy_slot_management: 0x18c9f18,  // AlchemyItemSlot.OnManagementPressed: the slot's count window (ItemManagementWindow)
   inventory_item_load: 0x17d14b8,   // InventoryItemWindow.LoadData(data): an item's info window (data.Item +0x10)
   inventory_item_friends: 0x17d2a0c,  // InventoryItemWindow.OpenFriendsPanel: a pack's one button, Send
+  drop_pack_reply: 0x247f888,       // DropFriendPackResponse.Factory.Deserialize(TypeMessage): reads [byte][int][int] of the reply
+  drop_items_response: 0x1876f78,   // ItemManagementWindow.OnDropItemsResponse<object>(response, storage): the count window's answer
+  inventory_get_item: 0x1a0cc10,    // PlayerInventory.GetItem(itemTypeId, id, amount): an item to show, nothing added
+  item_claim_data: 0x18cfddc,       // ItemClaimWindowData..ctor(Item, int quantity, bool bigOpenSfx): Items +0x10 (List<Pair<Item,int>>)
+  show_window: 0x1817864,           // ShowWindow..ctor(IWindowContent, bool hideCurrentWindow): the window manager's signal
+  safe_fire: 0x198dd1c,             // SignalBusExtensions.SafeFire(SignalBus, object signal, object identifier)
+  open_pack_reply: 0x1e79ed0,       // OpenPackResponse.Factory.Deserialize(TypeMessage): [byte][long][int][int][int] of the reply
+  open_pack_response: 0x1978ec0,    // FriendsModule.OnOpenPackResponse: a gift's item added and shown in the game's pack window
+  item_claim_load: 0x18da558,       // ItemClaimWindow.LoadData(data): the claim window got its items
+  sword_damage: 0x1938fa8,          // SwordModule.CalculateSwordDamage(hitType, stats): a Damage (+0x14 AdditiveBonus, +0x18 Value)
+  collecting_distance: 0x1909214,   // CollectingQuestPoi.OnUpdate: cmp w8, #200, the metres walked before a find shows
+  collecting_created: 0x19090ec,    // CollectingQuestPoi.OnCreated: a collecting find on the map (its instance +0x180)
+  collecting_walked: 0x190944c,     // CollectingQuestPoi.OnDistanceWalkedSignal: the instance's metres (+0x80) grow by 100
+  quest_poi_instantiate: 0x1909f58,  // QuestPoiInstance.ShouldBeInstantiated(position, time): Activated +0x58, IsQuestGiver
+                                     // +0x59, DisplayMode +0x60
+  tracked_quest: 0x19a5aa8,         // StoryModule.SetTrackedQuest(int questId, bool manualToggle)
+  fact_requirement: 0x1962d3c,      // FactRequirementNode.HasDesiredValue: Node.graph +0x20, FactRequirement +0x48 (Value
+                                    // +0x10, Operator +0x14: Equal 0 … LowerThan 4, FactId +0x18)
 };
 const callbacks = [];  // NativeCallbacks given to Interceptor.replace, kept from the garbage collector
 
@@ -230,6 +248,21 @@ function stage(name, work) {
   } catch (e) {
     log('stage FAILED:', name, '-', e.message);
     return false;
+  }
+}
+
+// A hook the game calls every frame, in C (a CModule exporting onEnter/onLeave, which calls into JS only when there is
+// work): a JS callback per call costs a few microseconds each, many times a frame. Without CModule (a Gadget build without
+// its C compiler) the same hook runs in JS, as before.
+function fastHook(name, target, source, symbols, js) {
+  try {
+    const module = new CModule(source, symbols);
+    callbacks.push(module);
+    Interceptor.attach(target, module);
+    log('fast hook:', name);
+  } catch (e) {
+    log('fast hook in JS:', name, '-', e.message);
+    Interceptor.attach(target, js);
   }
 }
 
@@ -291,10 +324,10 @@ function install(m) {
     };
     const str = s => stringNew(Memory.allocUtf8String(s));
     const read = s => (s.isNull() ? null : stringChars(s).readUtf16String(stringLength(s)));
-    il2cpp = { images, classFromName, resolveIcall, objectClass, method, str, read };
+    il2cpp = { images, classFromName, methodFromName, resolveIcall, objectClass, method, str, read };
   });
   if (il2cpp) {
-    const { images, classFromName, resolveIcall, objectClass, method, str, read } = il2cpp;
+    const { images, classFromName, methodFromName, resolveIcall, objectClass, method, str, read } = il2cpp;
 
     // Game server: every ClientSettings lookup answers with our server, gatekeeper off.
     const setting = (name, value) => stage('ClientSettings.' + name, () => {
@@ -350,7 +383,18 @@ function install(m) {
         said.add(parts[0]);
         log('offline play:', ...parts);
       };
-      Interceptor.attach(m.base.add(RVA.internet_reachability), {
+      // ConnectionHandler.Tick asks every frame
+      const noNetwork = new NativeCallback(() => once('no network on the phone', '-> local network'), 'void', []);
+      callbacks.push(noNetwork);
+      fastHook('reachability', m.base.add(RVA.internet_reachability), `
+        #include <gum/guminterceptor.h>
+        extern void no_network (void);
+        static int said;
+        void onLeave (GumInvocationContext * ic) {
+          if (gum_invocation_context_get_return_value (ic) != 0) return;
+          gum_invocation_context_replace_return_value (ic, (void *) 2);
+          if (!said) { said = 1; no_network (); }
+        }`, { no_network: noNetwork }, {
         onLeave(ret) {
           if (ret.toInt32() !== 0) return;
           once('no network on the phone', '-> local network');
@@ -404,7 +448,7 @@ function install(m) {
           const hidden = [];
           const hide = (gameObject) => {
             if (gameObject.isNull()) return;
-            setActive(gameObject, false, NULL);
+            setActive(gameObject, 0, NULL);   // a 'bool' argument takes a number: false threw "expected an integer"
             hidden.push(read(objectName(gameObject, NULL)));
           };
           const part = this.window.add(0xf0).readPointer();   // _loginParent
@@ -473,35 +517,182 @@ function install(m) {
         },
       });
     });
-    // Addressables: every asset key lookup goes through ResourceLocationMap.Locate(key, type, out locations).
-    stage('addressables', () => {
-      const stringClass = classFromName(images['mscorlib.dll'], Memory.allocUtf8String('System'), Memory.allocUtf8String('String'));
-      Interceptor.attach(method('Unity.Addressables.dll', 'UnityEngine.AddressableAssets.ResourceLocators',
-                                'ResourceLocationMap', 'Locate', 3), {
-        onEnter(args) {
-          if (args[1].isNull() || !objectClass(args[1]).equals(stringClass)) return;
-          const key = read(args[1]);
-          const fix = ASSET_KEY_FIXES.find(([from]) => key.endsWith(from));
-          if (!fix) return;
-          args[1] = str(key.slice(0, -fix[0].length) + fix[1]);
-          log('asset key fixed', fix[0], '->', fix[1]);
+    // The dashboard's settings for the game (Tuning, sent with the texts); each one off keeps the original game.
+    stage('game settings', () => {
+      const objectName = new NativeFunction(m.base.add(RVA.object_name), 'pointer', ['pointer', 'pointer']);
+      // combat.oilsMultiply. CalculateSwordDamage builds a Damage whose Value is the sword's base damage and whose
+      // AdditiveBonus sums the hit type's, the attack's and the oil's bonus (SwordModifiers +0x108: OilModifier +0x58, its value
+      // +0x10, 0.33 for the basic oil, more with the oil skills); weaknesses and potions are added to that sum, so the oil gave
+      // its share of the base only. On, the oil leaves the sum and multiplies the blow.
+      whenSettings(() => {
+        if (!SETTINGS['combat.oilsMultiply']) return;
+        let said = false;
+        Interceptor.attach(m.base.add(RVA.sword_damage), {
+          onEnter(args) { this.sword = args[0]; },
+          onLeave(damage) {
+            if (damage.isNull()) return;
+            const modifiers = this.sword.add(0x108).readPointer();
+            const oil = modifiers.isNull() ? NULL : modifiers.add(0x58).readPointer();
+            const bonus = oil.isNull() ? 0 : oil.add(0x10).readFloat();
+            if (bonus === 0) return;
+            damage.add(0x18).writeFloat(damage.add(0x18).readFloat() * (1 + bonus));
+            damage.add(0x14).writeFloat(damage.add(0x14).readFloat() - bonus);
+            if (!said) log('oils: the oil multiplies the blow by', (1 + bonus).toFixed(2));
+            said = true;
+          },
+        });
+        log('oils: multiply');
+      });
+      // quests.collectingDistance: the metres CollectingQuestPoi.OnUpdate waits for (cmp w8, #200; the game counts 100 m steps).
+      whenSettings(() => {
+        const metres = SETTINGS['quests.collectingDistance'];
+        if (!metres || metres === 200) return;
+        const at = m.base.add(RVA.collecting_distance);
+        if (hex(at.readByteArray(4)) !== '1f210371') return void log('collecting: unexpected code, the distance stays 200 m');
+        Memory.patchCode(at, 4, code => code.writeU32((0x7100011f | (metres << 10)) >>> 0));   // cmp w8, #metres
+        log('collecting: a find after', metres, 'm');
+      });
+      // quests.collectingUntracked: QuestPoiInstance.ShouldBeInstantiated shows a quest node only once SetActiveQuestNodes has
+      // activated it (+0x58), which it does for the tracked quest's nodes alone, so tracking another quest hid the mushrooms
+      // and stopped the candles. A collecting find or a timed node (Collecting 7, Auto 5) of a started quest shows anyway.
+      whenSettings(() => {
+        if (!SETTINGS['quests.collectingUntracked']) return;
+        Interceptor.attach(m.base.add(RVA.quest_poi_instantiate), {
+          onEnter(args) { this.poi = args[0]; },
+          onLeave(shown) {
+            if (shown.toInt32() !== 0) return;
+            const display = this.poi.add(0x60).readS32();
+            if ((display === 5 || display === 7) && this.poi.add(0x58).readU8() === 0 && this.poi.add(0x59).readU8() === 0)
+              shown.replace(ptr(1));
+          },
+        });
+        log('collecting: finds show without tracking their quest');
+      });
+      // quests.intruderAllEndings: the Intruder's ending graph gives full_reward and bonus_reward only for fact 33 = 0, and the
+      // sorcerer's dialogue always sets 1 (2 once his 24 hours are waited out). Its two "33 = 0" requirements read "33 < 2".
+      whenSettings(() => {
+        if (!SETTINGS['quests.intruderAllEndings']) return;
+        const seen = new Set();
+        Interceptor.attach(m.base.add(RVA.fact_requirement), {
+          onEnter(args) {
+            const requirement = args[0].add(0x48).readPointer();
+            if (requirement.isNull() || requirement.add(0x18).readS32() !== 33 || requirement.add(0x14).readS32() !== 0 ||
+                requirement.add(0x10).readS32() !== 0) return;
+            const graph = args[0].add(0x20).readPointer();
+            const name = graph.isNull() ? null : read(objectName(graph, NULL));
+            if (!(name || '').startsWith('s01mq06_vogt_02')) {   // a copy of the graph is named "…(Clone)"
+              if (!seen.has(name)) log('intruder: f33 = 0 asked in', name, '(kept)');
+              seen.add(name);
+              return;
+            }
+            requirement.add(0x14).writeS32(4);   // LowerThan
+            requirement.add(0x10).writeS32(2);
+            log('intruder: the ending reads f33 < 2');
+          },
+        });
+      });
+      // Diagnostics for the collecting quests (rare events): a find on the map, the walking it counts, the tracked quest.
+      Interceptor.attach(m.base.add(RVA.collecting_created), { onEnter() { log('collecting: a find is on the map'); } });
+      Interceptor.attach(m.base.add(RVA.collecting_walked), {
+        onEnter(args) { this.poi = args[0]; },
+        onLeave() {
+          const instance = this.poi.add(0x180).readPointer();
+          if (!instance.isNull()) log('collecting: walked', instance.add(0x80).readS32(), 'm');
         },
       });
+      Interceptor.attach(m.base.add(RVA.tracked_quest), {
+        onEnter(args) { log('tracked quest', args[1].toInt32(), (args[2].toInt32() & 1) ? '(by the player)' : '(by the story)'); },
+      });
+    });
+    // Addressables: every asset key lookup goes through ResourceLocationMap.Locate(key, type, out locations).
+    // Every asset load (hundreds when a fight starts) asks: in C only a key with the fix's ending reaches JS.
+    stage('addressables', () => {
+      const stringClass = classFromName(images['mscorlib.dll'], Memory.allocUtf8String('System'), Memory.allocUtf8String('String'));
+      const fixed = (key) => {
+        const fix = ASSET_KEY_FIXES.find(([from]) => key.endsWith(from));
+        if (!fix) return null;
+        log('asset key fixed', fix[0], '->', fix[1]);
+        return str(key.slice(0, -fix[0].length) + fix[1]);
+      };
+      const locate = method('Unity.Addressables.dll', 'UnityEngine.AddressableAssets.ResourceLocators', 'ResourceLocationMap',
+                            'Locate', 3);
+      const js = {
+        onEnter(args) {
+          if (args[1].isNull() || !objectClass(args[1]).equals(stringClass)) return;
+          const key = fixed(read(args[1]));
+          if (key) args[1] = key;
+        },
+      };
+      if (ASSET_KEY_FIXES.length !== 1) return void Interceptor.attach(locate, js);   // the C form checks one ending
+      const [[ending]] = ASSET_KEY_FIXES;
+      const suffix = Memory.alloc(ending.length * 2 + 2);   // and the terminator writeUtf16String adds
+      suffix.writeUtf16String(ending);
+      const onKey = new NativeCallback(key => {
+        try {
+          return fixed(read(key)) || key;
+        } catch (e) {
+          return key;
+        }
+      }, 'pointer', ['pointer']);
+      callbacks.push(onKey);
+      fastHook('asset keys', locate, `
+        #include <gum/guminterceptor.h>
+        extern void * string_class;
+        extern unsigned short suffix[];
+        extern void * on_key (void * key);
+        void onEnter (GumInvocationContext * ic) {
+          void * key = gum_invocation_context_get_nth_argument (ic, 1);
+          if (key == 0 || *(void **) key != string_class) return;
+          int n = *(int *) ((char *) key + 0x10), length = ${ending.length};
+          if (n < length) return;
+          unsigned short * chars = (unsigned short *) ((char *) key + 0x14) + (n - length);
+          for (int i = 0; i < length; i++) if (chars[i] != suffix[i]) return;
+          gum_invocation_context_replace_nth_argument (ic, 1, on_key (key));
+        }`, { string_class: stringClass, suffix, on_key: onKey }, js);
     });
     // Texts the server supplies: the bestiary's occurrences from the wiki, the trinkets' bonuses, the weather items' names.
     // A term is looked up only when its length is one of theirs, since some windows ask for texts every frame.
     // Texts by language are {"en": …, "pl": …}: the game's language code before any "-" picks one, else English.
+    // In C (every frame, from timers and Update methods): only a term with one of those lengths reaches JS.
     stage('texts', () => {
       const languageCode = new NativeFunction(m.base.add(RVA.current_language_code), 'pointer', ['pointer']);
       language = () => (read(languageCode(NULL)) || 'en').toLowerCase().split('-')[0];
-      Interceptor.attach(m.base.add(RVA.get_translation), {
+      const answer = (term, text) => {
+        const found = term && TEXTS.get((packWindow && PACK_TERMS[term]) || term);
+        return found ? str(found.replace !== undefined ? pick(found.replace) : (read(text) || '') + pick(found.append)) : null;
+      };
+      const onTerm = new NativeCallback((term, text) => {
+        try {
+          return answer(read(term), text) || text;
+        } catch (e) {
+          return text;   // the game's own text: a throw here would reach the game
+        }
+      }, 'pointer', ['pointer', 'pointer']);
+      callbacks.push(onTerm);
+      fastHook('texts', m.base.add(RVA.get_translation), `
+        #include <gum/guminterceptor.h>
+        extern unsigned char lengths[];
+        extern void * on_term (void * term, void * text);
+        typedef struct { void * term; } State;
+        void onEnter (GumInvocationContext * ic) {
+          State * s = GUM_IC_GET_INVOCATION_DATA (ic, State);
+          void * term = gum_invocation_context_get_nth_argument (ic, 0);
+          int n = term == 0 ? 0 : *(int *) ((char *) term + 0x10);
+          s->term = n > 0 && n < ${TERM_LENGTHS} && lengths[n] ? term : 0;
+        }
+        void onLeave (GumInvocationContext * ic) {
+          State * s = GUM_IC_GET_INVOCATION_DATA (ic, State);
+          if (s->term == 0) return;
+          void * text = gum_invocation_context_get_return_value (ic);
+          void * replaced = on_term (s->term, text);
+          if (replaced != text) gum_invocation_context_replace_return_value (ic, replaced);
+        }`, { lengths: termLengths, on_term: onTerm }, {
         onEnter(args) {
           this.term = !args[0].isNull() && textLengths.has(args[0].add(0x10).readS32()) ? read(args[0]) : null;
         },
         onLeave(ret) {
-          const text = this.term && TEXTS.get((packWindow && PACK_TERMS[this.term]) || this.term);
-          if (!text) return;
-          ret.replace(str(text.replace !== undefined ? pick(text.replace) : (read(ret) || '') + pick(text.append)));
+          const text = answer(this.term, ret);
+          if (text) ret.replace(text);
         },
       });
       setTimeout(loadTexts, 0);  // off the game's start; the game reads its static texts after the login
@@ -541,7 +732,11 @@ function install(m) {
     //   (AlchemyItemSlot.OnManagementPressed on the slot tapped last, AlchemyItemSlot.OnClick); the friends panel still sends;
     // - the count window (ItemManagementWindow) drops packs with DropFriendPack 109, which the server opens. While it shows a
     //   pack its question and button read as opening (PACK_TERMS in the texts stage; the button's label is also set after
-    //   LoadData and given back for other items, as the window is reused).
+    //   LoadData and given back for other items, as the window is reused);
+    // - what the packs held follows the reply's own fields (PlayerService.HandleDropItems: [int n][int type][int item][int
+    //   amount] x n, which the game leaves unread); once the window has its answer, the game's item-claim window (the one
+    //   crafted items are collected with) shows them, one at a time with the reward sound. The items themselves come with the
+    //   server's inventory push.
     stage('open packs', () => {
       const fn = (rva, ret, args) => new NativeFunction(m.base.add(rva), ret, args);
       const packClass = classFromName(images['Game.dll'], Memory.allocUtf8String('WitcherWorld.Modules.DataManager'),
@@ -591,12 +786,23 @@ function install(m) {
       const manage = fn(RVA.alchemy_slot_management, 'void', ['pointer', 'pointer']);
       const friends = m.base.add(RVA.inventory_item_friends);
       const sendOriginal = new NativeFunction(friends, 'void', ['pointer', 'pointer']);
+      // A window's own Close() (Window<T>, vtable slot 17: code +0x240, method +0x248), as OpenFriendsPanel and
+      // UseSummoningScroll end. Without it the count window (shown with hideCurrentWindow) only hid this one, which came back
+      // when the count and claim windows closed: the pack's window, still offering Open, with no pack left. It closes first:
+      // a window shown with hideCurrentWindow waits for the current one's hide to end, and closing it then left the count
+      // window waiting for good; asked while a window closes, the manager queues it and shows it once that one has closed
+      // (WindowsManager.OnShowWindow 0x181FBAC, OnWindowClosed 0x182006C).
+      const closeWindow = (window) => {
+        const klass = window.readPointer();
+        new NativeFunction(klass.add(0x240).readPointer(), 'bool', ['pointer', 'pointer'])(window, klass.add(0x248).readPointer());
+      };
       const send = new NativeCallback((window, info) => {
         try {
           const data = window.add(0x78).readPointer();                            // Window<InventoryItemData>.Data
           const item = data.isNull() ? NULL : data.add(0x10).readPointer();
           if (opening() && isPack(item) && !tapped.isNull() && tapped.add(0x80).readPointer().equals(item)) {
             once('open', 'the count window from the info window');
+            closeWindow(window);
             manage(tapped, NULL);
             return;
           }
@@ -631,6 +837,113 @@ function install(m) {
           } else if (!isPack(this.item) && current === word && own !== null) {
             setText(text, str(own), NULL);
           }
+        },
+      });
+      // what the packs held
+      const claimClass = classFromName(images['Game.dll'], Memory.allocUtf8String('WitcherWorld.Modules.GUI.ItemClaim'),
+        Memory.allocUtf8String('ItemClaimWindowData'));
+      const showClass = classFromName(images['Game.dll'], Memory.allocUtf8String('WitcherWorld.Modules.GUI.WindowsManager'),
+        Memory.allocUtf8String('ShowWindow'));
+      if (claimClass.isNull() || showClass.isNull()) throw new Error('class ItemClaimWindowData or ShowWindow not found');
+      const objectNew = fn(RVA.object_new, 'pointer', ['pointer']);
+      const invoke = fn(RVA.runtime_invoke, 'pointer', ['pointer', 'pointer', 'pointer', 'pointer']);
+      const getItem = fn(RVA.inventory_get_item, 'pointer', ['pointer', 'int', 'int', 'int', 'pointer']);
+      const claimData = fn(RVA.item_claim_data, 'void', ['pointer', 'pointer', 'int', 'bool', 'pointer']);
+      const showWindow = fn(RVA.show_window, 'void', ['pointer', 'pointer', 'bool', 'pointer']);
+      const safeFire = fn(RVA.safe_fire, 'void', ['pointer', 'pointer', 'pointer', 'pointer']);
+      // [itemType, item, amount] x n that a reply lists after its own fields (the server's additions, which the game's reader
+      // leaves unread): the reply's TypeMessage.Data (+0x10), a ByteBuffer (_buffer +0x10, _readPosition +0x1C, _writePosition
+      // +0x20), big-endian. Each step is logged (opening packs is rare), so a report shows where a claim window stopped.
+      const readStacks = (message, what) => {
+        try {
+          const buffer = message.add(0x10).readPointer();
+          const bytes = buffer.add(0x10).readPointer().add(0x20);       // _buffer's elements
+          let at = buffer.add(0x1c).readS32();                          // past the reply's own fields
+          const end = buffer.add(0x20).readS32();
+          const int = () => {
+            const value = new DataView(bytes.add(at).readByteArray(4)).getInt32(0);
+            at += 4;
+            return value;
+          };
+          if (end - at < 4) return void log(what + ': the reply holds no list of what was found (' + (end - at) + ' bytes left)');
+          const n = int();
+          if (n < 0 || n > 64 || end - at < n * 12) return void log(what + ': the reply lists', n, 'stacks in', end - at, 'bytes');
+          const stacks = [];
+          for (let i = 0; i < n; i++) stacks.push([int(), int(), int()]);
+          log(what + ': the reply lists', JSON.stringify(stacks));
+          return stacks;
+        } catch (e) {
+          log(what + ': the reply could not be read -', e.message);
+          return null;
+        }
+      };
+      // The game's item-claim window (the one crafted items are collected with) for [stacks], fired on [bus]. With
+      // [hideCurrent] it covers the window now showing; without, it waits until that one closes (the manager's queue).
+      const showClaim = (bus, inventory, stacks, hideCurrent, what) => {
+        try {
+          const items = stacks.map(([type, id, amount]) => [getItem(inventory, type, id, amount, NULL), amount])
+            .filter(([item]) => !item.isNull());
+          if (items.length === 0) return void log(what + ': the game has none of the', stacks.length, 'items found');
+          const data = objectNew(claimClass);
+          claimData(data, items[0][0], items[0][1], 1, NULL);
+          const list = data.add(0x10).readPointer();                    // its List<Pair<Item, int>>, the first item in it
+          const pairClass = objectClass(list.add(0x10).readPointer().add(0x20).readPointer());
+          const add = methodFromName(objectClass(list), Memory.allocUtf8String('Add'), 1);
+          const param = Memory.alloc(8), thrown = Memory.alloc(8);
+          for (const [item, amount] of items.slice(1)) {
+            const pair = objectNew(pairClass);
+            pair.add(0x10).writePointer(item);                          // Pair.first
+            pair.add(0x18).writeS32(amount);                            // Pair.second
+            param.writePointer(pair);
+            thrown.writePointer(NULL);
+            invoke(add, list, param, thrown);
+            if (!thrown.readPointer().isNull()) throw new Error('List.Add threw');
+          }
+          const signal = objectNew(showClass);
+          showWindow(signal, data, hideCurrent ? 1 : 0, NULL);   // a 'bool' argument takes a number, not true/false
+          safeFire(bus, signal, NULL, NULL);
+          log(what + ': shown', items.length, 'items');
+        } catch (e) {
+          log(what + ': the claim window failed -', e.message);
+        }
+      };
+      // packs opened in the inventory (DropFriendPack 109): every stack, once the count window has its answer
+      let found = null;  // the last reply's stacks, until its window has the answer
+      Interceptor.attach(m.base.add(RVA.drop_pack_reply), {
+        onEnter(args) { this.message = args[1]; },
+        onLeave() { found = readStacks(this.message, 'open packs'); },
+      });
+      Interceptor.attach(m.base.add(RVA.drop_items_response), {
+        onEnter(args) { this.window = args[0]; },
+        onLeave() {
+          const stacks = found;
+          found = null;
+          if (!stacks || stacks.length === 0) return;   // not a pack
+          // ItemManagementWindow._playerInventory +0xD8, Window._signalBus +0x18
+          showClaim(this.window.add(0x18).readPointer(), this.window.add(0xd8).readPointer(), stacks, true, 'open packs');
+        },
+      });
+      // a gift opened (OpenPack 107): the game's pack window shows the stack its reply names, the rest follows after it
+      let gift = null;
+      Interceptor.attach(m.base.add(RVA.open_pack_reply), {
+        onEnter(args) { this.message = args[1]; },
+        onLeave() { gift = readStacks(this.message, 'gift'); },
+      });
+      Interceptor.attach(m.base.add(RVA.open_pack_response), {
+        onEnter(args) { this.module = args[0]; },
+        onLeave() {
+          const stacks = gift;
+          gift = null;
+          if (!stacks || stacks.length === 0) return;
+          // FriendsModule._signalBus +0x30, _playerInventory +0x20
+          showClaim(this.module.add(0x30).readPointer(), this.module.add(0x20).readPointer(), stacks, false, 'gift');
+        },
+      });
+      // the window manager took it (crafted items are collected through the same window)
+      Interceptor.attach(m.base.add(RVA.item_claim_load), {
+        onEnter(args) {
+          const items = args[1].isNull() ? NULL : args[1].add(0x10).readPointer();
+          log('claim window: loads', items.isNull() ? 0 : items.add(0x18).readS32(), 'items');
         },
       });
     });
@@ -690,6 +1003,15 @@ const OPEN_PACK = 'REVIVAL/OPEN_PACK', OPEN_PACK_HEADER = 'REVIVAL/OPEN_PACK_HEA
 const PACK_TERMS = { 'UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE_HEADER': OPEN_PACK_HEADER, 'UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE': OPEN_PACK };
 let packWindow = false;
 let textLengths = new Set();
+// The same lengths for the C form of the texts hook: one byte per length, 1 for a length of the server's terms.
+const TERM_LENGTHS = 1024;
+const termLengths = Memory.alloc(TERM_LENGTHS);
+// The dashboard's settings the game follows (WorldTuning.GameSettings, with the texts): {key: value}, and what applies them.
+const SETTINGS = {};
+const settingsUsers = [];
+function whenSettings(apply) {
+  settingsUsers.push(apply);
+}
 let language = () => 'en';  // the game's language (the texts stage asks I2)
 // A text that is the same in every language (a string), or one by language ({"en": …, "pl": …}).
 function pick(value) {
@@ -711,9 +1033,20 @@ function loadTexts() {
       for (const term of Object.keys(texts.replace || {})) TEXTS.set(term, { replace: texts.replace[term] });
       for (const term of Object.keys(texts.append || {})) TEXTS.set(term, { append: texts.append[term] });
       textLengths = new Set([...TEXTS.keys(), ...Object.keys(PACK_TERMS)].map(term => term.length));
+      for (const length of textLengths) if (length < TERM_LENGTHS) termLengths.add(length).writeU8(1);
       log('texts:', TEXTS.size, 'from the server');
+      Object.assign(SETTINGS, texts.settings || {});
+      log('settings:', JSON.stringify(SETTINGS));
     } catch (e) {
       log('texts: not loaded -', e.message);
+    }
+    // without them (an older server, no answer) the game keeps its own behaviour: every setting reads as off
+    for (const apply of settingsUsers) {
+      try {
+        apply();
+      } catch (e) {
+        log('settings: not applied -', e.message);
+      }
     }
   });
 }

@@ -243,7 +243,7 @@ public sealed partial class PlayerService
             foreach (var (node, place) in placed) WriteStoryNode(b, node, node.Instance, place.Id,
                 quest.Id == 145 ? Reconstruction.StoryDisplayMode(snapshot.QuestStage) : Reconstruction.DisplayNormal);
         }
-        b.WriteInt(0);
+        WriteNodeTimers(b, updated);   // ExpiringQuestNodeInstances
         byte[] response = b.ToArray();
         bool applied = false;
         profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>

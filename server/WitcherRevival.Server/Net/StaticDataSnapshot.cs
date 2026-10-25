@@ -9,8 +9,10 @@ public sealed class StaticDataSnapshot
     public string Revision { get; }
     public string Url { get; }
 
-    public StaticDataSnapshot(IConfiguration cfg, DrivingWarningSettings driving, TaskCatalog tasks)
+    /// <param name="world">Made first: the shop's prices come from its tuning (Economy.FreezePrices).</param>
+    public StaticDataSnapshot(IConfiguration cfg, DrivingWarningSettings driving, TaskCatalog tasks, WorldPolicy world)
     {
+        Economy.FreezePrices();
         // TaskCatalog refuses changes to the live wire catalogue. Draw weights and minimum levels
         // remain live server decisions and do not alter this serialized representation.
         Gzip = PreloaderStaticData.GzipContainer(cfg.GetValue("Preloader:EmptyObject", false),

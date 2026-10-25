@@ -47,6 +47,19 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual((r.integer(), r.pos), (0, len(r.data)))
         return notice
 
+    def ingredients(self, c):
+        return sum(self.inventory(c)['ingredients'].values())
+
+    def gift(self, reply, sender):
+        # Revival's pack: three draws of ingredients (roots most often), 1-4 each; the reply names the rarest stack
+        self.assertEqual(reply[:9], b'\1' + Q(sender))
+        r = Reader(reply[9:]); stack = (r.integer(), r.integer(), r.integer())
+        rest = [(r.integer(), r.integer(), r.integer()) for _ in range(r.integer())]   # the others, which hook.js shows after it
+        self.assertEqual((stack[0], r.pos, len(rest) <= 2), (1, len(r.data), True))
+        self.assertTrue(all(kind == 1 and amount > 0 for kind, _, amount in rest))
+        self.assertIn(stack[1], range(101, 114)); self.assertIn(stack[2], range(1, 13))
+        return stack
+
     def pair(self, a, b):
         self.assertEqual(a.rpc(103, Q(self.bid)), b'\1' + Q(self.bid))
         self.assertEqual(b.rpc(104, Q(self.aid)), b'\1' + Q(self.aid))
@@ -94,15 +107,16 @@ class SocialTests(base.PrototypeTests):
         for method in (103, 104, 105, 108):                                   # nothing else takes your own id
             self.assertEqual(a.rpc(method, Q(own))[0], 0)
         server, a, b = self.seed_packs(server)
-        before = self.inventory(a)['ingredients'].get(101, 0)
+        before = self.ingredients(a)
         self.assertEqual(a.rpc(106, I(1) + Q(own)), b'\1' + I(1) + Q(own))
         self.assertEqual(a.rpc(106, I(1) + Q(own))[0], 0)                      # the last one is still unopened
         self.assertEqual(self.friends(a)[1][own]['sent'], (0, 1, 0))            # day 0: the game's countdown never waits
         self.assertEqual(self.notices(a)[2], [own])
-        self.assertEqual(a.rpc(107, Q(own)), b'\1' + Q(own) + I(1) + I(101) + I(5))
+        self.gift(a.rpc(107, Q(own)), own)
         self.assertEqual(a.rpc(106, I(1) + Q(own))[0], 1)                      # the same day again, once opened
-        self.assertEqual(a.rpc(107, Q(own))[0], 1)
-        self.assertEqual((self.inventory(a)['packs'], self.inventory(a)['ingredients'][101]), ({1: 1}, before + 10))
+        self.gift(a.rpc(107, Q(own)), own)
+        self.assertEqual(self.inventory(a)['packs'], {1: 1})
+        self.assertIn(self.ingredients(a) - before, range(6, 25))
         # Vanilla: the original list, and your own id is refused
         server.stop()
         self.social_env.update(self.tuned('vanilla'))
@@ -115,7 +129,7 @@ class SocialTests(base.PrototypeTests):
         server, a, b = self.social_server(); self.pair(a, b)
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid))[0], 0)
         server, a, b = self.seed_packs(server)
-        before = self.inventory(b)['ingredients'].get(101, 0)
+        before = self.ingredients(b)
         send = a.rpc(106, I(1) + Q(self.bid)); nonce = a.sequence
         self.assertEqual(send, b'\1' + I(1) + Q(self.bid))
         self.assertEqual(a.rpc(106, I(2) + Q(self.bid), repeat=True)[0], 0)
@@ -124,9 +138,11 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual(self.notices(b)[2], [self.aid])
         self.assertEqual(b.rpc(108, Q(self.aid))[0], 0)
         opened = b.rpc(107, Q(self.aid)); open_nonce = b.sequence
-        self.assertEqual(opened, b'\1' + Q(self.aid) + I(1) + I(101) + I(5))
+        _, item, amount = self.gift(opened, self.aid)
         self.assertEqual(b.rpc(107, Q(self.aid), repeat=True), opened)
-        self.assertEqual(self.inventory(b)['ingredients'][101], before + 5)
+        after = self.inventory(b)['ingredients']
+        self.assertIn(sum(after.values()) - before, range(3, 13))
+        self.assertGreaterEqual(after[item], amount)
         self.assertEqual(self.notices(b)[2], [])
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid))[0], 0)
         server.stop(); server = self.start('social-a', self.social_env)
@@ -135,7 +151,7 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid), repeat=True), send)
         self.assertEqual(b.rpc(107, Q(self.aid), repeat=True), opened)
         self.assertEqual(self.inventory(a)['packs'], {1: 2})
-        self.assertEqual(self.inventory(b)['ingredients'][101], before + 5)
+        self.assertEqual(self.inventory(b)['ingredients'], after)
 
     def test_social_concurrent_send_and_open_preserve_economy(self):
         server, a, b = self.social_server(); self.pair(a, b); server, a, b = self.seed_packs(server)
@@ -143,11 +159,11 @@ class SocialTests(base.PrototypeTests):
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             replies = list(pool.map(lambda c: c.rpc(106, I(1) + Q(self.bid)), (a, a2)))
         self.assertEqual(sum(r[0] for r in replies), 1)
-        before = self.inventory(b)['ingredients'].get(101, 0)
+        before = self.ingredients(b)
         with concurrent.futures.ThreadPoolExecutor(2) as pool:
             replies = list(pool.map(lambda c: c.rpc(107, Q(self.aid)), (b, b2)))
         self.assertEqual(sum(r[0] for r in replies), 1)
-        self.assertEqual(self.inventory(b)['ingredients'][101], before + 5)
+        self.assertIn(self.ingredients(b) - before, range(3, 13))
         self.assertEqual(self.inventory(a)['packs'], {1: 2})
 
     def test_social_capacity_refusal_keeps_unopened_gift(self):
@@ -158,9 +174,9 @@ class SocialTests(base.PrototypeTests):
         self.assertEqual(b.rpc(107, Q(self.aid))[0], 0)
         self.assertEqual(self.friends(b)[1][self.aid]['received'][2], 0)
         self.assertEqual(self.inventory(b)['ingredients'], {101: 199})
-        self.assertEqual(b.rpc(71, I(101) + I(5))[0], 1)
-        self.assertEqual(b.rpc(107, Q(self.aid))[0], 1)
-        self.assertEqual(self.inventory(b)['ingredients'], {101: 199})
+        self.assertEqual(b.rpc(71, I(101) + I(20))[0], 1)                       # room for any pack (3-12 items)
+        self.gift(b.rpc(107, Q(self.aid)), self.aid)
+        self.assertIn(self.ingredients(b) - 179, range(3, 13))
 
     def test_social_mutual_invites_limits_and_malformed_stay_connected(self):
         server, a, b = self.social_server(Social__FriendLimit='1')
@@ -205,7 +221,7 @@ class SocialTests(base.PrototypeTests):
         self.assertIsNone(json.loads(path.read_text())['Pending'])
 
     def test_social_next_day_retains_unopened_gift_and_pack_drop(self):
-        server, a, b = self.social_server(Social__GiftIngredientAmount='7')
+        server, a, b = self.social_server()
         self.pair(a, b); server, a, b = self.seed_packs(server, count=4)
         self.assertEqual(a.rpc(106, I(99) + Q(self.bid))[0], 0)
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid))[0], 1)
@@ -213,11 +229,11 @@ class SocialTests(base.PrototypeTests):
         server = self.start('social-a', self.social_env)
         a, b = self.client(server), self.client(server, identity=base.identity_of('social-b'))
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid))[0], 0)
-        before = self.inventory(b)['ingredients'].get(101, 0)
-        self.assertEqual(b.rpc(107, Q(self.aid)), b'\1' + Q(self.aid) + I(1) + I(101) + I(7))
-        self.assertEqual(self.inventory(b)['ingredients'][101], before + 7)
+        before = self.ingredients(b)
+        self.gift(b.rpc(107, Q(self.aid)), self.aid)
+        self.assertIn(self.ingredients(b) - before, range(3, 13))
         self.assertEqual(a.rpc(106, I(1) + Q(self.bid))[0], 1)
-        self.assertEqual(a.rpc(109, I(1) + I(1)), b'\1' + I(1) + I(1))
+        self.assertEqual(a.rpc(109, I(1) + I(1))[:9], b'\1' + I(1) + I(1))    # opened (Tuning inventory.openPacks)
         self.assertEqual(self.inventory(a)['packs'], {1: 1})
         self.assertEqual(a.rpc(109, I(1) + I(2))[0], 0)
         self.assertEqual(self.inventory(a)['packs'], {1: 1})

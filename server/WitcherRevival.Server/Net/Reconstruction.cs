@@ -908,9 +908,12 @@ public static class Reconstruction
     };
     public const int PerfectParryExp = 15, CriticalHitExp = 15, FirstKillExp = 100, ProperOilExp = 50;
 
-    // Client: CombatDetails.Index.
-    public const int DetailPerfectAttacks = 1, DetailCriticalHits = 9, DetailUsedProperOil = 10, DetailPerfectParries = 11,
-        DetailBombsUsed = 12, RequiredDetailsCount = 13;
+    // Client: CombatDetails.Index. With Hit Reflection a perfect parry is a deflect: PlayerSetup.GetEndPoints (0x18BAC44)
+    // checks Quen, deflect, parry, perfect parry in that order and HealthModule.DecreaseHealth takes the first, so
+    // AnticipateWithDeflect's perfect window counts in DetailDeflects (IncreaseDeflectsCounter 0x18BB9DC), never in
+    // DetailPerfectParries (Tuning xp.deflectsAsParries pays them as parries).
+    public const int DetailPerfectAttacks = 1, DetailDeflects = 3, DetailCriticalHits = 9, DetailUsedProperOil = 10,
+        DetailPerfectParries = 11, DetailBombsUsed = 12, RequiredDetailsCount = 13;
 
     public static LocalProfileStore.PlayerState StartState() => new(
         Exp: 0, Gold: 0, SkillPoints: 0,
@@ -1051,7 +1054,7 @@ public static class ReconstructionRows
         rows["lures"] = WorldNests.Lures.Select((lure, n) => J(new Dictionary<string, object>
             { ["id"] = lure.Id, ["slug"] = lure.Slug, ["priority"] = n })).ToArray();
         rows["shop_lures"] = WorldNests.Lures.Where(lure => lure.Sold).Select(lure => J(new Dictionary<string, object>
-            { ["item_id"] = lure.Id, ["price"] = WorldNests.BaitPrice })).ToArray();
+            { ["item_id"] = lure.Id, ["price"] = Economy.Price(Economy.BundleById(1000 + lure.Id)!) })).ToArray();
         rows["game_configuration"] = new (string Name, int Value)[]
         {
             ("nestClearingExp", WorldNests.ClearingExp), ("nestDailyLimit", WorldNests.DailyLimit),

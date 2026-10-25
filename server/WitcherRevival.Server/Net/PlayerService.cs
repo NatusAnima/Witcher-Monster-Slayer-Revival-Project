@@ -124,6 +124,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         {
             await FrameCodec.WriteAsync(stream, Ch_Api, ApiProtocol.BuildResponse(req.Id, req.Method, replay), ct);
             log.LogInformation("  TX  Api response Method={Method} Id={Id} replayed", req.Method, req.Id);
+            // A retry means the game lost the first answer, and with it the LevelUp pushes written behind it.
+            int[] again;
+            lock (settled) again = announcedLevels.GetValueOrDefault((req.Method, req.Id)) ?? [];
+            await afterReply.WaitAsync(ct);
+            try { foreach (int level in again) await PushLevelUpAsync(stream, level, ct); }
+            finally { afterReply.Release(); }
             return;
         }
 
@@ -137,6 +143,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         Admin.MapObservation.Snapshot? observedMap = null;
         try
         {
+            using var lookups = PlayableLocations.Lookups();   // one placement lookup per area for this reply
             methodPayload = req.Method switch
             {
                 M_LoadCells => HandleLoadCells(req),           // LoadCellsResponse : BooleanResponse -> 1 byte
@@ -229,18 +236,27 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
 
         RememberResponse(req, methodPayload);
         var payload = ApiProtocol.BuildResponse(req.Id, req.Method, methodPayload);
-        await FrameCodec.WriteAsync(stream, Ch_Api, payload, ct);
+        // before the answer: the map is answered beside the queue, and the dashboard must see what the game was given
         if (observedMap is not null) Admin.MapObservation.Record(profiles.ProfileId, observedMap);
+        await FrameCodec.WriteAsync(stream, Ch_Api, payload, ct);
         log.LogInformation("  TX  Api response Method={Method} Id={Id} ({Len}B)", req.Method, req.Id, payload.Length);
+        // What follows a reply (LevelUp windows, trophies, queued pushes) goes out for one reply at a time: the map's
+        // requests are answered beside the queue (GameSocketService), and a window must not be pushed twice.
+        await afterReply.WaitAsync(ct);
+        try { await AfterReplyAsync(stream, req, movementSession, expBefore, achievementsBefore, ct); }
+        finally { afterReply.Release(); }
+    }
+
+    private readonly SemaphoreSlim afterReply = new(1, 1);
+
+    private async Task AfterReplyAsync(Stream stream, ApiProtocol.ApiRequest req, Guid movementSession, int? expBefore,
+        HashSet<int> achievementsBefore, CancellationToken ct)
+    {
         bool booted;
         lock (pushGate) booted = bootedSessions.Contains(movementSession) && req.Method != M_ResolveRewards;
-        foreach (int level in LevelsToAnnounce(push: ExpMethods.Contains(req.Method) || booted))
-        {
-            var push = ApiProtocol.BuildResponse(0, M_LevelUp, BuildLevelUpPush(level), ack: Array.Empty<long>());
-            await FrameCodec.WriteAsync(stream, Ch_Api, push, ct);
-            LevelShown(level);   // only once the window is on its way: a lost one goes out again after the next boot
-            log.LogInformation("  TX  Api push LevelUp level={Level} ({Len}B)", level, push.Length);
-        }
+        var levels = LevelsToAnnounce(push: ExpMethods.Contains(req.Method) || booted);
+        if (levels.Count > 0 && SettledMethods.Contains(req.Method)) lock (settled) announcedLevels[(req.Method, req.Id)] = [.. levels];
+        foreach (int level in levels) await PushLevelUpAsync(stream, level, ct);
         // The game adds a reply's experience itself, and one quest reply can reach two waiting quest nodes
         // (QuestEndRequestNode takes any EndBehaviourGraph reply), so the total it shows is set from the saved one.
         if (ExpMethods.Contains(req.Method) && profiles.Snapshot().Player?.Exp != expBefore)
@@ -271,6 +287,16 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private readonly Dictionary<(int Method, long Id), (DateTime At, byte[] Payload)> settled = new();
 
     private readonly Dictionary<(int Method, long Id), TaskCompletionSource<byte[]?>> inflight = new();
+    // The LevelUp windows a settled request's answer was followed by, sent again with its replay (kept as long as it).
+    private readonly Dictionary<(int Method, long Id), int[]> announcedLevels = new();
+
+    private async Task PushLevelUpAsync(Stream stream, int level, CancellationToken ct)
+    {
+        var push = ApiProtocol.BuildResponse(0, M_LevelUp, BuildLevelUpPush(level), ack: Array.Empty<long>());
+        await FrameCodec.WriteAsync(stream, Ch_Api, push, ct);
+        LevelShown(level);   // only once the window is on its way: a lost one goes out again after the next boot
+        log.LogInformation("  TX  Api push LevelUp level={Level} ({Len}B)", level, push.Length);
+    }
 
     // A retry can arrive on a reconnected socket while the first request is still running; it waits for that answer
     // instead of running the handler again (which would find the encounter or reward used up and answer nothing paid).
@@ -301,7 +327,10 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         {
             var now = DateTime.UtcNow;
             foreach (var key in settled.Where(e => now - e.Value.At >= ReplayWindow).Select(e => e.Key).ToList())
+            {
                 settled.Remove(key);
+                announcedLevels.Remove(key);
+            }
             settled[(req.Method, req.Id)] = (now, payload);
             if (inflight.Remove((req.Method, req.Id), out var waiting)) waiting.TrySetResult(payload);
         }
@@ -369,6 +398,9 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         ItemKinds.Potions, ItemKinds.Bombs, ItemKinds.Oils, ItemKinds.Lures, null, null, null, null, ItemKinds.SensesPotions,
         ItemKinds.Consumables, ItemKinds.Ingredients, null, ItemKinds.SummoningScrolls,
     ];
+
+    /// <summary>The item kinds a LevelUp push can carry (RewardTables.Validate keeps level rewards to them).</summary>
+    public static readonly IReadOnlySet<string> LevelUpKinds = LevelUpLists.OfType<string>().ToHashSet();
 
     /// <summary>LevelUp (31) is a server push: an Api RESPONSE message with TypeMessage [long 0][int 31] and no
     /// acknowledged request. LevelUpResponse.Factory.Deserialize (0x1E78330): [int Level] then 13 lists, each
@@ -441,7 +473,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
   
         // Method 3 — GetPlayerInfo (shared builder — also served standalone post-boot)
         Part(M_GetPlayerInfo);
-        b.WriteBytes(BuildGetPlayerInfoPayload());
+        b.WriteBytes(BuildGetPlayerInfoPayload(boot: true));
 
         // Method 9 — GetEquipment
         // Constructor: SwordsCount (int), [int*SwordsCount], ArmorsCount (int), [int*ArmorsCount], EquippedArmor (int), EquippedSword (int)
@@ -1087,7 +1119,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
                 }
                 loot = Fit(player, Looted(loot, LootPercent(player)));
                 attackExp = WorldNests.Exp(Reconstruction.CriticalHitExp * Sum(Reconstruction.DetailPerfectAttacks));
-                parryExp = WorldNests.Exp(Reconstruction.PerfectParryExp * Sum(Reconstruction.DetailPerfectParries));
+                parryExp = WorldNests.Exp(Reconstruction.PerfectParryExp * PerfectParries(Sum));
                 oilExp = WorldNests.Exp(Reconstruction.ProperOilExp * Count(Reconstruction.DetailUsedProperOil));
                 clearingExp = WorldNests.ClearingExp;
                 boostedExp = rarityExp * ExpBonusPercent(player, nest!.Boss) / 100;   // equipment (effect 65) and boosts
@@ -1343,40 +1375,44 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     /// <summary>Drop* (47-51, 71, 100, 109, 118) from the item window's remove button: IntIntRequest
     /// [int itemId][int amount]; IntIntResponse [byte Result][int itemId][int amount], on which the client calls
     /// PlayerStorage.Remove(itemId, amount) (OnDropItemsResponse 0x1876F78). A reconstructed profile drops owned
-    /// items of the kinds it keeps; anything else is refused and nothing changes.</summary>
+    /// items of the kinds it keeps; anything else is refused and nothing changes. Opened packs add what they held:
+    /// [int n][int itemType][int item][int amount] × n after the usual fields, which the game's reader leaves unread
+    /// (DropFriendPackResponse.Factory.Deserialize 0x247F888 reads a byte and two ints) and hook.js shows.</summary>
     private byte[] HandleDropItems(ApiProtocol.ApiRequest req, string? kind)
     {
         var r = new ByteBuffer(req.Data);
         int id = r.ReadInt(), amount = r.ReadInt();
         if (r.RemainingToRead != 0) throw new InvalidDataException("Unsupported drop payload shape.");
         bool dropped = false;
-        // Tuning inventory.openPacks: a pack "dropped" from the inventory is opened (hook.js names the button Open): the
-        // herbs a friend would get for it (Social:GiftIngredientAmount Herba each), if the bag holds them. The game takes
-        // the packs off itself; the herbs come with an inventory push.
+        // Tuning inventory.openPacks: a pack "dropped" from the inventory is opened (hook.js names the button Open): what the
+        // packs hold (the preset's pack table, the Rewards page), if the bag holds it. The game takes the packs off itself;
+        // the contents come with an inventory push.
         bool open = kind == SocialService.PackItems && WorldTuning.Current.On(WorldTuning.OpenPacks);
-        int herbs = open ? cfg.GetValue("Social:GiftIngredientAmount", 5) * Math.Max(0, amount) : 0;
+        List<RewardTables.Item> found = [];
         if (kind is not null && amount > 0 && profiles.Snapshot().Player is not null)
             profiles.UpdatePlayer(new Dictionary<int, int>(), null, player =>
             {
                 if (!player.Items.TryGetValue(kind, out var owned) || owned.GetValueOrDefault(id) < amount) return null;
-                if (open && SocialPolicy.Occupied(player) - amount + herbs > Economy.BagSize(player)) return null;
+                found = open ? WorldTuning.Current.Rewards.DrawPacks(amount, Random.Shared) : [];
+                if (open && SocialPolicy.Occupied(player) - amount + found.Sum(i => (long)i.Amount) > Economy.BagSize(player)) return null;
                 owned[id] -= amount;
                 if (owned[id] == 0) owned.Remove(id);
-                if (open)
-                {
-                    if (!player.Items.TryGetValue(ItemKinds.Ingredients, out var ingredients)) player.Items[ItemKinds.Ingredients] = ingredients = [];
-                    ingredients[Economy.Herba] = ingredients.GetValueOrDefault(Economy.Herba) + herbs;
-                }
+                AddItems(player, found.Select(i => (i.Kind, i.Id, i.Amount)));
                 dropped = true;
                 return player;
             });
         if (open && dropped) lock (pushGate) pendingPushes.Add(M_GetInventory);
         log.LogInformation("  Drop method={Method} result={Result} amount={Amount}{Opened}", req.Method, dropped, amount,
-            open ? $" opened: +{herbs} herba" : "");
+            open && dropped ? " opened: " + string.Join(", ", found.Select(i => $"{i.Kind} {i.Id} x{i.Amount}")) : "");
         var b = new ByteBuffer();
         b.WriteByte(dropped ? (byte)1 : (byte)0);
         b.WriteInt(id);
         b.WriteInt(dropped ? amount : 0);
+        if (open && dropped)
+        {
+            b.WriteInt(found.Count);
+            foreach (var item in found) { b.WriteInt(Economy.TypeOf(item.Kind)!.Value); b.WriteInt(item.Id); b.WriteInt(item.Amount); }
+        }
         return b.ToArray();
     }
 
@@ -1441,7 +1477,13 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     /// legacy fixtures retain the original typed refusals.</summary>
     private byte[] HandleFriendAction(ApiProtocol.ApiRequest req)
     {
-        if (social is not null && profiles.Snapshot().Player is not null) return social.Action(profiles.ProfileId, req);
+        if (social is not null && profiles.Snapshot().Player is not null)
+        {
+            byte[] reply = social.Action(profiles.ProfileId, req);
+            // An opened pack's reply names one stack (the rarest); the rest come with the inventory.
+            if (req.Method == 107 && reply[0] == 1) lock (pushGate) pendingPushes.Add(M_GetInventory);
+            return reply;
+        }
         var r = new ByteBuffer(req.Data);
         int packType = req.Method == 106 ? r.ReadInt() : 0;
         long playerId = r.ReadLong();
@@ -1559,7 +1601,12 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     /// [byte TutorialFinished][byte Gender]. Shared by the 115 batch and the standalone re-sync.
     /// TutorialFinished: default 0 -> tutorial ENABLED (the goal). Set Player:TutorialFinished=true to
     /// force-skip it — used to STAGE the phone bring-up without recompiling.
-    private byte[] BuildGetPlayerInfoPayload()
+    /// <paramref name="boot"/>: the 115 batch, whose experience sets the level the game compares a LevelUp push with
+    /// (LevelUpEventsManager.OnResponsesReceived 0x1A07740; ShowWindowsEvent.Decide 0x1A05540 shows a window only for a
+    /// higher level, and nothing else moves that level but a shown window). While a level's window was never shown (a lost
+    /// push, a crash), the batch stops the experience just below that level, so the windows pushed after the boot show; the
+    /// game asks for GetPlayerInfo after each one (PlayerData.OnLevelUp 0x1A096E4) and gets the whole amount.
+    private byte[] BuildGetPlayerInfoPayload(bool boot = false)
     {
         var snapshot = profiles.Snapshot();
         var player = snapshot.Player;
@@ -1570,7 +1617,10 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // offers a random name for it).
         b.WriteString(player?.Name ?? UnnamedPlayer);
         b.WriteInt(player?.Gold ?? 5000);  // Gold (legacy: ID contract)
-        b.WriteInt(player?.Exp ?? 4500);   // Exp (legacy: demonstration value)
+        int exp = player?.Exp ?? 4500;     // Exp (legacy: demonstration value)
+        if (boot && player?.LevelShown is int shown && Reconstruction.LevelForExp(exp) > shown)
+            exp = Math.Min(exp, Reconstruction.ExpThreshold(shown + 1) - 1);
+        b.WriteInt(exp);
         b.WriteInt(player?.Head ?? 1);     // Head (customization_heads; 1 = head_caucasian_1), its model by the gender
         // Reconstructed profiles report the tutorial as finished once its fact 3 is set (tut_gravehag/tut_exit).
         bool tutorialFinished = player is null
@@ -1844,6 +1894,11 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         return scaled;
     }
 
+    /// <summary>The perfect parries a fight's details count: with Tuning xp.deflectsAsParries also the deflects, which is what
+    /// a perfect parry becomes once Hit Reflection is learnt (Reconstruction.DetailDeflects).</summary>
+    private int PerfectParries(Func<int, int> detail) => detail(Reconstruction.DetailPerfectParries) +
+        (world.Tuning.On(WorldTuning.DeflectsAsParries) ? detail(Reconstruction.DetailDeflects) : 0);
+
     /// <summary>As much of [loot] as the player's bag still holds; the rest is left behind (the client lists what the
     /// reply lists, so it stays in step).</summary>
     private static List<int> Fit(LocalProfileStore.PlayerState player, List<int> loot) =>
@@ -1864,7 +1919,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         {
             baseExp = Exp(Reconstruction.FightExp(fought.MonsterId, fought.Difficulty));
             comboExp = Exp(Reconstruction.CriticalHitExp * end.Detail(Reconstruction.DetailPerfectAttacks));
-            parryExp = Exp(Reconstruction.PerfectParryExp * end.Detail(Reconstruction.DetailPerfectParries));
+            parryExp = Exp(Reconstruction.PerfectParryExp * PerfectParries(end.Detail));
             oilExp = end.Detail(Reconstruction.DetailUsedProperOil) > 0 ? Exp(Reconstruction.ProperOilExp) : 0;
             if (profiles.Snapshot().Player is not null)
             {
@@ -2079,7 +2134,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         WriteItemMap(b, granted is null ? null : Reconstruction.OutputKills(outputName, snapshot.Facts));
         b.WriteInt(0); // ingredients
         WriteGear(b, granted?.Items);   // Armors, Swords
-        b.WriteInt(0); // ExpiringQuestNodeInstances (after rewards in RPC57)
+        WriteNodeTimers(b, snapshot);   // ExpiringQuestNodeInstances (after rewards in RPC57)
         return b.ToArray();
     }
 
@@ -2135,7 +2190,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         WriteItemMap(b, granted is null ? null : step!.Output.Kills);   // BestiaryEntries
         b.WriteInt(0); // ingredients
         WriteGear(b, granted?.Items);   // Armors, Swords
-        b.WriteInt(0); // ExpiringQuestNodeInstances
+        WriteNodeTimers(b, snapshot);   // ExpiringQuestNodeInstances
         return b.ToArray();
     }
 
@@ -2792,7 +2847,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         snapshot ??= CaughtUp(profiles.Snapshot());
         var b = new ByteBuffer();
         WriteStory(b, snapshot);
-        b.WriteInt(0); // ExpiringQuestNodeInstances (immediately after nodes in RPC60)
+        WriteNodeTimers(b, snapshot);   // ExpiringQuestNodeInstances (immediately after nodes in RPC60)
         return b.ToArray();
     }
 
@@ -2840,6 +2895,25 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
     private static LocalProfileStore.StoryProgress? SeasonOne(LocalProfileStore.Profile snapshot) =>
         snapshot.Player is { } player && snapshot.QuestStage == LocalProfileStore.JvDoneStage
             ? player.Story ?? LocalProfileStore.StoryProgress.Empty : null;
+
+    /// <summary>ExpiringQuestNodeInstances, after a reply's nodes (Dictionary&lt;long, int&gt;: [int n] and n × [long instance][int
+    /// unix seconds]): StoryModule.UpdateTTL (0x19A6814) gives each node of the reply its time to fire, which an Auto node
+    /// (AutoQuestPoi.OnUpdate 0x19085B4) compares with the phone's own clock and then starts its graph. Each active Auto node
+    /// fires when its timer's effect ends: the saved modifier's expiry (AddPlayerModifier, sent by the graph that lit the
+    /// candle), or the graph's own time from now while the server has not saved it.</summary>
+    private void WriteNodeTimers(ByteBuffer b, LocalProfileStore.Profile snapshot)
+    {
+        var timed = SeasonOne(snapshot) is { } story
+            ? StoryEngine.Active(story, snapshot.Facts, StoryNow(story)).Where(n => n.Timer is [_, _]).ToList() : [];
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        b.WriteInt(timed.Count);
+        foreach (var node in timed)
+        {
+            var saved = snapshot.Player?.Modifiers?.LastOrDefault(m => m.Id == node.Timer![0]);
+            b.WriteLong(node.Instance);
+            b.WriteInt(saved is { Expire: > 0 } ? saved.Expire : checked((int)(now + node.Timer![1])));
+        }
+    }
 
     /// <summary>The display of a node beside the player: queued ones follow it (CloseFollow), the others keep their own.</summary>
     private static int BesideDisplay(StoryEngine.Node node) => node.Queued ? Reconstruction.DisplayCloseFollow : node.Display;

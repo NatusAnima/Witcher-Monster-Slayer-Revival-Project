@@ -626,6 +626,134 @@ Maintainer's rule: **anything not vanilla is tunable**.
 - **Device checks:** the info window's Open and the count window's texts in a few languages, yourself in the friends list,
   `settings: hidden` in the report, What's new in another language.
 
+## 0.4.0 (2026-10-24): shop prices, chests, packs and what they held
+0.3.0 was released by the maintainer on 2026-10-23. Their decisions for 0.4.0: a price for every shop item on the dashboard,
+packs "a lot more versatile" with roots the most common drop and monster drops rare, the game's two unused sets added.
+- **Prices** (`RewardTables.Prices`, bundle id → orens, on the Rewards page's "Shop prices" section; `catalog.shop` lists the
+  bundles with their contents and Vanilla price). Vanilla is each bundle's `GoldPrice` (the community prices); Revival
+  (`RewardTables.RevivalPrices`): potions and Falcon two thirds, bombs and bags half, oils, ingredients and stations 0.6, baits
+  and gear three quarters, scrolls and charms 0.8, rounded to 5; chests by hand (a quarter below their parts).
+  - `Economy.FreezePrices` (called by `StaticDataSnapshot`, which takes `WorldPolicy` so the tuning is loaded first) keeps the
+    table and the daily discount the game was given at start: `Price`, `PriceOf`, `UnitPrices`, the `shop_bundles` and
+    `shop_lures` rows all read it, so a purchase is charged what the shop shows and a new price waits for the next start.
+  - Daily deals: Tuning `shop.dailyDiscount` (Revival 40, Vanilla 25) for every bundle with a nonzero `DailyDiscount`.
+- **Chests:** 64 and 65 cost more than their parts before (authored 250/900): Vanilla 160/490, Revival 90/280. New: 66
+  "Scrolls and bombs" (Lesser scroll ×2, Grapeshot ×3, Dancing Star ×3; sold only with `shop.scrolls`) and 67 "Set of bait"
+  (one of each sold bait); the client has their names, descriptions and `icon_bundle_66/67`.
+- **Packs** (`RewardTables.PackDraws` and `PackPool` rows kind/id/weight/min/max, the "Packs" section): Revival 3 draws of Radix
+  50, Herba 25, tissue 15 and each family's remains 1 (about 1 pack in 4 holds remains); Vanilla 1 draw of Herba 3-6 or Radix
+  2-4 (the pack's own description). `DrawPacks` merges the same item and orders the stacks rarest first. Presets saved before
+  get Revival's (`RewardTables.Complete`, used by `Parse`). Pack rows must be inventory kinds (`Economy.TypeOf`).
+  - Opening (109, `HandleDropItems`): the draw must fit the bag; the reply adds `[int n][int type][int item][int amount] × n`
+    after its usual fields (the game's `DropFriendPackResponse` reader stops after them).
+  - Gifts (107, `SocialService.Recover`): one pack drawn with the gift's receipt as the seed (a retry or recovery draws the same);
+    the reply names the rarest stack (the game's gift window shows one) and `PlayerService` pushes the inventory for the rest.
+    `Gift.Amount` / `Social:GiftIngredientAmount` no longer decide anything.
+  - While the pool holds more than herbs and roots, `/revival/texts` appends `GameTexts.RarerFinds` (nine languages) to
+    `ITEMS/DESCRIPTIONS/PACKS/PACK_HERBALIST`.
+- **hook.js "open packs": what the packs held.** After `DropFriendPackResponse.Factory.Deserialize` (0x247F888) it reads the
+  stacks from the message's ByteBuffer (`TypeMessage.Data` +0x10: `_buffer` +0x10, `_readPosition` +0x1C, `_writePosition`
+  +0x20, big-endian); after `ItemManagementWindow.OnDropItemsResponse<object>` (0x1876F78) it opens the game's item-claim
+  window: `PlayerInventory.GetItem` (0x1A0CC10, on the window's `_playerInventory` +0xD8, adds nothing),
+  `ItemClaimWindowData(item, quantity, bigOpenSfx)` (0x18CFDDC) made with `il2cpp_object_new` (0x16D1564), the other stacks as
+  `Pair<Item,int>` (first +0x10, second +0x18) added with `List.Add` through `il2cpp_runtime_invoke` (0x16D15C4), then
+  `ShowWindow(content, true)` (0x1817864) fired with `SafeFire` (0x198DD1C) on `Window._signalBus` +0x18. It logs
+  `open packs: shown N items`. The window steps through the list (`OnButtonClick` compares `_currentItemIndex` +0xC4 with its
+  size).
+- **Device checks:** prices as on the Rewards page and charged as shown, daily deals 40% off, chests 66/67 with name, icon and
+  description, opening one and five packs (the claim window, the reward sound, `open packs: shown` in game.log, the counts), a
+  gift to yourself showing the rarest stack, the pack's extra description line.
+
+## 0.4.0 field round (2026-10-24): quests, oils, level-ups, pack windows, fight lag, character
+Uncommitted, in 0.4.0 (not released; the hook changed again, so the app offers "Update the game"). Plan:
+`C:\Users\iyave\.claude\plans\we-need-to-adrress-wobbly-puffin.md`. Maintainer's choices: oils get a Tuning switch and a Vanilla
+description line; the four f33 = 0 Intruder endings are a Tuning setting (Revival on); performance = map requests, hook hot paths,
+tiles; **map density stays 18 per cell** (lowering it was offered and declined). None of this is checked on a device yet.
+- **Sins candles** (first one never burnt out): the candle graph (`s01mq03_candle`, the only counter of candles: f26 1→2→3→−7,
+  f15 = 0, removes effect 4) had no node, and RPC 57/60/77 always sent an empty `ExpiringQuestNodeInstances`
+  (`Dictionary<long,int>`, instance → Unix time; `StoryModule.UpdateTTL` 0x19A6814). Now an **Auto (5)** node
+  (`AutoQuestPoi.OnUpdate` fires it at that time) with `timer` [effect, seconds] in the overlay (`season1_quests.py node(timer=)`),
+  `StoryEngine.Node.Timer`, `BesidePlayer` covers 5, `PlayerService.WriteNodeTimers` (the saved modifier's expiry, else now +
+  seconds). Candle shows on f15 = −1 & f147 < 2. Walk-through lights and burns three candles.
+- **Thorstein's Conversation button:** the shop graphs (`thorstein_in_shop/s01/.../bg_ts_*`) only queue node 316 (Sins) / 452
+  (Intruder); `FireQueuedGraph` 0x17E89D0 finds the map node by id. Node ids now 316/452 (lure 18085, armour 18086, `vogt_end`
+  18167 pinned). Sins Thorstein shows on `f26=0` (was `<1`: the candles end at f26 = −7, which brought him back). Intruder Thorstein shows from f70 ≥ 6 too; `vogt_end` also after a first-fight win (f59 = 2).
+  `season1_graphs.py` extracts the shop graphs (cache `local/cache/story/season1-graphs.json` regenerated: only 8 new graphs).
+- **New outputs are numbered after 1276** (`node(late=True)` in the overlay): candle 1277-1279, Intruder timer 1280-1282. Saved
+  progress keeps output ids only (`StoryProgress.Active` is unused), so node ids may change.
+- **Intruder endings:** `s01mq06_timer` (effect 6, sets f33 = 2) is an Auto node after the sorcerer's deal (f27 = −4). Tuning
+  `quests.intruderAllEndings`: hook.js rewrites `s01mq06_vogt_02`'s two `FactRequirement {33, Equal 0, 0}` to `{33, LowerThan 4,
+  2}` on their first `FactRequirementNode.HasDesiredValue` (0x1962D3C; FactRequirement +0x48: Value +0x10, Operator +0x14, FactId
+  +0x18; graph name via Node.graph +0x20). Walk ends on `reward`. Logs `intruder: f33 = 0 asked in <graph> (kept)` for others.
+- **Mushrooms:** `QuestPoiInstance.ShouldBeInstantiated` (0x1909F58) needs `Activated` (+0x58), set only for the tracked quest.
+  Tuning `quests.collectingUntracked` (Revival 1): non-giver display 5/7 nodes show anyway (JS leave handler: few quest POIs).
+  Tuning `quests.collectingDistance` (Revival 100, Vanilla 200): patches `cmp w8,#200` at 0x1909214 (`1f210371`). game.log:
+  `collecting: a find is on the map`, `collecting: walked N m`, `tracked quest N (by the player|story)`.
+- **Oils** (Tuning `combat.oilsMultiply`): `CalculateSwordDamage` 0x1938FA8 returns `Damage` (AdditiveBonus +0x14, Value +0x18);
+  the bonus sums hit type + attack + oil (`SwordModifiers` +0x108, `OilModifier` +0x58, value +0x10). On, the hook moves the oil
+  onto Value × (1 + oil). Off, `ClientTexts` appends `GameTexts.OilBaseDamage` to `ITEMS/DESCRIPTIONS/OILS/OIL_*`.
+- **Hook settings channel:** `/revival/texts` now has `settings` (`WorldTuning.GameSettings`); hook.js `SETTINGS`,
+  `whenSettings(apply)` run inside `loadTexts`' `Java.perform` after the texts. game.log `settings: {...}`.
+- **Parry XP:** with Hit Reflection every perfect parry is a deflect (`Details[3]`, `Reconstruction.DetailDeflects`). Tuning
+  `xp.deflectsAsParries` pays them (`PlayerService.PerfectParries`, world fights and nemeta).
+- **Level-up windows:** `BuildGetPlayerInfoPayload(boot: true)` caps the boot's experience below `LevelShown + 1` when the saved
+  level is higher; a replayed settled request re-pushes its levels (`announcedLevels`); debug "level" sets `LevelShown`;
+  `Rewards.Validate` refuses level rewards the push cannot carry (`PlayerService.LevelUpKinds`). Not done: reconnect without a
+  boot (D) and the level-3 in-app clear (F) from the plan.
+- **Pack windows:** the hook's `OpenFriendsPanel` replacement now calls the info window's `Close()` (vtable +0x240/+0x248), as
+  the game's `OpenFriendsPanel`/`UseSummoningScroll` do, so the last pack returns to the inventory. The claim window not showing
+  on 0.4.0 is **not explained** (calls, offsets and classes all check out statically): every step is logged now (`open packs: the
+  reply lists …`, `… shown N items`, `claim window: loads N items`). **Next: a report zip after opening packs.**
+- **Fight-start lag:** `GameSocketService` answers 40 and 87 beside the in-order queue (`BesideQueue`); `FrameCodec.WriteAsync`
+  holds a per-stream lock per frame; `HandleApiAsync`'s after-reply part (`AfterReplyAsync`: level-ups, trophies, pushes) runs one
+  reply at a time; the map observation is recorded before the answer. `PlayableLocations`: epoch-0 lookups are shared only within
+  one reply (`PlayableLocations.Lookups()`, a thread-static memo around the handler switch: a 2 s cache broke the relocation
+  refusal test, which changes the placement answer between requests). `SetArea` (LoadCells 88) still fetches the centres in order:
+  doing it in the background made two relocation tests fail once each in full-suite runs (not reproduced alone or under parallel
+  load), so it was put back. 60 stays in order (a stale node list after a quest step would undo it on the map).
+- **Hot hooks:** `fastHook()` (CModule listener, JS fallback) for `GetTranslation`, `get_internetReachability`, `Locate`;
+  game.log `fast hook: <name>` or `fast hook in JS: <name> - <reason>`. The C sources compile with Frida 17.15.3 on the PC
+  (scratchpad `cmodule_check.py`), and the texts listener was tested on a stand-in function. gps.js is unchanged (its per-frame
+  callback returns at once; its write probes are on the network thread).
+- **Tiles:** `FeatureIndex._seaward` keeps the side per 0.05° cell no coastline box reaches (`sea_cells`).
+- **Character:** `POST /api/profiles/{id}/character {gender, head}` (`AdminServer.CharacterWrite`, `PlayerService.Character`,
+  `DebugUpdate(markDebug: false)`), receipt `profile-character`; `ProfileDetail.character`; dashboard "Character" box
+  (`characterPanel` in app.js). Head ids 1-3 only.
+- **Save Data restore** (`MainActivity`): refuses while the server runs, unpacks to `state/profiles.restore`, zip-slip check,
+  requires `players.json`, swaps via `state/profiles.previous`.
+- **Tests:** new in test_season1 (candles, Thorstein), test_rebalance (deflects both presets, retried fight's level-up, boot XP cap,
+  texts settings and Vanilla oil lines), test_debug (character route, LevelShown), test_prototype (slow map request), map
+  `SeaTests`. Fixed two flaky tests: the date-dependent nemeton test (boss of the first fight's kind) and Good Money's place
+  rings (150 m apart, so the second cocoon's 40-150 m band had only its edge, failing 2-4 runs in 10). Full suite (Windows, 337):
+  only the known Windows-only failures and the two Final Exam tests. Story regenerated: `story_audit.py` 0 errors, the
+  same 4 warnings. `tools/client116` tests pass; the hook bundle compiles (`frida.Compiler` needs **absolute** paths here).
+- **Build 2026-10-25 01:53:** runtime rebuilt (checked in `runtime.zip`: the new hook stages, the What's new, the sea cache),
+  `local/release/witcher-monster-slayer-companion-app-0.4.0-arm64-v8a.apk` (the same release certificate; the 10-24 14:00 build is
+  kept as `...-0.4.0-shop-arm64-v8a.apk`). **Installed on the Xiaomi 2026-10-25 01:54** (`adb install -r`, data kept). The hook
+  changed, so the app offers "Update the game".
+- **Report 2026-10-25 02:36** (`reports/witcher-revival-report-20261025-023640/`, Xiaomi): every hook stage ok, the three
+  CModule fast hooks ran in C (`fast hook: reachability/asset keys/texts`), the settings arrived, `oils: the oil multiplies the
+  blow by 1.48`. **Packs could not be opened at all:** "open the count window from the info window" and then nothing (no 109 in
+  server.log). Closing the info window *after* firing the count window's ShowWindow (shown with hideCurrentWindow, which waits for
+  the current window's hide to end) left the count window waiting for good. Now the info window closes first; asked while a
+  window closes, the manager queues the next one and shows it when that one has closed. **Gifts showed one stack:** the 107 reply
+  now lists the others after its own fields (`SocialService.Reply`), and hook.js shows them in the claim window queued after the
+  game's pack window (`OpenPackResponse.Factory.Deserialize` 0x1E79ED0, `FriendsModule.OnOpenPackResponse` 0x1978EC0;
+  FriendsModule `_playerInventory` +0x20, `_signalBus` +0x30). No client code checks a reply for unread bytes (the only
+  `ByteBuffer.RemainingToRead` callers are serializers and the frame reader), so the extra fields are safe. Rebuilt and
+  **installed on the Xiaomi 2026-10-25 03:01** (same file name, same certificate); the hook changed again.
+- **Report 2026-10-25 03:08** (`reports/witcher-revival-report-20261025-030853/`): packs open now (count window, 109 with its
+  list); the claim window failed for packs and gifts with `expected an integer`. **Frida 17 refuses JS true/false for a
+  NativeFunction `bool` argument** (checked on the PC: 1/0 work, true/false throw; a NativeCallback receives numbers). So
+  `showWindow(…, true)` threw after the items were resolved, and `setActive(…, false)` in "no sign-in window" has thrown since
+  0.3.0 (the settings' account section was probably never hidden; the open field report about the "--- ACCOUNT ---" heading).
+  Both pass 1/0 now. Rebuilt and **installed 2026-10-25 03:11**.
+- **Device checks:** candle 1 → 2 after 15 min (night via "Time for quests"); the shop's Conversation in Sins and Intruder; a
+  mushroom after 100 m with another quest tracked; the Intruder full ending; an oiled hit vs a Revival/Vanilla switch; parry XP
+  with Hit Reflection; a level-up window after killing the app mid-reply; the last pack back to the inventory and the claim-window
+  logs; `fast hook:` lines; server.log showing an encounter answered while a 40 is pending; the character at the next start; a
+  Save Data restore with the server running (refused) and stopped.
+
 ## Current State (2026-10-05)
 **The client:**
 - The phone runs our built client: `local/client/witcher116.apk`, made by `tools/client116/build_client.py` from the clean Play export (`~/witcher_1.1.116_300085`) and the extracted packs (`~/witcher_1.1.116_packs`).

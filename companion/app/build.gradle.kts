@@ -11,7 +11,7 @@ val releaseKey = rootDir.resolve("../local/keys/companion.properties")
 // x.y.z. x: the stage (alpha, beta, ...). y: raise it for a release that touches the game itself; the app then updates
 // the installed game in place. z: raise it for a change to the app alone, which leaves the game as it is.
 // Tag the GitHub release v<version>. versionCode is derived from it, so y and z stay below 100.
-val appVersion = "0.3.0"
+val appVersion = "0.4.0"
 
 android {
     namespace = "io.github.natusanima.slayerrevival"

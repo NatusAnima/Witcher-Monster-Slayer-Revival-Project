@@ -333,6 +333,12 @@ class SeaTests(unittest.TestCase):
         self.assertAlmostEqual(sea(*self.BOX), 0.5, delta=0.01)
         self.assertAlmostEqual(sea(9.98, 20.0, 9.99, 20.01), 1.0, delta=1e-6)   # 1.5 km out: all sea
         self.assertEqual(sea(10.02, 20.0, 10.03, 20.01), 0)                     # inland
+        # The side is kept per 0.05° cell no coastline reaches, never for the cell the coast runs through (10.00-10.05).
+        self.assertEqual(index.sea_cells, {(199, 400): True})
+        self.assertEqual(sea(10.06, 20.0, 10.07, 20.01), 0)
+        self.assertEqual(index.sea_cells, {(199, 400): True, (201, 400): False})
+        index.sea_cells[(201, 400)] = True                                      # taken from the cache, not looked up again
+        self.assertAlmostEqual(sea(10.06, 20.0, 10.07, 20.01), 1.0, delta=1e-6)
 
 
 class ProgressTests(unittest.TestCase):

@@ -166,9 +166,10 @@ class Reader:
         return nodes
     def expiry(self): return {self.long(): self.integer() for _ in range(self.integer())}
     def quest(self):
-        locations, nodes = self.locations(), self.nodes()
-        if self.expiry(): raise ValueError('unexpected expiring nodes')
-        return {'locations': locations, 'nodes': nodes}
+        locations, nodes, expiry = self.locations(), self.nodes(), self.expiry()
+        # Only the reply's Auto nodes (mode 5) get a time to fire (the Sins candle, the Intruder's 24 hours).
+        if set(expiry) != {n['instance'] for n in nodes if n['mode'] == 5}: raise ValueError('expiring nodes are not the auto nodes')
+        return {'locations': locations, 'nodes': nodes, 'expiry': expiry}
     def end_graph(self):
         # Exact 1.1.116 Factory.Deserialize RVA 0x2481d74, not declaration order.
         result = {'success': self.byte() == 1}
@@ -740,9 +741,10 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(self.summoned_groups(Reader(c.rpc(112))), [group])
         ghoul, drowner = group['monsters'][0][1], group['monsters'][1][1]
         details = [0] * 13
-        # PerfectAttacks (proper finishers, the client's critical hits), UsedProperOil, PerfectParries. The client never
-        # increments CriticalHits (Details[9]), so it pays nothing.
-        details[1], details[10], details[11], details[9] = 2, 1, 3, 5
+        # PerfectAttacks (proper finishers, the client's critical hits), UsedProperOil, PerfectParries, and Deflects: with
+        # Hit Reflection a perfect parry is counted as a deflect, which Revival pays as a parry (xp.deflectsAsParries). The
+        # client never increments CriticalHits (Details[9]), so it pays nothing.
+        details[1], details[10], details[11], details[9], details[3] = 2, 1, 3, 5, 2
         body = lambda win, surrendered=False: bytes([win]) + I(13) + b''.join(I(v) for v in details) + bytes([surrendered])
         self.assertEqual(c.rpc(113, Q(12345)), b'\0')
         self.assertEqual(c.rpc(113, Q(drowner)), b'\1')
@@ -750,9 +752,9 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(sum(v for k, v in lost.items() if k != 'loot'), 0)
         self.assertEqual(c.rpc(113, Q(ghoul)), b'\1')
         won = self.combat_end(Reader(c.rpc(114, body(True))))
-        self.assertEqual(won, {'base': 100, 'combo': 30, 'oil': 50, 'time': 0, 'parry': 45, 'first': 100,
+        self.assertEqual(won, {'base': 100, 'combo': 30, 'oil': 50, 'time': 0, 'parry': 75, 'first': 100,
                                'boosted': 0, 'pack': 0, 'loot': [103, 103, 104]})   # tissue ×2, necrophage remains
-        self.assertEqual(self.player_info(c)['exp'], 325)
+        self.assertEqual(self.player_info(c)['exp'], 355)
         self.assertEqual(c.rpc(113, Q(ghoul)), b'\0')    # Defeated monsters cannot be fought again.
         listed, = self.summoned_groups(Reader(c.rpc(112)))
         self.assertEqual([alive for _, _, alive in listed['monsters']], [0, 1, 1])
@@ -808,6 +810,26 @@ class PrototypeTests(unittest.TestCase):
         self.addCleanup(fake.server_close)
         self.addCleanup(fake.shutdown)
         return f'http://127.0.0.1:{fake.server_port}', requests
+
+    def test_a_slow_map_request_does_not_hold_up_the_requests_behind_it(self):
+        # GetLocationsByCell (40) asks the placement service, which can take seconds on a phone: it is answered beside the
+        # session's queue, so the request sent after it (here GetPlayerInfo) is answered first; frames never interleave.
+        def slow(ids, epoch):
+            time.sleep(1.5)
+            return {i: {'center': [10.0, 20.0], 'places': []} for i in ids}
+        url, _ = self.playable_service(slow)
+        server, c = self.reconstructed(env={'Playable__Url': url})
+        cells = I(1) + Q(0x4704440000000000)
+        c.sequence += 1
+        c.send(1, b'\1\1' + I(0) + Q(c.sequence) + I(40) + cells)
+        sent = time.monotonic()
+        self.assertEqual(self.player_info(c)['success'], 1)        # Client.rpc fails on another request's answer
+        self.assertLess(time.monotonic() - sent, 1.0)
+        channel, response = c.receive()
+        r = Reader(response)
+        self.assertEqual((channel, r.byte(), r.byte()), (1, 1, 2))
+        r.longs(); r.long()
+        self.assertEqual((r.integer(), r.byte()), (40, 1))
 
     def test_get_weather_answers_the_real_weather_of_a_coarse_cell(self):
         # GetWeather (67): [float lat][float lng] -> [int WeatherCode] (OpenWeatherMap groups). The server asks the
@@ -1023,7 +1045,7 @@ class PrototypeTests(unittest.TestCase):
             self.assertIn(row['item_id'], items[row['item_type_id']])
             stacks.setdefault(row['shop_bundle_id'], []).append(row)
         self.assertEqual(set(stacks), set(bundles))
-        self.assertEqual({b for b, rows in stacks.items() if len(rows) > 1}, {64, 65, 129})
+        self.assertEqual({b for b, rows in stacks.items() if len(rows) > 1}, {64, 65, 66, 67, 129})   # chests, Fresh herbs
         categories = {r['shop_bundle_id']: (r['layout_group_name_main_category'], r['layout_group_name_sub_category'])
                       for r in data['shop_bundles_layout_group_name_categories']}
         self.assertEqual(set(categories), set(bundles))
@@ -1043,35 +1065,35 @@ class PrototypeTests(unittest.TestCase):
             self.assertEqual(prices_in_app[row['inapp_price_id']]['product_type'], 'Consumable')
             self.assertEqual(per_store[row['inapp_price_id']], {'GooglePlay', 'AppStore'})
         self.assertEqual(set(prices_in_app), set(per_store))
-        self.assertEqual(bundles[1205]['gold_price'], 60)                 # Swallow ×3 (TheGamer)
+        # Revival's prices (the preset's table): Swallow ×3 40 (60 in the original, TheGamer), deals 40 % off
+        self.assertEqual((bundles[1205]['gold_price'], bundles[1205]['daily_discount'], bundles[2202]['daily_discount']), (40, 40, 0))
         prices = {(r['item_type_id'], r['item_id']): r['gold_price'] for r in data['auto_equip_items_prices']}
-        self.assertEqual((prices[(4, 301)], prices[(3, 201)]), (25, 10))
-        # The tutorial exam pays nothing (the maintainer's reward list), so a purse of 300 orens; today's deals; a stack of
+        self.assertEqual((prices[(4, 301)], prices[(3, 201)]), (15, 7))
+        # The tutorial exam pays nothing (the maintainer's reward list), so a purse of 250 orens; today's deals; a stack of
         # potions and alchemy ingredients.
         c.rpc(57, self.completion_body({3: 1}, instance=self.TUT_EXAM, output='exam_end'))
         server.stop()
         path = self.profile_file('test-economy')
         profile = json.loads(path.read_text())
-        profile['Player']['Gold'] = 300
+        profile['Player']['Gold'] = 250
         path.write_text(json.dumps(profile))
         server = self.start('test-economy', shop)
         c = self.client(server)
-        self.assertEqual(self.player_info(c)['gold'], 300)
+        self.assertEqual(self.player_info(c)['gold'], 250)
         deals = Reader(c.rpc(79)); self.assertEqual(deals.byte(), 1)
         daily = deals.ints()
         self.assertEqual(len(daily), 3)
-        swallow = 45 if 1205 in daily else 60
+        swallow = 24 if 1205 in daily else 40
         self.assertEqual(c.rpc(80, I(1205) + Q(777)), b'\1' + I(1))            # transaction not found yet
         bought = Reader(c.rpc(75, I(1205) + Q(777)))
-        self.assertEqual((bought.byte(), bought.integer(), bought.integer()), (1, 1205, 300 - swallow))
+        self.assertEqual((bought.byte(), bought.integer(), bought.integer()), (1, 1205, 250 - swallow))
         self.assertEqual(c.rpc(80, I(1205) + Q(777)), b'\1' + I(3))            # completed
-        tissue_price = 50 * 75 // 100 if 1103 in daily else 50
-        self.assertEqual(c.rpc(75, I(1103) + Q(1))[:5], b'\1' + I(1103))
-        self.assertEqual(c.rpc(75, I(129) + Q(2))[:5], b'\1' + I(129))
-        gold = 300 - swallow - tissue_price - 80
+        self.assertEqual(c.rpc(75, I(1103) + Q(1))[:5], b'\1' + I(1103))      # tissue ×10: 30, never a deal
+        self.assertEqual(c.rpc(75, I(129) + Q(2))[:5], b'\1' + I(129))        # Fresh herbs: 50
+        gold = 250 - swallow - 30 - 50
         self.assertEqual(self.player_info(c)['gold'], gold)
-        # The 20-use station costs 300: more than is left, so nothing is bought or charged.
-        self.assertLess(gold, 300)
+        # The 20-use station costs 180: more than is left, so nothing is bought or charged.
+        self.assertLess(gold, 180)
         self.assertEqual(c.rpc(75, I(2202) + Q(3)), b'\0' + I(2202) + I(gold))
         self.assertEqual(self.player_info(c)['gold'], gold)
         self.assertEqual(c.rpc(75, I(99999) + Q(4)), b'\0' + I(99999) + I(gold))   # the unchanged balance
@@ -1136,7 +1158,7 @@ class PrototypeTests(unittest.TestCase):
         # The combat preparation's recommended purchase: one basic oil at its unit price.
         before = self.player_info(c)['gold']
         self.assertEqual(c.rpc(98, I(0) + I(0) + I(301)), b'\1')
-        self.assertEqual((self.player_info(c)['gold'], self.inventory(c)['oils'][301]), (before - 25, 1))
+        self.assertEqual((self.player_info(c)['gold'], self.inventory(c)['oils'][301]), (before - 15, 1))
         # Senses: free without a potion.
         self.assertEqual(c.rpc(42, I(0) + I(0)), b'\1')
         # The item window's remove button: owned amounts only; storages this server does not keep are refused.
@@ -1160,7 +1182,7 @@ class PrototypeTests(unittest.TestCase):
         bags = {r['shop_bundle_id']: r['amount'] for r in data['shop_bundle_items'] if r['item_type_id'] == 11}
         self.assertEqual(bags, {95: 50, 96: 50, 97: 100, 98: 200, 99: 400})
         self.assertEqual([(bundles[b]['gold_price'], bundles[b]['one_time']) for b in sorted(bags)],
-                         [(500, 1), (500, 1), (1000, 1), (2000, 1), (4000, 1)])
+                         [(250, 1), (250, 1), (500, 1), (1000, 1), (2000, 1)])          # Revival: half the original
         self.assertIn(('inventoryIncrement', '50'), [(r['param_name'], r['param_value']) for r in data['game_configuration']])
         self.assertEqual(self.inventory(c)['bag'], 200)
         def used(): return sum(sum(m.values()) for k, m in self.inventory(c).items() if k != 'bag') + 1   # + the basic station
@@ -1187,10 +1209,10 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(used(), 200)
         # Shop items that do not fit are refused unpaid; a bag makes room, once.
         self.assertEqual(c.rpc(75, I(1205) + Q(1)), b'\0' + I(1205) + I(1000))
-        self.assertEqual(c.rpc(75, I(95) + Q(2)), b'\1' + I(95) + I(500))
+        self.assertEqual(c.rpc(75, I(95) + Q(2)), b'\1' + I(95) + I(750))
         self.assertEqual(self.inventory(c)['bag'], 250)
         self.assertEqual(c.rpc(83), b'\1' + I(1) + I(95))
-        self.assertEqual(c.rpc(75, I(95) + Q(3)), b'\0' + I(95) + I(500))
+        self.assertEqual(c.rpc(75, I(95) + Q(3)), b'\0' + I(95) + I(750))
         self.assertEqual(c.rpc(75, I(1205) + Q(4))[:1], b'\1')
 
     def test_joint_venture_catches_up_a_missed_map_output_from_the_facts(self):
@@ -1478,24 +1500,23 @@ class PrototypeTests(unittest.TestCase):
         self.assertEqual(self.inventory(c)['bombs'], {401: 1})
         # The bestiary keeps the monster of the fight reached (no kill), not the boss never met.
         kills = server.state()['player']['kills']
-        self.assertEqual(kills.get(str(monsters[0])), 0)
-        self.assertNotIn(str(monsters[2]), kills)
+        self.assertEqual(kills, {str(monsters[0]): 0})      # (on some days the boss is the first fight's kind)
         self.assertEqual(self.nest_state(c.rpc(52, Q(first)))['state'], 1)
         c.rpc(52, Q(first))
         # A won run: 50 gold, 25 XP per common monster, 100 per new kind, 15 per perfect attack (Details[1]) and
-        # perfect parry, 50 per fight with the proper oil (Details[10]), 500 for the clearing; loot of the three
-        # monsters; the nest becomes DefaultClear.
+        # perfect parry (Details[11], and Revival's deflects, Details[3]), 50 per fight with the proper oil (Details[10]), 500
+        # for the clearing; loot of the three monsters; the nest becomes DefaultClear.
         before = self.player_info(c)
-        won = self.nest_end(c.rpc(53, self.nest_combat(True, first, 401, ((0, 2) + (0,) * 8 + (1,), (), (0,) * 11 + (1,)))))
+        won = self.nest_end(c.rpc(53, self.nest_combat(True, first, 401, ((0, 2, 0, 1) + (0,) * 6 + (1,), (), (0,) * 11 + (1,)))))
         # Revival pays nests twice the original: each monster its fight's base by rarity (100/250/600), clearing 250.
         kinds = len(set(monsters))
         rarity = 2 * sum({1: 100, 2: 250, 3: 600}[SPECIES_BY_ID[m]['rarity']] for m in monsters)
         self.assertEqual((won['gold'], won['rarity'], won['first'], won['attacks'], won['oil'], won['parries'], won['clearing']),
-                         (100, rarity, 200 * kinds, 60, 100, 30, 500))
+                         (100, rarity, 200 * kinds, 60, 100, 60, 500))
         self.assertTrue(len(won['loot']) >= 6)
         after = self.player_info(c)
         self.assertEqual(after['gold'] - before['gold'], 100)
-        self.assertEqual(after['exp'] - before['exp'], rarity + 200 * kinds + 60 + 100 + 30 + 500)
+        self.assertEqual(after['exp'] - before['exp'], rarity + 200 * kinds + 60 + 100 + 60 + 500)
         state = server.state()['player']
         for monster in set(monsters):
             self.assertEqual(state['kills'][str(monster)], monsters.count(monster))
@@ -1551,7 +1572,7 @@ class PrototypeTests(unittest.TestCase):
             (505, 'lure_hybrid'), (506, 'lure_insectoid'), (507, 'lure_necrophage'), (508, 'lure_ogroid'),
             (509, 'lure_relict'), (510, 'lure_specter'), (511, 'lure_vampire')])
         sold = [501, 503, 507, 508, 510]
-        self.assertEqual(data['shop_lures'], [{'item_id': i, 'price': 200} for i in sold])
+        self.assertEqual(data['shop_lures'], [{'item_id': i, 'price': 150} for i in sold])   # Revival (the original: 200)
         self.assertEqual({row['param_name']: row['param_value'] for row in data['game_configuration']},
                          {'nestClearingExp': '500', 'nestDailyLimit': '3', 'nestPlayerMinimalLevel': '10',
                           'inventoryIncrement': '50'})
@@ -1559,7 +1580,7 @@ class PrototypeTests(unittest.TestCase):
                  if row['layout_group_name_sub_category'] == 'Baits' and row['shop_bundle_id'] < 5000]   # scrolls from 5000
         self.assertEqual(baits, [1000 + i for i in sold])
         prices = {row['id']: row['gold_price'] for row in data['shop_bundles']}
-        self.assertTrue(all(prices[b] == 200 for b in baits))
+        self.assertTrue(all(prices[b] == 150 for b in baits))
         items = [(row['item_type_id'], row['item_id'], row['amount']) for row in data['shop_bundle_items']
                  if row['shop_bundle_id'] in baits]
         self.assertEqual(items, [(5, i, 1) for i in sold])
@@ -1574,7 +1595,7 @@ class PrototypeTests(unittest.TestCase):
         c = self.client(server)
         self.assertEqual(c.rpc(75, I(1507) + Q(1))[:5], b'\1' + I(1507))
         self.assertEqual(self.inventory(c)['lures'], {507: 1})
-        self.assertEqual(self.player_info(c)['gold'], 300)
+        self.assertEqual(self.player_info(c)['gold'], 350)
         self.assertEqual(c.rpc(50, I(507) + I(1)), b'\1' + I(507) + I(1))
         self.assertEqual(self.inventory(c)['lures'], {})
 
@@ -1617,7 +1638,9 @@ class PrototypeTests(unittest.TestCase):
         metres = lambda a, b: math.hypot((a[0] - b[0]) * 110540.0, (a[1] - b[1]) * 111320.0 * math.cos(math.radians(a[0])))
         places = [{'id': f'lab-test-{r}-{k}', 'lat': origin[0] + dy * r / 110540.0,
                    'lng': origin[1] + dx * r / (111320.0 * math.cos(math.radians(origin[0]))), 'biomes': [4], 'kind': 'path'}
-                  for r in (200, 350, 500, 650, 750) for k, (dy, dx) in enumerate(((1, 0), (0, 1), (-1, 0), (0, -1)))]
+                  # every lair ring (300-800 m) has a neighbour 120-130 m out, inside the second cocoon's 40-150 m band
+                  # (rings 150 m apart left only the band's edge, which rounding put in or out)
+                  for r in (200, 350, 480, 600, 720) for k, (dy, dx) in enumerate(((1, 0), (0, 1), (-1, 0), (0, -1)))]
         url, _ = self.playable_service(lambda ids, epoch: {
             i: {'center': list(origin), 'places': places if n == 0 else []} for n, i in enumerate(ids)})
         env = dict(self.RECONSTRUCTED, Playable__Url=url)
@@ -2009,14 +2032,14 @@ class PrototypeTests(unittest.TestCase):
                 for r in data['shop_bundles_layout_group_name_categories']}
         bundles = {r['id']: r for r in data['shop_bundles']}
         feline = 3004
-        self.assertEqual((tabs[feline], bundles[feline]['gold_price'], bundles[feline]['one_time']), (('Equipment', 'Armors'), 3400, 1))
+        self.assertEqual((tabs[feline], bundles[feline]['gold_price'], bundles[feline]['one_time']), (('Equipment', 'Armors'), 2550, 1))   # Revival (the original: 3400)
         self.assertEqual(tabs[4008], ('Equipment', 'Silver_Swords'))
         path = self.profile_file('test-gear')
         server.stop()
         profile = json.loads(path.read_text()); profile['Player']['Gold'] = 5000; path.write_text(json.dumps(profile))
         server = self.start('test-gear', self.RECONSTRUCTED); c = self.client(server)
         bought = Reader(c.rpc(75, I(feline) + Q(1)))
-        self.assertEqual((bought.byte(), bought.integer(), bought.integer()), (1, feline, 1600))
+        self.assertEqual((bought.byte(), bought.integer(), bought.integer()), (1, feline, 2450))
         self.assertEqual(Reader(c.rpc(75, I(feline) + Q(2))).byte(), 0)          # once only
         self.assertEqual(c.rpc(11, I(4)), b'\1' + I(4))
         self.assertEqual(equipment(), {'swords': [7, 13], 'armors': [7, 4], 'armor': 4, 'sword': 13})

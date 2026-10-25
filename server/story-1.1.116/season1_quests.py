@@ -35,7 +35,11 @@ TRACKS = POI + "s00/prolog/footprint_placeholder.asset"
 # "hunt" (HuntQuestPoi, the prologue griffin's) draws its own search circle, which shrinks as the player nears and starts the
 # graph there: the tracks and the leshen hound, whose only settings (s00/prolog/footprint_placeholder) have no prefab, so as
 # a normal node they drew nothing (the hound "did not spawn at all", 10 October 2026).
-DISPLAY = {"normal": 1, "hunt": 4, "collecting": 7}
+# "auto" (AutoQuestPoi, Start 0x1908204 / OnUpdate 0x19085B4) starts its graph by itself once the phone's clock passes the
+# node's time to fire, which only the ExpiringQuestNodeInstances list of the story replies sets (StoryModule.UpdateTTL
+# 0x19A6814): a node with a "timer" (an effect the graphs add, and its time) fires when that effect ends. The Sins candle
+# (each candle the lair lights burns for 15 minutes, then the candle graph counts it) and the Intruder's 24 hours.
+DISPLAY = {"normal": 1, "hunt": 4, "auto": 5, "collecting": 7}
 
 # Facts only the server sets (no graph of either story pack uses them). Monster Slayer opens on a trigger
 # (PlayerService.TrollFight; Community (Gamepressure): "kill at least one rock troll, then lose to the next one you meet
@@ -52,9 +56,13 @@ PRICES = {"s01hq01_map.map_bought": 500}
 
 
 def node(key, graph, poi=None, kind="poi", show="", root="", band=None, near=None, place_of=None, node_id=None,
-         copies=1, button_id=None, display="normal"):
+         copies=1, button_id=None, display="normal", timer=None, late=False):
+    """[timer]: (effect id, seconds) of an "auto" node, which fires when that player modifier ends (the graphs' own time when
+    the server has not saved the modifier yet). [late]: a node added after saves existed, whose outputs are numbered after
+    every other output, so the saved output ids keep their meaning."""
     return {"key": key, "graph": graph, "poi": poi, "kind": kind, "show": show, "root": root, "band": band,
-            "near": near, "place_of": place_of, "id": node_id, "copies": copies, "button_id": button_id, "display": display}
+            "near": near, "place_of": place_of, "id": node_id, "copies": copies, "button_id": button_id, "display": display,
+            "timer": list(timer) if timer else None, "late": late}
 
 
 def items(**kinds):
@@ -357,6 +365,11 @@ QUESTS = [
     # (Gamepressure): given by Vesemir at the end of Pride Ain't Cheap. Maintainer: 60 orens, 750 XP for breaking the curse
     # and Hermit's Armor; Authored: 500 XP when the striga is killed, the hermit stands on the mq04 hermit settings, the lure
     # on the tombstone, the empty lair (453) is not served; offered on Pride's completion fact 178, which its last step sends.
+    # Client: Thorstein's shop Conversation (thorstein_in_shop/s01/s01mq03_01, offered from f70 = 3, which the vodnik sets) only
+    # queues node 316 (FireQueuedGraph 0x17E89D0 looks for the map node with that id), so his node is 316. The lair lights a
+    # candle (15 = -1, effect 4 for 900 s): while it burns the lair answers "the candle burns"; when it ends, the candle graph
+    # (an auto node, nothing else starts it) counts it (26: 1 -> 2 -> 3 -> -7, 15 = 0) and the next can be lit; after the third
+    # (26 = -7) the curse can be lifted. The ritual's failure timer (s01mq03_timer) is not served.
     {"id": 152, "code": "s01mq03", "name": "The Sins Of Our Fathers", "folder": "s01mq03_striga", "criteria": "f178>=1",
      "done": 179, "main": True,
      "nodes": [
@@ -365,14 +378,16 @@ QUESTS = [
          node("s01mq03_hermit", "s01mq03_hermit", POI + "s01/mq04/hermit_lq.asset", show="f55>=1 & f147<1", band=(300, 800)),
          node("s01mq03_tracks", "s01mq03_tracks", TRACKS, show="f147=1 & f129<2", band=(200, 600), display="hunt"),
          node("s01mq03_vodnik", "s01mq03_vodnik", POI + "s01/mq03/vodnik_lq.asset", show="f129=2", band=(250, 700)),
-         node("s01mq03_thorstein", "s01mq03_thorstein", POI + "_common/thorstein_lq.asset", show="f129=3 & f26<1",
-              band=(150, 500)),
+         node("s01mq03_thorstein", "s01mq03_thorstein", POI + "_common/thorstein_lq.asset", show="f129=3 & f26=0",
+              band=(150, 500), node_id=316),   # f26 = 0: the candles end at -7
          node("s01mq03_lure", "s01mq03_lure", POI + "s01/mq03/tombstone_lq.asset", show="f26>=1 & f127<1 & f147<2",
-              band=(250, 700)),
+              band=(250, 700), node_id=18085),
          node("s01mq03_lair", "s01mq03_striga", POI + "s01/mq03/striga_lair_lq.asset", show="f127=1 & f147<2",
               near="s01mq03_lure", band=(40, 200)),
          node("s01mq03_armor", "s01mq03_armor", POI + "s01/mq03/armor_chest_lq.asset", show="f55>=5 & f179<1",
-              place_of="s01mq03_lair"),
+              place_of="s01mq03_lair", node_id=18086),
+         node("s01mq03_candle", "s01mq03_candle", EMPTY, show="f15=-1 & f147<2", display="auto", timer=(4, 900),
+              node_id=18087, late=True),
      ],
      "end": {"s01mq03_lair.striga_killed": {"exp": 500, "gold": 60}, "s01mq03_lair.striga_killed_knew": {"exp": 500, "gold": 60},
              # Community (Witcher Wiki): lifting the curse gives Hermit's Armor (armors row 8).
@@ -385,6 +400,12 @@ QUESTS = [
          ("s01mq03_vodnik", "vodnik", {129: 3, 32: 1}, ["s01mq03_thorstein"]),
          ("s01mq03_thorstein", "thorstein", {26: 1}, ["s01mq03_lure"]),
          ("s01mq03_lure", "lure", {127: 1, 134: 1}, ["s01mq03_lair"]),
+         ("s01mq03_lair", "candle_01", {15: -1}, ["s01mq03_lair", "s01mq03_candle"]),
+         ("s01mq03_candle", "candle_01", {15: 0, 26: 2, 194: 0}, ["s01mq03_lair"]),
+         ("s01mq03_lair", "candle_02", {15: -1}, ["s01mq03_lair", "s01mq03_candle"]),
+         ("s01mq03_candle", "candle_02", {15: 0, 26: 3, 194: 0}, ["s01mq03_lair"]),
+         ("s01mq03_lair", "candle_03", {15: -1}, ["s01mq03_lair", "s01mq03_candle"]),
+         ("s01mq03_candle", "candle_03", {15: 0, 26: -7, 194: 0}, ["s01mq03_lair"]),
          ("s01mq03_lair", "curse_lifted", {55: 5, 147: 2, 127: -1}, ["s01mq03_armor"]),
          ("s01mq03_armor", "armor", {179: 1, 31: 4}, []),
      ]},
@@ -398,9 +419,14 @@ QUESTS = [
     # frightener fight (361) sets 61; Thorstein (124) and the vogt's payment end it, with one of eight outputs
     # (s01mq06_vogt_02): bad_reward after the sorcerer's deal (164 = 2), otherwise reward, full_reward or
     # bonus_reward, each with a _dhl twin sent when Dehael was not advised (13 <= 0). Maintainer: 2000 XP and 100 orens
-    # (every ending, as the list gives one reward). Authored: the start
-    # stands beside the player and as a giver, the 24-hour wait advised by the sorcerer is not served (the
-    # frightener can be hunted at once), the massacre POI uses the corpse settings.
+    # (every ending, as the list gives one reward). Authored: the start stands beside the player and as a giver, the
+    # massacre POI uses the corpse settings, the frightener can be hunted at once. The sorcerer's deal (the solvent button's
+    # "sorcerer", 27 = -4) adds the 24-hour effect 6; when it ends, the timer graph (an auto node) sets 33 = 2 and sends the
+    # player on. full_reward and bonus_reward need 33 = 0, which the 1.1.116 content never leaves (the sorcerer's dialogue
+    # always sets 1): Tuning quests.intruderAllEndings (hook.js) reads those checks as 33 < 2, "the 24 hours were not waited
+    # out". Client: Thorstein's shop Conversation (bg_ts_s01mq06_01a/b, offered from f70 = 6, which a won frightener fight
+    # sets) queues node 452, so his node is 452 and shows from then; a frightener beaten in the first fight (59 = 2) leads to
+    # him and the vogt as the second fight does.
     {"id": 154, "code": "s01mq06", "name": "Intruder", "folder": "s01mq06_frightener", "criteria": "f31>=5", "done": 182,
      "nodes": [
          node("s01mq06_dehael", "s01mq06_start", POI + "s01/mq06/dehael_lq.asset", "giver", root="f57<1 & f162<1"),
@@ -420,10 +446,12 @@ QUESTS = [
          node("s01mq06_poison_01", "quest_item_buttons/qi_poison_01_button", kind="button", node_id=478),
          node("s01mq06_lair", "s01mq06_frightener_02", POI + "s01/mq06/frightener_lair_lq.asset",
               show="f57=5 & f61<2 | f162=5 & f61<2", place_of="s01mq06_frightener"),
-         node("s01mq06_thorstein", "s01mq06_thorstein", POI + "_common/thorstein_lq.asset", show="f61>=2 & f124<1",
-              band=(150, 500)),
-         node("s01mq06_vogt_end", "s01mq06_vogt_02", POI + "s01/mq05/vogt_lq.asset", show="f61>=2 & f124>=1",
-              place_of="s01mq06_vogt"),
+         node("s01mq06_thorstein", "s01mq06_thorstein", POI + "_common/thorstein_lq.asset",
+              show="f70>=6 & f124<1 | f61>=2 & f124<1", band=(150, 500), node_id=452),
+         node("s01mq06_vogt_end", "s01mq06_vogt_02", POI + "s01/mq05/vogt_lq.asset", show="f61>=2 & f124>=1 | f59=2 & f124>=1",
+              place_of="s01mq06_vogt", node_id=18167),
+         node("s01mq06_timer", "s01mq06_timer", EMPTY, show="f27=-4 & f61<2", display="auto", timer=(6, 86400),
+              node_id=18168, late=True),
      ],
      "end": {f"s01mq06_vogt_end.{name}{twin}": {"exp": 2000, "gold": 100}
              for name in ("bad_reward", "bonus_reward", "full_reward", "reward")
@@ -438,7 +466,7 @@ QUESTS = [
          ("s01mq06_solvent", "solvent", {27: -3, 162: 5}, ["s01mq06_lair"]),
          ("s01mq06_lair", "frightener", {61: 2, 163: 1}, ["s01mq06_thorstein"]),
          ("s01mq06_thorstein", "thorstein_shop", {124: 1}, ["s01mq06_vogt_end"]),
-         ("s01mq06_vogt_end", "full_reward", {166: 1}, []),
+         ("s01mq06_vogt_end", "reward", {166: 1}, []),
      ]},
 ]
 

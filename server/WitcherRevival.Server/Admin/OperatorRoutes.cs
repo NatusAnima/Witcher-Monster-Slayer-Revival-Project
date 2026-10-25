@@ -208,6 +208,8 @@ public sealed partial class AdminServer
         var p = registry.Store(id).Snapshot(); var player = p.Player; var taskState = player?.Tasks;
         return Results.Json(new { observedAt = DateTimeOffset.UtcNow, source = "saved-profile-snapshot", summary = ProfileSummary(id, p),
             debugTools = DebugTools, modifiers = player?.Modifiers?.Select(m => m.Id),
+            character = player is null ? null : new { gender = (int)player.Gender, head = player.Head ?? 1,
+                heads = PreloaderStaticData.HeadIds.Order() },
             quests = DebugTools ? registry.Player(id).QuestBook() : null, sky = DebugTools ? registry.Player(id).Sky : (int?)null,
             inventory = player?.Items, equipment = player?.Equipment, skills = player?.Skills,
             bestiary = player?.Kills?.OrderBy(k => k.Key).Select(k => new { monsterId = k.Key,

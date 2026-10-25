@@ -45,6 +45,25 @@ class DebugTests(unittest.TestCase):
         client.pushes.clear()
         return found
 
+    def test_the_character_is_chosen_without_the_debug_tools(self):
+        # Gender (0 male, 1 female) and head (customization_heads 1-3): the game reads both at its next start.
+        client, profile = self.profile()
+        self.assertEqual(self.request(f'profiles/{profile}')[1]['character'], {'gender': 0, 'head': 1, 'heads': [1, 2, 3]})
+        character = lambda **body: self.request(f'profiles/{profile}/character', 'POST', body)
+        for bad in ({'gender': 2, 'head': 1}, {'gender': 1, 'head': 4}):
+            self.assertEqual(character(**bad)[0], 400)
+        status, result = character(gender=1, head=3)
+        self.assertEqual((status, result['receipt']['action'], result['receipt']['outcome']), (200, 'profile-character', 'applied'))
+        player = self.saved(profile)['Player']
+        self.assertEqual((player['Gender'], player['Head'], player.get('Debug')), (1, 3, None))   # not a debug change
+        self.assertFalse(self.request('profiles')[1][0]['debug'])
+        client.close()
+        self.restart()
+        client = base.Client(self.server, identity=('synthetic-admin-device', 'synthetic-admin-account'))
+        self.addCleanup(client.close)
+        r = Reader(client.rpc(3)); r.byte(); r.string(); r.integer(); r.integer()
+        self.assertEqual((r.integer(), r.byte(), r.byte()), (3, 0, 1))      # head, tutorial finished, gender
+
     def test_off_unless_enabled(self):
         _, profile = self.profile()
         self.assertEqual(self.debug(profile, action='gold', value=5)[0], 404)
@@ -67,6 +86,7 @@ class DebugTests(unittest.TestCase):
         self.assertEqual(self.debug(profile, action='level', value=10)[0], 200)
         player = self.saved(profile)['Player']
         self.assertEqual((player['Exp'], player['SkillPoints'], player['LevelAnnounced']), (45000, points + 45, 10))
+        self.assertEqual(player['LevelShown'], 10)                           # so level 11's window shows when it comes
         self.assertEqual(player['Tasks'], tasks)                             # no task or trinket saw these changes
         self.assertTrue(self.pushed(client, 63))
         self.assertTrue(self.request('profiles')[1][0]['debug'])

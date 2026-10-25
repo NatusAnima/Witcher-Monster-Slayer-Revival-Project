@@ -9,6 +9,9 @@ namespace WitcherRevival.Server.Net;
 /// Tuning friends.self (Revival) lists every player first among their own friends, so a pack can be sent to yourself and
 /// opened (a backup to opening it in the inventory): no edge is stored for it, a gift to yourself needs only the last one
 /// opened (no day rule; its day is sent as 0, so the game's countdown never waits), and only 106 and 107 take your own id.
+/// An opened gift holds what the preset's pack table draws (the Rewards page), seeded by the gift's receipt so a retried or
+/// recovered claim gives the same; the reply names the rarest stack (the game shows one) and PlayerService pushes the
+/// inventory for the rest. Gift.Amount (Social:GiftIngredientAmount) is kept in the file but no longer decides the contents.
 /// Call outside registry/profile locks. Construction never calls the profile lookup delegate.</summary>
 public sealed class SocialService : IDisposable
 {
@@ -256,23 +259,35 @@ public sealed class SocialService : IDisposable
         EnsureLoaded();
         if (state.Pending is not { } intent) return;
         string receipt = "social:" + intent.Method + ":" + intent.Gift.Receipt; bool ok = false;
+        // ponytail: a dashboard change to the pack table between a crash and this recovery can name other stacks than granted
+        var contents = intent.Method == 107 ? Contents(intent.Gift) : [];
         var store = openStore(intent.Actor);
         if (store.Snapshot().Player is not null)
             store.UpdatePlayer(new Dictionary<int, int>(), null, p =>
             {
                 if (p.Granted.Contains(receipt)) { ok = true; return null; }
-                string kind = intent.Method == 106 ? PackItems : ItemKinds.Ingredients;
-                int id = intent.Method == 106 ? intent.Gift.Pack : 101;
-                var items = p.Items.GetValueOrDefault(kind) ?? new Dictionary<int, int>(); int before = items.GetValueOrDefault(id);
-                if (intent.Method == 106 && before < 1 || intent.Method == 107 &&
-                    (before > int.MaxValue - intent.Gift.Amount || SocialPolicy.Occupied(p) + intent.Gift.Amount > Economy.BagSize(p))) return null;
-                int after = intent.Method == 106 ? before - 1 : before + intent.Gift.Amount; p.Items[kind] = items;
-                if (after == 0) items.Remove(id); else items[id] = after;
+                if (intent.Method == 106)
+                {
+                    var packs = p.Items.GetValueOrDefault(PackItems) ?? new Dictionary<int, int>(); int before = packs.GetValueOrDefault(intent.Gift.Pack);
+                    if (before < 1) return null;
+                    p.Items[PackItems] = packs;
+                    if (before == 1) packs.Remove(intent.Gift.Pack); else packs[intent.Gift.Pack] = before - 1;
+                }
+                else
+                {
+                    if (SocialPolicy.Occupied(p) + contents.Sum(i => (long)i.Amount) > Economy.BagSize(p)) return null;
+                    foreach (var item in contents)
+                    {
+                        var items = p.Items.GetValueOrDefault(item.Kind) ?? new Dictionary<int, int>(); p.Items[item.Kind] = items;
+                        if (items.GetValueOrDefault(item.Id) > int.MaxValue - item.Amount) return null;
+                        items[item.Id] = items.GetValueOrDefault(item.Id) + item.Amount;
+                    }
+                }
                 p.Granted.Add(receipt); ok = true; return p;
             });
         var next = Copy() with { Pending = null };
         if (ok) next.Gifts[Direction(intent.Gift.Sender, intent.Gift.Receiver)] = intent.Gift with { Claimed = intent.Method == 107 };
-        byte[] response = Reply(intent.Method, ok, state.Players[intent.Other], intent.Gift.Pack, intent.Gift.Amount);
+        byte[] response = Reply(intent.Method, ok, state.Players[intent.Other], intent.Gift.Pack, contents);
         next.Operations[OperationKey(intent.Actor, intent.RequestId)] = new(intent.Hash, Convert.ToBase64String(response)); Save(next);
     }
     public static byte[] Refusal(ApiProtocol.ApiRequest req)
@@ -284,10 +299,27 @@ public sealed class SocialService : IDisposable
         return Reply(req.Method, false, target, pack);
     }
 
-    private static byte[] Reply(int method, bool ok, long other, int pack, int reward = 0)
+    /// <summary>What a gift holds: one pack of the preset's pack table, drawn with the gift's receipt as the seed.</summary>
+    private static List<RewardTables.Item> Contents(Gift gift) =>
+        WorldTuning.Current.Rewards.DrawPacks(1, new Random(BitConverter.ToInt32(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(gift.Receipt)))));
+
+    /// <summary>A gift's reply (107) names its first (rarest) stack, which the game adds and shows in its pack window
+    /// (FriendsModule.OnOpenPackResponse 0x1978EC0), then lists the others as [int n][int itemType][int item][int amount] × n,
+    /// which the game's reader (OpenPackResponse.Factory.Deserialize 0x1E79ED0) leaves unread and hook.js shows after it.</summary>
+    private static byte[] Reply(int method, bool ok, long other, int pack, IReadOnlyList<RewardTables.Item>? contents = null)
     {
         var b = new ByteBuffer(); b.WriteByte(ok ? (byte)1 : (byte)0); if (method == 106) b.WriteInt(pack); b.WriteLong(other);
-        if (method == 107) { b.WriteInt(ok ? 1 : 0); b.WriteInt(ok ? 101 : 0); b.WriteInt(ok ? reward : 0); } return b.ToArray();
+        if (method == 107)
+        {
+            var shown = ok ? contents?.FirstOrDefault() : null;
+            b.WriteInt(shown is null ? 0 : Economy.TypeOf(shown.Kind)!.Value); b.WriteInt(shown?.Id ?? 0); b.WriteInt(shown?.Amount ?? 0);
+            if (shown is not null)
+            {
+                b.WriteInt(contents!.Count - 1);
+                foreach (var item in contents.Skip(1)) { b.WriteInt(Economy.TypeOf(item.Kind)!.Value); b.WriteInt(item.Id); b.WriteInt(item.Amount); }
+            }
+        }
+        return b.ToArray();
     }
     /// <summary>Administrative callers enter here BEFORE the registry lock. Complete any prepared gift first;
     /// then existing revision checks detect that change before reset/copy/restore. Keeps lock order uniform.</summary>

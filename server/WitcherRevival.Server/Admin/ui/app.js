@@ -7,7 +7,7 @@
   const views = {
     engine: [L.m("Silnik"), L.m("STEROWANIE USŁUGĄ"), L.m("Uruchamianie, zatrzymywanie i wyniki operacji silnika gry.")],
     tuning: [L.m("Tuning"), L.m("YOUR OWN EXPERIENCE"), L.m("Simple values you can change to suit how you play. They are saved on this phone.")],
-    rewards: [L.m("Rewards"), L.m("WHAT THE GAME PAYS"), L.m("Quest endings, daily task items and level-up rewards of the preset in use.")],
+    rewards: [L.m("Rewards"), L.m("WHAT THE GAME PAYS"), L.m("Quest endings, daily task items, level-up rewards, packs and shop prices of the preset in use.")],
     testers: [L.m("Testerzy"), L.m("DOSTĘP DO LAB"), L.m("Kody instalacji, terminy dostępu i przypisania profili.")],
     overview: [
       L.m("Pulpit operatora"),
@@ -133,7 +133,7 @@
     ),
     "profile-label": L.m("Etykieta zmienia opis w panelu; nazwa w grze i postęp pozostają."),
     tuning: L.m("The settings are saved and apply as each one says; no restart is needed."),
-    rewards: L.m("The rewards are saved; quests, tasks and level-ups pay them from now on."),
+    rewards: L.m("The rewards are saved; quests, tasks, level-ups and packs pay them from now on, shop prices from the next server and game start."),
     "profile-restore": L.m("Przywrócono zapis. Uruchom LAB ponownie."),
     "profile-reset": L.m("Postęp zresetowano. Uruchom LAB ponownie."),
     "profile-copy": L.m(
@@ -1421,6 +1421,27 @@
       "(for a broken trigger or a long wait). Restart the game to see quest changes."), "hint"), wrap);
     return box;
   }
+  // The character's model (POST profiles/{id}/character, without the debug tools): gender and head, which the game shows
+  // at its next start. Saved with a receipt, so History can undo it.
+  function characterPanel(p, c) {
+    const box = el("section", null, "profile-detail-section");
+    box.append(el("h3", L.m("Character")), el("p", L.m("The figure the game shows. It changes at the game's next start."), "hint"));
+    const gender = el("select"), head = el("select");
+    gender.append(L.option(L.m("Male"), 0), L.option(L.m("Female"), 1));
+    for (const id of c.heads) head.append(L.option(L.join(L.m("Head "), id), id));
+    gender.value = String(c.gender); head.value = String(c.head);
+    const row = el("div", null, "debug-row");
+    row.append(gender, head, button(L.m("Save"), async () => {
+      try {
+        const result = await api("profiles/" + encodeURIComponent(p.id) + "/character",
+          { method: "POST", body: JSON.stringify({ gender: Number(gender.value), head: Number(head.value) }) });
+        notice(L.m(result.outcome.effect));
+        await showProfile(p);
+      } catch (e) { reportError(e); }
+    }));
+    box.append(row);
+    return box;
+  }
   async function showProfile(p) {
     const epoch = ++profileDetailsRequest;
     try {
@@ -1457,6 +1478,7 @@
       );
       const refreshProgress = button(L.m("Odśwież postęp gracza"), () => showProfile(p), "secondary");
       target.append(refreshProgress);
+      if (d.character) target.append(characterPanel(p, d.character));
       if (d.debugTools) {
         const panel = await debugPanel(p, d);
         if (epoch !== profileDetailsRequest) return;
@@ -3445,7 +3467,7 @@
       presetAction(() => api("tuning/presets/" + tuningData.preset, { method: "DELETE" }));
   });
 
-  // ── Rewards page: the active preset's quest endings, daily task items and level-up rewards ──────
+  // ── Rewards page: the active preset's quest endings, daily task items, level-up rewards, packs and shop prices ──────
   function itemText(items) {
     return (items || []).map((i) => {
       const known = rewardsData.catalog.items.find((c) => c.kind === i.kind && c.id === i.id);
@@ -3516,7 +3538,19 @@
       cells(row, numberInput(r.gold, 0, 100000, "gold"), itemsInput(r.items, "items"));
       levels.append(row);
     }
-    for (const body of [quests, $("rewards-pool"), levels]) labelCells(body);
+    $("rewards-pack-draws").value = tables.packDraws;
+    $("rewards-pack").replaceChildren(...tables.packPool.map(packRow));
+    const shop = $("rewards-shop");
+    shop.replaceChildren();
+    for (const b of d.catalog.shop) {
+      const row = el("tr"), contents = b.items.map((i) => (i.amount > 1 ? i.slug + " x" + i.amount : i.slug)).join(", ");
+      row.dataset.bundle = b.id;
+      row.append(el("td", b.oneTime ? L.join(contents, L.m(" (once)")) : contents), el("td", b.tab + " · " + b.group),
+        el("td", String(b.vanilla)));
+      cells(row, numberInput(tables.prices[b.id] ?? b.vanilla, 1, 100000, "price"));
+      shop.append(row);
+    }
+    for (const body of [quests, $("rewards-pool"), levels, $("rewards-pack"), shop]) labelCells(body);
     $("rewards-content").hidden = true;
     $("rewards-form").hidden = false;
   }
@@ -3528,8 +3562,16 @@
       numberInput(r.minLevel || 1, 1, 40, "minLevel"), remove);
     return row;
   }
+  function packRow(r) {
+    const row = el("tr"), remove = el("button", L.m("Remove"), "secondary");
+    remove.type = "button";
+    remove.addEventListener("click", () => { row.remove(); markDirty("rewards-form"); });
+    cells(row, itemsInput([{ ...r, amount: 1 }], "item"), numberInput(r.weight, 0, 10000, "weight"),
+      numberInput(r.min, 1, 100, "min"), numberInput(r.max, 1, 100, "max"), remove);
+    return row;
+  }
   function collectRewards() {
-    const quests = {}, levels = {}, dailyPool = [];
+    const quests = {}, levels = {}, dailyPool = [], packPool = [], prices = {};
     const field = (row, name) => row.querySelector(`[data-field="${name}"]`).value;
     for (const row of $("rewards-quests").querySelectorAll("tr")) {
       const quest = { exp: Number(field(row, "exp")), gold: Number(field(row, "gold")), slots: Number(field(row, "slots")),
@@ -3542,11 +3584,22 @@
     }
     for (const row of $("rewards-levels").querySelectorAll("tr"))
       levels[row.dataset.level] = { gold: Number(field(row, "gold")), items: parseItems(field(row, "items"), L.join(L.m("Level "), row.dataset.level)) };
-    return { quests, dailyItems: Number($("rewards-daily-count").value), dailyPool, levels };
+    for (const row of $("rewards-pack").querySelectorAll("tr")) {
+      const [item] = parseItems(field(row, "item"), L.m("Pack item"));
+      if (item) packPool.push({ kind: item.kind, id: item.id, weight: Number(field(row, "weight")), min: Number(field(row, "min")), max: Number(field(row, "max")) });
+    }
+    for (const row of $("rewards-shop").querySelectorAll("tr")) prices[row.dataset.bundle] = Number(field(row, "price"));
+    return { quests, dailyItems: Number($("rewards-daily-count").value), dailyPool, levels,
+      packDraws: Number($("rewards-pack-draws").value), packPool, prices };
   }
   $("rewards-pool-add").addEventListener("click", () => {
     $("rewards-pool").append(poolRow({ kind: "potions", id: 205, weight: 1, minLevel: 1 }));
     labelCells($("rewards-pool"));
+    markDirty("rewards-form");
+  });
+  $("rewards-pack-add").addEventListener("click", () => {
+    $("rewards-pack").append(packRow({ kind: "ingredients", id: 102, weight: 1, min: 1, max: 1 }));
+    labelCells($("rewards-pack"));
     markDirty("rewards-form");
   });
   $("rewards-load-revival").addEventListener("click", () => { renderRewards(rewardsData.revival); markDirty("rewards-form"); });

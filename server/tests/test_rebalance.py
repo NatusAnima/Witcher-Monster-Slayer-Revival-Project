@@ -88,7 +88,10 @@ class RebalanceTests(TaskTests):
         server.stop()
         self.edit('test-fresh', lambda p: p.update(Exp=3000, LevelAnnounced=3, LevelShown=2))
         server, c = self.reconstructed()
-        c.rpc(115)
+        # The boot's experience sets the level the game compares a LevelUp push with, so it stops below level 3 until
+        # that window is shown; the game's own GetPlayerInfo after the window reads the whole amount.
+        info = Reader(base.decode_batch(c.rpc(115))[3]); info.byte(); info.string(); info.integer()
+        self.assertEqual(info.integer(), 2999)
         c.rpc(119)
         c.rpc(3)
         c.rpc(3)                # a push follows a reply: the next request reads it
@@ -96,6 +99,23 @@ class RebalanceTests(TaskTests):
         c.rpc(3)
         self.assertEqual(len([p for p in c.pushes if p[0] == 31]), 1)
         self.assertEqual(server.state()['player'].get('levelShown', 3), 3)
+
+    def test_a_retried_fight_brings_its_level_up_window_again(self):
+        # The game retries a request whose answer it lost; the LevelUp push written behind that answer was lost with it.
+        server, c = self.reconstructed()
+        self.saved_profile(c)
+        server.stop()
+        self.edit('test-fresh', lambda p: p.update(Exp=950, LevelAnnounced=1, LevelShown=1))
+        server, c = self.reconstructed()
+        r = Reader(c.rpc(111, I(16) + I(1) + I(1) + I(1)))
+        self.assertEqual(r.byte(), 1)
+        group, = self.summoned_groups(r)
+        self.assertEqual(c.rpc(113, Q(group['monsters'][0][1])), b'\1')
+        body = bytes([1]) + I(13) + I(0) * 13 + b'\0'
+        won = c.rpc(114, body)
+        self.assertEqual(c.rpc(114, body, repeat=True), won)   # (it reads the first answer's push on the way)
+        c.rpc(3)                # a push follows a reply: the next request reads it
+        self.assertEqual([struct.unpack('>i', p[:4])[0] for m, p in c.pushes if m == 31], [2, 2])
 
     def test_the_original_level_table_keeps_each_players_level(self):
         server, c = self.reconstructed()
@@ -159,7 +179,7 @@ class RebalanceTests(TaskTests):
         self.assertEqual(self.inventory(c)['scrolls'], {})
         # The shop sells them (Alchemy, beside the baits), one at a time.
         bundles = {b['id']: b for b in self.static(server)['shop_bundles']}
-        self.assertEqual(bundles[5003]['gold_price'], 150)
+        self.assertEqual(bundles[5003]['gold_price'], 120)                                      # Revival's lesser scroll
         r = Reader(c.rpc(75, I(5003) + Q(42)))
         self.assertEqual(r.byte(), 1)
         self.assertEqual(self.inventory(c)['scrolls'], {3: 1})
@@ -196,18 +216,46 @@ class RebalanceTests(TaskTests):
         server.stop()
         self.edit('test-fresh', lambda p: p.update(Items=dict(p['Items'], friend_packs={'1': 3})))
         server, c = self.reconstructed()
-        herba = self.inventory(c)['ingredients'].get(101, 0)
-        self.assertEqual(c.rpc(109, I(1) + I(2)), b'\1' + I(1) + I(2))                        # Remove, named Open: two packs
-        self.assertEqual(self.inventory(c)['ingredients'].get(101, 0), herba + 10)             # a friend's 5 Herba each
+        before = self.inventory(c)['ingredients']
+        reply = Reader(c.rpc(109, I(1) + I(2)))                                              # Remove, named Open: two packs
+        self.assertEqual((reply.byte(), reply.integer(), reply.integer()), (1, 1, 2))
+        found = {}
+        for _ in range(reply.integer()):                       # what they held (the game leaves it unread; hook.js shows it)
+            item_type, item, amount = reply.integer(), reply.integer(), reply.integer()
+            self.assertEqual(item_type, 1)                                                     # Revival's pack: ingredients
+            found[item] = amount
+        self.assertEqual(reply.pos, len(reply.data))
+        self.assertIn(sum(found.values()), range(6, 25))                                       # three draws a pack, 1-4 each
+        after = self.inventory(c)['ingredients']
+        self.assertEqual({i: after.get(i, 0) - before.get(i, 0) for i in after if after.get(i, 0) != before.get(i, 0)}, found)
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:
-            self.assertEqual(json.loads(response.read())['replace']['REVIVAL/OPEN_PACK']['en'], 'Open')
-        # Vanilla: Remove throws the pack away, and the button keeps its name
+            texts = json.loads(response.read())
+        self.assertEqual(texts['replace']['REVIVAL/OPEN_PACK']['en'], 'Open')
+        self.assertEqual(texts['append']['ITEMS/DESCRIPTIONS/PACKS/PACK_HERBALIST']['en'], '\nNow and then it also holds rarer finds.')
+        # Vanilla: Remove throws the pack away, the button keeps its name, and the pack (herbs or roots) its description
         server.stop()
         server, c = self.reconstructed(env=self.world('vanilla'))
         self.assertEqual(c.rpc(109, I(1) + I(1)), b'\1' + I(1) + I(1))
-        self.assertEqual(self.inventory(c)['ingredients'].get(101, 0), herba + 10)
+        self.assertEqual(self.inventory(c)['ingredients'], after)
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:
-            self.assertNotIn('REVIVAL/OPEN_PACK', json.loads(response.read())['replace'])
+            texts = json.loads(response.read())
+        self.assertNotIn('REVIVAL/OPEN_PACK', texts['replace'])
+        self.assertNotIn('ITEMS/DESCRIPTIONS/PACKS/PACK_HERBALIST', texts['append'])
+
+    def test_deflects_pay_as_perfect_parries_only_on_revival(self):
+        # With Hit Reflection the game counts every perfect parry as a deflect (Details[3]): Revival pays them as parries.
+        details = [0] * 13
+        details[11], details[3] = 3, 2
+        body = bytes([1]) + I(13) + b''.join(I(v) for v in details) + b'\0'
+        for preset, parry in (('revival', 75), ('vanilla', 45)):
+            with self.subTest(preset=preset):
+                server, c = self.reconstructed('test-parry-' + preset, env=self.world(preset))
+                r = Reader(c.rpc(111, I(16) + I(1) + I(1) + I(1)))
+                self.assertEqual(r.byte(), 1)
+                group, = self.summoned_groups(r)
+                self.assertEqual(c.rpc(113, Q(group['monsters'][0][1])), b'\1')
+                self.assertEqual(self.combat_end(Reader(c.rpc(114, body)))['parry'], parry)
+                server.stop()
 
     def test_the_hook_texts_follow_the_preset(self):
         server, c = self.task_server(self.kills(1))
@@ -228,12 +276,21 @@ class RebalanceTests(TaskTests):
         for term, text in list(texts['replace'].items()) + list(texts['append'].items()):
             if isinstance(text, dict):
                 self.assertTrue(all(text.values()), term)
+        # the settings hook.js applies in the game (Revival); the oils multiply, so their descriptions stay
+        self.assertEqual(texts['settings'], {'combat.oilsMultiply': 1, 'quests.collectingDistance': 100,
+                                             'quests.collectingUntracked': 1, 'quests.intruderAllEndings': 1})
+        self.assertFalse(any(k.startswith('ITEMS/DESCRIPTIONS/OILS/') for k in texts['append']))
         server.stop()
         server, c = self.task_server(self.kills(1), extra=self.world('vanilla', **{'spawns.wikiOccurrences': 0}))
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:
             texts = json.loads(response.read())
         self.assertFalse(any(k.startswith('MONSTERS/') for k in texts['replace']))
-        self.assertEqual(texts['append'], {})
+        # the original sum of bonuses: each oil's description says what its bonus is a share of
+        oils = ['BASIC', 'NECROPHAGE', 'OGROID', 'CURSED', 'RELICT', 'HYBRID', 'INSECTOID', 'DRACONID', 'SPECTER', 'ELEMENTAL', 'VAMPIRE']
+        self.assertEqual(set(texts['append']), {'ITEMS/DESCRIPTIONS/OILS/OIL_' + oil for oil in oils})
+        self.assertTrue(texts['append']['ITEMS/DESCRIPTIONS/OILS/OIL_BASIC']['en'].startswith("\nIts bonus is a share of the sword's base"))
+        self.assertEqual(texts['settings'], {'combat.oilsMultiply': 0, 'quests.collectingDistance': 200,
+                                             'quests.collectingUntracked': 0, 'quests.intruderAllEndings': 0})
 
     def test_bestiary_tiers_follow_the_tuning(self):
         # Each tier's row carries the kills since the previous tier: Revival 3/25/100, Vanilla (before 1.2) 3/50/150.

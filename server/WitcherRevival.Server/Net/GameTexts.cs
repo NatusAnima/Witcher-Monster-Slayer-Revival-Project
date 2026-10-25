@@ -174,4 +174,25 @@ public static class GameTexts
         "Czy chcesz otworzyć ten przedmiot: #0?", "Möchtest du diesen Gegenstand öffnen: #0?", "¿Quieres abrir este objeto: #0?",
         "Vuoi aprire questo oggetto: #0?", "Voulez-vous ouvrir cet <nobr>objet :</nobr> <nobr>#0 ?</nobr>", "Открыть предмет: #0?",
         "Você deseja abrir este item: #0?", "#0を開けますか？");
+
+    /// <summary>The line added to the herbalist's pack's description ("random quantities of herbs or roots") while the
+    /// preset's pack table holds more than herbs and roots.</summary>
+    public static readonly Dictionary<string, string> RarerFinds = Of("Now and then it also holds rarer finds.",
+        "Czasem zawiera też rzadsze znaleziska.", "Ab und zu enthält es auch seltenere Funde.",
+        "De vez en cuando también contiene hallazgos más raros.", "Di tanto in tanto contiene anche reperti più rari.",
+        "Il contient parfois aussi des trouvailles plus rares.", "Иногда в ней бывают и более редкие находки.",
+        "De vez em quando, também traz achados mais raros.", "まれに、より珍しい品が入っていることもある。");
+
+    // ── Oils (Tuning combat.oilsMultiply off: the original sum) ──────────────────────────────────
+
+    public static readonly Dictionary<string, string> OilBaseDamage = Of(
+        "Its bonus is a share of the sword's base damage: weaknesses, potions and skills add to it rather than multiply it.",
+        "Premia to część podstawowych obrażeń miecza: słabości, eliksiry i umiejętności dodają się do niej, a nie ją mnożą.",
+        "Der Bonus ist ein Anteil am Grundschaden des Schwerts: Schwächen, Tränke und Fähigkeiten addieren sich dazu, statt ihn zu vervielfachen.",
+        "La bonificación es una parte del daño base de la espada: las debilidades, pociones y habilidades se suman a ella, no la multiplican.",
+        "Il bonus è una parte del danno base della spada: debolezze, pozioni e abilità si sommano a esso, non lo moltiplicano.",
+        "Le bonus est une part des dégâts de base de l'épée : faiblesses, potions et compétences s'y ajoutent au lieu de le multiplier.",
+        "Бонус — это доля базового урона меча: уязвимости, эликсиры и навыки складываются с ним, а не умножают его.",
+        "O bônus é uma parte do dano base da espada: fraquezas, poções e habilidades somam-se a ele, em vez de multiplicá-lo.",
+        "このボーナスは剣の基本ダメージに対する割合です。弱点、ポーション、スキルの効果は掛け合わされず、足し合わされます。");
 }

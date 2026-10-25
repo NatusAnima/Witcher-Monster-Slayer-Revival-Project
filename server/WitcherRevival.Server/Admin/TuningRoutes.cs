@@ -128,12 +128,18 @@ public sealed partial class AdminServer
             }
         });
 
-        // The Rewards page: the active preset's reward tables, the endings it lists and the items they may hold.
+        // The Rewards page: the active preset's reward tables, the endings it lists, the items they may hold and the shop's
+        // bundles (their contents and Vanilla prices) for the price table.
         object Catalog() => new
         {
             groups = RewardTables.Groups,
             items = RewardItems().Select(i => new { kind = i.Kind, id = i.Id, slug = i.Slug }),
             levels = Reconstruction.MaxLevel,
+            shop = Economy.Bundles.Where(b => b.InAppPrice is null).Select(b => new
+            {
+                id = b.Id, tab = b.Tab, group = b.Group, oneTime = b.OneTime, vanilla = b.GoldPrice,
+                items = b.Items.Select(i => new { slug = SlugOf(i.Type, i.Item), amount = i.Amount }),
+            }),
         };
         app.MapGet("/api/rewards", () =>
         {
@@ -156,12 +162,23 @@ public sealed partial class AdminServer
                 CheckRevision(write.Revision);
                 var preset = Owned(null) with { Rewards = write.Rewards };
                 Write(world.Tuning.PresetPath(preset.Id)!, WorldTuning.SerializePreset(preset), "rewards",
-                    $"The rewards of \"{preset.Name}\" are saved; they apply to quests, tasks and levels from now on.");
+                    $"The rewards of \"{preset.Name}\" are saved; quests, tasks, levels and packs pay them from now on, and the " +
+                    "shop's prices apply from the next server and game start.");
                 var receipt = Activate(preset, $"The preset \"{preset.Name}\" is in use.");
                 return Results.Json(new { receipt, revision = Revision(), preset = preset.Id, name = preset.Name });
             }
         });
     }
+
+    /// <summary>The slug the dashboard shows for a shop bundle's element ("bag" for inventory slots).</summary>
+    private static string SlugOf(int type, int item) => type switch
+    {
+        Economy.TypeArmor => Reconstruction.ArmorById(item)?.Slug,
+        Economy.TypeSword => Reconstruction.SwordById(item)?.Slug,
+        Economy.TypeBrewer => Economy.Brewers.FirstOrDefault(b => b.Id == item)?.Slug,
+        Economy.TypeBag => "bag",
+        _ => RewardItems().FirstOrDefault(i => i.Kind == Economy.KindOf(type) && i.Id == item).Slug,
+    } ?? $"{type}:{item}";
 
     /// <summary>Every item a reward may hold, with the slug the dashboard shows.</summary>
     private static IEnumerable<(string Kind, int Id, string Slug)> RewardItems() =>

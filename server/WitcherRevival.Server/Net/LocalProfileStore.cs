@@ -251,15 +251,17 @@ public sealed class LocalProfileStore : IDisposable
     /// <summary>The dashboard's debug tools: a change saved as one revision while the player may be online, which the task
     /// engine does not see (no task or trinket counts it; goals measured on the state itself, such as a level to reach,
     /// catch up at the next game save). <paramref name="backup"/> receives the profile before it; the player is marked
-    /// Debug. The change receives a detached copy and returns the new state, or null to keep it.</summary>
-    public Profile DebugUpdate(Func<PlayerState, PlayerState?> change, Action<Profile> backup)
+    /// Debug unless <paramref name="markDebug"/> is false (the dashboard's character choice, which is no cheat). The change
+    /// receives a detached copy and returns the new state, or null to keep it.</summary>
+    public Profile DebugUpdate(Func<PlayerState, PlayerState?> change, Action<Profile> backup, bool markDebug = true)
     {
         lock (_gate)
         {
             if (_profile.Player is null) throw new InvalidOperationException("Legacy profiles have no player state.");
             if (change(CopyPlayer(_profile.Player)) is not { } changed) return Copy(_profile);
             backup(Copy(_profile));
-            return WriteProfile(_profile with { Revision = checked(_profile.Revision + 1), Player = changed with { Debug = true } });
+            return WriteProfile(_profile with { Revision = checked(_profile.Revision + 1),
+                Player = markDebug ? changed with { Debug = true } : changed });
         }
     }
 

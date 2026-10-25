@@ -137,6 +137,7 @@ def main():
     quests, nodes, outputs, walks = [], [], [], {}
     used_ids, used_instances = set(), set()
     next_output = 1001
+    late_outputs = []   # outputs of nodes added after saves existed: numbered after all the others
     for q in QUESTS:
         quest_id, code = q["id"], q["code"]
         journal = f"assets/_bundledassets/story/journal/s01/{q['folder']}/log_{code}.asset"
@@ -177,16 +178,21 @@ def main():
             band = n["band"] or (GIVER_BAND if n["kind"] == "giver" else POI_BAND)
             if n["kind"] == "giver" and band[1] > GIVER_DISTANCE - 30:
                 errors.append(f"{n['key']}: a giver must stand well inside {GIVER_DISTANCE} m")
-            # A collecting map node stands beside the player (written like the queued ones); a collecting giver keeps its
-            # place, which the map-cell reply needs, and a hunt node its place, the centre of its search circle.
+            # A collecting or auto map node stands beside the player (written like the queued ones); a collecting giver keeps
+            # its place, which the map-cell reply needs, and a hunt node its place, the centre of its search circle. An auto
+            # node fires when its timer's effect ends, so it needs one, and its graph must remove that effect.
             if n["display"] not in DISPLAY or n["display"] != "normal" and n["kind"] not in ("poi", "giver"):
                 errors.append(f"{n['key']}: display {n['display']} is for map nodes and givers")
-            elif n["display"] == "collecting" and n["kind"] == "poi" and (n["band"] or n["near"] or n["place_of"] or n["copies"] != 1):
-                errors.append(f"{n['key']}: a collecting node stands beside the player: no band, near, place_of or copies")
+            elif n["display"] in ("collecting", "auto") and n["kind"] == "poi" and (n["band"] or n["near"] or n["place_of"] or n["copies"] != 1):
+                errors.append(f"{n['key']}: a {n['display']} node stands beside the player: no band, near, place_of or copies")
+            if (n["display"] == "auto") != bool(n["timer"]):
+                errors.append(f"{n['key']}: an auto node, and only one, has a timer")
+            elif n["timer"] and (n["timer"][0] not in graph["modifiers_removed"] or n["timer"][0] not in {i for i, _ in MODIFIERS}):
+                errors.append(f"{n['key']}: its graph does not end effect {n['timer'][0]}")
             nodes.append({"id": node_id, "quest": quest_id, "key": n["key"], "graph": graph_key, "poi": n["poi"] or "",
                           "instance": instance, "kind": n["kind"], "root": n["root"], "show": n["show"],
                           "min": band[0], "max": band[1], "near": n["near"], "placeOf": n["place_of"], "copies": n["copies"],
-                          "display": DISPLAY.get(n["display"], 1)})
+                          "display": DISPLAY.get(n["display"], 1), **({"timer": n["timer"]} if n["timer"] else {})})
             for sent, info in graph["outputs"].items():
                 name = OUTPUT_NAMES.get(sent, sent)
                 reward = dict(q["end"].get(f"{n['key']}.{name}", {}))
@@ -202,10 +208,14 @@ def main():
                             kills[str(monster_ids[monster])] = 1
                 if graph.get("gold_notice"):
                     gold += next((int(v) for f, v in info["facts"] if f == 175 and not str(v).startswith("+")), 0)
-                outputs.append({"id": next_output, "node": node_id, "name": name,
-                                "endpoint": f"{n['key']}.{name}" in q["end"], "exp": exp, "gold": gold,
-                                "items": reward.get("items", {}), "kills": kills})
-                next_output += 1
+                output = {"id": None, "node": node_id, "name": name, "endpoint": f"{n['key']}.{name}" in q["end"], "exp": exp,
+                          "gold": gold, "items": reward.get("items", {}), "kills": kills}
+                if n["late"]:
+                    late_outputs.append(output)
+                else:
+                    output["id"] = next_output
+                    next_output += 1
+                outputs.append(output)
             for npc in graph["npcs"]:
                 if f"assets/_bundledassets/characters/monsters/s00/{npc}/{npc}_settings.asset" in keys and npc not in monster_ids:
                     errors.append(f"{n['key']}: combat or scene monster {npc} has no monsters row")
@@ -218,6 +228,9 @@ def main():
         if not any(f == q["done"] and str(v) == "1" for x in nodes if x["quest"] == quest_id for f, v in graphs[x["graph"]]["sets"]):
             errors.append(f"{code}: no graph of the quest sets its completion fact f{q['done']}=1")
         walks[str(quest_id)] = [list(step) for step in q["walk"]]
+    for output in late_outputs:
+        output["id"] = next_output
+        next_output += 1
 
     # Conditions and walk-throughs refer to known things.
     known_outputs = {f"{x['key']}.{o['name']}" for x in nodes for o in outputs if o["node"] == x["id"]}

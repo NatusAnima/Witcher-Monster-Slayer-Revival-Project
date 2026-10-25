@@ -1200,7 +1200,7 @@
    "display": 1
   },
   {
-   "id": 18084,
+   "id": 316,
    "quest": 152,
    "key": "s01mq03_thorstein",
    "graph": "s01/s01mq03_striga/s01mq03_thorstein",
@@ -1208,7 +1208,7 @@
    "instance": 5124757846625354044,
    "kind": "poi",
    "root": "",
-   "show": "f129=3 & f26<1",
+   "show": "f129=3 & f26=0",
    "min": 150,
    "max": 500,
    "near": null,
@@ -1266,6 +1266,27 @@
    "placeOf": "s01mq03_lair",
    "copies": 1,
    "display": 1
+  },
+  {
+   "id": 18087,
+   "quest": 152,
+   "key": "s01mq03_candle",
+   "graph": "s01/s01mq03_striga/s01mq03_candle",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124757846625354045,
+   "kind": "poi",
+   "root": "",
+   "show": "f15=-1 & f147<2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1,
+   "display": 5,
+   "timer": [
+    4,
+    900
+   ]
   },
   {
    "id": 18160,
@@ -1455,7 +1476,7 @@
    "display": 1
   },
   {
-   "id": 18166,
+   "id": 452,
    "quest": 154,
    "key": "s01mq06_thorstein",
    "graph": "s01/s01mq06_frightener/s01mq06_thorstein",
@@ -1463,7 +1484,7 @@
    "instance": 5124756128638435780,
    "kind": "poi",
    "root": "",
-   "show": "f61>=2 & f124<1",
+   "show": "f70>=6 & f124<1 | f61>=2 & f124<1",
    "min": 150,
    "max": 500,
    "near": null,
@@ -1480,13 +1501,34 @@
    "instance": 5124760000000018167,
    "kind": "poi",
    "root": "",
-   "show": "f61>=2 & f124>=1",
+   "show": "f61>=2 & f124>=1 | f59=2 & f124>=1",
    "min": 250,
    "max": 700,
    "near": null,
    "placeOf": "s01mq06_vogt",
    "copies": 1,
    "display": 1
+  },
+  {
+   "id": 18168,
+   "quest": 154,
+   "key": "s01mq06_timer",
+   "graph": "s01/s01mq06_frightener/s01mq06_timer",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/empty.asset",
+   "instance": 5124756162998174117,
+   "kind": "poi",
+   "root": "",
+   "show": "f27=-4 & f61<2",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": null,
+   "copies": 1,
+   "display": 5,
+   "timer": [
+    6,
+    86400
+   ]
   }
  ],
  "outputs": [
@@ -3559,7 +3601,7 @@
   },
   {
    "id": 1201,
-   "node": 18084,
+   "node": 316,
    "name": "thorstein",
    "endpoint": false,
    "exp": 0,
@@ -3701,6 +3743,36 @@
      "8": 1
     }
    },
+   "kills": {}
+  },
+  {
+   "id": 1277,
+   "node": 18087,
+   "name": "candle_01",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1278,
+   "node": 18087,
+   "name": "candle_02",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1279,
+   "node": 18087,
+   "name": "candle_03",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
    "kills": {}
   },
   {
@@ -4239,7 +4311,7 @@
   },
   {
    "id": 1268,
-   "node": 18166,
+   "node": 452,
    "name": "thorstein_shop",
    "endpoint": false,
    "exp": 0,
@@ -4324,6 +4396,36 @@
    "endpoint": true,
    "exp": 2000,
    "gold": 100,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1280,
+   "node": 18168,
+   "name": "fail",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1281,
+   "node": 18168,
+   "name": "to_frightener",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
+   "items": {},
+   "kills": {}
+  },
+  {
+   "id": 1282,
+   "node": 18168,
+   "name": "to_poison",
+   "endpoint": false,
+   "exp": 0,
+   "gold": 0,
    "items": {},
    "kills": {}
   }
@@ -5424,6 +5526,75 @@
    ],
    [
     "s01mq03_lair",
+    "candle_01",
+    {
+     "15": -1
+    },
+    [
+     "s01mq03_lair",
+     "s01mq03_candle"
+    ]
+   ],
+   [
+    "s01mq03_candle",
+    "candle_01",
+    {
+     "15": 0,
+     "26": 2,
+     "194": 0
+    },
+    [
+     "s01mq03_lair"
+    ]
+   ],
+   [
+    "s01mq03_lair",
+    "candle_02",
+    {
+     "15": -1
+    },
+    [
+     "s01mq03_lair",
+     "s01mq03_candle"
+    ]
+   ],
+   [
+    "s01mq03_candle",
+    "candle_02",
+    {
+     "15": 0,
+     "26": 3,
+     "194": 0
+    },
+    [
+     "s01mq03_lair"
+    ]
+   ],
+   [
+    "s01mq03_lair",
+    "candle_03",
+    {
+     "15": -1
+    },
+    [
+     "s01mq03_lair",
+     "s01mq03_candle"
+    ]
+   ],
+   [
+    "s01mq03_candle",
+    "candle_03",
+    {
+     "15": 0,
+     "26": -7,
+     "194": 0
+    },
+    [
+     "s01mq03_lair"
+    ]
+   ],
+   [
+    "s01mq03_lair",
     "curse_lifted",
     {
      "55": 5,
@@ -5536,7 +5707,7 @@
    ],
    [
     "s01mq06_vogt_end",
-    "full_reward",
+    "reward",
     {
      "166": 1
     },

@@ -4,12 +4,14 @@ namespace WitcherRevival.Server.Net;
 
 /// <summary>
 /// The reward tables a Tuning preset carries (the dashboard's Rewards page): what each quest ending pays, the items a
-/// daily task adds to its gold, and the level-up rewards. Revival and Vanilla are built in; a player's own preset keeps a
-/// copy in world/presets. Vanilla is the original game as the wiki records it (v1.1 quest infoboxes, the pre-1.2 level
-/// table); Revival is this project's rebalance for casual play.
+/// daily task adds to its gold, the level-up rewards, what a pack holds and the shop's prices. Revival and Vanilla are built
+/// in; a player's own preset keeps a copy in world/presets. Vanilla is the original game as the wiki records it (v1.1 quest
+/// infoboxes, the pre-1.2 level table, the shop's community prices); Revival is this project's rebalance for casual play.
+/// A preset saved before packs and prices existed gets Revival's (Complete).
 /// </summary>
 public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests, int DailyItems, RewardTables.PoolItem[] DailyPool,
-    Dictionary<int, RewardTables.Level> Levels)
+    Dictionary<int, RewardTables.Level> Levels, Dictionary<int, int>? Prices = null, int PackDraws = 0,
+    RewardTables.PackItem[]? PackPool = null)
 {
     public sealed record Item(string Kind, int Id, int Amount);
 
@@ -21,6 +23,9 @@ public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests,
     }
 
     public sealed record PoolItem(string Kind, int Id, int Weight, int MinLevel = 1);
+
+    /// <summary>A row of a pack's draw table: [Min]-[Max] of the item, [Weight] against the other rows.</summary>
+    public sealed record PackItem(string Kind, int Id, int Weight, int Min, int Max);
 
     public sealed record Level(int Gold, Item[] Items);
 
@@ -100,7 +105,10 @@ public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests,
             var o = StoryEngine.Outputs.First(o => KeyOf(o) == key);
             quests[key] = new Quest(o.Exp, o.Gold, ItemsOf(o.Items));
         }
-        return new RewardTables(quests, 0, RevivalPool, VanillaLevels());
+        // The game's own description of the herbalist's pack: "random quantities of herbs or roots".
+        PackItem[] pack = [new(ItemKinds.Ingredients, Economy.Herba, 1, 3, 6), new(ItemKinds.Ingredients, Economy.Radix, 1, 2, 4)];
+        return new RewardTables(quests, 0, RevivalPool, VanillaLevels(),
+            Economy.Bundles.Where(b => b.InAppPrice is null).ToDictionary(b => b.Id, b => b.GoldPrice), 1, pack);
     }
 
     private static Item[] ItemsOf(Dictionary<string, Dictionary<int, int>>? items) =>
@@ -138,8 +146,43 @@ public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests,
         Set(new(1500, 250, Same("s01mq03_armor.armor")), "s01mq03_armor.armor");
         Set(new(3000, 500, [I(ItemKinds.SummoningScrolls, SummonScrolls.Legendary)]),
             Groups.Single(g => g.Quest == "Intruder").Keys);
-        return new RewardTables(q, 1, RevivalPool, RevivalLevels());
+        return new RewardTables(q, 1, RevivalPool, RevivalLevels(), RevivalPrices(), 3, RevivalPack());
     }
+
+    // Packs (2026-10-23 maintainer review): roots most often, the crafting bottleneck (a herb bush gives one 1 time in 3),
+    // then herbs and powdered tissue, and the remains of a family now and then (about 1 pack in 4).
+    private static PackItem[] RevivalPack() =>
+    [
+        new(ItemKinds.Ingredients, Economy.Radix, 50, 2, 4), new(ItemKinds.Ingredients, Economy.Herba, 25, 2, 4),
+        new(ItemKinds.Ingredients, Economy.Tissue, 15, 2, 4),
+        .. Economy.Ingredients.Where(i => i.Family is not null).Select(i => new PackItem(ItemKinds.Ingredients, i.Id, 1, 1, 2)),
+    ];
+
+    // Shop prices (2026-10-23): Revival income is about twice the original, so consumables cost a half to two thirds
+    // (a fight kit is about a day of dailies), gear three quarters, bags half; the chests a quarter below their parts.
+    private static Dictionary<int, int> RevivalPrices() => Economy.Bundles.Where(b => b.InAppPrice is null).ToDictionary(b => b.Id,
+        b => b.Id switch
+        {
+            Economy.LittleSomething => 90, Economy.ForProfessionals => 280, Economy.ScrollsAndBombs => 400, Economy.SetOfBait => 550,
+            _ => (int)(Math.Round(b.GoldPrice * RevivalShare(b.Items[0].Type) / 5, MidpointRounding.AwayFromZero) * 5),
+        });
+
+    private static double RevivalShare(int itemType) => itemType switch
+    {
+        Economy.TypePotion or Economy.TypeSensesPotion => 2 / 3.0,
+        Economy.TypeBomb or Economy.TypeBag => 0.5,
+        Economy.TypeLure or Economy.TypeArmor or Economy.TypeSword => 0.75,
+        SummonScrolls.ItemType or Consumables.ItemType => 0.8,
+        _ => 0.6,   // oils, ingredients, stations
+    };
+
+    /// <summary>The tables with what a preset saved before 0.4.0 lacks (prices, packs) taken from Revival.</summary>
+    public RewardTables Complete() => this with
+    {
+        Prices = Prices ?? Revival.Prices,
+        PackDraws = PackPool is null ? Revival.PackDraws : PackDraws,
+        PackPool = PackPool ?? Revival.PackPool,
+    };
 
     // The daily pool: shares potions/oils/bombs 50, summoning scrolls 20, boosters 20, nest baits 10 (nemeta open at 10).
     private static PoolItem[] RevivalPool =>
@@ -203,7 +246,8 @@ public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests,
                 if (item is null || !KnownItem(item.Kind, item.Id) || item.Amount is < 1 or > 1000)
                     throw new InvalidDataException($"{where}: {item?.Kind} {item?.Id} is not an item the game knows, or its amount is not 1-1000.");
         }
-        if (t.Quests is null || t.DailyPool is null || t.Levels is null) throw new InvalidDataException("The reward tables are incomplete.");
+        if (t.Quests is null || t.DailyPool is null || t.Levels is null || t.Prices is null || t.PackPool is null)
+            throw new InvalidDataException("The reward tables are incomplete.");
         foreach (var (key, quest) in t.Quests)
         {
             if (!Keys.Contains(key) || quest is null) throw new InvalidDataException($"Unknown quest ending {key}.");
@@ -225,7 +269,22 @@ public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests,
             Items(reward.Items, $"Level {level}");
             if (reward.Items.Length == 0)
                 throw new InvalidDataException($"Level {level}: give at least one item (the game's level-up window waits for one).");
+            // A sword or an armour cannot travel with the LevelUp push: the window would show nothing and wait for good.
+            if (reward.Items.FirstOrDefault(i => !PlayerService.LevelUpKinds.Contains(i.Kind)) is { } gear)
+                throw new InvalidDataException($"Level {level}: {gear.Kind} cannot be a level-up reward (the level-up window shows only " +
+                    "potions, oils, bombs, baits, ingredients, scrolls and other consumables).");
         }
+        if (t.PackDraws is < 1 or > 5) throw new InvalidDataException("A pack makes 1-5 draws.");
+        if (t.PackPool.Length is 0 or > 64 || t.PackPool.All(row => row?.Weight is not > 0))
+            throw new InvalidDataException("A pack holds 1-64 rows, at least one with a weight.");
+        foreach (var row in t.PackPool)
+            if (row is null || Economy.TypeOf(row.Kind) is null || !KnownItem(row.Kind, row.Id) || row.Weight is < 0 or > 10_000 ||
+                row.Min < 1 || row.Max < row.Min || row.Max > 100)
+                throw new InvalidDataException($"Pack: {row?.Kind} {row?.Id} is unknown, or its weight (0-10000) or amounts (1-100, " +
+                    "the least first) are wrong.");
+        foreach (var (bundle, price) in t.Prices)
+            if (Economy.BundleById(bundle) is not { InAppPrice: null } || price is < 1 or > 100_000)
+                throw new InvalidDataException($"Shop: bundle {bundle} is not sold for orens, or its price is not 1-100000.");
     }
 
     /// <summary>[DailyItems] draws from the pool rows the player's level allows, weighted (repeats possible).</summary>
@@ -243,6 +302,27 @@ public sealed record RewardTables(Dictionary<string, RewardTables.Quest> Quests,
         return drawn;
     }
 
+    /// <summary>What [packs] packs hold: [PackDraws] weighted draws each, the same item merged into one stack, rarest first
+    /// (the lowest row weight; a gift's reply shows that one).</summary>
+    public List<Item> DrawPacks(int packs, Random random)
+    {
+        var rows = (PackPool ?? []).Where(r => r.Weight > 0 && KnownItem(r.Kind, r.Id)).ToList();
+        long total = rows.Sum(r => (long)r.Weight);
+        var drawn = new Dictionary<(string Kind, int Id), int>();
+        for (long n = 0; n < (long)packs * PackDraws && total > 0; n++)
+        {
+            long ticket = random.NextInt64(total);
+            foreach (var row in rows)
+                if ((ticket -= row.Weight) < 0)
+                {
+                    drawn[(row.Kind, row.Id)] = drawn.GetValueOrDefault((row.Kind, row.Id)) + random.Next(row.Min, row.Max + 1);
+                    break;
+                }
+        }
+        int Weight((string Kind, int Id) key) => rows.Where(r => r.Kind == key.Kind && r.Id == key.Id).Sum(r => r.Weight);
+        return drawn.OrderBy(d => Weight(d.Key)).Select(d => new Item(d.Key.Kind, d.Key.Id, d.Value)).ToList();
+    }
+
     public static RewardTables Parse(JsonElement element) =>
-        element.Deserialize<RewardTables>(Json) ?? throw new InvalidDataException("The reward tables are empty.");
+        (element.Deserialize<RewardTables>(Json) ?? throw new InvalidDataException("The reward tables are empty.")).Complete();
 }

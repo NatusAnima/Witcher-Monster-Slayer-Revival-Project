@@ -215,15 +215,27 @@ class MainActivity : Activity() {
                 }
             }
             2 -> {
+                // A running server keeps the profiles in memory and would write them back over the restored ones.
+                if (ServerService.status != "Stopped") {
+                    Toast.makeText(this, "Stop the server first, then restore", Toast.LENGTH_LONG).show()
+                    return
+                }
+                // The backup is unpacked beside the save data and checked first: a wrong or damaged file leaves the progress
+                // as it was.
+                val profiles = File(filesDir, "state/profiles")
+                val incoming = File(filesDir, "state/profiles.restore")
+                val previous = File(filesDir, "state/profiles.previous")
                 try {
+                    incoming.deleteRecursively()
+                    incoming.mkdirs()
+                    val inside = incoming.canonicalPath + File.separator
                     contentResolver.openInputStream(uri)?.use { input ->
                         java.util.zip.ZipInputStream(input).use { zin ->
-                            val profiles = File(filesDir, "state/profiles")
-                            profiles.deleteRecursively()
-                            profiles.mkdirs()
                             var entry = zin.nextEntry
                             while (entry != null) {
-                                val file = File(profiles, entry.name)
+                                val file = File(incoming, entry.name)
+                                // no entry may leave the folder ("../" or an absolute name)
+                                if (!file.canonicalPath.startsWith(inside)) throw java.io.IOException("the file holds a path outside the save data")
                                 if (entry.isDirectory) {
                                     file.mkdirs()
                                 } else {
@@ -234,10 +246,20 @@ class MainActivity : Activity() {
                                 entry = zin.nextEntry
                             }
                         }
+                    } ?: throw java.io.IOException("the file could not be opened")
+                    // every Save Data backup holds the players' index (the server's players.json)
+                    if (!File(incoming, "players.json").isFile) throw java.io.IOException("this is not a Save Data backup")
+                    previous.deleteRecursively()
+                    if (profiles.exists() && !profiles.renameTo(previous)) throw java.io.IOException("the save data could not be moved")
+                    if (!incoming.renameTo(profiles)) {
+                        previous.renameTo(profiles)
+                        throw java.io.IOException("the backup could not be put in place")
                     }
+                    previous.deleteRecursively()
                     Toast.makeText(this, "Save data restored", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    Toast.makeText(this, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    incoming.deleteRecursively()
+                    Toast.makeText(this, "Restore failed: ${e.message}; the save data is unchanged", Toast.LENGTH_LONG).show()
                 }
             }
         }

@@ -119,6 +119,69 @@ class TuningApiTests(unittest.TestCase):
         self.assertEqual(page['rewards']['quests']['s01mq01_margit_2.scholar_02']['exp'], 777)
         self.assertEqual(self.request('rewards', 'PUT', {'revision': 'stale', 'rewards': rewards})[0], 409)
 
+    def test_shop_prices_and_packs_live_in_the_preset(self):
+        page = self.request('rewards')[1]
+        revival, vanilla = page['rewards'], page['vanilla']
+        bundles = (1201, 1205, 1301, 1302, 1401, 1402, 1501, 1103, 129, 2202, 3006, 4016, 95, 99, 5003, 6003, 64, 65, 66, 67)
+        self.assertEqual([vanilla['prices'][str(b)] for b in bundles],
+                         [30, 60, 75, 150, 150, 300, 200, 50, 80, 300, 12000, 12000, 500, 4000, 150, 250, 160, 490, 675, 750])
+        self.assertEqual([revival['prices'][str(b)] for b in bundles],
+                         [20, 40, 45, 90, 75, 150, 150, 30, 50, 180, 9000, 9000, 250, 2000, 120, 200, 90, 280, 400, 550])
+        self.assertNotIn('77', revival['prices'])                                 # oren packs: real money, never orens
+        shop = {b['id']: b for b in page['catalog']['shop']}
+        self.assertEqual([(i['slug'], i['amount']) for i in shop[67]['items']],
+                         [('lure_basic', 1), ('lure_draconid', 1), ('lure_necrophage', 1), ('lure_ogroid', 1), ('lure_specter', 1)])
+        # every chest costs less than its parts, in both presets (herbs and roots at Fresh herbs' price)
+        single = {b['items'][0]['slug']: b for b in shop.values() if len(b['items']) == 1}
+        for table in (revival, vanilla):
+            price = lambda bundle: table['prices'][str(bundle)]
+            for chest in (64, 65, 66, 67):
+                parts = sum(price(129) * i['amount'] / 15 if i['slug'] in ('ingredient_herba', 'ingredient_radix') else
+                            price(single[i['slug']]['id']) * i['amount'] / single[i['slug']]['items'][0]['amount']
+                            for i in shop[chest]['items'])
+                self.assertLess(price(chest), parts * 0.8, chest)
+        self.assertEqual((revival['packDraws'], vanilla['packDraws']), (3, 1))
+        self.assertEqual(revival['packPool'][0], {'kind': 'ingredients', 'id': 102, 'weight': 50, 'min': 2, 'max': 4})
+        discount = next(d for d in self.request('tuning')[1]['definitions'] if d['key'] == 'shop.dailyDiscount')
+        self.assertEqual((discount['default'], discount['vanilla']), (40, 25))
+        for change, word in (({'prices': dict(revival['prices'], **{'77': 10})}, 'bundle 77'),
+                             ({'prices': dict(revival['prices'], **{'1205': 0})}, 'bundle 1205'),
+                             ({'packDraws': 0}, 'draws'),
+                             ({'packPool': [{'kind': 'swords', 'id': 1, 'weight': 1, 'min': 1, 'max': 1}]}, 'swords 1'),
+                             ({'packPool': [{'kind': 'ingredients', 'id': 102, 'weight': 1, 'min': 3, 'max': 2}]}, 'ingredients 102')):
+            with self.subTest(word=word):
+                status, refused = self.request('rewards', 'PUT', {'revision': page['revision'], 'rewards': dict(revival, **change)})
+                self.assertEqual(status, 400)
+                self.assertIn(word, refused['error'])
+        # A purchase costs what the game was shown when the server started: a new price waits for the next start.
+        client, profile = self.profile()
+        client.close()
+        self.server.stop()
+        path = self.directory / 'profiles' / (profile + '.json')
+        saved = json.loads(path.read_text()); saved['Player']['Gold'] = 1000; path.write_text(json.dumps(saved))
+        self.restart()
+        client = self.profile()[0]
+        self.assertEqual(client.rpc(75, admin.I(129) + admin.Q(1)), b'\1' + admin.I(129) + admin.I(950))   # Fresh herbs: 50
+        page = self.request('rewards')[1]
+        status, _ = self.request('rewards', 'PUT', {'revision': page['revision'],
+                                                    'rewards': dict(page['rewards'], prices=dict(page['rewards']['prices'], **{'129': 33}))})
+        self.assertEqual(status, 200)
+        self.assertEqual(client.rpc(75, admin.I(129) + admin.Q(2)), b'\1' + admin.I(129) + admin.I(900))
+        client.close()
+        self.restart()
+        client = self.profile()[0]
+        self.assertEqual(client.rpc(75, admin.I(129) + admin.Q(3)), b'\1' + admin.I(129) + admin.I(867))
+        client.close()
+        # a preset saved before 0.4.0 has no prices or packs: it gets Revival's
+        self.server.stop()
+        file = self.world / 'presets' / 'custom.json'
+        preset = json.loads(file.read_text())
+        for key in ('prices', 'packDraws', 'packPool'): del preset['rewards'][key]
+        file.write_text(json.dumps(preset))
+        self.restart()
+        page = self.request('rewards')[1]
+        self.assertEqual((page['preset'], page['rewards']['prices'], page['rewards']['packDraws']), ('custom', revival['prices'], 3))
+
     def test_real_weather_can_be_turned_off(self):
         asked = []
         class Weather(http.server.BaseHTTPRequestHandler):

@@ -88,6 +88,22 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
                         else log.LogInformation("Approved transport authenticated session={Session}", sessionId);
                     }
                     else if (player is null && (boundProfile is not null || f.Type != Ch_StaticGameData)) throw new InvalidDataException("Authentication is required for this session.");
+                    if (f.Type == Ch_Api && player is not null && BesideQueue(f))
+                    {
+                        // The map's cells (GetLocationsByCell 40, GetMonsterInstances 87) ask the placement service, which can
+                        // take seconds on a phone: they are answered beside the queue, so an encounter or a fight's start behind
+                        // them does not wait (the client matches answers by request id; FrameCodec writes each frame whole).
+                        var (service, session) = (player, movementSession);
+                        _ = Task.Run(async () =>
+                        {
+                            try { await service.HandleApiAsync(stream, f, ct, session); }
+                            catch (Exception ex) when (ex is not OperationCanceledException)
+                            {
+                                log.LogWarning("Map request beside the queue failed: {ErrorType}", ex.GetType().Name);
+                            }
+                        }, ct);
+                        continue;
+                    }
                     await DispatchAsync(stream, f, player, movementSession, transportStaticUrl, ct);
                 }
             }
@@ -97,6 +113,14 @@ public sealed class GameSocketService(ILogger<GameSocketService> log, IConfigura
             log.LogWarning("Local session closed: {ErrorType}", ex.GetType().Name);
         }
         finally { player?.ReleaseMovementSession(movementSession); profileLease?.Dispose(); log.LogInformation("Client disconnected: {EP} session={Session}", ep, sessionId); }
+    }
+
+    /// <summary>Read-only map lookups answered beside the queue (HandleSessionAsync); a frame that does not parse stays in it,
+    /// where it is answered or refused as before.</summary>
+    private static bool BesideQueue(Frame f)
+    {
+        try { return ApiProtocol.Parse(f.Data).Method is 40 or 87; }
+        catch (Exception) { return false; }
     }
 
     // Outer channel type bytes, confirmed from ApiBuilder.CreateHandler key registrations.
