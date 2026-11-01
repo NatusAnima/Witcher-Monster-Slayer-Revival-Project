@@ -103,8 +103,7 @@ class AuraTests(base.PrototypeTests):
 
     def test_aura_native_catalogue_powers_and_configuration_bounds(self):
         for overrides, interval in [({},3600),
-                ({'Reconstruction__WitcherAuraIntervalSeconds':'900',
-                  'Reconstruction__WitcherAuraLifetimeSeconds':'600'},900)]:
+                (self.tuned(**{'skills.auraIntervalMinutes': 15, 'skills.auraLifetimeMinutes': 10}),900)]:
             server, client, _, _ = self.boot(name='catalogue-'+str(interval), overrides=overrides)
             with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/staticdata') as response:
                 data = json.loads(gzip.decompress(response.read()))
@@ -117,11 +116,7 @@ class AuraTests(base.PrototypeTests):
             groups = self.groups(client.rpc(111,self.PAYLOAD),True)
             self.assertEqual(groups[0]['end']-groups[0]['start'], 3600 if interval == 3600 else 600)
             server.stop()
-        for bad in [dict(Reconstruction__WitcherAuraIntervalSeconds='299'),
-                    dict(Reconstruction__WitcherAuraLifetimeSeconds='86401'),
-                    dict(Reconstruction__WitcherAuraIntervalSeconds='300')]:
-            with self.assertRaisesRegex(RuntimeError,'WitcherAura'):
-                base.Server(self.directory,'bad-aura',bad)
+        # The bounds are the Tuning page's (test_tuning): it refuses an aura outside 5-1440 minutes or longer than its interval.
 
     def test_aura_refuses_missing_or_remote_geometry_and_wrong_skill_without_mutation(self):
         server, client, env, requests = self.boot(mapped=False)

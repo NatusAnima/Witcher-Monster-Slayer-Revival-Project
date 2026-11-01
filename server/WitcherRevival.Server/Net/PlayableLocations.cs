@@ -199,6 +199,34 @@ public sealed class PlayableLocations
         }
     }
 
+    // A walk is worked out over the roads within reach (playable_locations.walking_metres): a second or two on a phone.
+    private static readonly HttpClient WalkHttp = new() { Timeout = TimeSpan.FromSeconds(20) };
+
+    /// <summary>Metres walked along the roads and paths from a point to each place (null for one farther than limit or off the
+    /// network), or null when the service cannot tell (off, unreachable, or from before walking distances).</summary>
+    public IReadOnlyList<double?>? Walk(double lat, double lng, IReadOnlyList<Place> places, double limit)
+    {
+        if (_url is null || places.Count is 0 or > 1024) return null;
+        try
+        {
+            string body = JsonSerializer.Serialize(new { from = new[] { lat, lng }, to = places.Select(p => new[] { p.Lat, p.Lng }), limit });
+            using var request = new HttpRequestMessage(HttpMethod.Post, _url + "/walk")
+                { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
+            using var response = WalkHttp.Send(request);
+            if (!response.IsSuccessStatusCode) return null;
+            using var stream = response.Content.ReadAsStream();
+            using var json = JsonDocument.Parse(stream);
+            var metres = json.RootElement.GetProperty("metres").EnumerateArray()
+                .Select(m => m.ValueKind == JsonValueKind.Null ? (double?)null : m.GetDouble()).ToList();
+            return metres.Count == places.Count ? metres : null;
+        }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or
+                                  KeyNotFoundException or InvalidOperationException or FormatException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>Metres between two points (equirectangular; exact enough within a few kilometres).</summary>
     public static double Distance(double lat1, double lng1, double lat2, double lng2)
     {

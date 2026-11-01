@@ -4,7 +4,7 @@
 // It imports the GPS collector and Frida's Java bridge, so restart.py bundles it before pushing it.
 'use strict';
 import Java from 'frida-java-bridge';
-import { startGps } from './gps.js';
+import { startGps, customRequest, onServerPush } from './gps.js';
 
 const CONFIG = {
   gameHost: '127.0.0.1',  // IPv4 literal of the server, as the phone reaches it
@@ -194,6 +194,39 @@ const RVA = {
   tracked_quest: 0x19a5aa8,         // StoryModule.SetTrackedQuest(int questId, bool manualToggle)
   fact_requirement: 0x1962d3c,      // FactRequirementNode.HasDesiredValue: Node.graph +0x20, FactRequirement +0x48 (Value
                                     // +0x10, Operator +0x14: Equal 0 … LowerThan 4, FactId +0x18)
+  skill_learn_refresh: 0x19ecf6c,   // SkillLearnPanel.Refresh(SkillSlot slot, bool isHighest, int cost): the skill details'
+                                    // button (_learnButton +0x18, _buttonText +0x30); SkillSlot.CurrentLevel +0x100 (-1 not
+                                    // learned); isHighest: no upgrade left (the button hides); SkillSlot.BaseSkill +0x108,
+                                    // Skill.IsStartingSkill +0x80
+  object_instantiate: 0x290f758,    // UnityEngine.Object.Instantiate(Object original, Transform parent)
+  object_set_name: 0x290f010,       // UnityEngine.Object.set_name
+  game_object_active_self: 0x23fddd0,  // UnityEngine.GameObject.get_activeSelf
+  button_pointer_click: 0x1e15f6c,  // UnityEngine.UI.Button.OnPointerClick(PointerEventData): a button's tap
+  // The skill tree redraws itself only when shown, a skill is learnt or an upgrade bought, not on PlayerSkills' sync
+  skill_tree_show: 0x19f25d0,       // SkillTreePanel.Show(data): RefreshDisplayers, RefreshSkillSlots
+  skill_tree_close: 0x19f2898,      // SkillTreePanel.Close
+  skill_tree_points: 0x19f2444,     // SkillTreePanel.RefreshDisplayers: the skill points shown
+  skill_tree_slots: 0x19f278c,      // SkillTreePanel.RefreshSkillSlots: each slot's level
+  skill_slot_level: 0x19edfd4,      // SkillSlot.CheckCurrentLevel: raises CurrentLevel (+0x100) to the chain's highest
+                                    // owned skill, never lowers it
+  skill_details_load: 0x1834d24,    // SkillDetailsWindow.LoadData(data)
+  skill_details_cleanup: 0x18352c4, // SkillDetailsWindow.CleanUp
+  skill_details_refresh: 0x1834d60, // SkillDetailsWindow.RefreshVisuals: its level and learn panel (SkillLearnPanel.Refresh)
+  player_skills_synced: 0x1a14210,  // PlayerSkills.OnGetSkillsResponse: the game's skills and points from GetSkills (63)
+  send_response: 0x187bf5c,         // ResponsePropagator.SendResponse<object>(T data, TypeMessage): every answer and push
+  // SwordStatistics: _performedParries +0x14 (CombatDetails Parries, 2), _performedDeflects +0x1C (Deflects, 3)
+  sword_deflects: 0x193c37c,        // SwordStatistics.IncreaseDeflectsCounter: a blow deflected (Hit Reflection)
+  sword_perfect_parries: 0x193c39c, // SwordStatistics.IncreasePerfectParriesCounter (parries are +0x14)
+  level_up_events: 0x1a06758,       // LevelUpEventsManager.OnLevelUp(LevelUpResponse): Level +0x10; the window's event
+  // PlayerSetup.GetEndPoints' closures (+0x10 the player): a blow takes the first end point whose condition holds, Quen first
+  quen_condition: 0x18bb734,        // <GetEndPoints>b__0: the shield is up (Player +0xE8); its end point (b__1) breaks it
+  perfect_parry_condition: 0x18bbe20,  // <GetEndPoints>b__12: the perfect parry window (the sword module's +0xA8)
+  selectable_interactable: 0x23de3c0,  // UnityEngine.UI.Selectable.set_interactable(bool)
+  // BaseWinWindow<object> (RegularWinWindow and NestWinWindow, the won fight's summary): _encounterTime row +0x108, _data
+  // +0x140 (CombatWinData.Rewards +0x20: Gold +0x20, TimeExp +0x2C), _totalExp +0x154
+  win_build_exp: 0x1ad86b4,         // BaseWinWindow.BuildExpTable: a row for each experience above 0
+  win_row_shown: 0x1ad91f8,         // BaseWinWindow.OnXpRowShow(IRewardElement): adds the row's Experience to _totalExp
+  xp_row_text: 0x17ce5f8,           // XPRewardText.UpdateText: value (+0x18) = Experience (+0x28) + " " + COMMON/XP
 };
 const callbacks = [];  // NativeCallbacks given to Interceptor.replace, kept from the garbage collector
 
@@ -276,20 +309,34 @@ function install(m) {
   // AstroConditionNode.condition (+0x44: full moon 0, sunrise 1, sunset 2, day 3). The game gets the plain code back, and
   // its quests see that sky until a plain code comes; without one they see the phone's own.
   stage('quest sky', () => {
-    let sky = -1;
+    const sky = Memory.alloc(4);   // the mask, read by the C hook below; -1 while the phone's own sky holds
+    sky.writeS32(-1);
     Interceptor.attach(m.base.add(RVA.weather_response), {
       onLeave(reply) {
         if (reply.isNull()) return;
         const code = reply.add(0x10).readS32();
         const mask = code >= 16 ? (code >> 4) - 1 : -1;
-        if (mask !== sky) log('quest sky', mask < 0 ? 'as on the phone' : 'mask ' + mask);
-        sky = mask;
+        if (mask !== sky.readS32()) log('quest sky', mask < 0 ? 'as on the phone' : 'mask ' + mask);
+        sky.writeS32(mask);
         if (mask >= 0) reply.add(0x10).writeS32(code & 15);
       },
     });
-    Interceptor.attach(m.base.add(RVA.astro_condition), {
+    // The quest graphs ask every frame while they run
+    fastHook('quest sky', m.base.add(RVA.astro_condition), `
+      #include <gum/guminterceptor.h>
+      extern volatile int sky;
+      typedef struct { char * node; } State;
+      void onEnter (GumInvocationContext * ic) {
+        GUM_IC_GET_INVOCATION_DATA (ic, State)->node = gum_invocation_context_get_nth_argument (ic, 0);
+      }
+      void onLeave (GumInvocationContext * ic) {
+        int mask = sky;
+        if (mask < 0) return;
+        int condition = *(int *) (GUM_IC_GET_INVOCATION_DATA (ic, State)->node + 0x44);
+        gum_invocation_context_replace_return_value (ic, (void *) (gsize) ((mask >> condition) & 1));
+      }`, { sky }, {
       onEnter(args) { this.node = args[0]; },
-      onLeave(result) { if (sky >= 0) result.replace(ptr((sky >> this.node.add(0x44).readS32()) & 1)); },
+      onLeave(result) { if (sky.readS32() >= 0) result.replace(ptr((sky.readS32() >> this.node.add(0x44).readS32()) & 1)); },
     });
   });
 
@@ -385,16 +432,18 @@ function install(m) {
       };
       // ConnectionHandler.Tick asks every frame
       const noNetwork = new NativeCallback(() => once('no network on the phone', '-> local network'), 'void', []);
-      callbacks.push(noNetwork);
+      const noNetworkSaid = Memory.alloc(4);
+      noNetworkSaid.writeS32(0);
+      callbacks.push(noNetwork, noNetworkSaid);
       fastHook('reachability', m.base.add(RVA.internet_reachability), `
         #include <gum/guminterceptor.h>
         extern void no_network (void);
-        static int said;
+        extern volatile int said;   /* in JS memory: a CModule's static variables are read-only */
         void onLeave (GumInvocationContext * ic) {
           if (gum_invocation_context_get_return_value (ic) != 0) return;
           gum_invocation_context_replace_return_value (ic, (void *) 2);
           if (!said) { said = 1; no_network (); }
-        }`, { no_network: noNetwork }, {
+        }`, { no_network: noNetwork, said: noNetworkSaid }, {
         onLeave(ret) {
           if (ret.toInt32() !== 0) return;
           once('no network on the phone', '-> local network');
@@ -557,10 +606,23 @@ function install(m) {
       // and stopped the candles. A collecting find or a timed node (Collecting 7, Auto 5) of a started quest shows anyway.
       whenSettings(() => {
         if (!SETTINGS['quests.collectingUntracked']) return;
-        Interceptor.attach(m.base.add(RVA.quest_poi_instantiate), {
+        // In C: the map asks for every quest place, every frame
+        fastHook('collecting finds', m.base.add(RVA.quest_poi_instantiate), `
+          #include <gum/guminterceptor.h>
+          typedef struct { char * poi; } State;
+          void onEnter (GumInvocationContext * ic) {
+            GUM_IC_GET_INVOCATION_DATA (ic, State)->poi = gum_invocation_context_get_nth_argument (ic, 0);
+          }
+          void onLeave (GumInvocationContext * ic) {
+            if (((gsize) gum_invocation_context_get_return_value (ic) & 0xff) != 0) return;   // a bool
+            char * poi = GUM_IC_GET_INVOCATION_DATA (ic, State)->poi;
+            int display = *(int *) (poi + 0x60);
+            if ((display == 5 || display == 7) && poi[0x58] == 0 && poi[0x59] == 0)
+              gum_invocation_context_replace_return_value (ic, (void *) 1);
+          }`, {}, {
           onEnter(args) { this.poi = args[0]; },
           onLeave(shown) {
-            if (shown.toInt32() !== 0) return;
+            if ((shown.toInt32() & 0xff) !== 0) return;
             const display = this.poi.add(0x60).readS32();
             if ((display === 5 || display === 7) && this.poi.add(0x58).readU8() === 0 && this.poi.add(0x59).readU8() === 0)
               shown.replace(ptr(1));
@@ -573,21 +635,37 @@ function install(m) {
       whenSettings(() => {
         if (!SETTINGS['quests.intruderAllEndings']) return;
         const seen = new Set();
-        Interceptor.attach(m.base.add(RVA.fact_requirement), {
+        const rewrite = (node, requirement) => {   // a requirement "fact 33 = 0"
+          const graph = node.add(0x20).readPointer();
+          const name = graph.isNull() ? null : read(objectName(graph, NULL));
+          if (!(name || '').startsWith('s01mq06_vogt_02')) {   // a copy of the graph is named "…(Clone)"
+            if (!seen.has(name)) log('intruder: f33 = 0 asked in', name, '(kept)');
+            seen.add(name);
+            return;
+          }
+          requirement.add(0x14).writeS32(4);   // LowerThan
+          requirement.add(0x10).writeS32(2);
+          log('intruder: the ending reads f33 < 2');
+        };
+        const onRequirement = new NativeCallback((node, requirement) => {
+          try { rewrite(node, requirement); } catch (e) { log('intruder:', e.message); }
+        }, 'void', ['pointer', 'pointer']);
+        callbacks.push(onRequirement);
+        // In C: every running quest graph checks its facts, every frame; only "33 = 0" reaches JS
+        fastHook('intruder endings', m.base.add(RVA.fact_requirement), `
+          #include <gum/guminterceptor.h>
+          extern void on_requirement (void * node, void * requirement);
+          void onEnter (GumInvocationContext * ic) {
+            char * node = gum_invocation_context_get_nth_argument (ic, 0);
+            char * r = *(char **) (node + 0x48);
+            if (r == 0 || *(int *) (r + 0x18) != 33 || *(int *) (r + 0x14) != 0 || *(int *) (r + 0x10) != 0) return;
+            on_requirement (node, r);
+          }`, { on_requirement: onRequirement }, {
           onEnter(args) {
             const requirement = args[0].add(0x48).readPointer();
             if (requirement.isNull() || requirement.add(0x18).readS32() !== 33 || requirement.add(0x14).readS32() !== 0 ||
                 requirement.add(0x10).readS32() !== 0) return;
-            const graph = args[0].add(0x20).readPointer();
-            const name = graph.isNull() ? null : read(objectName(graph, NULL));
-            if (!(name || '').startsWith('s01mq06_vogt_02')) {   // a copy of the graph is named "…(Clone)"
-              if (!seen.has(name)) log('intruder: f33 = 0 asked in', name, '(kept)');
-              seen.add(name);
-              return;
-            }
-            requirement.add(0x14).writeS32(4);   // LowerThan
-            requirement.add(0x10).writeS32(2);
-            log('intruder: the ending reads f33 < 2');
+            rewrite(args[0], requirement);
           },
         });
       });
@@ -637,12 +715,12 @@ function install(m) {
       callbacks.push(onKey);
       fastHook('asset keys', locate, `
         #include <gum/guminterceptor.h>
-        extern void * string_class;
+        extern char string_class[];   // a symbol is an address: as an array, string_class is the class itself
         extern unsigned short suffix[];
         extern void * on_key (void * key);
         void onEnter (GumInvocationContext * ic) {
           void * key = gum_invocation_context_get_nth_argument (ic, 1);
-          if (key == 0 || *(void **) key != string_class) return;
+          if (key == 0 || *(void **) key != (void *) string_class) return;
           int n = *(int *) ((char *) key + 0x10), length = ${ending.length};
           if (n < length) return;
           unsigned short * chars = (unsigned short *) ((char *) key + 0x14) + (n - length);
@@ -657,8 +735,16 @@ function install(m) {
     stage('texts', () => {
       const languageCode = new NativeFunction(m.base.add(RVA.current_language_code), 'pointer', ['pointer']);
       language = () => (read(languageCode(NULL)) || 'en').toLowerCase().split('-')[0];
+      // GetTranslation(Term, FixForRTL, maxLineLengthForRTL, ignoreRTLnumbers, applyParameters, localParametersRoot,
+      // overrideLanguage): an alias's text is the game's own term's, in the player's language
+      const translate = new NativeFunction(m.base.add(RVA.get_translation), 'pointer',
+        ['pointer', 'int', 'int', 'int', 'int', 'pointer', 'pointer', 'pointer']);
       const answer = (term, text) => {
         const found = term && TEXTS.get((packWindow && PACK_TERMS[term]) || term);
+        if (found && found.alias !== undefined) {
+          const own = translate(str(found.alias), 1, 0, 1, 0, NULL, NULL, NULL);
+          return own.isNull() ? null : own;
+        }
         return found ? str(found.replace !== undefined ? pick(found.replace) : (read(text) || '') + pick(found.append)) : null;
       };
       const onTerm = new NativeCallback((term, text) => {
@@ -702,9 +788,12 @@ function install(m) {
     // borrow an original one: the trinkets' attack bonuses (921-926) the blacksmith's sword (1), the debug tools'
     // invincibility (901) Maiden's Skin (16) and one-hit kills (902) Dead Honey (18).
     stage('effect icons', () => {
-      const borrow = (id) => (id >= 921 && id <= 926 ? 1 : id === 901 ? 16 : id === 902 ? 18 : 0);
+      // and the lasting potions (LastingEffects: 10000 + the potion's id) Maiden's Skin's, the lasting oils the sword's
+      const borrow = (id) => (id >= 921 && id <= 926 ? 1 : id === 901 ? 16 : id === 902 ? 18 :
+        id >= 10200 && id < 10300 ? 16 : id >= 10300 && id < 10400 ? 1 : 0);
       let presets = null;  // modifier id -> its ModifierGUIPreset
-      Interceptor.attach(m.base.add(RVA.modifiers_gui_update), {
+      // The panel updates every frame: once the presets are read, the listener goes
+      const update = Interceptor.attach(m.base.add(RVA.modifiers_gui_update), {
         onEnter(args) {
           if (presets) return;
           const settings = args[0].add(0x20).readPointer();
@@ -716,6 +805,7 @@ function install(m) {
             const preset = items.add(0x20 + i * 8).readPointer();
             if (!preset.isNull()) presets[preset.add(0x10).readS32()] = preset;   // ModifierId; Icon +0x18, Frame +0x20
           }
+          setTimeout(() => update.detach(), 0);
         },
       });
       Interceptor.attach(m.base.add(RVA.modifier_slot_init), {
@@ -947,6 +1037,262 @@ function install(m) {
         },
       });
     });
+    // Tuning skills.reset: the details of a learned skill (SkillSlot.CurrentLevel +0x100 from 0) get a Reset skills button
+    // under Learn/Upgrade: a copy of the Learn Button (RESET_BUTTON) in the Learn Panel's vertical layout, made once per panel.
+    // A maxed skill (isHighest): Refresh ends with gameObject.SetActive(!isHighest), hiding the whole Learn Panel and the
+    // copy with it, so the panel is shown again with only the copy; the children hidden for it are shown again (by name)
+    // before the next Refresh, which then shows and hides its own as it does.
+    // The prefab saves no click listeners, so the copy has none of Learn's; its first tap asks to be sure, the second sends
+    // ResetSkills (2002) through gps.js customRequest, and the server pushes the skills and points back (GetSkills). One tap can
+    // reach OnPointerClick twice, so a second one within half a second is the same tap. Once the game has the skills back,
+    // the skill tree and the open details are redrawn: neither does it on PlayerSkills' sync.
+    stage('reset skills', () => whenSettings(() => {
+      if (!SETTINGS['skills.reset']) return;
+      const fn = (rva, ret, args) => new NativeFunction(m.base.add(rva), ret, args);
+      const setActive = fn(RVA.game_object_set_active, 'void', ['pointer', 'bool', 'pointer']);
+      const gameObjectOf = fn(RVA.component_game_object, 'pointer', ['pointer', 'pointer']);
+      const transformOf = fn(RVA.component_transform, 'pointer', ['pointer', 'pointer']);
+      const objectTransform = fn(RVA.game_object_transform, 'pointer', ['pointer', 'pointer']);
+      const find = fn(RVA.transform_find, 'pointer', ['pointer', 'pointer', 'pointer']);
+      const instantiate = fn(RVA.object_instantiate, 'pointer', ['pointer', 'pointer', 'pointer']);
+      const setName = fn(RVA.object_set_name, 'void', ['pointer', 'pointer', 'pointer']);
+      const objectName = fn(RVA.object_name, 'pointer', ['pointer', 'pointer']);
+      const componentNamed = fn(RVA.game_object_component_by_name, 'pointer', ['pointer', 'pointer', 'pointer']);
+      const setInteractable = fn(RVA.selectable_interactable, 'void', ['pointer', 'bool', 'pointer']);
+      const setText = fn(RVA.tmp_set_text, 'void', ['pointer', 'pointer', 'pointer']);
+      const childCount = fn(RVA.transform_child_count, 'int', ['pointer', 'pointer']);
+      const childAt = fn(RVA.transform_get_child, 'pointer', ['pointer', 'int', 'pointer']);
+      const activeSelf = fn(RVA.game_object_active_self, 'uint8', ['pointer', 'pointer']);
+      const word = (term) => TEXTS.get(term) && pick(TEXTS.get(term).replace);
+      // a transform's children, as their GameObjects
+      const children = (transform) => Array.from({ length: childCount(transform, NULL) },
+        (_, i) => gameObjectOf(childAt(transform, i, NULL), NULL));
+      const hidden = new Map();   // a Learn Panel (its address) -> the names of the children hidden for a maxed skill
+      // the button's label: its Cost Amount text, as the Learn Button's
+      const labelOf = (component) => {
+        const cost = find(transformOf(component, NULL), str('Cost Amount'), NULL);
+        return cost.isNull() ? NULL : componentNamed(gameObjectOf(cost, NULL), str('TextMeshProUGUI'), NULL);
+      };
+      const refreshPoints = fn(RVA.skill_tree_points, 'void', ['pointer', 'pointer']);
+      const refreshSlots = fn(RVA.skill_tree_slots, 'void', ['pointer', 'pointer']);
+      const refreshDetails = fn(RVA.skill_details_refresh, 'void', ['pointer', 'pointer']);
+      let sure = false, tapped = 0;    // the first tap asked to be sure; the last tap taken (ms)
+      let refunded = 0;                 // when the server said done (ms)
+      let tree = null, details = null;  // the skill tree and the skill details while they show
+      // A slot's level only ever went up, so after a reset the tree kept the old levels (and the game would not learn
+      // those skills again) until the game restarted: each check starts from -1 (not learned). The slots checked since
+      // the tree opened are kept, for the redraw below, which runs from a hook and so fires no hook of its own.
+      const slots = new Set();
+      Interceptor.attach(m.base.add(RVA.skill_tree_show), { onEnter(args) { tree = args[0]; slots.clear(); } });
+      Interceptor.attach(m.base.add(RVA.skill_tree_close), { onEnter() { tree = null; slots.clear(); } });
+      Interceptor.attach(m.base.add(RVA.skill_slot_level), {
+        onEnter(args) {
+          args[0].add(0x100).writeS32(-1);
+          if (tree !== null) slots.add(args[0].toString());
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.skill_details_load), { onEnter(args) { details = args[0]; } });
+      Interceptor.attach(m.base.add(RVA.skill_details_cleanup), { onEnter() { details = null; } });
+      // PlayerSkills (and PlayerData) take GetSkills only from the start-up sync (ISynchronizer.Synchronize replays the boot
+      // batch's answer once); nothing listens for a later one, so a pushed GetSkills (the reset's, the debug tools') never
+      // reached the game until its next start. The start-up message (MethodMessage: Data +0x20) is kept, and a pushed
+      // GetSkills answer (the same class) goes into it and through PlayerSkills' handler again, which clears and refills.
+      // The game's own redraws hang on hooks, and a call made from a hook fires none, so the tree and details redraw here.
+      const applySkills = fn(RVA.player_skills_synced, 'void', ['pointer', 'pointer', 'pointer']);
+      let skills = null, message = null, skillsClass = null;   // the PlayerSkills module, its start-up message, Data's class
+      Interceptor.attach(m.base.add(RVA.send_response), {
+        onEnter(args) {
+          if (skillsClass === null || args[1].isNull() || !args[1].readPointer().equals(skillsClass)) return;
+          message.add(0x20).writePointer(args[1]);
+          try {
+            applySkills(skills, message, NULL);
+            if (tree !== null) {
+              for (const slot of slots) ptr(slot).add(0x100).writeS32(-1);
+              refreshPoints(tree, NULL);
+              refreshSlots(tree, NULL);
+            }
+            if (details !== null) refreshDetails(details, NULL);
+            log('reset skills: pushed skills applied, points', args[1].add(0x10).readS32(), 'tree', tree !== null, slots.size,
+                'details', details !== null);
+          } catch (e) {
+            log('reset skills: skills not applied -', e.message);
+          }
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.player_skills_synced), {
+        onEnter(args) {
+          if (skills !== null || args[1].isNull() || args[1].add(0x20).readPointer().isNull()) return;
+          skills = args[0];
+          message = args[1];
+          skillsClass = message.add(0x20).readPointer().readPointer();
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.skill_learn_refresh), {
+        onEnter(args) {
+          this.panel = args[0];
+          this.level = args[1].isNull() ? -1 : args[1].add(0x100).readS32();
+          // a starting skill's first rank is never refunded, so it offers no reset (its bought upgrades do)
+          const base = args[1].isNull() ? NULL : args[1].add(0x108).readPointer();
+          if (this.level === 0 && !base.isNull() && base.add(0x80).readU8()) this.level = -1;
+          this.highest = args[2].toInt32() & 0xff;
+          const names = hidden.get(this.panel.toString());
+          if (names === undefined) return;
+          hidden.delete(this.panel.toString());
+          for (const child of children(transformOf(this.panel, NULL)))
+            if (names.includes(read(objectName(child, NULL)))) setActive(child, 1, NULL);
+        },
+        onLeave() {
+          const learn = this.panel.add(0x18).readPointer();
+          if (learn.isNull() || !word(RESET_SKILLS)) return;
+          const panel = transformOf(this.panel, NULL);
+          let copy = find(panel, str(RESET_BUTTON), NULL);
+          if (copy.isNull()) {
+            const made = instantiate(gameObjectOf(learn, NULL), panel, NULL);
+            setName(made, str(RESET_BUTTON), NULL);
+            copy = objectTransform(made, NULL);
+            log('reset skills: the skill details have the button');
+          }
+          setActive(gameObjectOf(copy, NULL), this.level >= 0 ? 1 : 0, NULL);   // a 'bool' argument takes a number
+          if (this.level < 0) return;
+          if (this.highest) {
+            setActive(gameObjectOf(this.panel, NULL), 1, NULL);
+            const names = [];
+            for (const child of children(panel)) {
+              const name = read(objectName(child, NULL));
+              if (name === RESET_BUTTON || !activeSelf(child, NULL)) continue;
+              setActive(child, 0, NULL);
+              names.push(name);
+            }
+            hidden.set(this.panel.toString(), names);
+          }
+          const button = componentNamed(gameObjectOf(copy, NULL), str('Button'), NULL);
+          if (!button.isNull()) setInteractable(button, 1, NULL);
+          const text = labelOf(copy);
+          // just reset: the redrawn details still say so for a moment
+          if (!text.isNull()) setText(text, str(word(Date.now() - refunded < 3000 ? SKILLS_WERE_RESET : RESET_SKILLS)), NULL);
+          sure = false;
+        },
+      });
+      // Every button's tap: only the copy's is ours (its GameObject's name)
+      Interceptor.attach(m.base.add(RVA.button_pointer_click), {
+        onEnter(args) {
+          try {
+            if (read(objectName(gameObjectOf(args[0], NULL), NULL)) !== RESET_BUTTON) return;
+            if (Date.now() - tapped < 500) return;
+            tapped = Date.now();
+            const text = labelOf(args[0]);
+            if (!sure) {
+              sure = true;
+              if (!text.isNull()) setText(text, str(word(RESET_SKILLS_SURE)), NULL);
+              return;
+            }
+            sure = false;
+            const sent = customRequest(RESET_SKILLS_RPC, new Uint8Array(0), (reply) => {
+              const done = reply.length >= 5 && reply[0] === 1;
+              const points = done ? new DataView(reply.buffer, reply.byteOffset).getInt32(1, false) : 0;
+              log('reset skills:', done ? 'done, ' + points + ' points back' : 'refused');
+              if (!done) return;
+              refunded = Date.now();
+              if (!text.isNull()) setText(text, str(word(SKILLS_WERE_RESET)), NULL);
+            });
+            log('reset skills:', sent ? 'asked' : 'not sent (no connection yet)');
+          } catch (e) {
+            log('reset skills:', e.message);
+          }
+        },
+      });
+      log('reset skills: learned skills offer it');
+    }));
+    // Orens from a won fight (Tuning rewards.fightGold*): the fight's reply has no gold, and only a nemeton's summary has a
+    // gold line, so the server pushes the amount and the regular summary shows it in the fight-duration row the server never
+    // fills (TimeExp 0), labelled by the server's texts (UI/PANELS/COMBAT_END/FIGHT_DURATION), and kept out of the total.
+    stage('fight orens', () => {
+      const setText = new NativeFunction(m.base.add(RVA.tmp_set_text), 'void', ['pointer', 'pointer', 'pointer']);
+      let pending = 0, pendingAt = 0, row = null, shown = 0;
+      onServerPush(FIGHT_ORENS_PUSH, (payload) => {
+        pending = payload.length >= 4 ? new DataView(payload.buffer, payload.byteOffset).getInt32(0, false) : 0;
+        pendingAt = Date.now();
+      });
+      Interceptor.attach(m.base.add(RVA.win_build_exp), {
+        onEnter(args) {
+          row = null;
+          const data = args[0].add(0x140).readPointer();
+          if (pending <= 0 || Date.now() - pendingAt > 120000 || data.isNull() || data.add(0x20).readS32() !== 0) return;
+          shown = pending;
+          pending = 0;
+          row = args[0].add(0x108).readPointer();
+          data.add(0x2c).writeS32(shown);   // the summary's own copy: the experience was counted from the reply
+          log('fight orens: the summary shows', shown);
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.win_row_shown), {
+        onEnter(args) {
+          if (row !== null && args[1].equals(row)) args[0].add(0x154).writeS32(args[0].add(0x154).readS32() - shown);
+        },
+      });
+      Interceptor.attach(m.base.add(RVA.xp_row_text), {
+        onEnter(args) { this.row = args[0]; },
+        onLeave() {
+          if (row === null || !this.row.equals(row)) return;
+          const value = row.add(0x18).readPointer();
+          if (!value.isNull()) setText(value, str(shown + ' <sprite name="tmp_coin">'), NULL);
+        },
+      });
+    });
+    // Tuning xp.deflectsAsParries: once Hit Reflection is learnt the game counts a parry as a deflect (PlayerSetup.GetEndPoints
+    // takes the deflect first), so the parry tasks (Swordmaster, On your guard: CombatDetails Parries) stopped moving. Each
+    // deflect counts as a parry too; the server reads the fight's details, so both sides agree.
+    stage('deflects as parries', () => whenSettings(() => {
+      if (!SETTINGS['xp.deflectsAsParries']) return;
+      let said = false;
+      Interceptor.attach(m.base.add(RVA.sword_deflects), {
+        onEnter(args) { this.stats = args[0]; },
+        onLeave() {
+          if (this.stats.isNull()) return;
+          this.stats.add(0x14).writeS32(this.stats.add(0x14).readS32() + 1);
+          if (!said) log('deflects as parries: a deflect counted as a parry');
+          said = true;
+        },
+      });
+    }));
+    // Tuning tasks.perfectParriesAsParries: the game counts perfect parries apart from parries, so Swordmaster and On your
+    // guard never moved with them (Discord 2026-10-31: stuck at 8/10); each also counts as a parry.
+    stage('perfect parries as parries', () => whenSettings(() => {
+      if (!SETTINGS['tasks.perfectParriesAsParries']) return;
+      let said = false;
+      Interceptor.attach(m.base.add(RVA.sword_perfect_parries), {
+        onEnter(args) { this.stats = args[0]; },
+        onLeave() {
+          if (this.stats.isNull()) return;
+          this.stats.add(0x14).writeS32(this.stats.add(0x14).readS32() + 1);
+          if (!said) log('perfect parries as parries: a perfect parry counted as a parry');
+          said = true;
+        },
+      });
+    }));
+    // Tuning combat.quenPerfectParry: in the perfect parry window the Quen condition says no, so the blow takes the parry (or
+    // the deflect, with Hit Reflection) and the shield stays up.
+    stage('quen perfect parry', () => whenSettings(() => {
+      if (!SETTINGS['combat.quenPerfectParry']) return;
+      const perfect = new NativeFunction(m.base.add(RVA.perfect_parry_condition), 'uint8', ['pointer', 'pointer']);
+      let said = false;
+      Interceptor.attach(m.base.add(RVA.quen_condition), {
+        onEnter(args) { this.closure = args[0]; },
+        onLeave(result) {
+          if ((result.toInt32() & 0xff) === 0 || perfect(this.closure, NULL) === 0) return;
+          result.replace(ptr(0));
+          if (!said) log('quen perfect parry: a perfect parry kept the shield');
+          said = true;
+        },
+      });
+    }));
+    // Level-ups: the server's LevelUp push (31) as the game takes it (its window follows when the level is above the one
+    // the game started with). server.log has the push; this line says the game got it.
+    stage('level ups', () => {
+      Interceptor.attach(m.base.add(RVA.level_up_events), {
+        onEnter(args) { log('level up: the game got level', args[1].isNull() ? -1 : args[1].add(0x10).readS32()); },
+      });
+    });
   }
   log('hooks installed');
   stage('map tiles', () => setTimeout(freshTiles, 0));  // off the game's start; the map comes seconds later
@@ -999,6 +1345,12 @@ function freshTiles() {
 const TEXTS = new Map();
 // ClientTexts.OpenPackButton and OpenPackHeader: no game terms, only this hook asks for them
 const OPEN_PACK = 'REVIVAL/OPEN_PACK', OPEN_PACK_HEADER = 'REVIVAL/OPEN_PACK_HEADER';
+// ClientTexts.ResetSkills, ResetSkillsSure, SkillsWereReset, and PlayerService's ResetSkills request
+const RESET_SKILLS = 'REVIVAL/RESET_SKILLS', RESET_SKILLS_SURE = 'REVIVAL/RESET_SKILLS_SURE', SKILLS_WERE_RESET = 'REVIVAL/SKILLS_RESET';
+const RESET_SKILLS_RPC = 2002;
+const RESET_BUTTON = 'Revival Reset Skills';   // the skill details' own button (the reset skills stage)
+// PlayerService's push after a won fight that paid orens: [int orens]
+const FIGHT_ORENS_PUSH = 2003;
 // The count window's throw-away texts, read as opening while it shows a pack (the open packs stage sets packWindow)
 const PACK_TERMS = { 'UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE_HEADER': OPEN_PACK_HEADER, 'UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE': OPEN_PACK };
 let packWindow = false;
@@ -1032,6 +1384,7 @@ function loadTexts() {
       const texts = JSON.parse(body);
       for (const term of Object.keys(texts.replace || {})) TEXTS.set(term, { replace: texts.replace[term] });
       for (const term of Object.keys(texts.append || {})) TEXTS.set(term, { append: texts.append[term] });
+      for (const term of Object.keys(texts.alias || {})) TEXTS.set(term, { alias: texts.alias[term] });
       textLengths = new Set([...TEXTS.keys(), ...Object.keys(PACK_TERMS)].map(term => term.length));
       for (const length of textLengths) if (length < TERM_LENGTHS) termLengths.add(length).writeU8(1);
       log('texts:', TEXTS.size, 'from the server');

@@ -1,4 +1,4 @@
-"""The spawn rules' synthetic probe (tests/world_spawn_probe, C#): the 88/18/3 lottery, the occurrence rules from the Witcher
+"""The spawn rules' synthetic probe (tests/world_spawn_probe, C#): the 90/9/2 lottery, the occurrence rules from the Witcher
 wiki's bestiary (natural environments off streets, rain roaming, day and night, the full moon, multiplying boosts), the
 level gate, and pinned hashes of generated worlds. It needs no server, profile or network."""
 import json

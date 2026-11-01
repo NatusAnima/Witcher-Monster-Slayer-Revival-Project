@@ -22,7 +22,7 @@ GOOD_MONEY_DONE = {100: 4, 53: 4, 1000: 1, 1001: 1, 1003: 1}
 
 
 class Season1Tests(base.PrototypeTests):
-    def season(self, name, facts, story=None, gold=None, summons=None):
+    def season(self, name, facts, story=None, gold=None, summons=None, level10=False):
         """A profile past "A Joint Venture" with [facts] (and story progress, orens, summoned monsters) on a map of places
         around (10, 20)."""
         origin = (10.0, 20.0)
@@ -45,6 +45,7 @@ class Season1Tests(base.PrototypeTests):
                                           'Reached': {}, 'Clock': 0, **story}
         if gold is not None: profile['Player']['Gold'] = gold
         if summons is not None: profile['Player']['Summons'] = summons
+        if level10: profile['Player']['Exp'] = 45000; profile['Player']['LevelAnnounced'] = 10
         path.write_text(json.dumps(profile))
         server = self.start(name, env)
         c = self.client(server)
@@ -54,13 +55,49 @@ class Season1Tests(base.PrototypeTests):
     def givers(self, c):
         return {g['node']: g['mode'] for g in self.locations_by_cell(c.rpc(40, REQUEST))['quests']}
 
+    def test_the_blacksmith_keeps_his_forge_after_his_quest(self):
+        # The Dark Side Of The Full Moon ends with Lothar's farewell (spared: 141 = 4) or with the new smith (64 = 1). Either
+        # way a forge stays where Lothar stood, with its after-quest graph (the sharpening); none while the quest runs.
+        for facts, node in (({141: 4, 119: 3, 185: 1}, NODE['s01hq03_lothar_after']),
+                            ({141: 2, 64: 1, 116: 10, 185: 1}, NODE['s01hq03_new_smith_after'])):
+            with self.subTest(node=node):
+                server, c = self.season(f'test-forge-{node}', {100: 4, 1001: 1, **facts}, story={'Finished': [147]})
+                # (beside it the Sword in the Stone map, queued unseen until that quest starts)
+                served = [n for n in Reader(c.rpc(60)).quest()['nodes'] if n['node'] != NODE['s01hq01_map']]
+                self.assertEqual([n['node'] for n in served], [node])
+                server.stop()   # saves the places chosen for the request
+                lothar = json.loads(self.profile_file(f'test-forge-{node}').read_text())['Player']['StoryPlaces']['s01hq03_lothar']
+                self.assertEqual(served[0]['place'], lothar['Id'])
+                server, c = self.season(f'test-forge-running-{node}', {100: 4, 1001: 1, **facts}, story={'Started': [147]})
+                self.assertNotIn(node, [n['node'] for n in Reader(c.rpc(60)).quest()['nodes']])
+                server.stop()
+
+    def test_monsters_and_herbs_keep_clear_of_quest_markers(self):
+        # Quest places come from the fixed layout (epoch 0), monsters and herbs from the day's places; here both stand on the
+        # same spots, so without the clearance the givers would share theirs with a monster or a herb.
+        server, c = self.season('test-clear', {100: 4})
+        world = self.locations_by_cell(c.rpc(40, REQUEST))
+        at = {place: xy for places in world['cells'].values() for place, xy, _ in places}
+        quests = [at[q['place']] for q in world['quests']]
+        self.assertTrue(quests)
+        self.assertTrue(world['monsters'] and world['herbs'])
+        def metres(a, b):
+            return math.hypot((a[0] - b[0]) * 111_320, (a[1] - b[1]) * 111_320 * math.cos(math.radians(a[0])))
+        for kind in ('monsters', 'herbs', 'nests'):
+            for item in world[kind]:
+                self.assertTrue(all(metres(at[item['place']], q) >= 30 for q in quests), (kind, item['place']))
+
     def test_season1_quests_open_after_their_prerequisites(self):
         with urllib.request.urlopen(f'http://127.0.0.1:{self.server.http}/staticdata', timeout=1) as response:
             rows = json.loads(gzip.decompress(response.read()))['quests']
         self.assertEqual({q['id']: q['activation_criteria'] for q in rows if q['id'] in CRITERIA}, CRITERIA)
         # After "A Joint Venture": Good Money, Evil Never Sleeps, and To the Rescue, whose Kienan the client shows beside the
         # player after 200 m of walking (Collecting).
-        server, c = self.season('test-open', {100: 4})
+        # What Lurks in the Nemeta, played at a nemeton, waits for the nemeta's level (10)
+        server, c = self.season('test-lurks', {100: 4, 53: 4, 1000: 1, 1001: 1, 1003: 1})
+        self.assertNotIn(GIVER[159], self.givers(c))
+        server.stop()
+        server, c = self.season('test-open', {100: 4}, level10=True)
         self.assertEqual(self.givers(c), {GIVER[149]: 1, GIVER[104]: 1, GIVER[148]: 7})
         self.assertEqual(Reader(c.rpc(60)).quest()['nodes'], [])
 

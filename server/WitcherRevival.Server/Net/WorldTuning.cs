@@ -33,15 +33,33 @@ public sealed class WorldTuning
         TrollDefeats = "story.trollDefeats", TaskGoldPercent = "tasks.goldPercent", TaskExp = "tasks.exp",
         WikiOccurrences = "spawns.wikiOccurrences", NaturalAwayFromBuildings = "spawns.naturalAwayFromBuildings",
         Boost = "spawns.boost", StrongBoost = "spawns.strongBoost", RainRoaming = "spawns.rainRoaming", LevelGate = "spawns.levelGate",
+        OneSkullLevel = "spawns.oneSkullLevel", TwoSkullsLevel = "spawns.twoSkullsLevel",
+        ThreeSkullsLevel = "spawns.threeSkullsLevel", QuenAbsorb = "skills.quenAbsorb",
         ExpByRarity = "xp.baseByRarity", VanillaCurve = "xp.vanillaCurve", QuestSoftCap = "quests.softCap",
+        QuestWalkingCap = "quests.walkingCap",
         QuestHardCap = "quests.hardCap", TrinketBuffs = "trinkets.buffs", ShopScrolls = "shop.scrolls",
         ShopWeatherItems = "shop.weatherItems", ShopOrenPacks = "shop.orenPacks", OpenPacks = "inventory.openPacks",
         SelfFriend = "friends.self", ShopDailyDiscount = "shop.dailyDiscount", DeflectsAsParries = "xp.deflectsAsParries",
         OilsMultiply = "combat.oilsMultiply", CollectingDistance = "quests.collectingDistance",
-        CollectingUntracked = "quests.collectingUntracked", IntruderAllEndings = "quests.intruderAllEndings";
+        CollectingUntracked = "quests.collectingUntracked", IntruderAllEndings = "quests.intruderAllEndings",
+        NestMinLevel = "nests.minLevel", NestsPerDay = "nests.perDay", ParryExp = "xp.perfectParry", AttackExp = "xp.perfectAttack",
+        FirstKillExp = "xp.firstKill", OilExp = "xp.properOil", SkillPointsPerLevel = "skills.pointsPerLevel",
+        TierSkillPoints = "bestiary.tierSkillPoints", BrewTimePercent = "alchemy.brewTimePercent", PackEveryWins = "rewards.packEveryWins",
+        ExtraPotionChance = "skills.extraPotionChance", SquallRemains = "skills.squallRemains", ResolveFloor = "skills.resolveFloor",
+        AttackAdrenaline = "skills.attackAdrenaline", EventAdrenaline = "skills.eventAdrenaline",
+        InitialAdrenaline = "skills.initialAdrenaline", SurvivalChance = "skills.survivalChance",
+        SignRecoveryChance = "skills.signRecoveryChance", BombAngle = "skills.bombAngle", AuraInterval = "skills.auraIntervalMinutes",
+        AuraLifetime = "skills.auraLifetimeMinutes", SkillsReset = "skills.reset", LastingMinutes = "combat.lastingMinutes",
+        BlacksmithDamage = "combat.blacksmithDamage", InteractionRange = "map.interactionRange",
+        QuenPerfectParry = "combat.quenPerfectParry", PerfectParriesAsParries = "tasks.perfectParriesAsParries",
+        FightGoldCommonMin = "rewards.fightGoldCommonMin", FightGoldCommonMax = "rewards.fightGoldCommonMax",
+        FightGoldRareMin = "rewards.fightGoldRareMin", FightGoldRareMax = "rewards.fightGoldRareMax",
+        FightGoldLegendaryMin = "rewards.fightGoldLegendaryMin", FightGoldLegendaryMax = "rewards.fightGoldLegendaryMax",
+        FightGoldPerTier = "rewards.fightGoldPerTier";
 
     /// <summary>The settings hook.js applies in the game (ClientTexts sends them with the texts at the game's start).</summary>
-    public static readonly string[] GameSettings = [OilsMultiply, CollectingDistance, CollectingUntracked, IntruderAllEndings];
+    public static readonly string[] GameSettings = [OilsMultiply, CollectingDistance, CollectingUntracked, IntruderAllEndings,
+        SkillsReset, DeflectsAsParries, QuenPerfectParry, PerfectParriesAsParries];
 
     /// <summary>Bestiary knowledge thresholds by rarity (common, rare, legendary): the cumulative kills of tiers 1-3.</summary>
     public static string Bestiary(string rarity, int tier) => $"bestiary.{rarity}{tier}";
@@ -52,6 +70,11 @@ public sealed class WorldTuning
     private const string StaticApply = "The next server start and game start.";
     private const string GameApply = "The next game start.";
     private const string Switch = "on/off";
+    private const string Unknown = " The original game's value is not known; this is the reconstruction's.";
+
+    // A skill's number, which the game reads from its static data at its start.
+    private static Setting SkillSetting(string key, string label, string help, double value, double max, string unit) =>
+        new(key, "Skills", label, help + Unknown, StaticApply, value, 0, max, 1, unit);
 
     private static Setting Share(string ground, string label, string where, double share) => new("places." + ground, "Places",
         label, $"How much of a map cell's places lie {where}. The five shares count against each other, so only their sizes " +
@@ -67,7 +90,7 @@ public sealed class WorldTuning
     {
         new("places.perCell", "Places", "Places per map cell",
             "How many spots a map cell (about half a kilometre across) offers for monsters, herbs, nests and quests. How many monsters " +
-            "stand on them is the World page's monsters per cell.", PlacesApply, 24, 4, 48, 1, "places"),
+            "stand on them is the World page's monsters per cell.", PlacesApply, 32, 4, 48, 1, "places"),
         new("places.spacing", "Places", "Distance between places",
             "The least distance between two places. Smaller lets a cell hold more of them.", PlacesApply, 50, 30, 200, 5, "m"),
         Share("paths", "On paths", "on footpaths and tracks away from houses", 40),
@@ -75,6 +98,14 @@ public sealed class WorldTuning
         Share("woods", "In woods", "in woods and forests", 15),
         Share("water", "By water", "within 60 m of a river, lake or the sea", 10),
         Share("urban", "Near houses", "within 60 m of a building: the streets and footpaths of a town", 40),
+        new(InteractionRange, "Places", "Reach on the map",
+            "How far from you monsters, herbs, nemeta and quest places can be tapped (the game's basicInteractionRange: 67.5 m " +
+            "in the original).", StaticApply, 100, 30, 300, 0.5, "m", 67.5),
+        new("places.offPath", "Places", "Distance beside paths",
+            "How far a place stands beside a footpath or track (every other one half as far again), in a park or wood if there " +
+            "is one, else on any ground clear of roads, buildings and water; beside a street, a third of it farther out. " +
+            "0 leaves places on the paths. Field round 2026-10-31: monsters and herbs stood on the paths and streets.",
+            PlacesApply, 12, 0, 30, 1, "m"),
         new("places.streetClearance", "Places", "Distance from streets",
             "How far places keep from the middle of ordinary streets (main roads always keep 30 m). Below 13 m, places line " +
             "both sides of the streets (bigger streets only among houses), so towns get monsters on their streets and not " +
@@ -96,8 +127,14 @@ public sealed class WorldTuning
             "1 lets water monsters that like rain appear away from water while it rains ('Drowners spawn near water or during " +
             "rain'); 0 keeps them by water.", SpawnApply, 1, 0, 1, 1, Switch),
         new(LevelGate, "Monsters", "Monsters suit your level",
-            "1 keeps world monsters within your level: no skulls from level 1, one skull from 3, two from 6, legendaries from 10. " +
-            "0 lets any monster appear at any level.", SpawnApply, 1, 0, 1, 1, Switch),
+            "1 keeps world monsters within your level: no skulls from level 1, then one skull, two skulls and three (the " +
+            "legendaries) from the levels below. 0 lets any monster appear at any level.", SpawnApply, 1, 0, 1, 1, Switch),
+        new(OneSkullLevel, "Monsters", "One-skull monsters from level",
+            "With Monsters suit your level: the level from which one-skull monsters appear.", SpawnApply, 5, 1, 40, 1, "level"),
+        new(TwoSkullsLevel, "Monsters", "Two-skull monsters from level",
+            "The same for two-skull monsters.", SpawnApply, 10, 1, 40, 1, "level"),
+        new(ThreeSkullsLevel, "Monsters", "Three-skull monsters (legendaries) from level",
+            "The same for three-skull monsters: every legendary has three.", SpawnApply, 15, 1, 40, 1, "level"),
         new(ExpByRarity, "Experience", "Experience by rarity",
             "1 gives 100 experience for a common monster, 250 for a rare and 600 for a legendary, as the original game did; 0 " +
             "goes by the skulls shown (100, 175, 250, 600).", "The next fight.", 1, 0, 1, 1, Switch),
@@ -107,18 +144,61 @@ public sealed class WorldTuning
             StaticApply, 0, 0, 1, 1, Switch, 1),
         new(DeflectsAsParries, "Experience", "Deflected blows count as perfect parries",
             "1 pays the perfect-parry experience for blows deflected with Hit Reflection: once it is learnt, the game counts every " +
-            "perfect parry as a deflect, so it never paid for one. 0 keeps the original game's count.", "The next fight.",
+            "perfect parry as a deflect, so it never paid for one. The hook also counts each deflect as a parry, so the parry " +
+            "tasks (Swordmaster, On your guard) still move. 0 keeps the original game's count.", "The next fight.",
+            1, 0, 1, 1, Switch, 0),
+        new(PerfectParriesAsParries, "Experience", "Perfect parries count for parry tasks",
+            "1 lets the hook count each perfect parry as a parry too, so Swordmaster and On your guard move with them (the game " +
+            "counts them apart, so a fight of perfect parries left those tasks where they were). Parries pay no experience, so " +
+            "nothing is paid twice. 0 keeps the original game's count.", "The next game start.",
             1, 0, 1, 1, Switch, 0),
         new(ExpPercent, "Experience", "Experience from fights",
             "How much experience a won fight gives, as a share of the normal amount: 200 doubles it, 50 halves it.",
             "The next fight.", 100, 10, 1000, 5, "%"),
+        new(ParryExp, "Experience", "Experience for a perfect parry",
+            "Experience each perfect parry adds to a won fight or nemeton (before Experience from fights).",
+            "The next fight.", 15, 0, 500, 1, "experience"),
+        new(AttackExp, "Experience", "Experience for a perfect attack",
+            "Experience each perfect attack (the fight summary's combo) adds to a won fight or nemeton.",
+            "The next fight.", 15, 0, 500, 1, "experience"),
+        new(FirstKillExp, "Experience", "Experience for a new monster",
+            "Experience the first win over a kind of monster adds (its new bestiary entry).", "The next fight.", 100, 0, 5000, 10, "experience"),
+        new(OilExp, "Experience", "Experience for the right oil",
+            "Experience a won fight adds when the oil on the sword suits the monster.", "The next fight.", 50, 0, 1000, 5, "experience"),
         new(LootPercent, "Rewards", "Ingredients from fights",
             "How many ingredients a won fight drops, as a share of the normal amount: 200 doubles them, 0 drops none.",
             "The next fight.", 100, 0, 1000, 10, "%"),
-        new(NestGold, "Rewards", "Gold for clearing a nest",
-            "The orens a cleared nest pays, for the first three clears of a day.",
+        new(FightGoldCommonMin, "Rewards", "Orens from a common monster, at least",
+            "A won fight against a common monster pays a random amount from this to the most (a nemeton's monsters too, beside " +
+            "its own gold), more for a harder one (Orens for each harder tier). The fight's summary shows it in the line the " +
+            "game kept for the fight's duration. The original game paid none.", "The next fight.", 3, 0, 1000, 1, "orens", 0),
+        new(FightGoldCommonMax, "Rewards", "Orens from a common monster, at most",
+            "The most a common monster pays; below the least, it pays the least.", "The next fight.", 7, 0, 1000, 1, "orens", 0),
+        new(FightGoldRareMin, "Rewards", "Orens from a rare monster, at least",
+            "The same for a rare monster.", "The next fight.", 10, 0, 1000, 1, "orens", 0),
+        new(FightGoldRareMax, "Rewards", "Orens from a rare monster, at most",
+            "The same for a rare monster.", "The next fight.", 15, 0, 1000, 1, "orens", 0),
+        new(FightGoldLegendaryMin, "Rewards", "Orens from a legendary monster, at least",
+            "The same for a legendary monster.", "The next fight.", 20, 0, 5000, 1, "orens", 0),
+        new(FightGoldLegendaryMax, "Rewards", "Orens from a legendary monster, at most",
+            "The same for a legendary monster.", "The next fight.", 25, 0, 5000, 1, "orens", 0),
+        new(FightGoldPerTier, "Rewards", "Orens for each harder tier",
+            "How much more a monster pays for each difficulty tier above the first (its skulls in the bestiary, 1 to 3): 25 " +
+            "pays a tier-3 monster 50 % more.", "The next fight.", 25, 0, 200, 5, "%"),
+        new(PackEveryWins, "Rewards", "A herbalist's pack every",
+            "Every this many won fights bring a herbalist's pack (when the bag has room). 0 brings none." + Unknown,
+            "The next won fight.", 5, 0, 100, 1, "won fights"),
+        new(NestMinLevel, "Nemeta", "Nemeta from level",
+            "The level from which nemeta can be fought; below it the game shows them closed. At most 10, the original game's.",
+            StaticApply, 10, 1, 10, 1, "level"),
+        new(NestsPerDay, "Nemeta", "Nemeta per day",
+            "How many nemeton clears a day pay its gold (the nemeton window shows the count). More clears still pay " +
+            "experience, and their monsters' orens.",
+            StaticApply, 3, 1, 20, 1, "clears"),
+        new(NestGold, "Nemeta", "Gold for clearing a nest",
+            "The orens a cleared nest pays, for the first clears of a day (Nemeta per day).",
             "The next nest you open.", 100, 0, 1000, 10, "orens", WorldNests.BountyGold),
-        new(NestExpPercent, "Rewards", "Experience from nests",
+        new(NestExpPercent, "Nemeta", "Experience from nests",
             "How much experience a nest gives (its monsters, and 250 for clearing it), as a share of the original amount.",
             "The next nest you open.", 200, 10, 1000, 5, "%", 100),
         new(TaskGoldPercent, "Rewards", "Gold from daily tasks",
@@ -154,12 +234,56 @@ public sealed class WorldTuning
         BestiarySetting("common", 1, 3, 3), BestiarySetting("common", 2, 25, 50), BestiarySetting("common", 3, 100, 150),
         BestiarySetting("rare", 1, 2, 2), BestiarySetting("rare", 2, 10, 10), BestiarySetting("rare", 3, 20, 30),
         BestiarySetting("legendary", 1, 1, 1), BestiarySetting("legendary", 2, 2, 2), BestiarySetting("legendary", 3, 4, 6),
+        new(TierSkillPoints, "Bestiary", "Skill points per bestiary tier",
+            "The skill points each bestiary tier gives when its reward is claimed.", StaticApply, 1, 0, 10, 1, "points"),
+        new(SkillPointsPerLevel, "Skills", "Skill points per level",
+            "The skill points each new level gives. Levels already reached keep what they gave.", StaticApply, 5, 0, 20, 1, "points"),
+        new(SkillsReset, "Skills", "Reset skills in the skill tree",
+            "1 lets a player give back every learned skill for the points it cost (the starting skills stay): in the skill " +
+            "tree, open a fully learned skill and tap its button twice. 0 keeps the original game's skills for good.",
+            GameApply, 1, 0, 1, 1, Switch, 0),
+        SkillSetting(ExtraPotionChance, "Elixir Master: a second potion",
+            "The chance that a potion brewed with Elixir Master comes out twice.", 10, 100, "%"),
+        new(SquallRemains, "Skills", "Squall: elemental remains",
+            "How many elemental remains the Squall potion's recipe needs." + Unknown, StaticApply, 1, 1, 100, 1, "remains"),
+        SkillSetting(ResolveFloor, "Resolve: adrenaline floor",
+            "The adrenaline Resolve keeps at least, per rank.", 10, 30, "% per rank"),
+        SkillSetting(AttackAdrenaline, "Precise and Crushing Blows",
+            "The extra adrenaline each fast (Precise Blows) or strong (Crushing Blows) attack gives.", 1, 20, "points"),
+        SkillSetting(EventAdrenaline, "Adrenaline from parries, signs and bombs",
+            "The adrenaline Cold Blood (a parry), Adrenaline Burst (a sign), the three Intensity skills (Quen, Igni, Aard) and " +
+            "Advanced Pyrotechnics (a bomb) give each time.", 1, 10, "points"),
+        SkillSetting(InitialAdrenaline, "Razor Focus: adrenaline at the start",
+            "The adrenaline Razor Focus gives when a fight starts.", 3, 10, "points"),
+        SkillSetting(SurvivalChance, "Undying: survive the final blow",
+            "The chance that Undying lets you survive a blow that would end the fight.", 10, 100, "%"),
+        SkillSetting(SignRecoveryChance, "Gorged on Power: instant sign",
+            "The chance that Gorged on Power makes a sign ready again at once.", 10, 100, "%"),
+        SkillSetting(BombAngle, "Steady Aim: flatter throws",
+            "How many degrees Steady Aim, and again Advanced Steady Aim, take off a bomb's throwing angle (45 without them).",
+            15, 20, "degrees"),
+        new(AuraInterval, "Skills", "Witcher Aura: how often",
+            "How long after a Witcher Aura monster the skill can summon the next." + Unknown, StaticApply, 60, 5, 1440, 5, "minutes"),
+        new(AuraLifetime, "Skills", "Witcher Aura: how long the monster stays",
+            "How long a Witcher Aura monster waits on the map. At most Witcher Aura: how often." + Unknown,
+            StaticApply, 60, 5, 1440, 5, "minutes"),
+        new(QuenAbsorb, "Skills", "Quen: share of a blow it absorbs",
+            "How much of the blow that breaks the Quen shield it takes. The game starts the shield at nothing and the Quen skill " +
+            "carries the share (ImproveQuenAbsorb), so without it Quen let every blow through. 100 blocks the blow; the community " +
+            "remembers the original game's 70.", StaticApply, 100, 0, 100, 5, "%", 70),
+        new(BrewTimePercent, "Alchemy", "Brewing time",
+            "How long brewing takes, as a share of each recipe's own time (faster stations still halve it): 50 brews twice as fast.",
+            StaticApply, 100, 10, 200, 5, "%"),
         new(QuestSoftCap, "Quests", "Quest places: preferred distance",
             "Quest places are chosen within this distance of you when the map has room; 5000 leaves the quests' own distances.",
             "Quest places chosen from now on.", 800, 100, 5000, 50, "m", 5000),
         new(QuestHardCap, "Quests", "Quest places: farthest distance",
             "No quest place is ever farther from you than this (a farther one moves closer at the next map load).",
             "Quest places chosen from now on.", 1000, 100, 5000, 50, "m", 5000),
+        new(QuestWalkingCap, "Quests", "Quest places: farthest walk",
+            "No new quest place is farther than this to walk, along the map's roads and paths: a place across a river or " +
+            "round a fence can be two or three times farther on foot than it looks. 0 measures in a straight line only.",
+            "Quest places chosen from now on.", 1500, 0, 5000, 50, "m", 0),
         new(TrollDefeats, "Story", "Monster Slayer: troll defeats",
             "After Good Money, a player who has beaten a rock troll must lose this many fights to rock trolls before the troll " +
             "talks and offers Monster Slayer. The game shows the quest from its next start.",
@@ -178,6 +302,20 @@ public sealed class WorldTuning
             "1 makes an oil's bonus (33 % for the basic oil) multiply the whole blow, after weaknesses, potions and skills. 0 keeps " +
             "the original game's sum: the oil adds its share of the sword's base damage, so on a blow already doubled by a " +
             "weakness it shows as about 14 % more, and the oils' descriptions say so.", GameApply, 1, 0, 1, 1, Switch, 0),
+        new(LastingMinutes, "Combat", "Potions and oils last",
+            "How long a potion or oil taken before a fight keeps working: every fight in that time has it, and the map's " +
+            "effects panel shows the time left. As many potions as your potion slots (a new one replaces the one taken first) " +
+            "and one oil (a new one replaces it); the same one again starts its time again. 0 keeps them to the one fight, as " +
+            "the original game did.", "The next potion or oil taken; the names in the effects panel at the next game start.",
+            30, 0, 1440, 5, "minutes", 0),
+        new(QuenPerfectParry, "Combat", "Perfect parries under Quen",
+            "1 lets a perfect parry count while the Quen shield is up: the blow is parried and the shield stays (the game takes " +
+            "the shield first, so a parry under Quen always broke it). 0 keeps the original game's order.", "The next game start.",
+            1, 0, 1, 1, Switch, 0),
+        new(BlacksmithDamage, "Combat", "The blacksmith's sharpening",
+            "How much more melee damage a sword the blacksmith sharpened deals, for the hour it lasts (the effects panel: " +
+            "Increased damage). The game sends the hour; the amount was the original servers'." + Unknown,
+            StaticApply, 10, 0, 100, 5, "%"),
         new(TrinketBuffs, "Trinkets", "Trinket bonuses",
             "1 gives each trinket a bonus (more herbs, experience, attack against a family, bag slots…), shown in its description; " +
             "0 keeps trinkets as keepsakes only.", "At once; the descriptions at the next game start.", 1, 0, 1, 1, Switch, 0),
@@ -197,6 +335,11 @@ public sealed class WorldTuning
     /// <summary>The running server's settings, for code that has no access to the service (the herb rules are static). Revival
     /// until the server's own is set.</summary>
     public static WorldTuning Current { get; set; } = new(null, null);
+
+    /// <summary>The values at this server's start, for the settings the game also reads from its static data at its start (the
+    /// nemeta limits, skill points, the skills' numbers, brewing time): the server keeps to them until its next start, as the
+    /// game does. WorldPolicy sets them; Revival's before that.</summary>
+    public static IReadOnlyDictionary<string, double> Started { get; set; } = Defaults();
 
     private readonly string? path, presetDirectory;
     private readonly ILogger? log;
@@ -298,6 +441,8 @@ public sealed class WorldTuning
             for (int tier = 2; tier <= 3; tier++)
                 if (result[Bestiary(rarity, tier)] < result[Bestiary(rarity, tier - 1)])
                     throw new InvalidDataException($"The bestiary's {rarity} tier {tier} cannot need fewer kills than tier {tier - 1}.");
+        if (result[AuraLifetime] > result[AuraInterval])
+            throw new InvalidDataException("A Witcher Aura monster cannot stay longer than the time between two of them.");
         return result;
     }
 

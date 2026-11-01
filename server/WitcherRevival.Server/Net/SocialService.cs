@@ -38,8 +38,7 @@ public sealed class SocialService : IDisposable
     {
         this.cfg = cfg; this.openStore = openStore;
         limit = cfg.GetValue("Social:FriendLimit", 100); amount = cfg.GetValue("Social:GiftIngredientAmount", 5);
-        if (limit is < 1 or > 1000 || amount is < 1 or > 50 ||
-            cfg.GetValue("Social:GiftEveryWins", 5) is < 0 or > 10000)
+        if (limit is < 1 or > 1000 || amount is < 1 or > 50)
             throw new InvalidOperationException("Social limits or reward configuration is outside its supported range.");
         directory = LocalProfileStore.PrepareDirectory(directory);
         path = Path.Combine(directory, "social.json");

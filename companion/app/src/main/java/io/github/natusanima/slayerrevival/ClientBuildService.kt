@@ -138,14 +138,15 @@ class ClientBuildService : Service() {
     }
 
     /**
-     * Assembles and signs the client: from the installed game and the downloaded packs, or, with [patch], from the
-     * installed client itself. False, with the reason shown, if it can't start.
+     * Assembles and signs the client: from the downloaded game (or the installed one) and the downloaded packs, or, with
+     * [patch], from the installed client itself. False, with the reason shown, if it can't start.
      */
     private fun assemble(patch: Boolean): Boolean {
-        val game = try {
+        val downloaded = !patch && PackDownloadService.apksComplete(this) // the hosted base game: no installed copy needed
+        val game = if (downloaded) null else try {
             packageManager.getApplicationInfo(MainActivity.GAME, 0)
         } catch (_: PackageManager.NameNotFoundException) {
-            finish("Install the game first (Setup step 2).")
+            finish("Get the game first: download it in the guided setup.")
             return false
         }
         if (patch) {
@@ -158,15 +159,17 @@ class ClientBuildService : Service() {
                 return false
             }
         } else if (!PackDownloadService.complete(this)) {
-            finish("Download the extra data first (Setup step 4).")
+            finish("Download the game files first, in the guided setup.")
             return false
         }
         update("Preparing", -1)
         val rt = Runtime.prepare(this)
         update(if (patch) "Updating the game (a few minutes)…" else "Building the client (a few minutes)…", -1)
         val unsigned = File(work, "unsigned.apk")
-        val source = if (patch) listOf("--patch", game.sourceDir) else listOf(
-            "--apks", File(game.sourceDir).parent!!, // the install dir holds base.apk and every split
+        EventLog.write(this, "client", "building from the " + if (patch) "installed client" else if (downloaded) "downloaded game" else "installed game")
+        val source = if (patch) listOf("--patch", game!!.sourceDir) else listOf(
+            // base.apk and every split: downloaded, or in the installed game's folder
+            "--apks", if (downloaded) PackDownloadService.apks(this).path else File(game!!.sourceDir).parent!!,
             "--packs", PackDownloadService.dir(this).path)
         python(rt, "phone_build.py", source + listOf(
             "--gadget", "$rt/client/libgadget.so", "--hook", "$rt/client/hook.bundle.js",
@@ -176,7 +179,10 @@ class ClientBuildService : Service() {
         ClientSigner.sign(unsigned, part)
         unsigned.delete()
         check(part.renameTo(signed)) { "could not keep the signed client" }
-        if (!patch) PackDownloadService.dir(this).deleteRecursively() // the packs are inside the client now: free their 1.4 GB
+        if (!patch) { // the game is inside the client now: free its 2 GB
+            PackDownloadService.dir(this).deleteRecursively()
+            PackDownloadService.apks(this).deleteRecursively()
+        }
         return true
     }
 
@@ -251,7 +257,11 @@ class ClientBuildService : Service() {
             PackageInstaller.STATUS_FAILURE_INCOMPATIBLE -> "This phone cannot run it: it needs a 64-bit ARM phone with Android 11 or later."
             PackageInstaller.STATUS_FAILURE_INVALID -> "Android found the file damaged."
             PackageInstaller.STATUS_FAILURE_STORAGE -> "There is not enough free space. Free up about 6 GB, then tap Install the client again."
-            else -> ""
+            // a Doogee V30T (Android 12) answered this to every try, with background running not allowed (Discord 2026-10-14)
+            else -> if ("Session relinquished" in detail || "Session destroyed" in detail)
+                "Android dropped the install. Allow this app to run in the background (its battery setting: Unrestricted), " +
+                    "restart the phone, keep this app open while installing and tap Install the client again. If it still " +
+                    "fails, the client can be installed over adb from a PC." else ""
         }
         return "The install failed: $detail $advice".trim()
     }

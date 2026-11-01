@@ -169,6 +169,22 @@ public static class GameTexts
     public static readonly Dictionary<string, string> Open =
         Of("Open", "Otwórz", "Öffnen", "Abrir", "Apri", "Ouvrir", "Открыть", "Abrir", "開ける");
 
+    /// <summary>The skill details' button while skills can be reset: its word, the second tap it asks for, and when it is done.</summary>
+    public static readonly Dictionary<string, string> ResetSkills = Of("Reset skills", "Zresetuj umiejętności",
+        "Fertigkeiten zurücksetzen", "Restablecer habilidades", "Azzera abilità", "Réinitialiser les compétences",
+        "Сбросить умения", "Redefinir habilidades", "スキルをリセット");
+
+    // One or two words: the button's label shrinks a longer text to fit (field round 2026-10-26).
+    public static readonly Dictionary<string, string> ResetSkillsSure = Of("Confirm?", "Potwierdzić?", "Bestätigen?",
+        "¿Confirmar?", "Confermi?", "Confirmer ?", "Подтвердить?", "Confirmar?", "確定？");
+
+    public static readonly Dictionary<string, string> SkillsWereReset = Of("Refunded", "Zwrócono", "Erstattet", "Reembolsado",
+        "Rimborsato", "Remboursé", "Возвращено", "Reembolsado", "返還済み");
+
+    /// <summary>The won fight summary's orens line (hook.js shows them in the fight-duration row the server never fills).</summary>
+    public static readonly Dictionary<string, string> FightOrens = Of("Gold coins", "Złote monety", "Goldmünzen",
+        "Monedas de oro", "Monete d'oro", "Pièces d'or", "Золотые монеты", "Moedas de ouro", "ゴールドコイン");
+
     /// <summary>The count window's question for a pack, worded like UI/PANELS/ALCHEMY/MANAGEMENT_REMOVE_HEADER (#0: the item).</summary>
     public static readonly Dictionary<string, string> OpenHeader = Of("Do you want to open this item: #0?",
         "Czy chcesz otworzyć ten przedmiot: #0?", "Möchtest du diesen Gegenstand öffnen: #0?", "¿Quieres abrir este objeto: #0?",

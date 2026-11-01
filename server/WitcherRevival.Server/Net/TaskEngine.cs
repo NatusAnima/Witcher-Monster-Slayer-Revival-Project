@@ -196,9 +196,15 @@ public sealed class TaskEngine(TaskCatalog catalog, TimeProvider clock, IConfigu
         8 => p.Skills.Count,
         9 => (p.Story?.Finished ?? []).Count(id => Matches(d.Quests, id)) +
              (d.Quests?.Contains(JointVentureQuest) == true && p.Granted.Contains(Reconstruction.RewardKey("success")) ? 1 : 0),
-        13 => (p.Story?.Outputs ?? []).Count(id => Matches(d.Outputs, id)),
+        13 => (p.Story?.Outputs ?? []).Count(id => Matches(d.Outputs, id) ||
+            SameStep.TryGetValue(id, out int step) && Matches(d.Outputs, step)),
         _ => 0,
     };
+
+    /// <summary>Story outputs that count as another for a trinket, whose saved row cannot change: Evil Never Sleeps' amulet
+    /// thrown with amulet_fail (1044, fact 75 = 2) ends the quest as well as amulet (1043), so Cursebreaker counts both
+    /// (Discord 2026-10-28: the quest finished without the trinket).</summary>
+    private static readonly Dictionary<int, int> SameStep = new() { [1044] = 1043 };
 
     private static int Delta(TaskCatalog.Definition d, LocalProfileStore.PlayerState a, LocalProfileStore.PlayerState b, Action? action)
     {

@@ -741,6 +741,42 @@
    "display": 1
   },
   {
+   "id": 383,
+   "quest": 147,
+   "key": "s01hq03_lothar_after",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_blacksmith_after",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/blacksmith_lq.asset",
+   "instance": 5124757812265615743,
+   "kind": "poi",
+   "root": "",
+   "show": "f141=4 & f64<1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01hq03_lothar",
+   "copies": 1,
+   "display": 1,
+   "after": true
+  },
+  {
+   "id": 17882,
+   "quest": 147,
+   "key": "s01hq03_new_smith_after",
+   "graph": "s01/s01hq03_blacksmith/s01hq03_new_smith_after",
+   "poi": "assets/_bundledassets/story/poi_settings/_common/new_blacksmith_lq.asset",
+   "instance": 5124760000000017882,
+   "kind": "poi",
+   "root": "",
+   "show": "f64>=1",
+   "min": 250,
+   "max": 700,
+   "near": null,
+   "placeOf": "s01hq03_lothar",
+   "copies": 1,
+   "display": 1,
+   "after": true
+  },
+  {
    "id": 399,
    "quest": 158,
    "key": "s01hq01_map",
@@ -5222,7 +5258,9 @@
      "64": 1,
      "116": 10
     },
-    []
+    [
+     "s01hq03_new_smith_after"
+    ]
    ]
   ],
   "158": [

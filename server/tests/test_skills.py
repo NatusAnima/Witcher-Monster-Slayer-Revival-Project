@@ -192,6 +192,36 @@ class SkillTests(base.PrototypeTests):
         restarted = self.start('skill-fixture', self.RECONSTRUCTED)
         self.assertEqual(self.skill_state(self.client(restarted)), expected)
 
+    def test_skills_reset_gives_every_learned_skill_back(self):
+        # ResetSkills (2002, hook.js's button in the skill details; Tuning skills.reset): the starting skills stay, the rest go
+        # back for what they cost, the game gets its skills again (GetSkills pushed), and a retry resets nothing more.
+        starting = [1, 2, 3, 29, 30, 46, 47, 48]
+        server, c, _ = self.seed(starting, points=0)
+        data = self.catalogue(server)
+        rank2 = next(s for s in data['skills'] if s.get('parent_id') == 20)
+        cost = {s['id']: s['cost'] for s in data['skills']}
+        server.stop()
+        path = self.profile_file('skill-fixture')
+        saved = json.loads(path.read_text()); saved['Player']['Skills'] = starting + [20, rank2['id']]; path.write_text(json.dumps(saved))
+        for preset, reset in (('vanilla', False), ('revival', True)):
+            with self.subTest(preset=preset):
+                server = self.start('skill-fixture', dict(self.RECONSTRUCTED, **self.tuned(preset)))
+                c = self.client(server)
+                c.rpc(119)   # the post-sync gate: from here the session gets pushes
+                answer = c.rpc(2002)
+                if not reset:
+                    self.assertEqual(answer, b'\0' + I(0))
+                    self.assertEqual(self.skill_state(c), (starting + [20, rank2['id']], 0))
+                    server.stop()
+                    continue
+                refund = cost[20] + cost[rank2['id']]
+                self.assertEqual(answer, b'\1' + I(refund))
+                self.assertEqual(c.rpc(2002, repeat=True), answer)
+                self.assertEqual(self.skill_state(c), (starting, refund))
+                self.assertIn(63, [method for method, _ in c.pushes])
+                self.assertEqual(c.rpc(2002), b'\1' + I(0))   # nothing left to give back
+                server.stop()
+
 
 def load_tests(loader, tests, pattern):
     return unittest.TestSuite(SkillTests(name) for name in loader.getTestCaseNames(SkillTests)

@@ -623,6 +623,14 @@ class FeatureIndex:
         with self.lock:
             return self._document((west, east, south, north), clip, mercator)
 
+    def roads(self, south: float, west: float, north: float, east: float) -> list[tuple[int, str, tuple[int, ...]]]:
+        """The roads and paths touching a box, whole, as (way id, class, coordinates as stored: lat, lon × 1e7 in turn).
+        Ways that meet share the meeting node, so its numbers are the same in both (the walking graph joins them there)."""
+        with self.lock:
+            return [(way_id, klass, struct.unpack(f"<{len(coords) // 4}i", coords)) for way_id, klass, coords in self.db.execute(
+                "SELECT w.id, w.class, w.coords FROM ways_rtree r JOIN ways w ON w.id = r.id WHERE w.kind = 'road' AND "
+                "r.max_lon >= ? AND r.min_lon <= ? AND r.max_lat >= ? AND r.min_lat <= ?", (west, east, south, north))]
+
     def _document(self, box, clip=None, mercator=False) -> dict:
         elements = []
         for way_id, kind, klass, name, attrs, coords in self.db.execute(
@@ -762,6 +770,13 @@ class FeatureIndexes:
                     element["id"] = f"{n}-{element['id']}"
                 elements.append(element)
         return {"elements": elements, "osm3s": {"timestamp_osm_base": self.meta.get("source_timestamp")}}
+
+    def roads(self, south: float, west: float, north: float, east: float) -> list[tuple[int, str, tuple[int, ...]]]:
+        found = {}
+        for part in self.parts:   # a road in two extracts is the same OSM way: once
+            for road in part.roads(south, west, north, east):
+                found.setdefault(road[0], road)
+        return list(found.values())
 
 
 def open_indexes(paths):

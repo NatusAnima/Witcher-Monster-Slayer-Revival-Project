@@ -20,17 +20,17 @@ var pools = new[] {
 foreach (var pool in pools) foreach (bool beginner in new[] {false, true})
 {
     var counts = new int[4];
-    for (int ticket = 0; ticket < 109; ticket++)
+    for (int ticket = 0; ticket < 101; ticket++)
         counts[WorldSpawns.DrawBalanced(pool, clear, new Tickets(ticket, 0), beginner)!.Rarity]++;
-    Check(counts.SequenceEqual(new[] {0, 88, 18, 3}), "category mass independent of species count/beginner flag");
+    Check(counts.SequenceEqual(new[] {0, 90, 9, 2}), "category mass independent of species count/beginner flag");
 }
 foreach (var pool in new[] {new[] {common}, new[] {rare, legend}, new[] {legend}, Array.Empty<WorldBestiary.Species>()})
 {
     var counts = new int[4];
-    for (int ticket = 0; ticket < 109; ticket++)
+    for (int ticket = 0; ticket < 101; ticket++)
         counts[WorldSpawns.DrawBalanced(pool, clear, new Tickets(ticket, 0), true)?.Rarity ?? 0]++;
-    var expected = pool.Length == 0 ? new[] {109, 0, 0, 0} : pool[0] == common ? new[] {0, 109, 0, 0}
-        : pool[0] == rare ? new[] {88, 0, 18, 3} : new[] {106, 0, 0, 3};
+    var expected = pool.Length == 0 ? new[] {101, 0, 0, 0} : pool[0] == common ? new[] {0, 101, 0, 0}
+        : pool[0] == rare ? new[] {90, 0, 9, 2} : new[] {99, 0, 0, 2};
     Check(counts.SequenceEqual(expected), "missing categories never inflate legendary mass");
 }
 var hardCommon = Species(4, 1, 2);
@@ -38,12 +38,12 @@ Check(WorldSpawns.DrawBalanced(new[] {hardCommon, common, rare, legend}, clear, 
     "common beginner preference");
 Check(WorldSpawns.DrawBalanced(new[] {hardCommon}, clear, new Tickets(0, 0), true) == hardCommon,
     "no unnecessary empty slot when no beginner fits");
-Check(WorldSpawns.DrawBalanced(new[] {rare}, clear, new Tickets(88, 0), true) == rare,
+Check(WorldSpawns.DrawBalanced(new[] {rare}, clear, new Tickets(90, 0), true) == rare,
     "beginner preference does not suppress rare draws");
 var rainy = clear with { Rain = true };
 var rainRare = Species(5, 2, 2, "RAIN");
 int boosted = Enumerable.Range(0, 4).Count(ticket =>
-    WorldSpawns.DrawBalanced(new[] {rare, rainRare}, rainy, new Tickets(88, ticket), false) == rainRare);
+    WorldSpawns.DrawBalanced(new[] {rare, rainRare}, rainy, new Tickets(90, ticket), false) == rainRare);
 Check(boosted == 3, "environment multiplier applies within category");
 
 // The occurrence rules (the Witcher wiki's bestiary and the client's phrases; the Tuning defaults).
@@ -69,9 +69,11 @@ Check(WorldSpawns.BoostOf(duskRain, clear) == 1 && WorldSpawns.BoostOf(duskRain,
       WorldSpawns.BoostOf(Species(19, 1, 0, "FOG"), clear with { Fog = true }) == 3 &&
       WorldSpawns.BoostOf(Species(20, 1, 0, "D_AND_D"), twilight) == 3, "increased ×3, significantly ×6, boosts multiply");
 var gated = new[] { Species(21, 1, 0), Species(22, 1, 1), Species(23, 2, 2), Species(24, 3, 3) };
-Check(gated.Where(s => WorldSpawns.Allowed(s, 1)).Select(s => s.MonsterId).SequenceEqual(new[] {21}) &&
-      gated.Count(s => WorldSpawns.Allowed(s, 3)) == 2 && gated.Count(s => WorldSpawns.Allowed(s, 6)) == 3 &&
-      gated.All(s => WorldSpawns.Allowed(s, 10)) && gated.All(s => WorldSpawns.Allowed(s, null)), "the level gate by skulls (1/3/6/10)");
+Check(gated.Where(s => WorldSpawns.Allowed(s, 4)).Select(s => s.MonsterId).SequenceEqual(new[] {21}) &&
+      gated.Count(s => WorldSpawns.Allowed(s, 5)) == 2 && gated.Count(s => WorldSpawns.Allowed(s, 9)) == 2 &&
+      gated.Count(s => WorldSpawns.Allowed(s, 10)) == 3 && gated.Count(s => WorldSpawns.Allowed(s, 14)) == 3 &&
+      gated.All(s => WorldSpawns.Allowed(s, 15)) && gated.All(s => WorldSpawns.Allowed(s, null)),
+      "the level gate by skulls (1/5/10/15, Tuning spawns.*SkullLevel)");
 Check(WorldSpawns.WeightUnder(common, clear) == 10 && WorldSpawns.WeightUnder(rare, clear) == 3 &&
       WorldSpawns.WeightUnder(legend, clear) == 1, "legacy and Aura lottery untouched");
 
@@ -109,7 +111,8 @@ foreach (int biome in new[] {1, 5, 7, 10}) foreach (int count in new[] {0, 4, 24
             WorldBalance.Default.At));
 string balancedHash = Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(balancedReference))).ToLowerInvariant();
 // Moved with the wiki's bestiary and occurrence rules (2026-10-22), on purpose.
-Check(balancedHash == "dcf93acfb0fc3f47802a84884ddf84c90053718acc7450a8e20e98679ad17d50", "default policy keeps the 88:18:3 algorithm and IDs " + balancedHash);
+// 90/9/2 since the field round of 2026-10-31 (88/18/3 before: dcf93acf…): a deliberate change of the default world.
+Check(balancedHash == "34109e849144eaf9cd634359d9a3afb259cb78defb451db545a1eb6b2bc1c548", "default policy keeps the 90:9:2 algorithm and IDs " + balancedHash);
 // A level-1 player meets no skulled monster and as many monsters as anyone.
 foreach (int biome in new[] {1, 4, 10})
 {
@@ -134,8 +137,10 @@ var boostedRules = new WorldBalance.Rules(0, 1, 0, new() {[rare.MonsterId] = 2, 
 int multiplierHits = Enumerable.Range(0, 14).Count(ticket =>
     WorldSpawns.DrawBalanced(new[] {rare, rainRare}, rainy, new Tickets(0, ticket), false, boostedRules) == rainRare);
 Check(multiplierHits == 12, "species multipliers combine with environmental boosts");
-Check(new WorldBalance.Rules(SpeciesWeights: new() {[31] = 1}).IdentitySuffix == ":balance88-18-3",
-    "explicit defaults preserve canonical identities");
+Check(new WorldBalance.Rules(88, 18, 3, new() {[31] = 1}).IdentitySuffix == ":balance88-18-3",
+    "saved 88/18/3 rules keep their canonical identities");
+Check(new WorldBalance.Rules(SpeciesWeights: new() {[31] = 1}).IdentitySuffix == ":balance:90:9:2:",
+    "the 90/9/2 default has identities of its own");
 
 var changedRules = new WorldBalance.Rules(100, 0, 0, new() {[31] = 0});
 var timeline = WorldBalance.Append(WorldBalance.Default, changedRules, activation, 0);
@@ -185,7 +190,7 @@ const int draws = 1_000_000;
 for (int i = 0; i < draws; i++) sampleCounts[WorldSpawns.DrawBalanced(pools[0], clear, rng, false)!.Rarity-1]++;
 foreach (int i in Enumerable.Range(0, 3))
 {
-    double p = new[] {88, 18, 3}[i] / 109.0;
+    double p = new[] {90, 9, 2}[i] / 101.0;
     Check(Math.Abs(sampleCounts[i]-draws*p) < 6*Math.Sqrt(draws*p*(1-p)), "million production draws within six sigma");
 }
 var contexts = new List<object>();

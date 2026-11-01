@@ -16,7 +16,7 @@ public sealed class StaticDataSnapshot
         // TaskCatalog refuses changes to the live wire catalogue. Draw weights and minimum levels
         // remain live server decisions and do not alter this serialized representation.
         Gzip = PreloaderStaticData.GzipContainer(cfg.GetValue("Preloader:EmptyObject", false),
-            driving, tasks.Current, SkillBalancePolicy.FromConfiguration(cfg));
+            driving, tasks.Current, SkillBalancePolicy.FromTuning());
         Revision = Convert.ToHexString(SHA256.HashData(Gzip)).ToLowerInvariant();
         string? publicUrl = cfg["Http:StaticDataUrl"];
         if (publicUrl is not null)

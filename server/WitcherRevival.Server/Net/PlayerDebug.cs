@@ -53,6 +53,7 @@ public sealed partial class PlayerService
     private readonly object pushGate = new();
     private readonly SortedSet<int> pendingPushes = [];
     private readonly HashSet<Guid> bootedSessions = [];
+    private readonly HashSet<Guid> hookedSessions = [];   // sessions whose hook sent its own requests (2001, 2002)
 
     /// <summary>Applies one debug action (see the class summary); <paramref name="backup"/> receives the profile before it.
     /// Throws ArgumentException for a malformed request and DebugRefusal for one the player's state cannot take.</summary>
@@ -277,7 +278,7 @@ public sealed partial class PlayerService
                 M_GetWeather => WeatherPayload(Volatile.Read(ref weatherSpot) is { } spot ? weather.Code(spot.Lat, spot.Lng) : WorldWeather.Clear),
                 _ => InitialPlayerDataPart(pushed),
             };
-            var push = ApiProtocol.BuildResponse(0, pushed, payload, ack: Array.Empty<long>());
+            var push = ApiProtocol.BuildPush(pushed, payload);
             await FrameCodec.WriteAsync(stream, Ch_Api, push, ct);
             log.LogInformation("  TX  Api push Method={Method} debug ({Len}B)", pushed, push.Length);
         }
@@ -285,6 +286,6 @@ public sealed partial class PlayerService
 
     private void ForgetBootedSession(Guid session)
     {
-        lock (pushGate) bootedSessions.Remove(session);
+        lock (pushGate) { bootedSessions.Remove(session); hookedSessions.Remove(session); }
     }
 }

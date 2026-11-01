@@ -36,6 +36,7 @@ public sealed class WorldPolicy
         Balance = new WorldBalance(directory, log);
         Distance = new DistancePolicy(directory, log);
         Tuning = WorldTuning.Current = new WorldTuning(directory, log);
+        WorldTuning.Started = Tuning.Effective();
         // The experience table is fixed for the process: the client reads the level_ups rows once (static data).
         Reconstruction.VanillaCurve = Tuning.On(WorldTuning.VanillaCurve);
         Distance.Read(refresh: true);

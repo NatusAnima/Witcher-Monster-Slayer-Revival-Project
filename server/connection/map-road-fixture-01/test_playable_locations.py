@@ -84,6 +84,15 @@ class CandidateTests(unittest.TestCase):
         self.assertTrue(near_water and all(pl.WATER in p["biomes"] for p in near_water))
         self.assertTrue(all(pl.URBAN in p["biomes"] for p, (x, y) in found if abs(x) < 100))
 
+    def test_places_stand_off_the_path(self):
+        # Tuning places.offPath: beside a footpath by the distance, every other one half as far again; 0 keeps them on it.
+        path = self.way("footway", [(-300, 0), (300, 0)])
+        found = pl.candidates({"elements": [path]}, self.cell, off_path=12)
+        offsets = sorted({round(abs(y)) for _, y in (self.proj.xy(p["lat"], p["lng"]) for p in found)})
+        self.assertEqual(offsets, [12, 18])
+        on_path = pl.candidates({"elements": [path]}, self.cell, off_path=0)
+        self.assertTrue(on_path and all(abs(self.proj.xy(p["lat"], p["lng"])[1]) < 1 for p in on_path))
+
     def test_main_roads_keep_a_wider_clearance(self):
         found = self.points(self.way("primary", [(-300, 0), (300, 0)]),
                             self.way("footway", [(-300, 25), (300, 25)]),
@@ -92,7 +101,7 @@ class CandidateTests(unittest.TestCase):
         self.assertTrue(all(y > pl.MAJOR_ROAD_CLEARANCE_M for _, (_, y) in found))
 
     def test_woods_give_forest_points_and_sampling_is_spaced_and_varies(self):
-        found = pl.candidates({"elements": [self.area("forest", -200, -200, 200, 200)]}, self.cell)
+        found = pl.candidates({"elements": [self.area("forest", -300, -300, 300, 300)]}, self.cell)
         self.assertTrue(found and all(p["biomes"] == [pl.FOREST] and p["kind"] == "forest" for p in found))
         first, second = pl.sample(found, self.cell, 0), pl.sample(found, self.cell, 1)
         self.assertEqual(len(first), pl.MAX_PER_CELL)  # a cell of nothing but wood: the other grounds' shares go to it
@@ -184,6 +193,35 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual(sum(v['nest_place_id'] is not None for v in together.values()), 1)
 
 
+class WalkingTests(unittest.TestCase):
+    # Around (0, 0) a degree is ~111 km, so 0.0009° is ~100 m.
+    @staticmethod
+    def road(n, klass, *points):
+        return (n, klass, tuple(round(v * 1e7) for p in points for v in p))
+
+    def test_walking_follows_the_paths_not_the_crow(self):
+        # A U: the target is 100 m east of the player but the path goes 900 m north, east and back.
+        u = self.road(1, "footway", (0, 0), (0.0081, 0), (0.0081, 0.0009), (0, 0.0009))
+        metres = pl.walking_metres([u], (0, 0), [(0, 0.0009)], 5000)[0]
+        self.assertTrue(1880 < metres < 1920, metres)
+        self.assertEqual(pl.walking_metres([u], (0, 0), [(0, 0.0009)], 1500), [None])   # past the limit
+
+    def test_unconnected_paths_and_motorways_do_not_walk(self):
+        west = self.road(1, "path", (0, 0), (0.0045, 0))
+        east = self.road(2, "path", (0, 0.0045), (0.0045, 0.0045))           # across a river 500 m away: no bridge
+        motorway = self.road(3, "motorway", (0.0045, 0), (0.0045, 0.0045))   # the only link, but nobody walks there
+        self.assertEqual(pl.walking_metres([west, east, motorway], (0, 0), [(0.0045, 0.0045), (0.0045, 0)], 5000)[0], None)
+        self.assertTrue(495 < pl.walking_metres([west, east], (0, 0), [(0.0045, 0)], 5000)[0] < 505)
+
+    def test_a_loose_end_beside_a_street_joins_it_and_places_snap_on(self):
+        street = self.road(1, "residential", (0, -0.0045), (0, 0.0045))
+        footway = self.road(2, "footway", (0.0001, 0.001), (0.0045, 0.001))   # ends ~11 m short of the street (its pavement)
+        metres = pl.walking_metres([street, footway], (0, 0), [(0.0045, 0.0012), (0, 0.003)], 5000)
+        self.assertTrue(600 < metres[0] < 640, metres)       # 111 m along the street, 11 m across, 489 m up, 22 m off the path
+        self.assertTrue(330 < metres[1] < 337, metres)       # the same street: straight along it
+        self.assertEqual(pl.walking_metres([street], (0.01, 0), [(0, 0.003)], 5000), [None])   # the player 1 km from any path
+
+
 class TuningTests(unittest.TestCase):
     """The place settings come from the dashboard's file, looked at about once a second."""
 
@@ -216,8 +254,8 @@ class TuningTests(unittest.TestCase):
     def test_the_places_follow_the_file_without_a_restart(self):
         cell = s2cells.cell_of(10, 20, pl.CELL_LEVEL)
         proj = pl.Projection(*s2cells.center(cell))
-        wood = [proj.latlng(x, y) for x, y in [(-250, -250), (250, -250), (250, 100), (-250, 100)]]
-        park = [proj.latlng(x, y) for x, y in [(-250, 150), (250, 150), (250, 280), (-250, 280)]]
+        wood = [proj.latlng(x, y) for x, y in [(-300, -300), (300, -300), (300, 130), (-300, 130)]]
+        park = [proj.latlng(x, y) for x, y in [(-300, 160), (300, 160), (300, 300), (-300, 300)]]
 
         class Index:
             def covers(self, *args): return True
@@ -303,7 +341,7 @@ class CacheTests(unittest.TestCase):
                 self.calls += 1
                 return {'elements': [dict(type='area', kind='forest', rings=[ring])]}
         index = Index(); service = pl.PlayableLocations(index)
-        service._sampled = pl._BoundedMemo(entries=2, points=48)
+        service._sampled = pl._BoundedMemo(entries=2, points=2 * pl.MAX_PER_CELL)
         with patch.object(pl, 'sample', wraps=pl.sample) as sample:
             original = service.cell(cell, 123)
             self.assertEqual(original, service.cell(cell, 123))

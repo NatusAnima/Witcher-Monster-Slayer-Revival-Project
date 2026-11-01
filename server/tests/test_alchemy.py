@@ -157,13 +157,13 @@ class AlchemyTests(base.PrototypeTests):
 
     def test_alchemy_extra_output_saved_at_start_survives_restart_and_retries(self):
         server, c, settings = self.seed_alchemy(skills=STARTING + [63],
-                                              env={'Reconstruction__ExtraPotionChancePercent': '100'})
+                                              env=self.tuned(**{'skills.extraPotionChance': 100}))
         before = self.inventory(c)['potions'][201]
         self.assertEqual(c.rpc(4, Q(1) + I(2101) + I(3))[:1], b'\1')
         self.assertEqual(self.saved_alchemy()['Brewers'][0]['OutputCount'], 2)
         self.assertEqual(c.rpc(68, Q(1)), b'\0' + Q(1) + I(0))
         # Skill removal and a changed chance cannot reroll the saved craft outcome.
-        settings['Reconstruction__ExtraPotionChancePercent'] = '0'
+        self.tuned(**{'skills.extraPotionChance': 0})
         server, c = self.finish_alchemy(server, settings, remove_skills=True)
         result = b'\1' + Q(1) + I(2) + I(3) + I(201) + I(3) + I(201)
         self.assertEqual(c.rpc(68, Q(1)), result)
@@ -177,7 +177,7 @@ class AlchemyTests(base.PrototypeTests):
 
     def test_alchemy_extra_output_excludes_non_potions_and_unowned_skill(self):
         server, c, settings = self.seed_alchemy(skills=STARTING + [63],
-                                              env={'Reconstruction__ExtraPotionChancePercent': '100'})
+                                              env=self.tuned(**{'skills.extraPotionChance': 100}))
         for recipe, kind in [(3101, 4), (4101, 2), (6101, 6)]:
             self.assertEqual(c.rpc(4, Q(1) + I(recipe) + I(kind))[:1], b'\1')
             self.assertEqual(self.saved_alchemy()['Brewers'][0]['OutputCount'], 1)
@@ -190,11 +190,9 @@ class AlchemyTests(base.PrototypeTests):
         self.assertEqual(self.saved_alchemy()['Brewers'][0]['OutputCount'], 1)
 
     def test_alchemy_configured_policy_matches_catalogue_and_crafting_cost(self):
-        server, c, _ = self.seed_alchemy(skills=STARTING + [56], env={
-            'Reconstruction__SquallElementalRemains': '4', 'Reconstruction__ResolveFloorPercentPerRank': '7',
-            'Reconstruction__AttackAdrenalineBonus': '2', 'Reconstruction__EventAdrenalineGain': '2',
-            'Reconstruction__InitialAdrenalineGain': '4', 'Reconstruction__FinalBlowSurvivalChancePercent': '20',
-            'Reconstruction__InstantSignRecoveryChancePercent': '25', 'Reconstruction__BombAngleReductionDegrees': '10'})
+        server, c, _ = self.seed_alchemy(skills=STARTING + [56], env=self.tuned(**{
+            'skills.squallRemains': 4, 'skills.resolveFloor': 7, 'skills.attackAdrenaline': 2, 'skills.eventAdrenaline': 2,
+            'skills.initialAdrenaline': 4, 'skills.survivalChance': 20, 'skills.signRecoveryChance': 25, 'skills.bombAngle': 10}))
         data = self.catalogue_alchemy(server)
         self.assertIn({'recipe_id': 2107, 'ingredient_id': 108, 'amount': 4}, data['potion_recipe_ingredients'])
         effects = {r['item_id']: r for r in data['skill_to_effect'] if r['item_id'] in {17, 18, 19, 7, 8, 23, 26, 28, 45, 53, 55}}

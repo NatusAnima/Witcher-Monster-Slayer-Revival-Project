@@ -56,13 +56,14 @@ PRICES = {"s01hq01_map.map_bought": 500}
 
 
 def node(key, graph, poi=None, kind="poi", show="", root="", band=None, near=None, place_of=None, node_id=None,
-         copies=1, button_id=None, display="normal", timer=None, late=False):
+         copies=1, button_id=None, display="normal", timer=None, late=False, after=False):
     """[timer]: (effect id, seconds) of an "auto" node, which fires when that player modifier ends (the graphs' own time when
     the server has not saved the modifier yet). [late]: a node added after saves existed, whose outputs are numbered after
-    every other output, so the saved output ids keep their meaning."""
+    every other output, so the saved output ids keep their meaning. [after]: served once its quest has finished (and only
+    then), as long as [show] holds."""
     return {"key": key, "graph": graph, "poi": poi, "kind": kind, "show": show, "root": root, "band": band,
             "near": near, "place_of": place_of, "id": node_id, "copies": copies, "button_id": button_id, "display": display,
-            "timer": list(timer) if timer else None, "late": late}
+            "timer": list(timer) if timer else None, "late": late, "after": after}
 
 
 def items(**kinds):
@@ -218,6 +219,9 @@ QUESTS = [
     # the werewolf (291) is killed (141 = 2, map found: 46 = 1) or spared (141 = 4); Lothar's farewell (464) or
     # the new blacksmith (381) end it; both can hand over the Sword in the Stone map (queue 399). Community
     # (Gamepressure): 350 XP. Authored: the hunt resets on 'too_late' (119 = 0) to the forge.
+    # After the quest the forge stays (field round 2026-10-31: neither smith came back): Lothar spared (141 = 4) keeps
+    # his after-quest graph (node 383, dialog s01hq03_01 with the sharpening, effect 1 for an hour); the new smith (64 = 1)
+    # his (s01hq03_new_smith_after, no node id of its own; dialog s01hq03_04, "Blade lost her edge, did she?").
     {"id": 147, "code": "s01hq03", "name": "The Dark Side Of The Full Moon", "folder": "s01hq03_blacksmith",
      "criteria": "f1001>=1", "done": 185,
      "nodes": [
@@ -230,6 +234,10 @@ QUESTS = [
               place_of="s01hq03_lothar"),
          node("s01hq03_new_smith", "s01hq03_new_smith", POI + "_common/new_blacksmith_lq.asset", show="f141=2 & f64<1",
               place_of="s01hq03_lothar"),
+         node("s01hq03_lothar_after", "s01hq03_blacksmith_after", POI + "_common/blacksmith_lq.asset", show="f141=4 & f64<1",
+              place_of="s01hq03_lothar", late=True, after=True),
+         node("s01hq03_new_smith_after", "s01hq03_new_smith_after", POI + "_common/new_blacksmith_lq.asset", show="f64>=1",
+              place_of="s01hq03_lothar", late=True, after=True),
      ],
      "end": {"s01hq03_farewell.blacksmith": {"exp": 350}, "s01hq03_farewell.blacksmith_map": {"exp": 350},
              "s01hq03_new_smith.new_blacksmith": {"exp": 350}},
@@ -237,7 +245,7 @@ QUESTS = [
          ("s01hq03_lothar", "full_moon_01", {119: 1, 131: 2}, ["s01hq03_tracks"]),
          ("s01hq03_tracks", "tracks", {119: 2}, ["s01hq03_werewolf"]),
          ("s01hq03_werewolf", "werewolf_dead", {46: 1, 119: 0, 141: 2, 172: 3}, ["s01hq03_new_smith"]),
-         ("s01hq03_new_smith", "new_blacksmith", {64: 1, 116: 10}, []),
+         ("s01hq03_new_smith", "new_blacksmith", {64: 1, 116: 10}, ["s01hq03_new_smith_after"]),
      ]},
 
     # ── Sword in the Stone (s01hq01, "Miecz w skale"). Client: the map comes from the blacksmith quest (fact 46 = 1,

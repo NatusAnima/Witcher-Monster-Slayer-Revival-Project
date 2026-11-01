@@ -15,6 +15,7 @@ DEFAULT_ROWS = [
     {'id': 2, 'param_name': 'nestDailyLimit', 'param_value': '3'},
     {'id': 3, 'param_name': 'nestPlayerMinimalLevel', 'param_value': '10'},
     {'id': 4, 'param_name': 'inventoryIncrement', 'param_value': '50'},
+    {'id': 5, 'param_name': 'basicInteractionRange', 'param_value': '100'},   # Tuning map.interactionRange (the game: 67.5)
 ]
 DRIVING_PARAMETERS = {'drivingWarningCooldown', 'drivingWarningMinSamples', 'drivingWarningMinSpeed'}
 
@@ -73,8 +74,11 @@ class ClientConfigurationTests(unittest.TestCase):
         ])
 
     def test_snapshot_bytes_revision_and_https_bootstrap_agree(self):
-        server = self.start({'Http__StaticDataUrl': 'https://game.example.test/staticdata',
-                             'Reconstruction__ResolveFloorPercentPerRank': '5'})
+        world = self.directory / 'world'
+        world.mkdir()
+        (world / 'world.json').write_text(json.dumps({'schemaVersion': 1, 'monsterSlotsPerCell': 18}))
+        (world / 'tuning.json').write_text(json.dumps({'schemaVersion': 2, 'preset': 'revival', 'values': {'skills.resolveFloor': 5}}))
+        server = self.start({'Http__StaticDataUrl': 'https://game.example.test/staticdata', 'World__Directory': str(world)})
         client = Client(server, auth=False)
         self.addCleanup(client.close)
         client.send(4, I(2) + I(0))

@@ -44,7 +44,7 @@ public static class WorldSpawns
     public const int LifetimeSeconds = 1800;
     // Keep this partition count fixed: changing it would move existing monsters and reuse their generations.
     public const int MonstersPerCell = 6;
-    public const int DefaultMonsterSlotsPerCell = 18;
+    public const int DefaultMonsterSlotsPerCell = 24;
     // Up to five more monsters in each share; a cell needs the places for them (the dashboard's places per cell).
     public const int MaxMonsterSlotsPerCell = 36;
     // Four partitions prefer easy common draws; legacy generations restrict all their draws to zero skulls.
@@ -58,8 +58,13 @@ public static class WorldSpawns
         Barren = 9, Water = 10;
 
     /// <summary>The least player level that meets a species (Aura summons always; world monsters with the level gate).</summary>
-    public static int MinPlayerLevel(WorldBestiary.Species species) =>
-        species.Skulls switch { <= 0 => 1, 1 => 3, 2 => 6, _ => 10 };
+    public static int MinPlayerLevel(WorldBestiary.Species species) => species.Skulls switch
+    {
+        <= 0 => 1,
+        1 => (int)WorldTuning.Current.Get(WorldTuning.OneSkullLevel),
+        2 => (int)WorldTuning.Current.Get(WorldTuning.TwoSkullsLevel),
+        _ => (int)WorldTuning.Current.Get(WorldTuning.ThreeSkullsLevel),
+    };
 
     public static int Weight(WorldBestiary.Species species) => species.Rarity switch { 1 => 10, 2 => 3, _ => 1 };
 

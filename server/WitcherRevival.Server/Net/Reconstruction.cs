@@ -15,7 +15,7 @@ public static class Reconstruction
     // 120k 145k 170k 195k 220k and 270k 345k 445k 570k 700k (level 40 at 3,877,000 in all). Community (DualShockers,
     // 20 Jul 2021): "usually around five" skill points per level-up. The client derives the level from these rows.
     public const int MaxLevel = 40;              // Authored cap; community skill gates reach level 35.
-    public const int SkillPointsPerLevel = 5;
+    public static int SkillPointsPerLevel => (int)WorldTuning.Started[WorldTuning.SkillPointsPerLevel]; // 5, Tuning
 
     private static readonly int[] VanillaSteps =
     [
@@ -180,7 +180,7 @@ public static class Reconstruction
         // Numeric skill contracts recovered from 1.1.116 native effect classes.
         new(3, "lab_improve_defense", Combat), new(5, "lab_improve_first_attack", Combat),
         new(7, "lab_finisher_slowdown", Combat), new(8, "lab_enemy_attack_delay", Combat),
-        new(11, "lab_improve_aard", Combat), new(12, "lab_quen_reflection", Combat),
+        new(11, "lab_improve_aard", Combat), new(12, "lab_quen_reflection", Combat), new(69, "lab_improve_quen_absorb", Combat),
         new(13, "lab_signs_slowdown", Combat), new(15, "lab_oil_finisher", Combat),
         new(22, "lab_improve_oil", Combat), new(23, "lab_oil_defense", Combat),
         new(24, "lab_improve_bombs", Combat), new(25, "lab_igni_extra_damage_chance", Combat),
@@ -272,6 +272,11 @@ public static class Reconstruction
             // With both at 0 a tapped bomb falls in place. Only ImproveBombSpeed (16, Percent) and
             // DecreaseBombThrowAngle (74, Point) raise them, so the starting bomb skill carries the base:
             // speed factor 1.0 (an exact ballistic hit) and a 45° throw. Values are Authored from the formula.
+            // Client: Player's ShieldModifier starts at 0 and the Quen end point (GetEndPoints b__2 0x18BB814) lets 1 − it of a
+            // blow through, so the shield absorbed nothing; only ImproveQuenAbsorb (69, Percent: power / 100) raises it. The Quen
+            // skill carries the share, as the bomb skill carries the bomb's base (Tuning skills.quenAbsorb).
+            if (skill.Slug == "quen_sign")
+                yield return new ItemEffect(skill.Id, 69, policy.QuenAbsorbPercent, FightStart(69));
             if (skill.Slug == "bomb_creation")
             {
                 yield return new ItemEffect(skill.Id, 16, 100, OnStart);
@@ -672,7 +677,7 @@ public static class Reconstruction
         int[] total = Enumerable.Range(1, 3).Select(tier => (int)WorldTuning.Current.Get(WorldTuning.Bestiary(rarity, tier))).ToArray();
         return new[] { total[0], total[1] - total[0], total[2] - total[1] };
     }
-    public const int KnowledgeTierSkillPoints = 1;
+    public static int KnowledgeTierSkillPoints => (int)WorldTuning.Started[WorldTuning.TierSkillPoints]; // 1, Tuning
     public static int KnowledgeTier(int monsterId, int kills)
     {
         int tier = 0, needed = 0;
@@ -906,7 +911,11 @@ public static class Reconstruction
         new(7, 225, 2),   // 16875 HP, 1200 per hit (story 16879 / 1000)
         new(8, 327, 2),   // 24525 HP, 1200 per hit (story 24518 / 1000)
     };
-    public const int PerfectParryExp = 15, CriticalHitExp = 15, FirstKillExp = 100, ProperOilExp = 50;
+    // 15, 15, 100 and 50 (Tuning xp.*)
+    public static int PerfectParryExp => (int)WorldTuning.Current.Get(WorldTuning.ParryExp);
+    public static int CriticalHitExp => (int)WorldTuning.Current.Get(WorldTuning.AttackExp);
+    public static int FirstKillExp => (int)WorldTuning.Current.Get(WorldTuning.FirstKillExp);
+    public static int ProperOilExp => (int)WorldTuning.Current.Get(WorldTuning.OilExp);
 
     // Client: CombatDetails.Index. With Hit Reflection a perfect parry is a deflect: PlayerSetup.GetEndPoints (0x18BAC44)
     // checks Quen, deflect, parry, perfect parry in that order and HealthModule.DecreaseHealth takes the first, so
@@ -1055,14 +1064,17 @@ public static class ReconstructionRows
             { ["id"] = lure.Id, ["slug"] = lure.Slug, ["priority"] = n })).ToArray();
         rows["shop_lures"] = WorldNests.Lures.Where(lure => lure.Sold).Select(lure => J(new Dictionary<string, object>
             { ["item_id"] = lure.Id, ["price"] = Economy.Price(Economy.BundleById(1000 + lure.Id)!) })).ToArray();
-        rows["game_configuration"] = new (string Name, int Value)[]
+        rows["game_configuration"] = new (string Name, double Value)[]
         {
             ("nestClearingExp", WorldNests.ClearingExp), ("nestDailyLimit", WorldNests.DailyLimit),
             ("nestPlayerMinimalLevel", WorldNests.PlayerMinimalLevel),
             // the shop's amount for every bag (ShopItemDataSource.GetQuantityForItem); each bag's own text gives its size
             ("inventoryIncrement", Economy.Bags[0].Slots),
+            // how far the player reaches on the map (GameConfigData.LoadPlayerSettings; 67.5 m without a row)
+            ("basicInteractionRange", WorldTuning.Started[WorldTuning.InteractionRange]),
         }.Select((row, n) => J(new Dictionary<string, object>
-            { ["id"] = n + 1, ["param_name"] = row.Name, ["param_value"] = row.Value.ToString() })).ToArray();
+            { ["id"] = n + 1, ["param_name"] = row.Name,
+              ["param_value"] = row.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) })).ToArray();
         // Equipment rows in the inherited format (rows 1-6 unchanged); the client builds prefab paths from the slug.
         rows["swords"] = Reconstruction.Swords.Select(sword => J(new Dictionary<string, object>
         {
@@ -1085,7 +1097,8 @@ public static class ReconstructionRows
         rows["player_modifiers"] = [.. StoryEngine.ModifierRows(), .. PlayerService.DebugModifiers.Select(m =>
             J(new Dictionary<string, object> { ["id"] = m.Id, ["slug"] = m.Slug })), .. TrinketBuffs.ModifierRows().Select(m =>
             J(new Dictionary<string, object> { ["id"] = m.Modifier, ["slug"] = m.Slug })), .. Consumables.All.Select(c =>
-            J(new Dictionary<string, object> { ["id"] = c.Modifier, ["slug"] = c.ModifierSlug }))];
+            J(new Dictionary<string, object> { ["id"] = c.Modifier, ["slug"] = c.ModifierSlug })), .. LastingEffects.ModifierRows()
+            .Select(m => J(new Dictionary<string, object> { ["id"] = m.Id, ["slug"] = m.Slug }))];
         // Summoning scrolls (SummonScrolls; the shop sells them, so their rows are always there), all with the basic scroll's
         // cooldown modifier 13. Native LoadSummoningScrolls requires the modifier. ID13 is in the original GUI blacklist;
         // empty effects are accepted by LoadPlayerModifiers and do not invent a combat buff.
@@ -1105,7 +1118,11 @@ public static class ReconstructionRows
             .. TrinketBuffs.ModifierRows().Select(m =>
             ItemEffectRow(new Reconstruction.ItemEffect(m.Modifier, m.Effect, m.Power, Reconstruction.FightStart(m.Effect)))),
             .. Consumables.All.Where(c => c.Effect is not null).Select(c =>
-            ItemEffectRow(new Reconstruction.ItemEffect(c.Modifier, c.Effect!.Value, c.Power, 1)))];
+            ItemEffectRow(new Reconstruction.ItemEffect(c.Modifier, c.Effect!.Value, c.Power, 1))),
+            .. LastingEffects.EffectRows().Select(ItemEffectRow),
+            // The blacksmith's sharpening (s01_blacksmith, an hour from the story graph): ImproveAttackPower, as Thunderbolt
+            ItemEffectRow(new Reconstruction.ItemEffect(StoryEngine.Modifiers.First(m => m.Slug == "s01_blacksmith").Id, 41,
+                (int)WorldTuning.Started[WorldTuning.BlacksmithDamage], Reconstruction.FightStart(41)))];
         // Native pack type and slug; numeric id and rewards are explicit LAB policy.
         rows["packs_types"] = [J(new Dictionary<string, object>
         { ["id"] = SocialService.PackId, ["slug"] = "pack_herbalist", ["priority"] = 1 })];

@@ -42,9 +42,11 @@ public static class StoryEngine
     /// (beside the player after 200 m of walking).</param>
     /// <param name="Timer">An Auto node's [effect id, seconds]: it fires when that player modifier ends (PlayerService
     /// writes the time in ExpiringQuestNodeInstances).</param>
+    /// <param name="After">Served once its quest has finished, and only then (the blacksmith's forge after The Dark Side Of
+    /// The Full Moon); other nodes go with their quest.</param>
     public sealed record Node(int Id, int Quest, string Key, string Graph, string Poi, long Instance, string Kind,
         string Root, string Show, double Min, double Max, string? Near, string? PlaceOf, int Copies, int Display = 1,
-        int[]? Timer = null)
+        int[]? Timer = null, bool After = false)
     {
         public const int DisplayAuto = 5, DisplayCollecting = 7;
         [JsonIgnore] public bool Giver => Kind == "giver";
@@ -195,8 +197,9 @@ public static class StoryEngine
 
     /// <summary>The map nodes (RPC 60 and 57) shown now.</summary>
     public static IEnumerable<Node> Active(LocalProfileStore.StoryProgress progress, IReadOnlyDictionary<int, int> facts, long now) =>
-        Nodes.Where(n => n.OnMap && !progress.Finished.Contains(n.Quest) &&
-                         (n.Queued || progress.Started.Contains(n.Quest)) && Holds(n.Show, facts, progress, now));
+        Nodes.Where(n => n.OnMap && (n.After ? progress.Finished.Contains(n.Quest)
+                                             : !progress.Finished.Contains(n.Quest) && (n.Queued || progress.Started.Contains(n.Quest))) &&
+                         Holds(n.Show, facts, progress, now));
 
     /// <summary>The node a graph output came from: a served instance (with its copies), or, for journal buttons and
     /// windows whose graphs carry no instance, the one button output of that name in a started quest.</summary>

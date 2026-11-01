@@ -192,7 +192,8 @@ def main():
             nodes.append({"id": node_id, "quest": quest_id, "key": n["key"], "graph": graph_key, "poi": n["poi"] or "",
                           "instance": instance, "kind": n["kind"], "root": n["root"], "show": n["show"],
                           "min": band[0], "max": band[1], "near": n["near"], "placeOf": n["place_of"], "copies": n["copies"],
-                          "display": DISPLAY.get(n["display"], 1), **({"timer": n["timer"]} if n["timer"] else {})})
+                          "display": DISPLAY.get(n["display"], 1), **({"timer": n["timer"]} if n["timer"] else {}),
+                          **({"after": True} if n["after"] else {})})
             for sent, info in graph["outputs"].items():
                 name = OUTPUT_NAMES.get(sent, sent)
                 reward = dict(q["end"].get(f"{n['key']}.{name}", {}))

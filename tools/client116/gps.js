@@ -177,12 +177,38 @@ const AT = {
 };
 const WRITE_SNAPSHOT = AT.handleWrites + 0x38, WRITE_SUCCESS = [AT.handleWrites + 0x60, AT.handleWrites + 0x90];
 
+// What the hooks need kept alive (NativeCallbacks, CModules, listeners, memory the C reads): nothing else refers to most of it,
+// and the garbage collector frees what nothing refers to while the game still calls it.
+const kept=[];
+// The sender of this project's own requests once the GPS runtime is built (null before), and the replies awaited by method.
+let custom=null;
+const replies=new Map();
+// Handlers of this project's own server pushes (no request), by method: the game never sees them.
+const pushes=new Map();
+
+/** Sends request [method] with [payload] (bytes) on the game's connection from the Unity thread; [onReply] gets the reply's
+ * payload. False if it could not go now (no connection yet, another thread, the runtime not built). */
+export function customRequest(method, payload, onReply) {
+  return custom ? custom(method, payload, onReply) : false;
+}
+
+/** [handler] gets the payload of every server push of [method] (this project's own methods only). */
+export function onServerPush(method, handler) {
+  pushes.set(method, handler);
+}
+
 export function startGps(image, log) {
-  const zero=ptr(0),keep=[];
+  const zero=ptr(0),keep=kept;
   let n=null,ready=false,failed=false,javaReady=false,coordinator=null;
   let workerHandle=0,workerKey='',unityThread=null,clock={elapsed:0,utc:0};
   let lastTick=-1,lastPermission=-1,lastStats=-1,permissions=true,lastCaptured=-1,lastCode='';
   const queued=new Map(); // At most one telemetry message held in the native queue.
+  // Shared with the C tick hook: 1 when the timer has work for the Unity thread (the runtime's build first); the frame counts.
+  let tickDue=Memory.alloc(4);tickDue.writeS32(1);
+  const frames=Memory.alloc(12),lastFrame=Memory.alloc(8);
+  frames.writeByteArray(new Uint8Array(12));lastFrame.writeS64(0);
+  kept.push(tickDue,frames,lastFrame);
+  let pollLongest=0; // ms, the longest location poll since the last log line
   function note(code) {
     // Codes and bounded counters only; never exception text, epochs, payloads or fixes.
     if(code===lastCode)return;lastCode=code;log('gps',code);
@@ -335,10 +361,18 @@ export function startGps(image, log) {
             // Read method before 64-bit request ID: ordinary native IDs may exceed JS's safe integer range.
             const v=new DataView(b.buffer),ackCount=v.getInt32(2,false),at=6+8*ackCount;
             if(b[0]===1 && b[1]===2 && ackCount>=0 && ackCount<=4096 && at+12<=b.length) {
-              if(v.getInt32(at+8,false)===2001) {
+              const replied=v.getInt32(at+8,false);
+              if(replied===2001) {
                 consumed=true;
                 const response=DistanceWire.response(b);
                 if(coordinator && response)coordinator.receive(response.id,response.payload);
+              } else if(replies.has(replied)) {
+                consumed=true;
+                const onReply=replies.get(replied);replies.delete(replied);
+                try {onReply(b.slice(at+12));}catch(e){log('custom reply',replied,e.message);}
+              } else if(ackCount===0 && pushes.has(replied)) {
+                consumed=true;
+                try {pushes.get(replied)(b.slice(at+12));}catch(e){log('server push',replied,e.message);}
               } else if(coordinator && !coordinator.connected)coordinator.fresh(true);
             }
           }
@@ -370,6 +404,24 @@ export function startGps(image, log) {
       } finally {if(mh)n.unroot(mh);n.unroot(ah);}
     }
     runtimeSend=send;
+    // This project's own requests (hook.js: customRequest), on the game's connection like 2001 but without its write
+    // tracking: one at a time per method, and the reply goes to onReply (the game never sees it).
+    custom=(rpc,payload,onReply)=>{
+      if(!ready || !workerHandle || Process.getCurrentThreadId()!==unityThread)return false;
+      const w=n.target(workerHandle);if(w.isNull())return false;
+      const queue=n.getRef(wq,w),factory=n.getRef(wf,w);if(queue.isNull() || factory.isNull())return false;
+      const enqueue=method(n.objectClass(queue),'Enqueue',['WitcherWorld.WebstuffClient.Core.Socket.Message']);
+      const bytes=DistanceWire.envelope(2**48+Math.floor(Math.random()*2**47),rpc,payload);
+      const array=n.arrayNew(byte,bytes.length),ah=root(array);let mh=0;
+      try {
+        array.add(0x20).writeByteArray(bytes);
+        const channel=Memory.alloc(1);channel.writeU8(1);
+        const message=invoke(create,factory,[channel,array]);mh=root(message);
+        replies.set(rpc,onReply);
+        invoke(enqueue,queue,[message]);
+        return true;
+      } finally {if(mh)n.unroot(mh);n.unroot(ah);}
+    };
     Interceptor.replace(receiveAddress,replacement);Interceptor.flush();keep.push(replacement,...listeners);
     ready=true;note('native-ready');
   }
@@ -441,6 +493,7 @@ export function startGps(image, log) {
     }
     setInterval(()=>{
       try {updateClock();}catch(_){note('clock-unavailable');if(coordinator)coordinator.breakContinuity();return;}
+      if(tickDue)tickDue.writeS32(1);
       // Unity stops ticking in the background: no Java calls there (Android kills a cached app above 2% CPU).
       const active=clock.elapsed-lastTick<=2000;
       if(active && clock.elapsed-lastPermission>=2000) {
@@ -451,24 +504,62 @@ export function startGps(image, log) {
         });}catch(_){note('permission-unavailable');coordinator.breakContinuity();}
       }
       if(active && pollFix!==null && permissions) {
+        const started=Date.now();
         try {Java.performNow(pollFix);}catch(_){note('capture-failed');coordinator.breakContinuity();}
+        pollLongest=Math.max(pollLongest,Date.now()-started);   // the script's lock is held meanwhile
       }
       if(clock.elapsed-lastStats>=60000) {
         lastStats=clock.elapsed;const c=coordinator.counts;
-        log('gps counts captured='+c.captured+' dropped='+c.dropped+' sent='+c.sent+' ack='+c.acked+' resets='+c.resets);
+        const longest=frames.readS32(),slow=frames.add(4).readS32(),count=frames.add(8).readS32();
+        frames.writeByteArray(new Uint8Array(12));
+        log('gps counts captured='+c.captured+' dropped='+c.dropped+' sent='+c.sent+' ack='+c.acked+' resets='+c.resets+
+          (tickDue?' frames='+count+' over50ms='+slow+' longest='+longest+'ms':'')+' poll='+pollLongest+'ms');
+        pollLongest=0;
       }
     },250);
     javaReady=true;note('capture-ready');
   }
 
-  keep.push(Interceptor.attach(image.base.add(AT.tick),{onEnter(){
+  function onTick() {
     if(failed)return;
     const thread=Process.getCurrentThreadId();if(unityThread===null)unityThread=thread;if(thread!==unityThread)return;
     try {
       if(!ready)buildRuntime();
       if(coordinator && javaReady && clock.elapsed!==lastTick) {lastTick=clock.elapsed;coordinator.tick();}
     }catch(_){if(!ready)failed=true;note('tick-guard');}
-  }}));
+  }
+  // LocationModule.Tick runs every frame and moves the player on the map: a JS callback there waited for the script's lock
+  // whenever the 250 ms timer below held it (its Java calls), so the walk stuttered. In C it enters JS only when the timer
+  // has work for it, and measures the frames (the longest, those over 50 ms) for the minute's log line.
+  try {
+    const tickJs=new NativeCallback(onTick,'void',[]);
+    const cm=new CModule(`
+      #include <gum/guminterceptor.h>
+      typedef struct { gint64 sec; gint64 nsec; } Clock;   /* struct timespec on arm64 */
+      extern int clock_gettime (int id, Clock * t);
+      extern volatile int due;
+      extern volatile int frames[];   /* the longest frame (ms), frames over 50 ms, frames: since the last log line */
+      extern void tick (void);
+      extern volatile gint64 last;   /* in JS memory: a CModule's static variables are read-only */
+      void onEnter (GumInvocationContext * ic) {
+        Clock t;
+        clock_gettime (1, &t);   /* CLOCK_MONOTONIC */
+        gint64 now = t.sec * 1000 + t.nsec / 1000000, gap = last == 0 ? 0 : now - last;
+        last = now;
+        if (gap < 5000) {   /* longer: the game was in the background */
+          if (gap > frames[0]) frames[0] = (int) gap;
+          if (gap > 50) frames[1]++;
+          frames[2]++;
+        }
+        if (due) { due = 0; tick (); }
+      }`,{clock_gettime:Process.getModuleByName('libc.so').getExportByName('clock_gettime'),due:tickDue,frames,last:lastFrame,tick:tickJs});
+    keep.push(tickJs,cm,Interceptor.attach(image.base.add(AT.tick),cm));
+    log('fast hook: location tick');
+  } catch(e) {
+    log('fast hook in JS: location tick -',e.message);
+    tickDue=null;
+    keep.push(Interceptor.attach(image.base.add(AT.tick),{onEnter:onTick}));
+  }
   // Java.perform waits for the app's class loader; a failure leaves the game's own location handling alone.
   Java.perform(()=>{try {installCapture();} catch(e) {failed=true;note('capture-unavailable');log('gps', e.message);}});
 }

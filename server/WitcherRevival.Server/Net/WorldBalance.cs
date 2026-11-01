@@ -9,7 +9,9 @@ public sealed class WorldBalance
 {
     public const int MaximumVersions = 128;
     public const long MaximumStart = 253402298999; // Leave room for a full lifetime in DateTimeOffset.
-    public sealed record Rules(int Common = 88, int Rare = 18, int Legendary = 3,
+    // The default lottery: about one rare in ten (field round 2026-10-31; one in six with 88/18/3 before). Saved schedules
+    // keep their own weights, and rules of 88/18/3 keep their identities.
+    public sealed record Rules(int Common = 90, int Rare = 9, int Legendary = 2,
         Dictionary<int, int>? SpeciesWeights = null)
     {
         public int Weight(int monster) => SpeciesWeights?.GetValueOrDefault(monster, 1) ?? 1;

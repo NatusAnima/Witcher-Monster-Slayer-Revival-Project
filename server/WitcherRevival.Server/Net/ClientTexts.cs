@@ -7,8 +7,10 @@ namespace WitcherRevival.Server.Net;
 /// language), each trinket's bonus line and attack modifier name while trinket bonuses are on, the weather items' names and
 /// descriptions (they reuse the icons of unused consumables, whose own texts they replace), a pack's Open texts while packs
 /// open from the inventory, a line on the pack's description while it holds more than herbs and roots, and a line on each
-/// oil's description while oils keep the original sum (combat.oilsMultiply off). Those are by language (GameTexts):
-/// {"en": …, "pl": …}. "settings" carries the Tuning values hook.js applies in the game (WorldTuning.GameSettings).
+/// oil's description while oils keep the original sum (combat.oilsMultiply off), and the won fight summary's orens line
+/// while fights pay orens. Those are by language (GameTexts):
+/// {"en": …, "pl": …}. "alias" names, for a term, the game's own term whose text hook.js gives instead (the lasting potions'
+/// and oils' names). "settings" carries the Tuning values hook.js applies in the game (WorldTuning.GameSettings).
 /// </summary>
 public static class ClientTexts
 {
@@ -18,11 +20,15 @@ public static class ClientTexts
 
     // Not game terms: hook.js uses them for a pack's buttons and its count window's question while packs open from the inventory.
     public const string OpenPackButton = "REVIVAL/OPEN_PACK", OpenPackHeader = "REVIVAL/OPEN_PACK_HEADER";
+    // The same for the skill details' button while skills can be reset (Tuning skills.reset): its word, its second tap, done.
+    public const string ResetSkills = "REVIVAL/RESET_SKILLS", ResetSkillsSure = "REVIVAL/RESET_SKILLS_SURE",
+        SkillsWereReset = "REVIVAL/SKILLS_RESET";
 
     public static object Build()
     {
         var replace = new Dictionary<string, object>();
         var append = new Dictionary<string, object>();
+        var alias = new Dictionary<string, string>();
         if (WorldTuning.Current.On(WorldTuning.WikiOccurrences))
             foreach (var species in WorldBestiary.All.Where(s => s.ClientTags is { } client && !client.SequenceEqual(s.Tags)))
                 replace[$"MONSTERS/DESCRIPTIONS/{species.Slug.ToUpperInvariant()}/INFO_2"] = OccurrenceLine(species.Tags);
@@ -43,6 +49,19 @@ public static class ClientTexts
             replace[OpenPackButton] = GameTexts.Open;
             replace[OpenPackHeader] = GameTexts.OpenHeader;
         }
+        if (WorldTuning.Current.On(WorldTuning.LastingMinutes))
+            foreach (var (term, gameTerm) in LastingEffects.Names()) alias[term] = gameTerm;
+        if (WorldTuning.Current.On(WorldTuning.SkillsReset))
+        {
+            replace[ResetSkills] = GameTexts.ResetSkills;
+            replace[ResetSkillsSure] = GameTexts.ResetSkillsSure;
+            replace[SkillsWereReset] = GameTexts.SkillsWereReset;
+        }
+        // Fights pay orens: the summary's fight-duration row shows them (hook.js "fight orens"; the server sends no time bonus).
+        if (new[] { WorldTuning.FightGoldCommonMin, WorldTuning.FightGoldCommonMax, WorldTuning.FightGoldRareMin,
+                WorldTuning.FightGoldRareMax, WorldTuning.FightGoldLegendaryMin, WorldTuning.FightGoldLegendaryMax }
+            .Any(WorldTuning.Current.On))
+            replace["UI/PANELS/COMBAT_END/FIGHT_DURATION"] = GameTexts.FightOrens;
         if ((WorldTuning.Current.Rewards.PackPool ?? []).Any(row => row.Weight > 0 &&
             !(row.Kind == ItemKinds.Ingredients && row.Id is Economy.Herba or Economy.Radix)))
             append["ITEMS/DESCRIPTIONS/PACKS/PACK_HERBALIST"] = GameTexts.RarerFinds.ToDictionary(p => p.Key, p => "\n" + p.Value);
@@ -50,6 +69,6 @@ public static class ClientTexts
             foreach (var oil in Reconstruction.Oils)
                 append[$"ITEMS/DESCRIPTIONS/OILS/{oil.Slug.ToUpperInvariant()}"] = GameTexts.OilBaseDamage.ToDictionary(p => p.Key, p => "\n" + p.Value);
         var settings = WorldTuning.GameSettings.ToDictionary(key => key, WorldTuning.Current.Get);
-        return new { replace, append, settings };
+        return new { replace, append, alias, settings };
     }
 }

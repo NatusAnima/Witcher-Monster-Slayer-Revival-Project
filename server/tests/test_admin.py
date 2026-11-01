@@ -269,7 +269,7 @@ class AdminTests(unittest.TestCase):
         status, data = self.request('world')
         self.assertEqual(status, 200)
         balance = data['spawnBalance']
-        self.assertEqual([balance[k] for k in ('common', 'rare', 'legendary')], [88, 18, 3])
+        self.assertEqual([balance[k] for k in ('common', 'rare', 'legendary')], [90, 9, 2])
         self.assertEqual(balance['fromUnixSeconds'], at)
         self.assertEqual(balance['allNewByUnixSeconds'], at + 1800)
         self.assertEqual(balance['scope'], 'ordinary-shared-world')
@@ -283,7 +283,7 @@ class AdminTests(unittest.TestCase):
     def test_spawn_balance_write_backup_restore_and_restart(self):
         status, original = self.request('world/balance')
         self.assertEqual(status, 200)
-        default = {'common': 88, 'rare': 18, 'legendary': 3, 'speciesWeights': {}}
+        default = {'common': 90, 'rare': 9, 'legendary': 2, 'speciesWeights': {}}
         self.assertEqual(original['saved'], {'revision': 'missing', 'document': default})
         self.assertEqual(original['effective'], default)
         self.assertEqual(original['defaults'], default)

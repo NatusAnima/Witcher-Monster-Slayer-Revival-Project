@@ -24,6 +24,7 @@ import argparse
 from collections import OrderedDict
 from concurrent.futures import Future
 import hashlib
+import heapq
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import math
@@ -49,6 +50,9 @@ CARRIAGEWAY_CLEARANCE_M = 20.0     # from the centre line of a street, under a s
 STREET_CLEARANCE_M = 12.0          # the default draw's, which the dashboard changes: below STREET_SIDE_M, places line the streets
 MAJOR_ROAD_CLEARANCE_M = 30.0      # wide multi-lane roads
 STREET_SIDE_M = 13.0               # places beside streets, used only when the street clearance is below this
+OFF_PATH_M = 12.0                  # how far beside a path a place stands, and beyond STREET_SIDE_M beside a street (the
+                                   # default draw's, which the dashboard changes; field round 2026-10-31: 6-9 m into parks
+                                   # and woods only before, which a scheduled policy's days keep)
 BUILDING_CLEARANCE_M = 8.0
 SHORE_CLEARANCE_M = 3.0            # off the shoreline and river centre lines (bridges)
 WATER_NEAR_M = 60.0
@@ -56,7 +60,7 @@ URBAN_NEAR_M = 60.0
 PATH_STEP_M = 25.0
 AREA_STEP_M = 35.0
 MIN_SPACING_M = 50.0
-MAX_PER_CELL = 24
+MAX_PER_CELL = 32
 # The place mix, in shares of a cell's places. Parks and woods are a grid over their whole area and paths only a line of points,
 # so a draw evenly from every candidate filled each cell with whichever area it touched (93-99% woods around a big forest on the
 # Israel extract, parks in towns). The defaults are the maintainer's (2026-10-09): paths first, and town streets ("urban": within
@@ -66,7 +70,7 @@ MIX = {"paths": 40, "parks": 25, "woods": 15, "water": 10, "urban": 40}
 CELL_LEVEL = 14
 NEST_SPACING_M = 300.0  # below the minimum width of a level-14 S2 cell (~366 m)
 CLIP_MARGIN_M = 150.0   # beyond the cell; must exceed every clearance and "near" radius above
-PLACEMENT_VERSION = 5   # ids carry it, so places chosen under an older rule never share an id with these
+PLACEMENT_VERSION = 6   # ids carry it, so places chosen under an older rule never share an id with these
 
 FOREST, SHRUBLAND, GRASSLAND, URBAN, BARREN, WATER = 1, 2, 4, 7, 9, 10
 
@@ -217,9 +221,11 @@ def _cell_polygon(cell_id: int, proj: Projection):
 
 
 def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
-               clearance: float = CARRIAGEWAY_CLEARANCE_M) -> list[dict]:
+               clearance: float = CARRIAGEWAY_CLEARANCE_M, off_path: float | None = None) -> list[dict]:
     """Every safe point in the cell with its biomes and ground (deterministic, unsampled). [clearance] is kept from
-    ordinary streets; below STREET_SIDE_M, quiet streets get points beside them too."""
+    ordinary streets; below STREET_SIDE_M, quiet streets get points beside them too. [off_path]: how far beside a path
+    a point moves (parks and woods first, then any safe ground) and how much farther than STREET_SIDE_M beside a street;
+    None keeps the scheduled policies' rule (6-9 m, into parks and woods only)."""
     lat0, lng0 = s2cells.center(cell_id)
     proj = Projection(lat0, lng0)
     cell = _cell_polygon(cell_id, proj)
@@ -277,7 +283,7 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
             x, y = ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps
             # Only move a safe path anchor into mapped open ground. Unknown verges retain
             # their path anchor; a blind offset could land inside a garden or carriageway.
-            if length and safe(x, y):
+            if length and safe(x, y) and off_path is None:
                 distance = 6.0 if k % 2 == 0 else 9.0
                 dx, dy = -(by - ay) / length * distance, (bx - ax) / length * distance
                 for sign in ((1, -1) if k % 2 == 0 else (-1, 1)):
@@ -285,6 +291,14 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
                     if (parks.contains(ox, oy) or forests.contains(ox, oy)) and safe(ox, oy):
                         x, y = ox, oy
                         break
+            elif length and safe(x, y) and off_path > 0:
+                # off the path, so a monster does not stand on it: open ground first, else any safe ground (kept from
+                # roads, buildings and water like every point); none safe keeps the path point
+                distance = off_path if k % 2 == 0 else off_path * 1.5
+                dx, dy = -(by - ay) / length * distance, (bx - ax) / length * distance
+                sides = [(x + sign * dx, y + sign * dy) for sign in ((1, -1) if k % 2 == 0 else (-1, 1))]
+                open_ground = [p for p in sides if (parks.contains(*p) or forests.contains(*p)) and safe(*p)]
+                x, y = (open_ground or [p for p in sides if safe(*p)] or [(x, y)])[0]
             raw.append(((x, y), "path"))
     # Towns often map no footways of their own, only streets: with a small enough clearance, both sides of a street get
     # points (still kept from buildings and water like any other); bigger streets only where houses stand.
@@ -295,7 +309,8 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
                 if not length:
                     continue
                 steps = max(1, int(length // PATH_STEP_M))
-                dx, dy = -(by - ay) / length * STREET_SIDE_M, (bx - ax) / length * STREET_SIDE_M
+                side = STREET_SIDE_M if off_path is None else STREET_SIDE_M + off_path / 3
+                dx, dy = -(by - ay) / length * side, (bx - ax) / length * side
                 for k in range(steps):
                     x, y = ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps
                     raw += [(side, "street") for side in ((x + dx, y + dy), (x - dx, y - dy))
@@ -415,7 +430,7 @@ class Tuning:
 
     SETTINGS = {  # key: (default, lowest, highest)
         "places.perCell": (MAX_PER_CELL, 4, 48), "places.spacing": (MIN_SPACING_M, 30, 200),
-        "places.streetClearance": (STREET_CLEARANCE_M, 10, 30),
+        "places.streetClearance": (STREET_CLEARANCE_M, 10, 30), "places.offPath": (OFF_PATH_M, 0, 30),
         **{"places." + ground: (share, 0, 100) for ground, share in MIX.items()},
     }
 
@@ -457,6 +472,13 @@ class PlayableLocations:
         self._raw = _BoundedMemo(entries=256, points=100_000, inflight=2)
         self._sampled = _BoundedMemo(entries=1024, points=64 * 1024, inflight=2)
 
+    def walk(self, origin, targets, limit):
+        """walking_metres over the roads within reach of origin."""
+        lat, lng = origin
+        pad = limit + WALK_SNAP_M
+        dlat, dlng = pad / 110_540.0, pad / (111_320.0 * math.cos(math.radians(lat)))
+        return walking_metres(self.index.roads(lat - dlat, lng - dlng, lat + dlat, lng + dlng), origin, targets, limit)
+
     def document(self, cell_id, clip=True):
         if s2cells.level(cell_id) != CELL_LEVEL:
             raise ValueError("unsupported cell level")
@@ -491,10 +513,11 @@ class PlayableLocations:
             raise ValueError("unsupported cell level")
         active, key, tuning = self._rules(epoch)
         clearance = self.clearance(active, tuning)
+        off_path = None if active else tuning["places.offPath"]
         def geometry():
             document = self.document(cell_id)
-            return candidates(document, cell_id, active, clearance=clearance) if document is not None else []
-        return self._raw.get((key, clearance, cell_id), geometry)
+            return candidates(document, cell_id, active, clearance=clearance, off_path=off_path) if document is not None else []
+        return self._raw.get((key, clearance, off_path, cell_id), geometry)
 
     def cell(self, cell_id: int, epoch: int) -> list[dict]:
         if s2cells.level(cell_id) != CELL_LEVEL:
@@ -531,7 +554,8 @@ class PlayableLocations:
             document = self.document(cell_id, clip=False)  # the operator map draws whole features
             stats = {}
             tuning = self.tuning.values()
-            points = candidates(document, cell_id, active, stats, self.clearance(active, tuning)) if document is not None else []
+            points = candidates(document, cell_id, active, stats, self.clearance(active, tuning),
+                                None if active else tuning["places.offPath"]) if document is not None else []
             chosen = sample(points, cell_id, epoch, active, tuning)
             spacing = active["spacingMeters"] if active else tuning["places.spacing"]
             blocked = sum(not any(p["lat"] == q["lat"] and p["lng"] == q["lng"] for q in chosen)
@@ -608,6 +632,132 @@ def _distance_m(a: dict, b: dict) -> float:
     return 2 * 6_371_008.8 * math.asin(math.sqrt(min(1.0, h)))
 
 
+NO_WALK_CLASSES = {"motorway", "motorway_link"}  # no pedestrians
+# The index leaves out pavements mapped beside their street (osm_extract_index.skip_road), so a footway that met one would end
+# in the air: a loose end joins the nearest other point of the network this close.
+WALK_LINK_M = 25.0
+WALK_SNAP_M = 150.0   # the player or a place farther than this from every road and path has no walking distance
+WALK_GRID_M = 50.0
+
+
+def walking_metres(roads, origin, targets, limit):
+    """Metres walked along the roads and paths from origin to each target ((lat, lng) pairs): None for one farther than
+    limit, or off the network. roads: (way id, class, flat lat/lon × 1e7), as FeatureIndex.roads gives them."""
+    proj = Projection(*origin)
+    ids, xy, adj, segments = {}, [], [], []
+
+    def node(lat, lon):
+        i = ids.get((lat, lon))
+        if i is None:
+            i = ids[(lat, lon)] = len(xy)
+            xy.append(proj.xy(lat / 1e7, lon / 1e7))
+            adj.append([])
+        return i
+
+    def join(a, b, d):
+        adj[a].append((b, d))
+        adj[b].append((a, d))
+
+    for _, klass, flat in roads:
+        if klass in NO_WALK_CLASSES:
+            continue
+        previous = None
+        for k in range(0, len(flat) - 1, 2):
+            i = node(flat[k], flat[k + 1])
+            if previous is not None and i != previous:
+                d = math.dist(xy[previous], xy[i])
+                join(previous, i, d)
+                segments.append((previous, i, d))
+            previous = i
+    grid = {}
+
+    def index(s):
+        a, b, _ = segments[s]
+        (ax, ay), (bx, by) = xy[a], xy[b]
+        for gx in range(int(min(ax, bx) // WALK_GRID_M), int(max(ax, bx) // WALK_GRID_M) + 1):
+            for gy in range(int(min(ay, by) // WALK_GRID_M), int(max(ay, by) // WALK_GRID_M) + 1):
+                grid.setdefault((gx, gy), []).append(s)
+
+    for s in range(len(segments)):
+        index(s)
+
+    def nearest(px, py, radius, away_from=None):
+        """The nearest point of a segment (not one of away_from's) within radius: (metres off it, segment, metres to its
+        start, metres to its end, the point)."""
+        reach, best, seen = math.ceil(radius / WALK_GRID_M), None, set()
+        for gx in range(int(px // WALK_GRID_M) - reach, int(px // WALK_GRID_M) + reach + 1):
+            for gy in range(int(py // WALK_GRID_M) - reach, int(py // WALK_GRID_M) + reach + 1):
+                for s in grid.get((gx, gy), ()):
+                    if s in seen:
+                        continue
+                    seen.add(s)
+                    a, b, d = segments[s]
+                    if away_from in (a, b):
+                        continue
+                    (ax, ay), (bx, by) = xy[a], xy[b]
+                    t = 0.0 if d == 0 else min(1.0, max(0.0, ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / (d * d)))
+                    point = (ax + t * (bx - ax), ay + t * (by - ay))
+                    off = math.dist((px, py), point)
+                    if off <= radius and (best is None or off < best[0]):
+                        best = (off, s, t * d, (1 - t) * d, point)
+        return best
+
+    for i in range(len(xy)):   # loose ends join the nearest path beside them, which is split there (a junction)
+        if len(adj[i]) == 1 and (near := nearest(*xy[i], WALK_LINK_M, away_from=i)) is not None:
+            off, s, to_a, to_b, point = near
+            a, b, _ = segments[s]
+            p = len(xy)
+            xy.append(point)
+            adj.append([])
+            join(i, p, off)
+            join(p, a, to_a)
+            join(p, b, to_b)
+            segments[s] = (a, p, to_a)   # the grid keeps listing s over the whole stretch: nearest() measures what it is now
+            segments.append((p, b, to_b))
+            index(len(segments) - 1)
+
+    def snap(lat, lng):
+        """The nearest point of the network: (metres off it, segment, metres to its start, metres to its end)."""
+        found = nearest(*proj.xy(lat, lng), WALK_SNAP_M)
+        return None if found is None else found[:4]
+
+    start = snap(*origin)
+    if start is None:
+        return [None] * len(targets)
+    off, s0, to_a, to_b = start
+    a0, b0, _ = segments[s0]
+    walked = {}
+    heap = []
+    for i, d in ((a0, off + to_a), (b0, off + to_b)):
+        if d < walked.get(i, math.inf):
+            walked[i] = d
+            heapq.heappush(heap, (d, i))
+    while heap:
+        d, i = heapq.heappop(heap)
+        if d > limit:
+            break
+        if d > walked[i]:
+            continue
+        for j, w in adj[i]:
+            if (n := d + w) < walked.get(j, math.inf) and n <= limit:
+                walked[j] = n
+                heapq.heappush(heap, (n, j))
+
+    result = []
+    for lat, lng in targets:
+        end = snap(lat, lng)
+        if end is None:
+            result.append(None)
+            continue
+        t_off, s, t_a, t_b = end
+        a, b, _ = segments[s]
+        metres = min(walked.get(a, math.inf) + t_a, walked.get(b, math.inf) + t_b) + t_off
+        if s == s0:   # the same stretch of path: straight along it
+            metres = min(metres, off + abs(to_a - t_a) + t_off)
+        result.append(round(metres) if metres <= limit else None)
+    return result
+
+
 def make_handler(service: PlayableLocations):
     class Handler(BaseHTTPRequestHandler):
         def respond(self, status, value):
@@ -637,6 +787,18 @@ def make_handler(service: PlayableLocations):
                 self.respond(400, {"error": "Invalid placement request."})
 
         def do_POST(self):
+            if self.path == "/walk":
+                # {"from": [lat, lng], "to": [[lat, lng], ...], "limit": metres} -> {"metres": [m or null, ...]}
+                try:
+                    length = int(self.headers.get("Content-Length", "0"))
+                    if not 0 < length <= 65536: raise ValueError
+                    value = json.loads(self.rfile.read(length))
+                    origin, targets, limit = tuple(map(float, value["from"])), value["to"], float(value["limit"])
+                    if len(origin) != 2 or not 0 < len(targets) <= 1024 or not 0 < limit <= 10_000: raise ValueError
+                    self.respond(200, {"metres": service.walk(origin, [tuple(map(float, t)) for t in targets], limit)})
+                except (ValueError, TypeError, KeyError):
+                    self.respond(400, {"error": "Invalid walking request."})
+                return
             # Read-only validation/preview on loopback. Durable writes remain behind the
             # authenticated admin API with its origin, revision, receipt and backup checks.
             try:

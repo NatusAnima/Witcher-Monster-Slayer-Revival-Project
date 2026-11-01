@@ -2,6 +2,7 @@
 server/**/bin/
 server/**/obj/
 server/**/data/
+server/.cache/
 
 # Proprietary game assets / RE dumps (large, not for distribution)
 Original APK and OBB/

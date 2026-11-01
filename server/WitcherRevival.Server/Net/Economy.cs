@@ -182,6 +182,21 @@ public static class Economy
             (recipe.RequiredSkill is null || player.Skills.Contains(recipe.RequiredSkill.Value));
     }
 
+    /// <summary>The orens a won fight against a monster pays (Tuning rewards.fightGold*; the original game paid none): a random
+    /// amount in its rarity's range, rewards.fightGoldPerTier % more for each difficulty tier above the first.</summary>
+    public static int FightGold(int monsterId, int difficulty)
+    {
+        var tuning = WorldTuning.Current;
+        var (least, most) = WorldBestiary.Of(monsterId)?.Rarity switch
+        {
+            3 => (WorldTuning.FightGoldLegendaryMin, WorldTuning.FightGoldLegendaryMax),
+            2 => (WorldTuning.FightGoldRareMin, WorldTuning.FightGoldRareMax),
+            _ => (WorldTuning.FightGoldCommonMin, WorldTuning.FightGoldCommonMax),
+        };
+        int low = (int)tuning.Get(least), amount = Random.Shared.Next(low, Math.Max(low, (int)tuning.Get(most)) + 1);
+        return (int)Math.Round(amount * (100 + tuning.Get(WorldTuning.FightGoldPerTier) * Math.Max(0, difficulty - 1)) / 100);
+    }
+
     // Client GrantAdditionalPotion (effect45) adds one for each of these distinct owned utility skills.
     public static int PotionCapacity(LocalProfileStore.PlayerState player) =>
         1 + (player.Skills.Contains(54) ? 1 : 0) + (player.Skills.Contains(58) ? 1 : 0);
@@ -192,7 +207,11 @@ public static class Economy
 
     /// <summary>Crafting seconds on a station (at least one second).</summary>
     public static int CraftingSeconds(Recipe recipe, Brewer brewer) =>
-        Math.Max(1, recipe.Minutes * 60 * brewer.TimeCoefficient / 100);
+        Math.Max(1, RecipeSeconds(recipe) * brewer.TimeCoefficient / 100);
+
+    /// <summary>A recipe's own time (the crafting_time row) scaled by Tuning alchemy.brewTimePercent, as at the server's start.</summary>
+    public static int RecipeSeconds(Recipe recipe) =>
+        Math.Max(1, recipe.Minutes * 60 * (int)WorldTuning.Started[WorldTuning.BrewTimePercent] / 100);
 
     // ── Shop ────────────────────────────────────────────────────────────────────────────────
     // Client: shop_bundles (gold_price, discount, daily_discount, one_time, layout_*), shop_bundle_items and
@@ -371,7 +390,7 @@ public static class Economy
             rows[$"{table}_recipes"] = recipes.Select(r => J(new Dictionary<string, object>
             {
                 ["id"] = r.Id, ["slug"] = r.Slug, ["output"] = r.Output, ["tier_id"] = RecipeTier,
-                ["crafting_time"] = r.Minutes * 60, ["priority"] = r.Id,
+                ["crafting_time"] = RecipeSeconds(r), ["priority"] = r.Id,
             })).ToArray();
             rows[$"{table}_recipe_ingredients"] = recipes.SelectMany(r => r.Ingredients.Select(n => J(new Dictionary<string, object>
                 { ["recipe_id"] = r.Id, ["ingredient_id"] = n.Ingredient, ["amount"] = n.Amount }))).ToArray();

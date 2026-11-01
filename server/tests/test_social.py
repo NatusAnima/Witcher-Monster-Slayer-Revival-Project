@@ -305,6 +305,18 @@ class SocialTests(base.PrototypeTests):
         server.stop(); server = self.start('social-a', self.social_env); a = self.client(server)
         self.assertEqual(self.inventory(a)['packs'], {1: 1})
 
+    def test_social_combat_pack_rate_is_a_setting(self):
+        # Tuning rewards.packEveryWins 0: the fifth win brings no pack.
+        server, a, b = self.social_server(); server.stop()
+        path = self.directory / 'profiles' / (server.profile_id() + '.json')
+        data = json.loads(path.read_text()); data['Player']['Kills'] = {'166': 4}; path.write_text(json.dumps(data))
+        server = self.start('social-a', dict(self.social_env, **self.tuned(**{'rewards.packEveryWins': 0}))); a = self.client(server)
+        r = Reader(a.rpc(111, I(16) + I(1) + I(1000000) + I(1000000)))
+        self.assertEqual(r.byte(), 1); group, = self.summoned_groups(r)
+        self.assertEqual(a.rpc(113, Q(group['monsters'][0][1])), b'\1')
+        self.assertEqual(self.combat_end(Reader(a.rpc(114, b'\1' + I(13) + I(0) * 13 + b'\0')))['pack'], 0)
+        self.assertEqual(self.inventory(a).get('packs', {}), {})
+
 
 def load_tests(loader, tests, pattern):
     return unittest.TestSuite(SocialTests(name) for name in loader.getTestCaseNames(SocialTests) if name.startswith('test_social_'))

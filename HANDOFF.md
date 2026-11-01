@@ -754,6 +754,327 @@ tiles; **map density stays 18 per cell** (lowering it was offered and declined).
   logs; `fast hook:` lines; server.log showing an encounter answered while a 40 is pending; the character at the next start; a
   Save Data restore with the server running (refused) and stopped.
 
+## 0.4.0 additions (2026-10-25): more Tuning, hosted game files, community design
+Folded into the unreleased 0.4.0 (the app version stays 0.4.0). Plan: `C:\Users\iyave\.claude\plans\radiant-tumbling-island.md`.
+- **Tuning** (`WorldTuning.Settings`, the dashboard draws them; each keeps today's value as Revival):
+  - **Nemeta group:** `nests.minLevel` (10, at most 10, so `TaskCatalog`'s nest-task check, made before the snapshot exists,
+    never fails) and `nests.perDay` (3). `nests.gold` and `nests.expPercent` moved into this group.
+  - **Experience:** `xp.perfectParry`, `xp.perfectAttack`, `xp.firstKill`, `xp.properOil` (15/15/100/50), read live.
+  - **Skill points:** `skills.pointsPerLevel` (5), `bestiary.tierSkillPoints` (1).
+  - **Skills (11):** the `SkillBalancePolicy` values that were server config (`Reconstruction:*`); the aura is in minutes
+    (`skills.auraIntervalMinutes` and `skills.auraLifetimeMinutes`; `Parse` refuses a lifetime longer than the interval).
+  - **Alchemy and rewards:** `alchemy.brewTimePercent` (`Economy.RecipeSeconds`: the `crafting_time` rows and the brew timer),
+    `rewards.packEveryWins` (was `Social:GiftEveryWins`).
+  - **Fixed at server start:** whatever the game reads from static data is read from `WorldTuning.Started` (set in
+    `WorldPolicy`'s constructor), so the server and the game agree until the next start: the nemeta values, skill points, the
+    skills, brewing time.
+  - `PlayerService.InitialSkillPoints` (10) only applies to the old demonstration profile mode (reconstructed profiles start at
+    0), so it is not a setting.
+  - **Tests:** the three that set `Reconstruction__*` now write tuning.json. `test_aura`'s bad-value startup cases are now
+    refusals in `test_tuning`. New tests: `test_tuning.test_the_games_own_numbers_reach_it_at_the_next_start`,
+    `test_social_combat_pack_rate_is_a_setting`, and a parry case in `test_rebalance`.
+  - **Full suite (Windows, 339):** 20 fail, the known set: 18 Windows-only plus the two Final Exam tests.
+    `test_aura_bootstrap_preserves_saved_timestamp_without_summoning` fails at HEAD too (checked with a stash).
+  - **Running the server tests on this PC:** a runner sets `dev.DOTNET` to the system SDK; it's in the session scratchpad, so
+    recreate it from the "Server tests on this PC" note in the 0.2.1 section if needed.
+- **Hosted game files (Internet Archive):**
+  - **The item:** `witcher-monster-slayer-1.1.116-android` (archive.org/details/…), uploaded with the maintainer's own
+    `ia configure` login. It holds the 23 APKs of `~/witcher_1.1.116_300085` and the 26 packs of `~/witcher_1.1.116_packs`,
+    unchanged, 2.09 GB.
+  - **How it was made (once):** `companion/.../assets/apks.txt` lists the 23 APKs as `size sha256 name`, like `packs.txt`. The 49
+    files went up with the `internetarchive` package in `local/venv` (`ia upload`, each file under its own name); afterwards
+    every file's size and MD5 in the item's metadata matched the originals. For another mirror, upload the same files under the
+    same names and add its base URL to `PackDownloadService.MIRRORS`.
+  - **Checked:** `base.apk` served at the right size through the redirect to `ia*.us.archive.org`; a Range request answers 206;
+    the SHA-256 matches; downloads run at 5.6 MB/s on the PC.
+- **Companion app:**
+  - `PackDownloadService` has a hosted mode (pref `setup/source`, `hosted` by default). It downloads `apks.txt` into
+    `files/game/apks` and `packs.txt` into `files/game/packs` from `MIRRORS`, through `downloadChecked` (`Download.kt`):
+    resume with Range, a 200 starts the file over, size and SHA-256 checked, each mirror tried twice.
+  - `ClientBuildService` builds from `files/game/apks` when it is complete (no installed game needed) and deletes both folders
+    afterwards.
+  - `SetupActivity`: 5 steps when hosted (phone, download, build, map, play) and 7 for Google Play; "I had the game: use Google
+    Play" and "Use the Revival download instead" switch between them. The APKMirror path is gone.
+  - The report's Setup line names the source and the mirror.
+- **Notes:** What's new (nine languages) gained a Tuning line and a Guided setup line. The 0.4.0 drafts
+  (`local/release/notes-0.4.0`: the three .md files and index.html) mention both, and the README setup section is rewritten.
+- **Community server:** the design is in `docs/community-server.md`. Phones keep their worlds; a Cloudflare Workers + D1 backend
+  handles accounts, cloud save, friends and the community features; results are taken on trust. Nothing built yet.
+- **Device checks:**
+  - A fresh hosted setup on a second phone, or on the Xiaomi after a Save Data backup: download, build, install.
+  - The Google Play switch.
+  - The report's Setup line.
+  - A nemeta limit and brewing time after a restart.
+
+## 0.4.0, third batch (2026-10-26): reset skills, quest places within a walk, lasting potions and oils, smooth walk
+Still unreleased 0.4.0. None of it is checked on a device yet.
+- **Quest places within a walk** (Tuning `quests.walkingCap`, Revival 1500 m, Vanilla 0 = straight lines only):
+  - `playable_locations.walking_metres` builds a walking graph from `FeatureIndex.roads` (the ways whole, unclipped; motorways
+    left out). Ways join where they share a node (the same int32 coordinates). A loose end within 25 m of another path splits
+    that path there, which covers the pavements `skip_road` leaves out. The player and the places snap to the nearest segment
+    within 150 m, then a cut-off Dijkstra runs.
+  - The service answers `POST /walk {from, to[], limit}` with `{"metres": [m|null]}`; the server calls it through
+    `PlayableLocations.Walk` (20 s timeout).
+  - `ChooseStoryPlace` keeps only walkable places; with no answer, or nothing walkable, it falls back to straight lines.
+    server.log: `Story place walking: N of M places within X m`.
+  - On the Israel index (central Tel Aviv) the roads query takes 0.01 s warm (4.6 s cold) and the walk 0.29 s (12 MB). The
+    walk averaged 1.28× the straight line, up to 1.97×. The saved place re-check (`TooFar`) is still a straight line.
+- **Reset skills** (Tuning `skills.reset`, Revival 1, Vanilla 0; in `GameSettings`):
+  - Server: request 2002 (`HandleResetSkills`, in `SettledMethods`) gives back every non-starting skill's `Cost`, then pushes 63
+    (GetSkills). Reply `[byte ok][int points]`.
+  - hook.js "reset skills": a button of its own on the details of every learned skill (`CurrentLevel` from 0; -1 is not
+    learned). After `SkillLearnPanel.Refresh(slot, isHighest, cost)` the Learn Button is copied once per panel into the
+    Learn Panel (`Object.Instantiate(original, parent)` 0x290F758, named `Revival Reset Skills`, found again by
+    `Transform.Find`). The panel is a VerticalLayoutGroup (Header, Effects, Learn Button, Requirement Text; read from
+    `gui_assets_all` with UnityPy), so the copy sits last in the column. The prefab saves no click listeners, so the copy
+    has none of Learn's. `Button.OnPointerClick` (0x1E15F6C) takes its taps by the GameObject's name: the first asks to be
+    sure, the second sends 2002 through `gps.js customRequest`.
+  - First version (2026-10-26 field round): it reused the Learn Button of a fully learned skill only (`isHighest` = no
+    upgrade left: Refresh hides the button), so the maintainer, with no maxed skill, never saw it.
+  - `customRequest`: the 2001 envelope without its write tracking; the reply is taken in the `HandleReceived` replacement.
+  - **Unverified on a device:** the copy's place and look in the column.
+  - Texts: `REVIVAL/RESET_SKILLS`, `_SURE` and `SKILLS_RESET` (GameTexts, nine languages).
+- **Fixed: only the first server push of a session reached the game** (2026-10-26 report `witcher-revival-report-20261026-013952`,
+  older than 0.4.0):
+  - `ResponsePropagator.SendResponse<T>` (0x187BF5C) skips a message whose id is in its `_responsesHandled` set and adds
+    it after handling. Every push went out with id 0, so after a session's first push all the others were dropped:
+    level-up windows (31), trophies (25), the purse after a fight (3), the debug tools' pushes, the skill reset's GetSkills
+    (63) and 0.4.0's lasting effects (90). In the report: 91, then 90, 90 and 3 all dropped.
+  - Pushes now go through `ApiProtocol.BuildPush`, with ids from the clock (`ms << 10`, counted up), so a restarted server
+    never repeats one the running game has seen. 2003 is taken by gps.js before the game, so it was never affected.
+  - The test client refuses a repeated push id.
+  - This likely explains earlier field reports of lost level-up windows.
+- **Potions and oils last** (Tuning `combat.lastingMinutes`, Revival 30, Vanilla 0):
+  - `LastingEffects`: modifier id 10000 + the item's id. The `player_modifiers` rows are `lasting_<slug>`; the
+    `player_modifier_to_effect` rows are the item's own potion or oil effect rows. Names are `NOTIFICATIONS/EFFECT/LASTING_<SLUG>`
+    = `**ITEMS/NAMES/POTIONS|OILS/<SLUG>**`; that the game expands the nesting there is **unverified**.
+  - 89 and 10 (`TakeLasting`, after the items are spent): as many potions as `PotionCapacity` (the one taken first goes) and
+    one oil; the same one again restarts its time.
+  - `takenForFight` keeps the new ones out of `WritePlayerModifiers` until 8, 114, 53 or 57 (or `TakenWindowSeconds`, 5
+    minutes: a preparation left without fighting). The fight has them from its preparation already. Then `AfterReplyAsync`
+    pushes each one as AddPlayerModifier's reply (90), as a quest's effect arrives, so the effects panel lists it.
+  - **Field report (2026-10-26):** the saved profile had 10201 and 10301, yet the map's effects panel showed nothing. The
+    likely cause, not confirmed: the old 91 push alone did not refresh the panel, or the fight-end push never came. Fixed by
+    the 90 pushes above; the device check is below.
+  - hook.js "effect icons" borrows preset 16 for potions and 1 for oils.
+  - **Unverified:** that `GetActiveEffects` applies every effect type (Swallow's heal over time, the family-damage effects).
+    Proper-oil experience and the oil and potion skills (`enhanced_oils` etc.) may not count for modifier-borne items.
+- **Monsters drop orens** (Tuning `rewards.fightGold{Common,Rare,Legendary}{Min,Max}` 3–7, 10–15, 20–25 and
+  `rewards.fightGoldPerTier` 25 %, the maintainer's ranges; Vanilla 0, on the assumption the original paid none per fight):
+  - `Economy.FightGold`: a random amount in the rarity's range (a most below the least pays the least), plus the per-tier
+    share for each difficulty step above 1 (the bestiary's 1–3), rounded half to even, so 3 to 38. CombatEndPayload (8, 114)
+    adds it with the experience.
+  - A nemeton adds its monsters' orens to its bounty, and those count even after the daily bounty limit. The nemeton
+    summary's own gold line (`NestWinWindow._goldText`) shows the sum.
+  - The fight reply has no gold field, and the regular summary (`RegularWinWindow`) has no gold line. So just before its
+    reply to a won 8 or 114 (so the hook has it when the summary opens) the server pushes **2003** `[int orens]`, only to a
+    session that has sent 2001 or 2002 (`hookedSessions`: the game itself knows no method 2003). server.log:
+    `Fight orens N: pushed to the hook`.
+  - gps.js `onServerPush` takes this project's own pushes; the game never sees them.
+  - hook.js "fight orens": `BaseWinWindow.BuildExpTable` (0x1AD86B4) writes the orens into the summary data's TimeExp (+0x2C,
+    which the server never fills), so the game shows its fight-duration row (`_encounterTime` +0x108). `XPRewardText.UpdateText`
+    (0x17CE5F8) then reads `N <sprite name="tmp_coin">` (`InlineIconTags.COIN_ICON_TAG`) instead of `N XP`, and `OnXpRowShow`
+    (0x1AD91F8) is offset so the experience total leaves the orens out. The row's label is `UI/PANELS/COMBAT_END/FIGHT_DURATION`,
+    "Gold coins" in the server's texts (nine languages) while fights pay orens.
+  - **Unverified on a device:** that the label is that term (the prefab's Localize component), the icon, and the row order
+    (after the oil row).
+- **Smooth walk, hook performance:**
+  - Moved to C: `gps.js`'s per-frame `LocationModule.Tick` listener (it moves the player, and waited for the script lock while
+    the location poll's Java calls held it, twice a second; now the C hook calls JS only when the 250 ms timer flags work); and
+    hook.js's per-frame quest checks: quest sky (shared `sky` int), collecting finds (`ShouldBeInstantiated`) and the Intruder's
+    `FactRequirement` (JS only for fact 33 = 0).
+  - The effects panel's listener detaches once it has the presets.
+  - game.log's minute line: `gps counts … frames=N over50ms=K longest=Lms poll=Pms`.
+- **Fixed (0.4.0 only, never released):** the asset-key C hook declared `extern void * string_class`, so it compared each key's
+  class with the String class's first field (a CModule symbol is an address) and the reward window fix never applied in C. It
+  is `extern char string_class[]` now.
+- **Crash on the Xiaomi (2026-10-26 00:26, report `witcher-revival-report-20261026-002957`): stuck at 33%.**
+  - **Cause:** UnityMain died with SIGSEGV 6 s after start, at the same address in both runs, inside an anonymous code page.
+    The location-tick CModule wrote its own `static long last`, and a CModule's static variables are read-only; the PC gets an
+    access violation too.
+  - **Fixed:**
+    - The state lives in JS memory as externs: `last` (gint64), and reachability's `said`, which would have crashed offline.
+    - The tick module's clock uses `gint64`.
+    - gps.js's `keep` is now the module-level `kept`: nothing rooted it once the tick left JS, so the GC could have freed the
+      HandleReceived replacement, the tick NativeCallback and the CModule.
+  - **Checked:** `tools/client116/test_hook_sources.py` refuses `static` in the C modules. Tick, reachability, quest sky and
+    collecting finds ran against stand-ins on the PC. (Several Interceptor.attach on NativeCallback stand-ins in one script
+    interfere: test one module per script.)
+  - Rebuilt and installed 2026-10-26; the hook changed, so "Update the game" again.
+- **Checked:** all seven C modules compile with Frida 17.15.3 (built in a throwaway process with stand-in symbols); the hook
+  bundles; the map tests (41) and `tools/client116` tests pass.
+- **Hosted files (answer to the maintainer):** the Internet Archive item holds everything a phone needs (base + 22 splits +
+  26 packs, byte-identical to the PC's clean inputs); the default setup downloads them directly.
+- **Device checks:**
+  - The walk on the map (game.log `frames`, `over50ms`, `poll`) and the reward window.
+  - A reset from a fully learned skill: the log line and the points.
+  - A potion and oil, then a second fight: the effects panel's names and icons right after the first fight (and 5 minutes
+    after a preparation left without fighting), Swift's vitality, an oil's damage.
+  - A won fight: the summary's Gold coins row and the purse (server.log `orens=` and `Fight orens`, game.log
+    `fight orens: the summary shows N`); the experience total without the orens.
+  - A quest place after a new quest starts (server.log walking line).
+
+## 0.4.0, fourth batch (2026-10-31): field round on the 02:02 build
+Evidence: report `witcher-revival-report-20261026-021110`, plus the maintainer's notes. Still unreleased 0.4.0.
+- **Effect names read `**ITEMS/NAMES/OILS/…**`:** the effects panel shows a `**term**` reference as it is. `/revival/texts`
+  now has `alias` {term: the game's term}. `LastingEffects.Names()` fills it (`NOTIFICATIONS/EFFECT/LASTING_<SLUG>` →
+  `ITEMS/NAMES/POTIONS|OILS/<SLUG>`). The hook's texts stage answers an alias with `GetTranslation(alias)`, so the name is
+  the game's own, in the player's language.
+- **Reset skills "did nothing":** the server did reset (`ResetSkills result=reset points=20`) and pushed 63. But
+  `SkillTreePanel` redraws only in Show, OnSkillUnlocked and OnAcquireSkill, never on `PlayerSkillsSynchronizedSignal`.
+  - hook.js tracks the open tree (Show/Close) and details (LoadData/CleanUp). After the GetSkills that follows a reset,
+    it calls `RefreshDisplayers`, `RefreshSkillSlots` and `SkillDetailsWindow.RefreshVisuals`
+    (game.log `reset skills: the skill tree redrawn`).
+  - One tap reached `Button.OnPointerClick` twice (confirm and send in one tap), so a second within 500 ms is ignored.
+  - The words are now short (`Confirm?`, `Refunded`): the label shrank the long ones.
+- **Swordmaster stuck at 8/10:** the task counts CombatDetails Parries (2). Once Hit Reflection is learnt, `GetEndPoints`
+  takes the deflect before the parry, so parries stop counting, on the game's side (`CombatActionQuestProgress`
+  .OnMapFightFinished) and the server's alike. With Tuning `xp.deflectsAsParries` (now in `GameSettings`), the hook adds
+  a parry for each deflect (`SwordStatistics.IncreaseDeflectsCounter` 0x193C37C: +0x14 `_performedParries`). Both sides
+  then count it. **Unconfirmed** that the maintainer had Hit Reflection: the logs do not list skills.
+- **The blacksmith's buff did nothing:** the story modifiers 1–8 had `player_modifiers` rows but no
+  `player_modifier_to_effect` rows. `s01_blacksmith` (1, "Increased damage", added for 3600 s by the sharpening dialogue)
+  now carries ImproveAttackPower (41), with Tuning `combat.blacksmithDamage` (10 %; the original amount is unknown).
+- **Level-up windows still missing:** no level-up in the reports since the push-id fix. 31 is push-only, and
+  `LevelUpEventsManager.OnLevelUp` → `ShowWindowsEvent` (Decide: tracked level < pushed). `LevelUpData` is not showable
+  during a fight and not discard-proof, but `WindowsManager.OnEnviroUnloaded` shows the queued windows after the fight.
+  game.log now has `level up: the game got level N`; the next report after a level-up says which side loses it.
+- **Blacksmith not back after the werewolf fight, no new smith: FIXED in the fifth batch (see there); the findings:**
+  - `StoryEngine.Active` serves a node only while its quest is started and not finished. The farewell (464:
+    `blacksmith`, `blacksmith_map`) and the new smith (381: `new_blacksmith`) are endpoints, so after them nothing of
+    s01hq03 is served.
+  - The game's after-quest scenes are not in the story at all: `s01hq03_blacksmith_after` (383, the sharpening dialogue
+    with the buff; queued by the main graph when f190 = 8), `_active` (497, which queues 464/467/469/471) and `_alarmed`
+    (471), and `s01hq03_new_smith_after` (no node id).
+  - The new smith not arriving at all (381 shows on f141 = 2 & f64 < 1) needs the profile's facts (141, 119, 64, 116,
+    154, 190) to explain.
+  - Atlas: `local/cache/atlas/s01hq03.md` (generated without the localisation by a scratchpad wrapper of `quest_atlas.py`).
+
+## 0.4.0, fifth batch (2026-10-31, afternoon): the maintainer's field notes on the 15:07 build
+- **Reset skills gone again:** the maintainer had granted every skill from the debug tools, so every skill was maxed.
+  `SkillLearnPanel.Refresh` ends with `gameObject.SetActive(!isHighest)`, which hides the whole Learn Panel and the copy
+  inside it. For a maxed skill the hook now shows the panel again with only the copy: the other children it hides are
+  remembered by name and shown again in the next Refresh's onEnter, before the game toggles its own.
+  `GameObject.get_activeSelf` 0x23FDDD0.
+- **Monsters and herbs on quest markers:** quest places come from the epoch-0 layout, and monsters and herbs from the
+  day's places, which are only 50 m apart within a cell. `BuildGetLocationsByCellResponse` now leaves out monsters and
+  herbs within `QuestClearanceMetres` (30) of a shown quest marker: the givers, plus the saved places of
+  `StoryEngine.Active` map nodes (`QuestSpots`, which never chooses a place). They stay in `worldSpawns`/`worldHerbs`, so
+  fights and gathering are unchanged. server.log: `cleared for quests=N`. Test: `test_season1`
+  `test_monsters_and_herbs_keep_clear_of_quest_markers`, which fails at 0 m.
+- **Spawn mix (the maintainer's choices):**
+  - Default lottery 90/9/2 (about one rare in ten; 88/18/3 before). The record's defaults changed, so the default
+    world reshuffles once. Saved schedules (`spawn-balance.json`, the World page) keep theirs, and rules of 88/18/3 keep
+    their identity suffix. The spawn probe's default hash is re-pinned
+    (34109e84…; 88/18/3 was dcf93acf…).
+  - The level gate is Tuning: `spawns.oneSkullLevel` 5, `spawns.twoSkullsLevel` 10, `spawns.threeSkullsLevel` 15 (3/6/10
+    before; the maintainer chose 5 and 10, and 15 for three skulls is my default). `test_world_policy` pins 3/6/10
+    through Tuning for its mechanism test.
+  - Density: `WorldSpawns.DefaultMonsterSlotsPerCell` 24 (18 before), and `places.perCell` 32 (24 before; C# setting
+    and `playable_locations.MAX_PER_CELL`). With 4 herbs and a nemeton, 24 places left only about 19 monsters. A saved
+    `world.json` keeps its own monsters per cell.
+- **Quen absorbed nothing:** `Player.ShieldModifier` (+0xD0) is created at 0. The Quen end point (`GetEndPoints` b__2
+  0x18BB814) lets `1 − ShieldModifier` of a blow through, and only `ImproveQuenAbsorb` (effect 69, Multiplier 2: power /
+  100) raises it. No row gave 69, so every Quen hit passed in full. The `quen_sign` skill now carries 69 with Tuning
+  `skills.quenAbsorb`: Revival 100 (blocks the blow), Vanilla 70 (the community's remembered value), capped at 100 so a
+  blow never heals. Effect row `lab_improve_quen_absorb` added (the client needs every used effect id in `effects`).
+  `ImproveQuen` (12) is the discharge damage, `SignsModifiers.QuenDamageModifier`.
+- **The blacksmith's forge after his quest:** both after-quest graphs are the sharpening services:
+  - `s01hq03_blacksmith_after` (node 383, the game's own id and instance): Lothar spared, dialog `s01hq03_01`
+    ("Will you sharpen my sword?", effect 1 for an hour).
+  - `s01hq03_new_smith_after` (no node id: authored 17882, instance 5124760000000017882): the new smith, dialog
+    `s01hq03_04` ("Blade lost her edge, did she?").
+  - The overlay (`season1_quests.py`) has them as `after` nodes at Lothar's place: shown on f141 = 4 & f64 < 1, and on
+    f64 >= 1. `StoryEngine.Node.After` makes `Active` serve them only once the quest has finished (all other nodes go with
+    their quest).
+  - `season1-story.json` was regenerated: the diff is only the two nodes, with no id or output moved. `story_audit`: 0
+    errors; 467/469/471 (the alarmed scenes) are still left out.
+  - Regenerate with `season1_story.py --graphs local/cache/story/season1-graphs.json --catalog
+    local/cache/apkdata/catalog.json` (base.apk `assets/aa/catalog.json`).
+  - Test: `test_season1` `test_the_blacksmith_keeps_his_forge_after_his_quest` (both endings, at Lothar's place, none
+    while the quest runs).
+  - The maintainer's save is at A Joint Venture, so the cause of "no new smith" (381 should show on f141 = 2 & f64 < 1)
+    could not be checked against real facts. Most likely he came, his scene ended the quest, and he vanished; now his
+    forge stays.
+- **Level-ups for higher levels (other players' reports):** level 5 showed for the maintainer. The level reward tables
+  are sound (every level has known items). The reports most likely come from builds before the push-id fix, where
+  later pushes in a session were dropped.
+- **Device checks:**
+  - The reset button on a maxed skill.
+  - No monster or herb on a quest marker.
+  - The new mix at levels 4/5 (no one-skull before 5).
+  - Monsters per cell (World page: a saved 18 stays).
+  - Quen blocking a blow.
+
+## 0.4.0, sixth batch (2026-10-31, evening): report `witcher-revival-report-20261031-233401`
+- **Refund still not shown:** the server refunded and pushed GetSkills (63), but both `PlayerSkills` and `PlayerData`
+  register 63 only through `ISynchronizer.Synchronize` (`SynchronizationModule.Synchronize<T>` 0x1879A20: replays the
+  boot batch's answer once, no subscription), and nothing listens for a live 63. A first try (forwarding from
+  `PlayerData.OnGetSkillsResponse`) never ran: report `20261031-235700` has the refund (18 points) and no hook line.
+  Now hook.js keeps the start-up `MethodMessage` and the PlayerSkills module (first `OnGetSkillsResponse` 0x1A14210);
+  when `ResponsePropagator.SendResponse<object>` 0x187BF5C carries data of the GetSkillsResponse class, it writes it
+  into the message's `Data` (+0x20) and calls `OnGetSkillsResponse` (clear, add each, points from Data +0x10, the synced
+  signal). game.log: `reset skills: pushed skills applied, points N tree T details D`. The debug tools' skill grants
+  show at once too. Report `20261101-002138`: applied (708 points) but no redraw, because Frida fires no hook for a call
+  made from a callback, so the redraw (once on the handler's onLeave) now runs right after the apply.
+- **Slot levels after a reset:** report `20261101-150213`: the skills were applied and the tree "redrawn", yet it kept the
+  old levels and the game would not learn those skills again (no AcquireSkill sent). `SkillSlot.CheckCurrentLevel`
+  0x19EDFD4 only raises `CurrentLevel` (+0x100) to the chain's highest owned skill and never lowers it. hook.js sets it to
+  -1 on each call and keeps the slots checked since the tree opened, which the reset's redraw sets to -1 before
+  `RefreshSkillSlots`.
+- **No reset on starting skills:** a starting skill's first rank is never refunded, so `SkillLearnPanel.Refresh` treats
+  `SkillSlot.BaseSkill` (+0x108) with `IsStartingSkill` (+0x80) at level 0 as not learned (no button). Upgrades bought on
+  it still offer the reset.
+- **Quest places no longer move:** `PlayerService.TooFar` (re-choose a started quest's place beyond 2 km, which a
+  server restart with the player elsewhere also triggered) is deleted; `ChooseStoryPlace` lost `fresh`. Givers of
+  unstarted quests still follow the player when out of sight (350 m).
+- **Places off paths:** Tuning `places.offPath` 12 m (0 = on the path). Path points move off/off×1.5 to the side, open
+  ground first, then any safe ground; street-side points at `STREET_SIDE_M + offPath/3`. `PLACEMENT_VERSION` 6.
+  Scheduled policies keep the old 6/9 m parks-only rule. Test `test_places_stand_off_the_path`.
+- **Reach:** Tuning `map.interactionRange` (Revival 100, Vanilla 67.5, the game's own `GameConfigData` default), sent as
+  the `basicInteractionRange` row of `game_configuration`; it applies at the next game start.
+- **Quen + perfect parry:** Tuning `combat.quenPerfectParry` (Revival 1, Vanilla 0, in the hook settings). In the perfect
+  parry window (`GetEndPoints` b__12 0x18BBE20) hook.js makes the Quen condition (b__0 0x18BB734, `Player` +0xE8) return
+  false, so the blow goes to deflect/parry/perfect parry and b__1 (which clears +0xE8) never runs. game.log:
+  `quen perfect parry: a perfect parry kept the shield` (once).
+- **Device checks:**
+  - Reset: the points and the tree change at once.
+  - A started quest's place after a server restart.
+  - Places beside paths.
+  - Tapping from about 100 m.
+  - A perfect parry under Quen keeps the shield.
+
+## 0.4.0, seventh batch (2026-11-01): the Discord sweep
+`local/discord/read_server.py` (GET only) saved the whole server to `local/discord/scrape/` (`all.txt`, per-channel JSON;
+report zips and screenshots under `reports/` and `img/`). Issues found and what was done:
+- **Nemeta on quest markers** (xhale 2026-10-31 screenshot, thestanleycast 2026-10-30): `PlayerService.MapClearance`
+  leaves a nemeton within 30 m of a shown quest marker off the map; GetMonsterInstances (87) now keeps the same clearance
+  (it refreshed monsters onto markers). A 25 m monster-to-nemeton rule was tried and dropped: places are
+  `MIN_SPACING_M` = 50 m apart, it only cut monsters in the tests' dense fixtures. Test: `test_season1` clearance test
+  covers nests.
+- **Cursebreaker missing** (skjoldsvartsso 2026-10-28): trinket 20018 needs two of 1043/1038/1039, and `amulet_fail`
+  (1044) also ends the quest. Rows are immutable (`TaskCatalog` refuses redefinitions), so `TaskEngine.SameStep`
+  counts 1044 as 1043 (catch-up from saved outputs). Test: `test_tasks` trinket test uses 1044.
+- **What Lurks before level 10** (same report): its giver is a nemeton; `StoryGivers` holds quest 159 back below
+  `WorldNests.PlayerMinimalLevel`. Test: `test_season1` prerequisites test (level 10 via `season(level10=True)`, and
+  not offered below).
+- **Swordmaster stuck at 8/10** (hjalmareq, ghostofmogus 2026-10-31): the perfect parry action (b__13 0x18BBEA0)
+  bumps only `_performedPerfectParries`; the task counts detail 2 (parries). New Tuning `tasks.perfectParriesAsParries`
+  (Revival 1, Vanilla 0): hook.js stage "perfect parries as parries" adds each to +0x14. Parries pay no experience.
+- **Doogee V30T install** (jawa115, report 2026-10-14, app 0.2.1, Android 12, background running off): every try ends
+  `INSTALL_FAILED_INTERNAL_ERROR: Session relinquished`, then `Session destroyed`, 3-15 s after the confirm. The same
+  1.97 GiB client installs on Android 13 and 16 phones. Not reproducible here and Android hides the installer's log;
+  the failure text now advises background running Unrestricted, a restart, keeping the app open, or adb.
+- **Not fixed, need data:**
+  - "Fewer monsters while the game runs, more after a restart" (jacciesz 2026-10-18/19, lord_axel 2026-10-23).
+    GetMonsterInstances answers every live monster of the cells, so the server side looks right; needs a long
+    session's report noting when the map emptied.
+  - Adding a big region (Poland) "loading" for 3 h, the app still listing one region (jacciesz 2026-10-26/28): no report.
+  - Stutter in fights (jacciesz, Motorola Edge 50 Neo, 2026-10-23/24): 0.4.0's performance work may cover it.
+  - "Add station" popup empty (m4sterpi3ce 2026-10-08, 0.1.0): it lists brewers 2 and 3 (`AlchemyBrewingPanel`
+    OnInitialize), which `Economy.Brewers` now has; likely fixed, to check in the game.
+  - Weather not matching the real weather (jacciesz 2026-10-26): Open-Meteo's data.
+
 ## Current State (2026-10-05)
 **The client:**
 - The phone runs our built client: `local/client/witcher116.apk`, made by `tools/client116/build_client.py` from the clean Play export (`~/witcher_1.1.116_300085`) and the extracted packs (`~/witcher_1.1.116_packs`).

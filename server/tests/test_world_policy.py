@@ -124,7 +124,9 @@ class WorldPolicyTests(base.PrototypeTests):
 
     def test_world_levels_share_instances_and_personal_kills_survive_reconnect_and_restart(self):
         url, _ = self.playable_service(self.response)
-        env = dict(self.RECONSTRUCTED, Playable__Url=url)
+        # The gate's mechanism at levels 1/3/6/10 and 18 monsters a cell (the defaults are 1/5/10/15 and 24)
+        env = dict(self.RECONSTRUCTED, Playable__Url=url, **self.tuned(**{'spawns.oneSkullLevel': 3,
+                   'spawns.twoSkullsLevel': 6, 'spawns.threeSkullsLevel': 10}))
         server = self.start('level-shared-world', env)
         identities = [server.identity] + [(f'SYNTHETIC_WORLD_LEVEL_{level}', '') for level in (3, 6, 10)]
         for identity in identities:
@@ -204,9 +206,9 @@ class WorldPolicyTests(base.PrototypeTests):
                 self.assertEqual(len(response['monsters']), 64*18)
                 for monster in response['monsters']: counts[rarity[monster['monster']]] += 1
             total = sum(counts.values())
-            for kind, weight in ((1, 88), (2, 18), (3, 3)):
+            for kind, weight in ((1, 90), (2, 9), (3, 2)):   # the default lottery (88/18/3 before 2026-10-31)
                 # Six binomial standard deviations plus a small finite-fixture allowance.
-                expected = weight / 109
+                expected = weight / 101
                 margin = 6*(expected*(1-expected)/total)**.5 + .003
                 self.assertAlmostEqual(counts[kind]/total, expected, delta=margin,
                                        msg=f'biome={biome} rarity={kind} counts={counts}')

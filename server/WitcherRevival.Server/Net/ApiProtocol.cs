@@ -35,6 +35,15 @@ public static class ApiProtocol
         return new ApiRequest(msgType, received, id, method, data);
     }
 
+    // The game handles each message id once (ResponsePropagator.SendResponse 0x187BF5C keeps the handled ids), so every
+    // push after the first one sent with id 0 was dropped. Ids from the clock: a restarted server never reuses one the
+    // running game has seen.
+    private static long pushId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() << 10;
+
+    /// <summary>A push: a response to no request (acknowledges none), with a message id of its own.</summary>
+    public static byte[] BuildPush(int method, byte[] methodPayload) =>
+        BuildResponse(Interlocked.Increment(ref pushId), method, methodPayload, ack: []);
+
     /// <summary>Build the Api.Message payload for a response to (id, method) with the given method payload.</summary>
     public static byte[] BuildResponse(long id, int method, byte[] methodPayload, long[]? ack = null)
     {

@@ -17,12 +17,11 @@ public static class SocialPolicy
 
     /// <summary>Call inside the successful combat's existing UpdatePlayer callback, after kills are incremented.
     /// The ordinary combat replay guard protects this same saved revision. Returns the pack id for CombatEnd.</summary>
-    public static LocalProfileStore.PlayerState AwardCombatPack(IConfiguration cfg,
+    public static LocalProfileStore.PlayerState AwardCombatPack(
         LocalProfileStore.PlayerState before, LocalProfileStore.PlayerState after, out int pack)
     {
         pack = 0;
-        int every = cfg.GetValue("Social:GiftEveryWins", 5);
-        if (every is < 0 or > 10000) throw new InvalidOperationException("Social:GiftEveryWins must be within 0..10000.");
+        int every = (int)WorldTuning.Current.Get(WorldTuning.PackEveryWins);
         if (every == 0) return after;
         long previous = before.Kills?.Values.Sum(n => (long)Math.Max(0, n)) ?? 0;
         long current = after.Kills?.Values.Sum(n => (long)Math.Max(0, n)) ?? 0;

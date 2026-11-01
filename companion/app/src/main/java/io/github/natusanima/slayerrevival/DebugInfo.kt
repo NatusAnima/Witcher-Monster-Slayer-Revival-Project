@@ -220,7 +220,9 @@ object DebugInfo {
             "${if (playSigned(it)) "Play" else "other"} signature, game libraries ${GameFiles.hasLibraries(it)}, " +
             "${size(File(it.applicationInfo?.sourceDir ?: "").length())} base" } ?: "not installed") + "\n")
         append("Client built for: ${ClientBuildService.builtFor(context)}, built and waiting to install: ${ClientBuildService.resumable(context)}\n")
-        append("Setup: signed in to Google ${PlayAccount.signedIn(context)}, extra data downloaded ${PackDownloadService.complete(context)}, ")
+        append("Setup: game files from " + (if (PackDownloadService.hosted(context)) "the mirrors (${PackDownloadService.MIRRORS.joinToString()})"
+            else "Google Play") + ", base game downloaded ${PackDownloadService.apksComplete(context)}, ")
+        append("signed in to Google ${PlayAccount.signedIn(context)}, extra data downloaded ${PackDownloadService.complete(context)}, ")
         append("map areas ${Maps.all(context).joinToString { "${Maps.name(context, it)} (${size(it.length())})" }.ifEmpty { "none" }}\n")
         append("Map: ${MapService.status ?: "not started"}\n")
         append("Server: ${ServerService.status}; ports ${ports()}\n")

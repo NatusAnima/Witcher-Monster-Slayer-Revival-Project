@@ -145,7 +145,7 @@ class TaskTests(base.PrototypeTests):
         self.assertEqual((r.integer(), r.integer(), r.ints(), r.ints(), r.integer()), (1, 12001, [0], [], 0))
         self.assertEqual(self.claim(c, 12001)[3], 2)
         self.assertEqual(c.rpc(123), b'\0')
-        before = self.player_info(c)['gold']; self.fight(c)
+        self.fight(c); before = self.player_info(c)['gold']   # after the fight's own orens
         self.assertEqual(self.claim(c, 12001), (0, 12001, before+13, 2))
         self.assertNotEqual(self.claim(c, 12001)[0], 0)
         r = Reader(c.rpc(123)); self.assertEqual((r.byte(), r.integer(), r.integer(), r.integer()), (1, 0, 24001, 70))
@@ -208,12 +208,12 @@ class TaskTests(base.PrototypeTests):
         check(base.decode_batch(c.rpc(115))[122], {12002: [self.NOW, 0]}, [12001])
         self.assertNotEqual(self.claim(c, 12001)[0], 0)
         self.assertEqual(self.player_info(c)['gold'], before+13)
-        self.fight(c)
-        self.assertEqual(self.claim(c, 12002), (0, 12002, before+30, 2))
+        self.fight(c); paid = self.player_info(c)['gold']   # with the fight's own orens
+        self.assertEqual(self.claim(c, 12002), (0, 12002, paid+17, 2))
         check(c.rpc(122), {}, [12001, 12002])
         self.assertEqual(c.rpc(123), b'\1'+I(0)+I(event['id'])+I(70)+I(0))
         check(c.rpc(122), {}, [12001, 12002], final=True)
-        self.assertEqual(self.player_info(c)['gold'], before+100)
+        self.assertEqual(self.player_info(c)['gold'], paid+17+70)
 
     def test_tasks_crafting_preparation_and_trinkets_follow_saved_actions(self):
         daily = [dict(id=10001, slug='brewing', type=6, target=1, item_type=3, gold=5),
@@ -285,7 +285,8 @@ class TaskTests(base.PrototypeTests):
         # Each branch of an ending has its own trinket; the season journal waits for all twelve quests.
         data = json.loads(path.read_text())
         data['Player']['Story']['Finished'] = [104, 147, 148, 149, 150, 152, 153, 154, 158, 159, 160, 161]
-        data['Player']['Story']['Outputs'] += [1043, 1039, 1116, 1275, 1176]   # curse broken, Lothar killed, Dehael died
+        # curse broken (the amulet thrown with amulet_fail counts too), Lothar killed, Dehael died
+        data['Player']['Story']['Outputs'] += [1044, 1039, 1116, 1275, 1176]
         path.write_text(json.dumps(data))
         server, c = self.task_server()
         self.assertEqual(achievements(c), {20025, 20014, 20015, 20016, 20018, 20020, 20021, 20023, 20024})
@@ -402,6 +403,7 @@ class TaskTests(base.PrototypeTests):
         details[8] = 3
         self.fight(c, details=details)
         self.assertEqual(fast_progress(), [30])
+        before = self.player_info(c)['gold']   # after the fights' own orens
         for task in (12001, 12002): self.assertEqual(self.claim(c, task)[0], 0)
         self.assertEqual(c.rpc(123), b'\0')  # Every complete subtask reward must first be claimed.
         self.assertEqual(self.claim(c, 12003), (0, 12003, before+100, 2))

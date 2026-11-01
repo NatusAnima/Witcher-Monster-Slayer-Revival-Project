@@ -3,11 +3,13 @@
 ## Overview
 This project resurrects the discontinued augmented reality game **The Witcher: Monster Slayer** (`com.spokko.witchermonsterslayer`, servers shut down June 2023). It targets client **1.1.116 (version code 300085)**, the last version before update 1.2.
 
-The original backend is gone, so the project runs a reconstructed game server and modifies your own installation of the game to talk to it. The game's files are not distributed here: you install the game yourself (from Google Play through the Aurora Store, or from APKMirror) and the tools build a playable client from that installation.
+The original backend is gone, so the project runs a reconstructed game server and modifies the game to talk to it. The game's files are not in this repository: the companion app downloads the original files, unchanged, from the Internet Archive (or, for a Google account that had the game, from Google Play) and builds a playable client from them.
 
 > **Thank you, Villainser.** This project is using Villainser's fork of this project that contributed immense amounts of code to this project. The game server, the operator panel, the OpenStreetMap map services, the majority of the story and protocol tools, the backend tests and the in-game client fixes all started there. Without it, this project would not exist in its present form. See [Credits and Licensing](#credits-and-licensing).
 
 **Community:** questions, setup help and news are in the unofficial Discord, https://discord.gg/dEJQfecqnU. Bugs still go to GitHub issues.
+
+**Support:** everything here is free and stays free. If you'd like to support the work, there is a Patreon, https://www.patreon.com/NatusAnima: dev logs, your name in the [Supporters](#supporters) list and a Patron role on Discord. Nothing in the game or the source is behind it.
 
 ## How it works
 - **Client:** `tools/client116/build_client.py` merges your installed APK splits and the 26 asset packs Google Play downloads after install into one APK. It patches the manifest, adds Frida Gadget, and re-signs it. Gadget runs `tools/client116/hook.js` inside the game, which:
@@ -28,16 +30,17 @@ The companion app, **Witcher Monster Slayer - Revival**, runs the server and the
 1. **Install the app.** Download `Witcher-Monster-Slayer-Revival-<version>.apk` from [Releases](https://github.com/NatusAnima/Witcher-Monster-Slayer-Revival-Project/releases) and open it on the phone. When Android asks, allow your browser or file manager to install apps.
 2. **Follow the guided setup**, which opens from the app's main screen. It ticks each step off by itself and opens the next:
    1. **Check the phone.** It shows your free space and what the setup needs.
-   2. **The game, version 1.1.116 (code 300085).** Get it from either source; the app checks what is installed and ticks the step. It shows the steps for the one you pick and can switch between them.
-      - **Aurora Store** downloads it from Google Play. Google removed the game from Play in January 2023, so only a Google account that had it before can still download it. In Aurora, sign in with that account (anonymous sign-in can't download it), open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
-      - **APKMirror** needs no Google account for this step. Open version 1.1.116 of The Witcher: Monster Slayer on apkmirror.com, download the **APK** (one file, about 700 MB; the bundle also works, but needs the APKMirror Installer app), and open the file to install it. The app's **Open APKMirror** button opens the search. The extra data in step 4 still comes from a Google account that had the game.
-   3. **Sign in to Google.** The game's 26 extra data packs (1.3 GB) exist only on Google's servers, and the app asks Google Play for them the way the Play Store does. Google removed the game in 2023, so it may only offer them to an account that had the game before. The account stays on the phone, private to the app, and the app signs out when the download ends. Your Google account's device list will show this phone as a Pixel 9a: remove it there afterwards if you like. This is not an official Google method, so use an account you are comfortable with.
-   4. **Download the extra data.** It carries on in the background, even with the screen off.
-   5. **Build the playable client.** The app builds it on the phone from your copy of the game and the extra data, with no PC and no Wireless debugging. Android then asks you twice: to uninstall the game, which the client replaces, and to install the client. Confirm both. It needs about 6–7 GB of free space and a few minutes. The game's own files never leave the phone.
-   6. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
+   2. **Download the game.** The app downloads the original files of version 1.1.116 (code 300085), unchanged, from the Internet Archive: the base APK with its 22 splits and the 26 extra data packs, 2.1 GB in all. No Google account is needed. It keeps each file only once its size and SHA-256 match the list inside the app, and it carries on in the background, even with the screen off.
+   3. **Build the playable client.** The app builds it on the phone from those files, with no PC and no Wireless debugging, and Android asks you to confirm installing it. It needs about 6–7 GB of free space and a few minutes.
+   4. **Your map region.** Pick it from Geofabrik's OpenStreetMap extracts. The app shows the download size, the map's size on the phone and your free space. It then downloads the extract and builds the map on the phone.
+
+   **Had the game on your Google account before?** Tap **I had the game: use Google Play** in step 2 to get it from Google Play instead:
+   - **Install the game through Aurora Store.** Google removed the game from Play in January 2023, so only a Google account that had it before can still download it. In Aurora, sign in with that account (anonymous sign-in can't download it), open the game's page, tap the three dots → **Manual download** and enter **300085**. Then, in the Play Store, use the Google account that previously had the game and untick **Enable auto update** on the game's page. Never tap **Update** there. The app has a button for each.
+   - **Sign in to Google.** The app asks Google Play for the 26 extra data packs (1.3 GB) the way the Play Store does. The account stays on the phone, private to the app, and the app signs out when the download ends. Your Google account's device list will show this phone as a Pixel 9a: remove it there afterwards if you like. This is not an official Google method, so use an account you are comfortable with.
+   - **Download the extra data**, then build the client: Android asks you twice, to uninstall the game, which the client replaces, and to install the client. Confirm both.
 3. **Tap Play.** It starts the server and opens the game when the server is ready.
 
-While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather, and a Tuning page for simple values: monsters and places per map cell, where places lie (paths, parks, woods, water, near houses), experience, loot, herbs, nest gold, the starting bag size and real weather) inside the app.
+While the server runs, **Dashboard** opens the operator panel (players, map, news, tasks, weather, and a Tuning page for simple values: monsters and places per map cell, where places lie (paths, parks, woods, water, near houses), experience, loot, herbs, nemeta, skill points and the skills' numbers, brewing time, the starting bag size and real weather) inside the app.
 
 On the phone, Players → your profile also has **Debug tools** for testing: set orens, level and skill points, learn every skill, give or take items, turn on invincibility or one-hit kills, bring the quests next to you, set the time the quests see (full moon night, dusk, dawn, night or day, for the steps that wait for them), and a quest list that shows every quest's next step and can complete it for you (including the 12 h and 24 h waits). Each change can be undone from History (with the game closed).
 
@@ -169,6 +172,9 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
 - `docs/phone-only-companion.md`: the design for phone-only play (companion app, server on the phone, shared servers).
 - `docs/` (1.0.43): protocol notes, memory maps, and the original server's feature inventory.
 
+## Supporters
+Thank you to everyone who supports the project on [Patreon](https://www.patreon.com/NatusAnima).
+
 ## Credits and Licensing
 - This project is licensed under GPLv3 (`LICENSE`).
 - **Villainser's contribution to this project is immense.** This project is built on Villainser's 1.1.116 reconstruction, which is the source of:
@@ -195,4 +201,4 @@ The code under `server/` originates from Villainser's 1.1.116 reconstruction (se
   - from Alpine Linux 3.22: musl (MIT), CPython 3.12 (PSF-2.0), OpenSSL 3.5 (Apache-2.0), the Mozilla CA certificate bundle (MPL-2.0), SQLite (public domain), libstdc++ and libgcc (GPL with the GCC Runtime Library Exception), zlib (Zlib), libffi and expat (MIT), bzip2 (bzip2), xz/liblzma (0BSD), mpdecimal and lz4 (BSD-2-Clause). Their sources are in Alpine's `aports` repository;
   - the .NET runtime and ASP.NET Core (MIT), compiled into the server;
   - pyosmium 4.3.1 (BSD-2-Clause), with libosmium (Boost Software License 1.0) and protozero (BSD-2-Clause).
-- This project is not affiliated with CD PROJEKT RED or Spokko. No original game files are included; you provide your own installation.
+- This project is not affiliated with CD PROJEKT RED or Spokko. No original game files are in this repository; the companion app downloads them, unchanged, from the Internet Archive.

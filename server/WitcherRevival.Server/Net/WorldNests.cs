@@ -32,8 +32,9 @@ public static class WorldNests
     // NestState (Client WitcherWorld.WebstuffClient.Core.Socket.Api.Response.Map.NestState).
     public const int Default = 1, DefaultClear = 2, Lured = 3, LuredClear = 4, NotAllowed = 5;
 
-    // Client GameConfigData defaults; sent as game_configuration rows too.
-    public const int PlayerMinimalLevel = 10, DailyLimit = 3;
+    // Client GameConfigData defaults 10 and 3; Tuning nests.minLevel and nests.perDay, sent as game_configuration rows too.
+    public static int PlayerMinimalLevel => (int)WorldTuning.Started[WorldTuning.NestMinLevel];
+    public static int DailyLimit => (int)WorldTuning.Started[WorldTuning.NestsPerDay];
 
     // The original game (DualShockers, 20 Jul 2021): "50 coins and up to 580 XP (300 XP for beating the monsters, 250 XP
     // for clearing the Nemeton and 30 XP for a perfect parry and perfect critical)": each monster pays a won fight's base
@@ -45,7 +46,7 @@ public static class WorldNests
     public static int Exp(int amount) => (int)Math.Min(int.MaxValue / 8, (long)amount *
         (long)WorldTuning.Current.Get(WorldTuning.NestExpPercent) / 100 * (long)WorldTuning.Current.Get(WorldTuning.ExpPercent) / 100);
 
-    // Community: 50 gold per clear, the first three clears of a day. The dashboard's Tuning page changes it (the nest
+    // Community: 50 gold per clear, the first three clears of a day (DailyLimit). The dashboard's Tuning page changes it (the nest
     // window shows the server's number, so the two never disagree).
     public const int BountyGold = 50;
     public static int Bounty => (int)WorldTuning.Current.Get(WorldTuning.NestGold);

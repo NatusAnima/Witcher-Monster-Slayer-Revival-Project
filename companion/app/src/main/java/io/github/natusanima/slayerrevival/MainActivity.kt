@@ -33,6 +33,7 @@ class MainActivity : Activity() {
         const val INSTALL = "io.github.natusanima.slayerrevival.INSTALL"
         const val SITE = "https://github.com/${Updates.REPO}"
         const val DISCORD = "https://discord.gg/dEJQfecqnU"
+        const val PATREON = "https://www.patreon.com/NatusAnima"
         const val AURORA_SITE = "https://gitlab.com/AuroraOSS/AuroraStore"
         /** SHA-256 of the certificate Google Play signs the game with: Aurora's copy, before the playable client. */
         const val PLAY_CERT = "35bb00ec82bd877bdcf816cdecba2c99566cf307015ca876768606ce258b3785"
@@ -168,6 +169,8 @@ class MainActivity : Activity() {
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
         page.addView(button("Join the Discord community") { open(DISCORD) }.apply { textSize = 12f },
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
+        page.addView(button("Support on Patreon (optional, everything stays free)") { open(PATREON) }.apply { textSize = 12f },
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
         val version = packageManager.getPackageInfo(packageName, 0).versionName
         page.addView(button("Version $version · Source code and credits") { open(SITE) }.apply { textSize = 12f },
             LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.CENTER_HORIZONTAL })
@@ -287,7 +290,7 @@ class MainActivity : Activity() {
         }
         if (DebugInfo.playSigned(game)) { // the original from Google Play talks to servers that are gone
             Toast.makeText(this, "This is the original game from Google Play, which cannot reach this server. " +
-                "Finish step 5 of the guided setup to install the playable client.", Toast.LENGTH_LONG).show()
+                "Build and install the playable client in the guided setup.", Toast.LENGTH_LONG).show()
             EventLog.write(this, "play", "refused: the installed game is the Google Play copy")
             return
         }

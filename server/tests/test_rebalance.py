@@ -247,14 +247,88 @@ class RebalanceTests(TaskTests):
         details = [0] * 13
         details[11], details[3] = 3, 2
         body = bytes([1]) + I(13) + b''.join(I(v) for v in details) + b'\0'
-        for preset, parry in (('revival', 75), ('vanilla', 45)):
-            with self.subTest(preset=preset):
-                server, c = self.reconstructed('test-parry-' + preset, env=self.world(preset))
+        for preset, values, parry in (('revival', {}, 75), ('vanilla', {}, 45), ('revival', {'xp.perfectParry': 30}, 150)):
+            with self.subTest(preset=preset, values=values):
+                server, c = self.reconstructed(f'test-parry-{preset}-{len(values)}', env=self.world(preset, **values))
                 r = Reader(c.rpc(111, I(16) + I(1) + I(1) + I(1)))
                 self.assertEqual(r.byte(), 1)
                 group, = self.summoned_groups(r)
                 self.assertEqual(c.rpc(113, Q(group['monsters'][0][1])), b'\1')
                 self.assertEqual(self.combat_end(Reader(c.rpc(114, body)))['parry'], parry)
+                server.stop()
+
+    def test_potions_and_oils_last_half_an_hour_in_their_slots(self):
+        # Tuning combat.lastingMinutes (Revival 30, Vanilla 0): a potion or oil spent on a fight becomes a modifier with the item's
+        # own effects, kept out of the game's modifiers during the fight it was taken for (that fight has it already). At the
+        # fight's end the game is given each one as AddPlayerModifier's reply (90), which puts it in the effects panel.
+        def fight(c):
+            r = Reader(c.rpc(111, I(16) + I(1) + I(1) + I(1)))
+            self.assertEqual(r.byte(), 1)
+            group, = self.summoned_groups(r)
+            self.assertEqual(c.rpc(113, Q(group['monsters'][0][1])), b'\1')
+            c.rpc(114, bytes([1]) + I(13) + I(0) * 13 + b'\0')
+        for preset in ('revival', 'vanilla'):
+            with self.subTest(preset=preset):
+                name = 'test-lasting-' + preset
+                server, c = self.reconstructed(name, env=self.world(preset))
+                if preset == 'revival':
+                    data = self.static(server)
+                    self.assertIn({'id': 10201, 'slug': 'lasting_potion_thunderbolt'}, data['player_modifiers'])
+                    own = [dict(r, item_id=10201) for r in data['potion_to_effect'] if r['item_id'] == 201]
+                    self.assertEqual([r for r in data['player_modifier_to_effect'] if r['item_id'] == 10201], own)
+                    self.assertTrue(any(r['item_id'] == 10302 for r in data['player_modifier_to_effect']))
+                self.saved_profile(c)
+                server.stop()
+                self.edit(name, lambda p: p.update(Items=dict(p['Items'], potions={'201': 3, '202': 3}, oils={'301': 2, '302': 2})))
+                c = self.client(self.start(name, dict(self.RECONSTRUCTED, **self.world(preset))))
+                c.rpc(119)   # the post-sync gate: from here the session gets pushes
+                lasting = lambda: {k: v for k, v in modifiers(c.rpc(91)).items() if k >= 10000}
+                def added():
+                    pushed = [struct.unpack('>5i', body) for method, body in c.pushes if method == 90]
+                    c.pushes.clear()
+                    return {m: (start, expire) for _, result, m, start, expire in pushed if result == 0}
+                self.assertEqual(c.rpc(89, I(301) + I(1) + I(201)), b'\1')   # Thunderbolt and the basic oil for a fight
+                self.assertEqual(lasting(), {})
+                c.pushes.clear()
+                fight(c)
+                if preset == 'vanilla':
+                    self.assertEqual(lasting(), {})
+                    self.assertEqual(added(), {})
+                    continue
+                after = lasting()
+                self.assertEqual(set(after), {10201, 10301})
+                self.assertAlmostEqual(after[10201][1], time.time() + 1800, delta=60)
+                self.assertEqual(added(), {m: (after[m][0], after[m][1]) for m in after})
+                # One potion slot: Swift replaces Thunderbolt, and the necrophage oil the basic one
+                self.assertEqual(c.rpc(89, I(302) + I(1) + I(202)), b'\1')
+                self.assertEqual(lasting(), {})
+                self.griffin(c)   # a story fight, ended by its graph (EndBehaviourGraph)
+                self.assertEqual(set(lasting()), {10202, 10302})
+                self.assertEqual(set(added()), {10202, 10302})
+
+    def test_a_won_fight_pays_orens_by_rarity_and_difficulty(self):
+        # Tuning rewards.fightGold* (Revival 3-7, 10-15 and 20-25 orens by rarity and 25 % more a difficulty tier, Vanilla
+        # none), into the purse, and pushed (2003) to a game with the hook, which shows them in the fight's summary.
+        for preset in ('revival', 'vanilla'):
+            with self.subTest(preset=preset):
+                server, c = self.task_server(self.kills(1), name='orens-' + preset, extra=self.world(preset))
+                c.rpc(2002)   # the hook's own request (a skill reset, nothing to give back): this game has the hook
+                r = Reader(c.rpc(111, I(16) + I(1) + I(1000000) + I(1000000)))
+                self.assertEqual(r.byte(), 1)
+                group, = self.summoned_groups(r)
+                monster, instance, _ = group['monsters'][0]
+                self.assertEqual(c.rpc(113, Q(instance)), b'\1')
+                before = self.player_info(c)['gold']
+                c.pushes.clear()
+                c.rpc(114, bytes([1]) + I(13) + I(0) * 13 + b'\0')
+                orens = self.player_info(c)['gold'] - before
+                pushed = [struct.unpack('>i', body)[0] for method, body in c.pushes if method == 2003]
+                least, most = base.fight_orens(monster)
+                if preset == 'vanilla':
+                    self.assertEqual((orens, pushed), (0, []))
+                else:
+                    self.assertTrue(least <= orens <= most, orens)
+                    self.assertEqual(pushed, [orens])
                 server.stop()
 
     def test_the_hook_texts_follow_the_preset(self):
@@ -272,25 +346,57 @@ class RebalanceTests(TaskTests):
         self.assertEqual(texts['replace']['NOTIFICATIONS/EFFECT/TROPHY_LIZARD_SLAYER']['de'],
                          'Echsenschlächter: +20 % Angriff gegen Drakoniden')
         self.assertEqual(texts['replace']['ITEMS/NAMES/CONSUMABLES/INTERACTION_BOOSTER']['en'], 'Rain Charm')
+        self.assertEqual(texts['replace']['UI/PANELS/COMBAT_END/FIGHT_DURATION']['pl'], 'Złote monety')   # the orens line
+        # the lasting potions' and oils' names: the game's own terms, which hook.js looks up
+        self.assertEqual(texts['alias']['NOTIFICATIONS/EFFECT/LASTING_POTION_THUNDERBOLT'], 'ITEMS/NAMES/POTIONS/POTION_THUNDERBOLT')
+        self.assertEqual(texts['alias']['NOTIFICATIONS/EFFECT/LASTING_OIL_BASIC'], 'ITEMS/NAMES/OILS/OIL_BASIC')
+        self.assertFalse(any('**' in term for term in texts['alias'].values()))
         self.assertEqual(texts['replace']['REVIVAL/OPEN_PACK_HEADER']['fr'], 'Voulez-vous ouvrir cet <nobr>objet :</nobr> <nobr>#0 ?</nobr>')
         for term, text in list(texts['replace'].items()) + list(texts['append'].items()):
             if isinstance(text, dict):
                 self.assertTrue(all(text.values()), term)
         # the settings hook.js applies in the game (Revival); the oils multiply, so their descriptions stay
         self.assertEqual(texts['settings'], {'combat.oilsMultiply': 1, 'quests.collectingDistance': 100,
-                                             'quests.collectingUntracked': 1, 'quests.intruderAllEndings': 1})
+                                             'quests.collectingUntracked': 1, 'quests.intruderAllEndings': 1,
+                                             'skills.reset': 1, 'xp.deflectsAsParries': 1, 'combat.quenPerfectParry': 1,
+                                             'tasks.perfectParriesAsParries': 1})
         self.assertFalse(any(k.startswith('ITEMS/DESCRIPTIONS/OILS/') for k in texts['append']))
         server.stop()
         server, c = self.task_server(self.kills(1), extra=self.world('vanilla', **{'spawns.wikiOccurrences': 0}))
         with urllib.request.urlopen(f'http://127.0.0.1:{server.http}/revival/texts', timeout=2) as response:
             texts = json.loads(response.read())
         self.assertFalse(any(k.startswith('MONSTERS/') for k in texts['replace']))
+        self.assertNotIn('UI/PANELS/COMBAT_END/FIGHT_DURATION', texts['replace'])   # Vanilla fights pay no orens
+        self.assertEqual(texts['alias'], {})   # nor do its potions last
         # the original sum of bonuses: each oil's description says what its bonus is a share of
         oils = ['BASIC', 'NECROPHAGE', 'OGROID', 'CURSED', 'RELICT', 'HYBRID', 'INSECTOID', 'DRACONID', 'SPECTER', 'ELEMENTAL', 'VAMPIRE']
         self.assertEqual(set(texts['append']), {'ITEMS/DESCRIPTIONS/OILS/OIL_' + oil for oil in oils})
         self.assertTrue(texts['append']['ITEMS/DESCRIPTIONS/OILS/OIL_BASIC']['en'].startswith("\nIts bonus is a share of the sword's base"))
         self.assertEqual(texts['settings'], {'combat.oilsMultiply': 0, 'quests.collectingDistance': 200,
-                                             'quests.collectingUntracked': 0, 'quests.intruderAllEndings': 0})
+                                             'quests.collectingUntracked': 0, 'quests.intruderAllEndings': 0,
+                                             'skills.reset': 0, 'xp.deflectsAsParries': 0, 'combat.quenPerfectParry': 0,
+                                             'tasks.perfectParriesAsParries': 0})
+
+    def test_the_blacksmiths_sharpening_raises_melee_damage(self):
+        # s01_blacksmith (id 1), which his story graph adds for an hour: ImproveAttackPower (41), Tuning combat.blacksmithDamage
+        for amount in (10, 25):
+            with self.subTest(amount=amount):
+                server = self.start(f'test-smith-{amount}', dict(self.RECONSTRUCTED, **self.world(**{'combat.blacksmithDamage': amount})))
+                rows = self.static(server)['player_modifier_to_effect']
+                self.assertEqual([(r['effect_id'], r['power']) for r in rows if r['item_id'] == 1], [(41, amount)])
+                server.stop()
+
+    def test_quen_absorbs_its_share_of_a_blow(self):
+        # The game starts Quen's shield at nothing (Player.ShieldModifier 0, a blow passes 1 - it), so the Quen skill carries
+        # ImproveQuenAbsorb (69, power / 100): Tuning skills.quenAbsorb, Revival 100, Vanilla 70.
+        for preset, share in (('revival', 100), ('vanilla', 70)):
+            with self.subTest(preset=preset):
+                server = self.start('test-quen-' + preset, dict(self.RECONSTRUCTED, **self.world(preset)))
+                data = self.static(server)
+                quen = next(s['id'] for s in data['skills'] if s['slug'] == 'quen_sign')
+                rows = [(r['effect_id'], r['power']) for r in data['skill_to_effect'] if r['item_id'] == quen]
+                self.assertIn((69, share), rows)
+                server.stop()
 
     def test_bestiary_tiers_follow_the_tuning(self):
         # Each tier's row carries the kills since the previous tier: Revival 3/25/100, Vanilla (before 1.2) 3/50/150.

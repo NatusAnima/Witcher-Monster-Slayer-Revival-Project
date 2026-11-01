@@ -1,4 +1,5 @@
 """The dashboard's tuning page: the file it saves, the limits it enforces and the audit trail it leaves."""
+import gzip
 import http.server
 import json
 import struct
@@ -54,6 +55,34 @@ class TuningApiTests(unittest.TestCase):
         self.restart()
         self.assertEqual(self.request('tuning')[1]['values'], written['values'])
         self.assertIn('tuning', [r['action'] for r in self.request('receipts')[1]])
+
+    def test_the_games_own_numbers_reach_it_at_the_next_start(self):
+        state = self.request('tuning')[1]
+        defaults = {d['key']: d['default'] for d in state['definitions']}
+        self.assertEqual([defaults[k] for k in ('nests.minLevel', 'nests.perDay', 'xp.perfectParry', 'xp.perfectAttack', 'xp.firstKill',
+                                                'xp.properOil', 'skills.pointsPerLevel', 'bestiary.tierSkillPoints',
+                                                'alchemy.brewTimePercent', 'rewards.packEveryWins', 'skills.auraIntervalMinutes')],
+                         [10, 3, 15, 15, 100, 50, 5, 1, 100, 5, 60])
+        for bad in ({'nests.minLevel': 11}, {'nests.perDay': 0}, {'skills.squallRemains': 0}, {'skills.auraIntervalMinutes': 4},
+                    {'skills.auraLifetimeMinutes': 1441}, {'skills.auraIntervalMinutes': 30}):   # the last: longer than its interval
+            with self.subTest(bad=bad):
+                self.assertEqual(self.request('tuning', 'PUT', self.body(bad, state['revision']))[0], 400)
+
+        def game(port):
+            with urllib.request.urlopen(f'http://127.0.0.1:{port}/staticdata', timeout=3) as response:
+                data = json.loads(gzip.decompress(response.read()))
+            config = {r['param_name']: r['param_value'] for r in data['game_configuration']}
+            return (config['nestDailyLimit'], config['nestPlayerMinimalLevel'],
+                    {r['id']: r['crafting_time'] for r in data['potion_recipes']}[2101],
+                    {r['id']: r['skill_points'] for r in data['level_ups']}[2],
+                    [r['power'] for r in data['skill_to_effect'] if (r['item_id'], r['effect_id']) == (29, 77)])
+        self.assertEqual(game(self.server.http), ('3', '10', 600, 5, [3600]))
+        changed = {'nests.perDay': 5, 'nests.minLevel': 6, 'alchemy.brewTimePercent': 50, 'skills.pointsPerLevel': 7,
+                   'skills.auraIntervalMinutes': 30, 'skills.auraLifetimeMinutes': 30}
+        self.assertEqual(self.request('tuning', 'PUT', self.body(changed, state['revision']))[0], 200)
+        self.assertEqual(game(self.server.http), ('3', '10', 600, 5, [3600]))   # the game got these at its start: they wait
+        self.restart()
+        self.assertEqual(game(self.server.http), ('5', '6', 300, 7, [1800]))
 
     def test_presets_are_built_in_copied_renamed_and_deleted(self):
         state = self.request('tuning')[1]

@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.net.Uri
 import android.os.SystemClock
 import android.text.format.Formatter
 import java.io.File
@@ -16,13 +17,26 @@ import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread
 
 /**
- * Downloads the game's 26 extra asset packs from Google Play (PlayPacks) in the foreground, so it carries on with
- * the screen off. The player is signed out of Google as soon as every pack is in and checked.
+ * Downloads the game files in the foreground, so it carries on with the screen off. Hosted (the default): the base game's
+ * APKs and the 26 extra asset packs, unchanged, from the mirrors. Google Play (for players who had the game): the 26 packs
+ * through PlayPacks, and the player is signed out of Google as soon as every pack is in and checked.
  */
 class PackDownloadService : Service() {
     companion object {
         const val CANCEL = "io.github.natusanima.slayerrevival.CANCEL_PACKS"
         private const val CONNECTIONS = 4
+
+        /** Where the original game files are hosted, in order; a file that fails on one is tried on the next. */
+        val MIRRORS = listOf("https://archive.org/download/witcher-monster-slayer-1.1.116-android/")
+
+        /** The setup's source of the game files: "hosted" (the default) or "play". */
+        fun hosted(context: Context) = context.getSharedPreferences("setup", Context.MODE_PRIVATE).getString("source", "hosted") == "hosted"
+
+        /** The base game's APKs from the mirrors (the client is built from them instead of an installed game). */
+        fun apks(context: Context) = File(context.filesDir, "game/apks")
+
+        fun apksComplete(context: Context) =
+            PlayPacks.expected(context, "apks.txt").all { File(apks(context), it.name).length() == it.size }
 
         /** The running download's progress, or how the last one ended; null before the first. */
         @Volatile
@@ -81,7 +95,7 @@ class PackDownloadService : Service() {
         thread(name = "pack-download") {
             val release = keepAwake(this, "packs", 4 * 60 * 60 * 1000L)
             try {
-                download()
+                if (hosted(this)) downloadHosted() else download()
             } finally {
                 release()
             }
@@ -120,7 +134,7 @@ class PackDownloadService : Service() {
                         if (cancelled) throw CancellationException()
                         val done = before + bytes
                         progress = (done * 100 / total).toInt()
-                        show(done, total, i, packs.size)
+                        show("the extra data", done, total, "pack ${i + 1} of ${packs.size}")
                     }
                     break
                 } catch (e: IOException) {
@@ -141,16 +155,58 @@ class PackDownloadService : Service() {
         }
     }
 
+    /**
+     * The game's APKs and packs from the mirrors (MIRRORS), each kept only once its size and SHA-256 match the lists in the
+     * app (apks.txt, packs.txt); files already here, such as packs from an earlier Google Play download, are skipped.
+     */
+    private fun downloadHosted() {
+        try {
+            val files = PlayPacks.expected(this, "apks.txt").map { it to apks(this) } + PlayPacks.expected(this).map { it to dir(this) }
+            val total = files.sumOf { it.first.size }
+            var before = 0L
+            for ((i, entry) in files.withIndex()) {
+                val (file, folder) = entry
+                val target = File(folder, file.name)
+                if (target.length() != file.size) {
+                    var failure: IOException? = null
+                    for (mirror in MIRRORS + MIRRORS) { // each mirror twice: a dropped connection resumes on the second try
+                        try {
+                            downloadChecked(mirror + file.name, target, file.size, file.sha256) { bytes ->
+                                if (cancelled) throw CancellationException()
+                                progress = ((before + bytes) * 100 / total).toInt()
+                                show("the game", before + bytes, total, "file ${i + 1} of ${files.size}")
+                            }
+                            EventLog.write(this, "packs", "${file.name}: verified, ${file.size} bytes, from ${Uri.parse(mirror).host}")
+                            failure = null
+                            break
+                        } catch (e: IOException) {
+                            failure = e
+                            EventLog.write(this, "packs", "${file.name} failed from ${Uri.parse(mirror).host}: $e")
+                        }
+                    }
+                    failure?.let { throw it }
+                }
+                before += file.size
+            }
+            progress = 100
+            update("All ${files.size} game files are downloaded and checked.")
+        } catch (e: CancellationException) {
+            update("Cancelled. Starting again continues where this stopped.")
+        } catch (e: Exception) {
+            failed = true
+            update("The download stopped: ${e.message ?: e.javaClass.simpleName}")
+        }
+    }
+
     /** The progress line, at most once a second: the bytes arrive far faster than a notification can be shown. */
-    private fun show(done: Long, total: Long, index: Int, count: Int) {
+    private fun show(what: String, done: Long, total: Long, where: String) {
         val now = SystemClock.elapsedRealtime()
         val last = shownAt // the download threads all call this: read it once, or another thread's update makes the divisor 0
         if (now - last < 1000) return
         val rate = if (last == 0L) 0 else maxOf(0L, done - shownBytes) * 1000 / (now - last)
         shownAt = now
         shownBytes = done
-        update("Downloading the extra data: ${size(done)} of ${size(total)}" + (if (rate > 0) " · ${size(rate)}/s" else "") +
-            " · pack ${index + 1} of $count")
+        update("Downloading $what: ${size(done)} of ${size(total)}" + (if (rate > 0) " · ${size(rate)}/s" else "") + " · $where")
     }
 
     private fun size(bytes: Long) = Formatter.formatShortFileSize(this, bytes)
@@ -164,7 +220,7 @@ class PackDownloadService : Service() {
     private fun notification(text: String, ongoing: Boolean = true): Notification {
         return Notification.Builder(this, "packs")
             .setSmallIcon(if (ongoing) android.R.drawable.stat_sys_download else android.R.drawable.stat_sys_download_done)
-            .setContentTitle("Extra data")
+            .setContentTitle(if (hosted(this)) "Game files" else "Extra data")
             .setContentText(text)
             .setStyle(Notification.BigTextStyle().bigText(text))
             .setProgress(if (ongoing) 100 else 0, progress.coerceAtLeast(0), ongoing && progress < 0)
