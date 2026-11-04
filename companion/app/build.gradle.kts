@@ -5,7 +5,9 @@ plugins {
 }
 
 // The release key stays in local/keys/ (never committed). companion.properties names the keystore, its alias
-// and its password. Lose it and installed copies can no longer update: keep a backup.
+// and its password. Lose it and installed copies can no longer update: keep a backup. Without it, every build is signed
+// with this computer's Android debug key (~/.android/debug.keystore, made on first use), so a self-built APK installs,
+// and each later build installs over it, with or without a fresh clone.
 val releaseKey = rootDir.resolve("../local/keys/companion.properties")
 
 // x.y.z. x: the stage (alpha, beta, ...). y: raise it for a release that touches the game itself; the app then updates
@@ -25,6 +27,7 @@ android {
         versionName = appVersion
         // The runtime is arm64-only: a phone with another ABI should refuse the install, not crash at start.
         ndk { abiFilters += "arm64-v8a" }
+        manifestPlaceholders["appLabel"] = "Witcher Monster Slayer - Revival"
     }
 
     signingConfigs {
@@ -39,7 +42,16 @@ android {
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.findByName("release")
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+        }
+        // gradlew assembleDev: a second app beside the published one, with its own server data, map and progress. It shares
+        // the one game on the phone (Updates.isDev) and can only run while the other copy's server is stopped: same ports.
+        create("dev") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".dev"
+            signingConfig = signingConfigs.getByName("debug")
+            manifestPlaceholders["appLabel"] = "Monster Slayer Revival DEV"
+            matchingFallbacks += "release"
         }
     }
 

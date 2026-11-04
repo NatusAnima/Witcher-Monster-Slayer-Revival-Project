@@ -38,11 +38,14 @@ object Updates {
 
     private var checked = false
 
+    /** The side-by-side dev build (gradlew assembleDev): it never updates itself from the published releases. */
+    fun isDev(context: Context) = context.packageName.endsWith(".dev")
+
     fun installedVersion(context: Context) = context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "0"
 
     /** Looks for a newer release, once per app start. */
     fun check(context: Context) {
-        if (checked) return
+        if (checked || isDev(context)) return
         checked = true
         val current = installedVersion(context)
         thread(name = "update-check") {

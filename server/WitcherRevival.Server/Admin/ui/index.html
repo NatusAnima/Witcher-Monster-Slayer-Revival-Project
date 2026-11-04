@@ -599,6 +599,33 @@
               <p id="placement-preview-status" class="hint" role="status"></p>
               <div id="placement-diagnostics" class="table-wrap" tabindex="0" role="region" aria-label="Rozmieszczenie miejsc"></div>
             </details>
+            <details id="nemeton-editor" class="placement-editor">
+              <summary>Nemetony i kowal na mapie</summary>
+              <p>Nemeton zostaje w swoim miejscu po restartach, aktualizacjach i zmianach ustawień. Tutaj możesz postawić go dokładnie tam, gdzie chcesz, albo usunąć. Zmiana działa od razu na całym serwerze.</p>
+              <p class="hint">Jedna komórka mapy mieści jeden nemeton, a postawiony zastępuje dotychczasowy. Uruchomiona gra może pokazać zmianę dopiero po ponownym uruchomieniu. Nemeton bliżej niż 30 m od znacznika zadania jest ukryty.</p>
+              <p class="hint">Kowal należy do wybranego profilu. Gdy podejdziesz do niego na 350 m, zostaje na miejscu. Gra pokazuje go tylko z tej odległości, a przeniesienie widać po ponownym uruchomieniu gry. Pozostałe zadania działają bez zmian.</p>
+              <p id="nemeton-status" class="inline-status" role="status" hidden></p>
+              <form id="nemeton-form">
+                <fieldset id="nemeton-fields" disabled>
+                  <legend class="sr">Nemetony i kowal na mapie</legend>
+                  <label>Co postawić<select id="nemeton-what"><option value="nest">Nemeton</option><option value="blacksmith">Kowal</option></select></label>
+                  <div class="placement-settings">
+                    <label>Szerokość geograficzna<input id="nemeton-lat" type="number" min="-85" max="85" step="any" required /></label>
+                    <label>Długość geograficzna<input id="nemeton-lng" type="number" min="-180" max="180" step="any" required /></label>
+                  </div>
+                  <div class="button-row">
+                    <button id="nemeton-pick" type="button" class="secondary">Wskaż na mapie</button>
+                    <button type="submit">Postaw</button>
+                    <button id="nemeton-cancel" type="button" class="secondary">Anuluj</button>
+                  </div>
+                  <p id="nemeton-pick-status" class="hint" role="status"></p>
+                  <div class="section-heading"><h3>Postawione ręcznie</h3></div>
+                  <div id="nemeton-pins" class="placement-controls"></div>
+                  <div class="section-heading"><h3>Usunięte</h3></div>
+                  <div id="nemeton-removed" class="placement-controls"></div>
+                </fieldset>
+              </form>
+            </details>
             <div class="section-heading">
               <h2>
                 Obiekty w obszarze <span id="map-count" class="count">—</span>

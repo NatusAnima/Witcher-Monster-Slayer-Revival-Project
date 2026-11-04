@@ -11,6 +11,7 @@ import time
 from unittest.mock import patch
 import unittest
 
+import placement_policy
 import playable_locations as pl
 import s2cells
 
@@ -351,6 +352,195 @@ class CacheTests(unittest.TestCase):
         self.assertEqual(index.calls, 1)
         self.assertTrue(all(f'-123-' in row['id'] for row in original))
         self.assertEqual(service._sampled.stats()['entries'], 2)
+
+
+class NemetonSpotTests(unittest.TestCase):
+    """A nemeton's spot is decided once per cell and survives what would draw it elsewhere; the dashboard can overrule it."""
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        folder = Path(self.directory.name)
+        self.spots, self.pins, self.tuning, self.policy = (folder / name for name in
+            ("nemeton-spots.json", "nemeton-pins.json", "tuning.json", "placement-policy.json"))
+        self.cell = s2cells.cell_of(10, 20, pl.CELL_LEVEL)
+        self.proj = pl.Projection(*s2cells.center(self.cell))
+        self.elements = self.town()
+        owner = self
+
+        class Index:
+            meta = {}
+            covered = True
+            def covers(self, *args): return self.covered
+            def document(self, *args, clip=None): return {"elements": list(owner.elements)}
+        self.index = Index()
+
+    def town(self):
+        rows = []
+        for y in range(-900, 901, 50):   # over this cell and its neighbours
+            rows.append({"type": "way", "tags": {"highway": "footway"}, "geometry":
+                         [dict(zip(("lat", "lon"), self.proj.latlng(x, y))) for x, y in ((-900, y), (900, y + 7))]})
+        return rows
+
+    def service(self, **paths):
+        """A fresh service, as after a restart."""
+        return pl.PlayableLocations(self.index, self.policy, self.tuning, self.spots, self.pins, **paths)
+
+    def nest(self, service, cell=None, epoch=20761):
+        cell = cell or self.cell
+        row = service.payload([cell], epoch)[str(cell)]
+        if row["nest_place_id"] is None:
+            return None
+        spot, = [p for p in row["places"] if p["id"] == row["nest_place_id"]]
+        return spot["lat"], spot["lng"]
+
+    def write_pins(self, pins=(), removed=()):
+        self.pins.write_text(json.dumps(dict(schemaVersion=1, pins=list(pins), removed=[str(c) for c in removed])))
+
+    def test_saved_spot_survives_restarts_settings_policy_and_a_changed_map(self):
+        spot = self.nest(self.service())
+        self.assertIsNotNone(spot)
+        self.assertEqual(self.nest(self.service(), epoch=20800), spot)
+        self.tuning.write_text(json.dumps({"schemaVersion": 1, "values": {"places.offPath": 25, "places.streetClearance": 20}}))
+        self.assertEqual(self.nest(self.service()), spot)
+        self.policy.write_text(json.dumps({"schemaVersion": 1, "versions": [
+            {"fromEpoch": 20700, "policy": dict(placement_policy.DEFAULT)}]}))
+        self.assertEqual(self.nest(self.service()), spot)
+        self.elements = self.elements[:1]   # the mapped paths change: the candidates are others now
+        self.assertEqual(self.nest(self.service()), spot)
+        self.index.covered = False          # even with its map area gone
+        self.assertEqual(self.nest(self.service()), spot)
+
+    def test_without_a_saved_spot_the_settings_would_have_moved_it(self):
+        # What the file protects from: the same cell, drawn afresh under other numbers.
+        before = self.nest(pl.PlayableLocations(self.index, None, self.tuning))
+        self.tuning.write_text(json.dumps({"schemaVersion": 1, "values": {"places.offPath": 25}}))
+        self.assertNotEqual(self.nest(pl.PlayableLocations(self.index, None, self.tuning)), before)
+
+    def test_first_save_keeps_the_draw_and_a_cell_without_a_map_stays_undecided(self):
+        drawn = self.nest(pl.PlayableLocations(self.index))
+        self.assertEqual(self.nest(self.service()), drawn)
+        cell = s2cells.neighbors(self.cell)[0]
+        self.index.covered = False
+        service = self.service()
+        self.assertIsNone(self.nest(service, cell))
+        self.assertEqual(service.spots.get(cell), (False, None))
+        self.index.covered = True
+        self.assertIsNotNone(self.nest(self.service(), cell))
+
+    def test_a_cell_decided_without_a_nemeton_stays_without_one_in_any_request_order(self):
+        other = s2cells.neighbors(self.cell)[0]
+        first = {str(cell): self.nest(self.service(), cell) for cell in (self.cell, other)}
+        self.spots.unlink()
+        second = {str(cell): self.nest(self.service(), cell) for cell in (other, self.cell)}
+        self.assertEqual(first, second)
+        self.assertEqual(json.loads(self.spots.read_text())["schemaVersion"], 1)
+        self.assertEqual(self.nest(self.service(), self.cell), first[str(self.cell)])
+
+    def test_pin_stands_at_exact_coordinates_and_replaces_the_saved_spot(self):
+        service = self.service()
+        spot = self.nest(service)
+        lat, lng = self.proj.latlng(33, -71)
+        lat, lng = round(lat, 6), round(lng, 6)
+        self.write_pins([dict(id="pin-1", lat=lat, lng=lng)])
+        self.assertEqual(self.nest(service), (lat, lng))     # the file is read again without a restart
+        row = service.payload([self.cell], 20761)[str(self.cell)]
+        place, = [p for p in row["places"] if p["id"] == row["nest_place_id"]]
+        self.assertEqual(place["kind"], "pinned")
+        self.assertEqual(place["id"], f"lab-{self.cell:016x}-20761-{pl.PLACEMENT_VERSION * 1000 + 999}")
+        self.assertEqual(self.nest(self.service(), epoch=20900), (lat, lng))
+        self.assertTrue(all(pl._distance_m(p, place) >= pl.MIN_SPACING_M for p in row["places"] if p is not place))
+        self.write_pins()
+        self.assertEqual(self.nest(service), spot)           # unpinned: back to its own spot
+
+    def test_pin_stands_outside_the_map_areas_and_on_unsafe_ground(self):
+        lat, lng = self.proj.latlng(10, 10)
+        self.elements.append({"type": "area", "kind": "building", "rings": [
+            [self.proj.latlng(x, y) for x, y in ((0, 0), (20, 0), (20, 20), (0, 20))]]})
+        self.write_pins([dict(id="pin-1", lat=lat, lng=lng)])
+        service = self.service()
+        self.assertEqual(self.nest(service), (round(lat, 6), round(lng, 6)))
+        self.index.covered = False
+        self.assertEqual(self.nest(self.service()), (round(lat, 6), round(lng, 6)))
+        self.assertEqual(self.service().payload([self.cell], 20761)[str(self.cell)]["places"][0]["biomes"], [pl.GRASSLAND])
+
+    def test_removed_cell_has_no_nemeton_until_restored(self):
+        service = self.service()
+        spot = self.nest(service)
+        self.write_pins(removed=[self.cell])
+        self.assertIsNone(self.nest(service))
+        self.assertIsNone(self.nest(self.service()))
+        self.write_pins()
+        self.assertEqual(self.nest(service), spot)
+
+    def test_an_undecided_neighbour_gives_way_to_a_pin_only_while_it_stands(self):
+        # A neighbour with a nemeton of its own, whose spot this cell's edge can reach within the nest spacing.
+        drawn, centre = pl.PlayableLocations(self.index), s2cells.center(self.cell)
+        reach = []
+        for other in s2cells.neighbors(self.cell):
+            spot = drawn.nest_place(other, 20761)
+            for corner in s2cells.corners(self.cell) if spot else ():
+                lat, lng = corner[0] * .95 + centre[0] * .05, corner[1] * .95 + centre[1] * .05
+                if pl._distance_m(spot, dict(lat=lat, lng=lng)) < pl.NEST_SPACING_M:
+                    reach.append((other, lat, lng))
+        other, lat, lng = reach[0]
+        self.assertEqual(s2cells.cell_of(lat, lng, pl.CELL_LEVEL), self.cell)
+        service = self.service()
+        self.write_pins([dict(id="pin-1", lat=lat, lng=lng)])
+        self.assertIsNone(self.nest(service, other))
+        self.assertEqual(service.spots.get(other), (False, None))
+        self.write_pins()
+        self.assertIsNotNone(self.nest(service, other))
+
+    def test_an_exclusion_moves_a_saved_spot_but_not_a_pin(self):
+        lat, lng = self.nest(self.service())
+        self.policy.write_text(json.dumps({"schemaVersion": 1, "versions": [{"fromEpoch": 20700, "policy": dict(
+            placement_policy.DEFAULT, exclusions=[dict(id="keep-out", lat=lat, lng=lng, radiusMeters=20)])}]}))
+        moved = self.nest(self.service())
+        self.assertNotEqual(moved, (lat, lng))
+        self.assertGreater(pl._distance_m(dict(lat=lat, lng=lng), dict(lat=moved[0], lng=moved[1])), 20)
+        self.assertEqual(self.nest(self.service()), moved)
+        self.write_pins([dict(id="pin-1", lat=lat, lng=lng)])
+        self.assertEqual(self.nest(self.service()), (lat, lng))
+
+    def test_damaged_files_do_not_stop_the_service(self):
+        service = self.service()
+        lat, lng = self.proj.latlng(5, 5)
+        self.write_pins([dict(id="pin-1", lat=lat, lng=lng)])
+        pinned = self.nest(service)
+        self.pins.write_text("{broken")
+        self.assertEqual(self.nest(service), pinned)         # the last good pins
+        self.assertTrue(service.pins.error)
+        self.spots.write_text("{broken")
+        self.pins.unlink()
+        self.assertIsNotNone(self.nest(self.service()))
+        self.assertEqual(self.spots.with_name(self.spots.name + ".damaged").read_text(), "{broken")
+
+    def test_a_hand_placed_point_gets_its_cell_and_ground(self):
+        service = self.service()
+        lat, lng = self.proj.latlng(5, 5)
+        point = service.point(lat, lng)
+        self.assertEqual((point["lat"], point["lng"]), (round(lat, 6), round(lng, 6)))
+        self.assertEqual((point["cell"], point["biomes"]), (str(self.cell), [pl.GRASSLAND]))
+        for bad in ((91, 0), (0, 181), (float("nan"), 0), ("10", 0), (True, 0)):
+            with self.assertRaises(ValueError, msg=bad):
+                service.point(*bad)
+
+    def test_pin_document_rules(self):
+        check = lambda **v: placement_policy.nemeton_pins(dict(dict(schemaVersion=1, pins=[], removed=[]), **v), pl.CELL_LEVEL)
+        lat, lng = self.proj.latlng(0, 0)
+        near = self.proj.latlng(20, 20)
+        ok = check(pins=[dict(id="a", lat=lat, lng=lng)], removed=[str(self.cell)])
+        self.assertEqual(ok["pins"][0]["cell"], str(self.cell))
+        self.assertEqual(ok["removed"], [])                  # a pin wins over the removal of its own cell
+        self.assertEqual(check(removed=[str(self.cell), str(self.cell)])["removed"], [str(self.cell)])
+        for bad in (dict(pins=[dict(id="a", lat=lat, lng=lng), dict(id="b", lat=near[0], lng=near[1])]),
+                    dict(pins=[dict(id="a", lat=91, lng=0)]), dict(pins=[dict(id="a", lat=float("nan"), lng=0)]),
+                    dict(pins=[dict(id="a b", lat=0, lng=0)]), dict(pins=[dict(id="a", lat="0", lng=0)]),
+                    dict(pins=[dict(id="a", lat=0, lng=0, extra=1)]), dict(removed=[self.cell]),
+                    dict(removed=["12"]), dict(removed=[str(s2cells.cell_of(10, 20, 13))]), dict(extra=1)):
+            with self.assertRaises(ValueError, msg=bad):
+                check(**bad)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,9 @@ roads), inside or next to a building, in water or on its shoreline. Biome ids fo
 BiomeType (1 Forest, 4 Grassland, 7 Urban, 9 Barren, 10 Water). The selection is random per
 (cell, epoch), so each epoch gives new spots, and follows the place mix: each ground (paths, parks, woods, water-side,
 urban) gets its share of a cell's places, so no ground crowds out the rest. The mix, the number of places, their spacing
-and the street clearance are the player's dashboard settings (--tuning names the file that holds them).
+and the street clearance are the player's dashboard settings (--tuning names the file that holds them). A nemeton's spot is
+decided once per cell and kept (--nemeton-spots), so restarts, updates, settings and map rebuilds leave it; the dashboard can pin
+one to exact coordinates or remove it (--nemeton-pins).
 Coordinates are never logged. Standard library only.
 """
 from __future__ import annotations
@@ -220,15 +222,8 @@ def _cell_polygon(cell_id: int, proj: Projection):
     return [proj.xy(lat, lng) for lat, lng in s2cells.corners(cell_id)]
 
 
-def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
-               clearance: float = CARRIAGEWAY_CLEARANCE_M, off_path: float | None = None) -> list[dict]:
-    """Every safe point in the cell with its biomes and ground (deterministic, unsampled). [clearance] is kept from
-    ordinary streets; below STREET_SIDE_M, quiet streets get points beside them too. [off_path]: how far beside a path
-    a point moves (parks and woods first, then any safe ground) and how much farther than STREET_SIDE_M beside a street;
-    None keeps the scheduled policies' rule (6-9 m, into parks and woods only)."""
-    lat0, lng0 = s2cells.center(cell_id)
-    proj = Projection(lat0, lng0)
-    cell = _cell_polygon(cell_id, proj)
+def _load_shapes(document: dict, proj: Projection):
+    """walk, roads, streets, town streets, major roads, buildings, water, parks, forests and beaches of a document."""
     walk, roads, streets, town_streets, major, buildings, water, parks, forests, beaches = (_Shapes() for _ in range(10))
     for element in document["elements"]:
         if element["type"] == "way":
@@ -250,6 +245,39 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
             rings = [[proj.xy(lat, lng) for lat, lng in ring] for ring in element["rings"]]
             {"building": buildings, "water": water, "park": parks, "forest": forests,
              "beach": beaches}.get(element["kind"], _Shapes()).add_polygon(rings)
+    return walk, roads, streets, town_streets, major, buildings, water, parks, forests, beaches
+
+
+def _ground(x, y, buildings, water, parks, forests, beaches):
+    """A point's biomes, and the share of the place mix it counts toward."""
+    biomes = []
+    if forests.contains(x, y):
+        biomes.append(FOREST)
+    elif parks.contains(x, y):
+        biomes.append(GRASSLAND)
+    elif beaches.contains(x, y):
+        biomes.append(BARREN)
+    elif buildings.near(x, y, URBAN_NEAR_M):
+        biomes.append(URBAN)
+    else:
+        biomes.append(GRASSLAND)
+    if water.near(x, y, WATER_NEAR_M):
+        biomes.append(WATER)
+    ground = ("woods" if biomes[0] == FOREST else "water" if WATER in biomes else
+              "parks" if parks.contains(x, y) else "urban" if biomes[0] == URBAN else "paths")
+    return biomes, ground
+
+
+def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
+               clearance: float = CARRIAGEWAY_CLEARANCE_M, off_path: float | None = None) -> list[dict]:
+    """Every safe point in the cell with its biomes and ground (deterministic, unsampled). [clearance] is kept from
+    ordinary streets; below STREET_SIDE_M, quiet streets get points beside them too. [off_path]: how far beside a path
+    a point moves (parks and woods first, then any safe ground) and how much farther than STREET_SIDE_M beside a street;
+    None keeps the scheduled policies' rule (6-9 m, into parks and woods only)."""
+    lat0, lng0 = s2cells.center(cell_id)
+    proj = Projection(lat0, lng0)
+    cell = _cell_polygon(cell_id, proj)
+    walk, roads, streets, town_streets, major, buildings, water, parks, forests, beaches = _load_shapes(document, proj)
 
     stats = diagnostics if diagnostics is not None else {}
     stats.update(raw=0, safe=0, rejected={})
@@ -338,22 +366,7 @@ def candidates(document: dict, cell_id: int, policy=None, diagnostics=None,
         if rejection:
             stats["rejected"][rejection] = stats["rejected"].get(rejection, 0) + 1
             continue
-        biomes = []
-        if forests.contains(x, y):
-            biomes.append(FOREST)
-        elif parks.contains(x, y):
-            biomes.append(GRASSLAND)
-        elif beaches.contains(x, y):
-            biomes.append(BARREN)
-        elif buildings.near(x, y, URBAN_NEAR_M):
-            biomes.append(URBAN)
-        else:
-            biomes.append(GRASSLAND)
-        if water.near(x, y, WATER_NEAR_M):
-            biomes.append(WATER)
-        # the share of the place mix the point counts toward
-        ground = ("woods" if biomes[0] == FOREST else "water" if WATER in biomes else
-                  "parks" if parks.contains(x, y) else "urban" if biomes[0] == URBAN else "paths")
+        biomes, ground = _ground(x, y, buildings, water, parks, forests, beaches)
         lat, lng = proj.latlng(x, y)
         points.append({"lat": round(lat, 6), "lng": round(lng, 6), "biomes": biomes, "kind": kind, "ground": ground})
     stats["safe"] = len(points)
@@ -463,10 +476,13 @@ class Tuning:
 
 
 class PlayableLocations:
-    def __init__(self, index: FeatureIndex, policy_path=None, tuning_path=None):
+    def __init__(self, index: FeatureIndex, policy_path=None, tuning_path=None, spots_path=None, pins_path=None):
         self.index = index
         self.tuning = Tuning(tuning_path)
         self.policy = placement_policy.PolicyStore(policy_path)
+        self.spots = placement_policy.NemetonSpots(spots_path)
+        self.pins = placement_policy.NemetonPins(pins_path, CELL_LEVEL)
+        self._pinned = {}   # a pin's place, by (cell, lat, lng): classifying one reads the cell's map
         # Placement is CPU-bound Python under the GIL: two computations at a time keep the
         # pace and bound the cell geometry alive at once (this runs on the phone with the game).
         self._raw = _BoundedMemo(entries=256, points=100_000, inflight=2)
@@ -585,29 +601,82 @@ class PlayableLocations:
 
     def nest_candidate(self, cell_id: int, epoch: int):
         """A potential nemeton anchor, independent of request order and player: one of the cell's candidate points, chosen
-        by its position alone, so the same every day and whatever the place mix draws (a rebuilt map can move it)."""
+        by its position alone, so the same every day and whatever the place mix draws. Candidates change with the map, the
+        street and path distances, a scheduled policy and this code: nest_place keeps the first answer."""
         points = self.points(cell_id, epoch)
         def rank(point):
             return hashlib.sha256(f"nest-v3:{point['lat']:.6f},{point['lng']:.6f}".encode()).digest()
         return min(points, key=rank) if points else None
 
     def nest_place(self, cell_id: int, epoch: int):
-        """The cell's nemeton anchor, unless a neighbour's anchor of higher priority stands within the nest spacing."""
-        candidate = self.nest_candidate(cell_id, epoch)
-        if candidate is None:
+        """The cell's nemeton: the dashboard's pin or removal first, else the spot saved when the cell was first decided, else
+        a new draw, which is saved. Only an area excluded from placement can move a saved spot, as the operator asked for that."""
+        pin = self.pins.pin(cell_id)
+        if pin is not None:
+            return self._pinned_place(cell_id, pin)
+        if self.pins.is_removed(cell_id):
             return None
+        known, saved = self.spots.get(cell_id)
+        if known and not self._excluded(saved, epoch):
+            return saved
+        candidate = self.nest_candidate(cell_id, epoch)
+        if candidate is None:   # no map here (yet): nothing is decided
+            return None
+        if any((pin := self.pins.pin(neighbor)) is not None and _distance_m(candidate, pin) < NEST_SPACING_M
+               for neighbor in s2cells.neighbors(cell_id)):
+            return None         # gives way while the pin stands, so not saved
+        spot = self._drawn_nest(cell_id, candidate, epoch)
+        self.spots.put(cell_id, spot)
+        return spot
+
+    def _drawn_nest(self, cell_id: int, candidate: dict, epoch: int):
+        """The candidate, unless a neighbour's anchor of higher priority stands within the nest spacing."""
         priority = lambda cid: (hashlib.sha256(f"nest-v3:{cid}".encode()).digest(), cid)
         own_priority = priority(cell_id)
         for neighbor in s2cells.neighbors(cell_id):
             if priority(neighbor) >= own_priority:
                 continue
-            other = self.nest_candidate(neighbor, epoch)
+            other = self.spots.get(neighbor)[1] or self.nest_candidate(neighbor, epoch)
             if other and _distance_m(candidate, other) < NEST_SPACING_M:
                 return None
         return candidate
 
+    def _excluded(self, spot, epoch: int) -> bool:
+        if spot is None:
+            return False
+        active = self._rules(epoch)[0]
+        return any(_distance_m(spot, row) <= row["radiusMeters"] for row in (active or {}).get("exclusions", []))
+
+    def _pinned_place(self, cell_id: int, pin: dict) -> dict:
+        key = (cell_id, pin["lat"], pin["lng"])
+        place = self._pinned.get(key)
+        if place is None:
+            biomes, ground = self.ground_at(cell_id, pin["lat"], pin["lng"])
+            if len(self._pinned) >= 2 * placement_policy.MAX_NEMETON_PINS:
+                self._pinned.clear()
+            place = self._pinned[key] = dict(lat=pin["lat"], lng=pin["lng"], biomes=biomes, kind="pinned", ground=ground)
+        return place
+
+    def ground_at(self, cell_id: int, lat: float, lng: float):
+        """A hand-placed point's biomes and share of the place mix; outside the map areas it still stands, on grass."""
+        document = self.document(cell_id)
+        if document is None:
+            return [GRASSLAND], "paths"
+        proj = Projection(*s2cells.center(cell_id))
+        return _ground(*proj.xy(lat, lng), *_load_shapes(document, proj)[5:])
+
+    def point(self, lat, lng) -> dict:
+        """A hand-placed point's rounded coordinates, cell and biomes, for the game server, which has no map of its own."""
+        for n, bound in ((lat, 85), (lng, 180)):
+            if type(n) not in (int, float) or not math.isfinite(n) or abs(n) > bound:
+                raise ValueError("point coordinates")
+        lat, lng = round(lat, 6), round(lng, 6)
+        cell = s2cells.cell_of(lat, lng, CELL_LEVEL)
+        return dict(lat=lat, lng=lng, cell=str(cell), biomes=self.ground_at(cell, lat, lng)[0])
+
     def payload(self, ids: list[int], epoch: int) -> dict:
         self.policy.refresh()
+        self.pins.refresh()
         active, _, tuning = self._rules(epoch)
         spacing = active["spacingMeters"] if active else tuning["places.spacing"]
         cells = {}
@@ -621,6 +690,7 @@ class PlayableLocations:
                 places = [p for p in places if _distance_m(p, nest) >= spacing] + [nest]
             cells[str(i)] = {"center": [round(v, 6) for v in s2cells.center(i)], "places": places,
                              "nest_place_id": nest and nest["id"]}
+        self.spots.flush()
         return cells
 
 
@@ -787,6 +857,26 @@ def make_handler(service: PlayableLocations):
                 self.respond(400, {"error": "Invalid placement request."})
 
         def do_POST(self):
+            if self.path == "/admin/nemeton-pins/validate":
+                try:
+                    length = int(self.headers.get("Content-Length", "0"))
+                    if not 0 < length <= 1024 * 1024: raise ValueError
+                    document = json.loads(self.rfile.read(length))["document"]
+                    self.respond(200, {"document": placement_policy.nemeton_pins(document, CELL_LEVEL),
+                                       "enabled": service.pins.path is not None, "status": "invalid-retaining-last-good"
+                                       if service.pins.error else "ready"})
+                except (ValueError, TypeError, KeyError):
+                    self.respond(400, {"error": "Invalid nemeton pins."})
+                return
+            if self.path == "/admin/point":
+                try:
+                    length = int(self.headers.get("Content-Length", "0"))
+                    if not 0 < length <= 1024: raise ValueError
+                    value = json.loads(self.rfile.read(length))
+                    self.respond(200, service.point(value["lat"], value["lng"]))
+                except (ValueError, TypeError, KeyError):
+                    self.respond(400, {"error": "Invalid point."})
+                return
             if self.path == "/walk":
                 # {"from": [lat, lng], "to": [[lat, lng], ...], "limit": metres} -> {"metres": [m or null, ...]}
                 try:
@@ -831,8 +921,10 @@ def main():
     parser.add_argument("--port", type=int, default=18093)
     parser.add_argument("--policy", type=Path, help="Shared world/placement-policy.json schedule")
     parser.add_argument("--tuning", type=Path, help="The dashboard's world/tuning.json (place mix, places per cell, spacing, street clearance)")
+    parser.add_argument("--nemeton-spots", type=Path, help="world/nemeton-spots.json: each cell's nemeton spot, kept once decided")
+    parser.add_argument("--nemeton-pins", type=Path, help="The dashboard's world/nemeton-pins.json: nemeta placed or removed by hand")
     args = parser.parse_args()
-    service = PlayableLocations(open_indexes(args.index), args.policy, args.tuning)
+    service = PlayableLocations(open_indexes(args.index), args.policy, args.tuning, args.nemeton_spots, args.nemeton_pins)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), make_handler(service))
     print(f"playable locations on 127.0.0.1:{args.port}", flush=True)
     server.serve_forever()

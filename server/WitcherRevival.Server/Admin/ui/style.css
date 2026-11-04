@@ -3879,6 +3879,14 @@ dialog .facts {
 .map-placement-preview { fill:#7bcddd33; stroke:#98e8f5; stroke-width:1.5; pointer-events:none; }
 .map-placement-exclusion { fill:#dd826829; stroke:#f0a58b; stroke-width:1.5; stroke-dasharray:5 4; pointer-events:none; }
 .map-placement-preferred { stroke:#8bf0cf; stroke-width:3; pointer-events:none; }
+.map-nemeton-pin { fill:#d6b7ea; stroke:#fff; stroke-width:2; pointer-events:none; }
+.map-blacksmith-pin { fill:#a9d9ee; stroke:#fff; stroke-width:2; pointer-events:none; }
+.map-nemeton-draft { fill:none; stroke:#f3d58e; stroke-width:3; pointer-events:none; }
+#world-map.map-placing, #world-map.map-placing:active { cursor:crosshair; }
+.nemeton-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; }
+.nemeton-row code { flex:1 1 220px; overflow-wrap:anywhere; font-size:12px; }
+.nemeton-row > span { flex:0 0 auto; }
+#nemeton-what { display:block; width:100%; margin-bottom:12px; }
 .placement-editor { border-block:1px solid var(--line); padding:20px 0; margin:18px 0 24px; }
 .placement-editor > summary { font:600 20px var(--font-heading,inherit); cursor:pointer; padding:8px 0; }
 .placement-editor > p { max-width:90ch; }

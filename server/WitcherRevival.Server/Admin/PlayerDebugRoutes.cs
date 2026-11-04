@@ -15,6 +15,22 @@ public sealed partial class AdminServer
     {
         app.MapPost("/api/profiles/{id}/debug", async (string id, HttpRequest request) =>
             ChangeProfileDebug(id, await Body<PlayerService.DebugRequest>(request)));
+        app.MapGet("/api/profiles/{id}/blacksmith", (string id) =>
+        {
+            RequireProfile(id);
+            return Results.Json(registry.Player(id).BlacksmithPlace());
+        });
+        // Where the blacksmith stands for this profile: the player's own world, so it works without the debug tools.
+        app.MapPost("/api/profiles/{id}/blacksmith", async (string id, HttpRequest request) =>
+        {
+            RequireProfile(id);
+            var write = await Body<BlacksmithWrite>(request);
+            var point = await PlacementRequest("/admin/point", new { lat = write.Lat, lng = write.Lng }, "Check the blacksmith's coordinates.");
+            ulong cell = ulong.Parse(point.GetProperty("cell").GetString()!);
+            int[] biomes = point.GetProperty("biomes").EnumerateArray().Select(b => b.GetInt32()).ToArray();
+            return ChangeProfileDebug(id, new PlayerService.DebugRequest("blacksmith"),
+                backup => registry.Player(id).MoveBlacksmith(point.GetProperty("lat").GetDouble(), point.GetProperty("lng").GetDouble(), cell, biomes, backup));
+        });
         // The character's model (gender and head): a player's own choice, so it works without the debug tools.
         app.MapPost("/api/profiles/{id}/character", async (string id, HttpRequest request) =>
         {
@@ -25,6 +41,7 @@ public sealed partial class AdminServer
     }
 
     public sealed record CharacterWrite(int Gender, int Head);
+    public sealed record BlacksmithWrite(double Lat, double Lng);
 
     private IResult ChangeProfileDebug(string id, PlayerService.DebugRequest write,
         Func<Action<LocalProfileStore.Profile>, PlayerService.DebugOutcome>? apply = null)

@@ -33,7 +33,9 @@ class PlacementAdminTests(unittest.TestCase):
             meta={'source_timestamp':'2026-01-01T00:00:00Z'}
             def covers(self,*args):return True
             def document(self,*args,clip=None):return {'elements':[dict(type='area',id=1,kind='forest',rings=[ring])]}
-        service=pl.PlayableLocations(Index(),self.world/'placement-policy.json')
+            def roads(self,*args):return []
+        service=pl.PlayableLocations(Index(),self.world/'placement-policy.json',None,
+            self.world/'nemeton-spots.json',self.world/'nemeton-pins.json')
         listener=ThreadingHTTPServer(('127.0.0.1',0),pl.make_handler(service))
         thread=threading.Thread(target=listener.serve_forever,daemon=True);thread.start()
         self.addCleanup(listener.server_close);self.addCleanup(listener.shutdown)
@@ -132,5 +134,91 @@ class PlacementAdminTests(unittest.TestCase):
         self.assertEqual(path.read_text(),'{broken')
         path.write_bytes(good)
         self.assertEqual(self.request('placement-policy')[1]['status'],'ready')
+    def test_nemeton_pin_moves_removes_and_restores_over_the_api_and_the_game_map(self):
+        from test_prototype import PrototypeTests as Map
+        self.assertEqual(self.request('nemeton-pins',auth=False)[0],403)
+        service,projection=self.sidecar()
+        client,profile=self.profile('synthetic-nemeton')
+        import s2cells
+        around=iter(s2cells.neighbors(self.cell)*2)
+        def nests():
+            # Another pair of cells each time: the game server shares an answer for the same cells for ten seconds.
+            world=Map.locations_by_cell(client.rpc(40,I(2)+Q(self.cell)+Q(next(around))))
+            places={place:at for rows in world['cells'].values() for place,at,_ in rows}
+            mine=f'lab-{self.cell:016x}-'
+            return [(n['instance'],places[n['place']]) for n in world['nests'] if n['place'].startswith(mine)]
+        (instance,spot),=nests()
+        initial=self.request('nemeton-pins')[1]
+        self.assertEqual(initial,dict(revision='missing',document=dict(schemaVersion=1,pins=[],removed=[])))
+        lat,lng=projection.latlng(73,-41)
+        document=dict(schemaVersion=1,pins=[dict(id='pin-1',lat=lat,lng=lng)],removed=[])
+        write=dict(revision='missing',document=document)
+        self.assertEqual(self.request('nemeton-pins','PUT',write,origin=False)[0],403)
+        status,saved=self.request('nemeton-pins','PUT',write)
+        self.assertEqual(status,200);self.assertEqual(saved['receipt']['outcome'],'applied')
+        self.assertEqual(saved['receipt']['action'],'nemeton-pins')
+        current=self.request('nemeton-pins')[1]
+        self.assertEqual(current['revision'],saved['revision'])
+        self.assertEqual(current['document']['pins'][0]['cell'],str(self.cell))
+        self.assertEqual(self.request('nemeton-pins','PUT',write)[0],409)
+        (moved,at),=nests()
+        self.assertEqual(moved,instance)   # the same nemeton of the day: a clear made today still counts
+        self.assertAlmostEqual(at[0],lat,places=4);self.assertAlmostEqual(at[1],lng,places=4)
+        # Two pins in a cell are refused with nothing written.
+        near=projection.latlng(90,-41)
+        crowded=dict(revision=current['revision'],document=dict(schemaVersion=1,removed=[],
+            pins=current['document']['pins']+[dict(id='pin-2',lat=near[0],lng=near[1])]))
+        receipts=self.request('receipts')[1]
+        self.assertEqual(self.request('nemeton-pins','PUT',crowded)[0],400)
+        self.assertEqual(self.request('receipts')[1],receipts)
+        # Remove it, then read the copy from before the removal and put it back.
+        status,gone=self.request('nemeton-pins','PUT',dict(revision=current['revision'],
+            document=dict(schemaVersion=1,pins=[],removed=[str(self.cell)])))
+        self.assertEqual(status,200)
+        self.assertEqual(nests(),[])
+        status,backup=self.request('receipts/'+gone['receipt']['id']+'/backup')
+        self.assertEqual(status,200);self.assertEqual(backup['previous']['document'],current['document'])
+        status,_=self.request('nemeton-pins','PUT',dict(revision=gone['revision'],document=backup['previous']['document']))
+        self.assertEqual(status,200)
+        # The first placement has a copy too: the empty document.
+        self.assertEqual(self.request('receipts/'+saved['receipt']['id']+'/backup')[1]['previous']['document'],initial['document'])
+        # A restarted server keeps it.
+        self.restart()
+        client,profile=self.profile('synthetic-nemeton')
+        (_,at),=nests()
+        self.assertAlmostEqual(at[0],lat,places=4)
+
+    def test_blacksmith_moves_for_one_profile_from_the_dashboard(self):
+        from test_prototype import PrototypeTests as Map
+        import s2cells
+        service,projection=self.sidecar()
+        client,profile=self.profile('synthetic-smith')
+        client.rpc(3)
+        self.server.stop()
+        path=self.directory/'profiles'/(profile+'.json')
+        saved=json.loads(path.read_text());saved['QuestStage'],saved['Facts']='jv_done',{'100':4,'53':4,'1000':1,'1001':1,'1003':1};path.write_text(json.dumps(saved))
+        self.restart()
+        client,profile=self.profile('synthetic-smith')
+        route='profiles/'+profile+'/blacksmith'
+        self.assertEqual(self.request(route,auth=False)[0],403)
+        status,before=self.request(route)
+        self.assertEqual(status,200);self.assertIsNone(before['place']);self.assertFalse(before['discovered'])
+        self.assertEqual(self.request(route,'POST',dict(lat=91,lng=20))[0],400)
+        lat,lng=projection.latlng(55,-44)
+        self.assertEqual(self.request(route,'POST',dict(lat=lat,lng=lng),origin=False)[0],403)
+        status,moved=self.request(route,'POST',dict(lat=lat,lng=lng))
+        self.assertEqual(status,200);self.assertEqual(moved['receipt']['action'],'profile-blacksmith')
+        self.assertEqual(moved['receipt']['outcome'],'applied')
+        status,after=self.request(route)
+        self.assertAlmostEqual(after['place']['lat'],lat,places=5);self.assertTrue(after['discovered'])
+        client.rpc(88,I(1)+Q(self.cell))
+        world=Map.locations_by_cell(client.rpc(40,I(1)+Q(self.cell)))
+        giver,=[g for g in world['quests'] if g['node']==after['node']]
+        at={name:point for rows in world['cells'].values() for name,point,_ in rows}[giver['place']]
+        self.assertAlmostEqual(at[0],lat,places=4);self.assertAlmostEqual(at[1],lng,places=4)
+        # Only he has a place from this; the other givers chose their own, and a second profile has none.
+        other,other_id=self.profile('synthetic-smith-other')
+        self.assertIsNone(self.request('profiles/'+other_id+'/blacksmith')[1]['place'])
+        self.assertEqual(self.request('receipts/'+moved['receipt']['id']+'/backup')[0],409)
 
 if __name__=='__main__':unittest.main()

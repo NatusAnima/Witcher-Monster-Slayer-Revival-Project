@@ -9,6 +9,8 @@ public sealed partial class AdminServer
     private static readonly HttpClient PlacementHttp = new() { Timeout = TimeSpan.FromSeconds(15) };
     private string PlacementPath => Path.Combine(worldRoot, "placement-policy.json");
     private static readonly byte[] EmptyPlacementSchedule = "{\"schemaVersion\":1,\"versions\":[]}"u8.ToArray();
+    private string NemetonPinsPath => Path.Combine(worldRoot, "nemeton-pins.json");
+    private static readonly byte[] EmptyNemetonPins = "{\"schemaVersion\":1,\"pins\":[],\"removed\":[]}"u8.ToArray();
 
     private void MapPlacementRoutes(WebApplication app)
     {
@@ -61,6 +63,23 @@ public sealed partial class AdminServer
                     EmptyPlacementSchedule);
             }
         });
+        app.MapGet("/api/nemeton-pins", () => { lock (gate) return Results.Json(ReadDocument(NemetonPinsPath, EmptyNemetonPins)); });
+        app.MapPut("/api/nemeton-pins", async (HttpRequest request) =>
+        {
+            var write = await Body<DocumentWrite>(request);
+            var checkedPins = await PlacementRequest("/admin/nemeton-pins/validate", new { document = write.Document },
+                "Check the nemeton's coordinates. A map cell holds one placed nemeton: move or unpin the other one first.");
+            if (!checkedPins.GetProperty("enabled").GetBoolean())
+                throw new Refusal(409, "The placement service was started without nemeton pins. Restart the server.");
+            lock (gate)
+            {
+                Directory.CreateDirectory(worldRoot);
+                return SaveDocument(NemetonPinsPath, write.Revision,
+                    JsonSerializer.SerializeToUtf8Bytes(checkedPins.GetProperty("document"), Json), "nemeton-pins", "nemeta",
+                    "The next map answer uses these nemeta on the whole server; a game already running may keep cells it has loaded until it restarts.",
+                    EmptyNemetonPins);
+            }
+        });
     }
 
     private string[] PlacementCells(string profile)
@@ -71,7 +90,7 @@ public sealed partial class AdminServer
         return ids;
     }
 
-    private async Task<JsonElement> PlacementRequest(string path, object? document = null)
+    private async Task<JsonElement> PlacementRequest(string path, object? document = null, string? refused = null)
     {
         string endpoint = cfg["Playable:Url"]?.TrimEnd('/') ?? "";
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || !uri.IsLoopback || uri.Scheme != "http")
@@ -86,7 +105,7 @@ public sealed partial class AdminServer
             }
             using var response = await PlacementHttp.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             if ((int)response.StatusCode == 400)
-                throw new Refusal(400, "Check placement limits and preferred points. Every preferred point must be on mapped walkable ground, inside coverage, outside exclusions and clear of roads, buildings and water.");
+                throw new Refusal(400, refused ?? "Check placement limits and preferred points. Every preferred point must be on mapped walkable ground, inside coverage, outside exclusions and clear of roads, buildings and water.");
             if (!response.IsSuccessStatusCode)
                 throw new Refusal(503, "Local placement service is unavailable. Retry after checking its status.");
             using var stream = await response.Content.ReadAsStreamAsync();

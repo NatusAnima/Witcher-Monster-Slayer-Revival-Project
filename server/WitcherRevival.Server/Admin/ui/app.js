@@ -88,6 +88,8 @@
     world: L.m("Gęstość spotkań"),
     "spawn-balance": L.m("Częstotliwość potworów"),
     "placement-policy": L.m("Rozmieszczenie miejsc"),
+    "nemeton-pins": L.m("Nemetony na mapie"),
+    "profile-blacksmith": L.m("Przeniesienie kowala"),
     weather: L.m("Polityka pogody"),
     "daily-rotation": L.m("Rotacja dzienna"),
     "hunt-policy": L.m("Zasada stempli"),
@@ -110,6 +112,8 @@
     "transport-rebind": L.m("Telefon zostanie rozłączony. Uruchom LAB ponownie. Zapisy obu profili i termin dostępu pozostają."),
     "transport-revoke": L.m("Telefon utraci dostęp i zostanie rozłączony. Zapis gracza pozostanie. Cofniętego dostępu nie można odnowić."),
     "placement-policy": L.m("Ustawienia całego serwera. Zapis działa od następnej północy UTC. Dotychczasowe dni i spotkania zachowują swoje miejsca."),
+    "nemeton-pins": L.m("Zmiana działa od razu na całym serwerze. Uruchomiona gra może pokazać ją dopiero po ponownym uruchomieniu."),
+    "profile-blacksmith": L.m("Uruchom grę ponownie, aby zobaczyć kowala w nowym miejscu."),
     "distance-policy": L.m("Tryb dotyczy nowych sesji klientów GPS. Uruchom LAB ponownie. Profile z aktywną ochroną pozostają chronione także po wybraniu obserwacji."),
     "spawn-balance": L.m("Zmiany dotyczą nowych generacji zwykłych potworów na całym serwerze. Dotychczasowe spotkania wygasają naturalnie w ciągu 30 minut. Restart nie jest potrzebny."),
     news: L.m("Gracze otrzymają listę przy kolejnym otwarciu „Co nowego”."),
@@ -193,6 +197,7 @@
     catalogueData = null,
     mapData = null,
     mapContext = null, placementData = null, placementDraft = null, placementPreview = null,
+    nemetonData = null, blacksmithData = null, nemetonPlacing = null, nemetonDraft = null,
     gpsData = null,
     gpsPolicy = null,
     gpsRequest = 0,
@@ -620,8 +625,8 @@
         );
       if (
         r.outcome === "applied" &&
-        (r.before !== "missing" || ["spawn-balance", "profile-label", "distance-policy", "placement-policy"].includes(r.action)) &&
-        ["news", "world", "spawn-balance", "weather", "daily-rotation", "hunt-policy", "profile-label", "distance-policy", "placement-policy"].includes(
+        (r.before !== "missing" || ["spawn-balance", "profile-label", "distance-policy", "placement-policy", "nemeton-pins"].includes(r.action)) &&
+        ["news", "world", "spawn-balance", "weather", "daily-rotation", "hunt-policy", "profile-label", "distance-policy", "placement-policy", "nemeton-pins"].includes(
           r.action,
         )
       )
@@ -639,7 +644,7 @@
           "receipts/" + encodeURIComponent(r.id) + "/backup",
         ),
         path =
-          r.action === "placement-policy" ? "placement-policy" : r.action === "distance-policy"
+          r.action === "placement-policy" ? "placement-policy" : r.action === "nemeton-pins" ? "nemeton-pins" : r.action === "distance-policy"
             ? "distance-policy"
             : r.action === "profile-label"
             ? "profiles/" + encodeURIComponent(r.target) + "/label"
@@ -1162,7 +1167,7 @@
       renderTasks();
     },
     world: async () => {
-      await loadPlacementPolicy();
+      await Promise.all([loadPlacementPolicy(), loadNemetonPins()]);
       const result = await Promise.allSettled([api("world"), api("profiles"), api("world/balance"), api("distance-policy")]);
       if (result[0].status === "fulfilled") {
         worldData = result[0].value;
@@ -2384,7 +2389,7 @@
       mapData = d;
       selectedPoint = d.points?.some(p => p.id === previous) ? previous : null;
       renderMap();
-      await loadMapContext(id, request);
+      await Promise.all([loadMapContext(id, request), loadBlacksmith()]);
     } catch (e) {
       if (request !== mapRequest || $("map-profile").value !== id) return;
       if (mapData) mapData.status = "stale";
@@ -2409,6 +2414,141 @@
     } catch {
       $("placement-fields").disabled = true;
       L.text($("placement-status"), L.m("Ustawienia rozmieszczenia są niedostępne. Ostatnia poprawna wersja pozostaje aktywna."));
+    }
+  }
+  async function loadNemetonPins() {
+    try {
+      const d = await api("nemeton-pins");
+      if (!d?.document || !Array.isArray(d.document.pins) || !Array.isArray(d.document.removed)) throw new Error("Invalid nemeton pins");
+      nemetonData = d;
+      $("nemeton-fields").disabled = false;
+      $("nemeton-status").hidden = true;
+    } catch {
+      nemetonData = null;
+      $("nemeton-fields").disabled = true;
+      $("nemeton-status").hidden = false;
+      L.text($("nemeton-status"), L.m("Ustawienia nemetonów są niedostępne."));
+    }
+    renderNemetonPins();
+  }
+  async function loadBlacksmith() {
+    const id = $("map-profile").value;
+    try {
+      blacksmithData = id ? await api("profiles/" + encodeURIComponent(id) + "/blacksmith") : null;
+    } catch { blacksmithData = null; }
+    if (id === $("map-profile").value) { renderNemetonPins(); renderMapSelection(); renderMapTable(); drawMap(); }
+  }
+  function isBlacksmith(p) {
+    return p.kind === "quest" && blacksmithData?.node && String(p.name) === "Quest " + blacksmithData.node;
+  }
+  function moveBlacksmith(lat, lng) {
+    const id = $("map-profile").value;
+    return busy($("nemeton-form"), async () => {
+      if (!id) throw new L.Error(L.m("Wybierz i pobierz obszar."));
+      const result = await api("profiles/" + encodeURIComponent(id) + "/blacksmith", {method:"POST",body:JSON.stringify({lat,lng})});
+      await finish(result, "nemeton-form", null);
+      stopNemetonPlacing();
+      await loadBlacksmith();
+    }, "profiles/" + id + "/blacksmith");
+  }
+  function nestCell(p) {
+    // A place id is "lab-<cell hex>-<epoch>-<n>".
+    try { return BigInt("0x" + p.placeId.split("-")[1]).toString(); } catch { return null; }
+  }
+  function nemetonReplaced(p) {
+    // The observation is the last map answer: a nemeton changed since then is drawn from the saved document instead.
+    if (isBlacksmith(p)) {
+      const place = blacksmithData.place;
+      return !!place && (Math.abs(place.lat - p.lat) > .00005 || Math.abs(place.lng - p.lng) > .00005);
+    }
+    if (p.kind !== "nest" || !nemetonData) return false;
+    const cell = nestCell(p), pin = nemetonData.document.pins.find(x => x.cell === cell);
+    return nemetonData.document.removed.includes(cell)
+      || !!pin && (Math.abs(pin.lat - p.lat) > .00005 || Math.abs(pin.lng - p.lng) > .00005);
+  }
+  function renderNemetonPins() {
+    const pins = $("nemeton-pins"), removed = $("nemeton-removed");
+    pins.replaceChildren(); removed.replaceChildren();
+    for (const pin of nemetonData?.document.pins || []) {
+      const row = el("div", null, "nemeton-row");
+      row.append(el("code", pin.lat.toFixed(6) + ", " + pin.lng.toFixed(6)),
+        button(L.m("Przenieś"), () => startNemetonPlacing(pin.cell), "secondary"),
+        button(L.m("Odepnij"), () => changeNemetonPins(d => { d.pins = d.pins.filter(x => x.id !== pin.id); }), "secondary"),
+        button(L.m("Usuń"), () => changeNemetonPins(d => {
+          d.pins = d.pins.filter(x => x.id !== pin.id);
+          d.removed.push(pin.cell);
+        }), "secondary"));
+      pins.append(row);
+    }
+    for (const cell of nemetonData?.document.removed || []) {
+      const row = el("div", null, "nemeton-row");
+      row.append(el("code", cell),
+        button(L.m("Przywróć"), () => changeNemetonPins(d => { d.removed = d.removed.filter(x => x !== cell); }), "secondary"));
+      removed.append(row);
+    }
+    if (blacksmithData?.place) {
+      const row = el("div", null, "nemeton-row");
+      row.append(el("span", L.m("Kowal")),
+        el("code", blacksmithData.place.lat.toFixed(6) + ", " + blacksmithData.place.lng.toFixed(6)),
+        button(L.m("Przenieś"), () => startNemetonPlacing(null, "blacksmith"), "secondary"));
+      pins.append(row);
+    }
+    if (!pins.children.length) pins.append(el("p", L.m("Brak"), "muted"));
+    if (!removed.children.length) removed.append(el("p", L.m("Brak"), "muted"));
+  }
+  function changeNemetonPins(change) {
+    if (!nemetonData) return Promise.resolve();
+    return busy($("nemeton-form"), async () => {
+      const next = structuredClone(nemetonData.document);
+      change(next);
+      const result = await api("nemeton-pins", {method:"PUT",body:JSON.stringify({revision:nemetonData.revision,document:next})});
+      let current = null; try { current = await api("nemeton-pins"); } catch {}
+      await finish(result, "nemeton-form", "nemeton-pins", current);
+      stopNemetonPlacing();
+      await loadNemetonPins();
+      if (selectedPoint && !mapData?.points?.some(p => p.id === selectedPoint && !nemetonReplaced(p))) selectedPoint = null;
+      renderMapSelection(); renderMapTable(); drawMap();
+    }, "nemeton-pins");
+  }
+  function startNemetonPlacing(moveFrom = null, what = null) {
+    nemetonPlacing = {moveFrom};
+    nemetonDraft = null;
+    if (what || moveFrom) $("nemeton-what").value = what || "nest";
+    $("nemeton-editor").open = true;
+    $("world-map").classList.add("map-placing");
+    L.text($("nemeton-pick-status"), L.m("Kliknij dokładne miejsce na mapie. Możesz kliknąć ponownie, aby je poprawić."));
+    $("nemeton-lat").value = ""; $("nemeton-lng").value = "";
+    $("world-map").scrollIntoView({block:"nearest"});
+    drawMap();
+  }
+  function stopNemetonPlacing() {
+    nemetonPlacing = null; nemetonDraft = null;
+    $("world-map").classList.remove("map-placing");
+    L.text($("nemeton-pick-status"), "");
+    $("nemeton-lat").value = ""; $("nemeton-lng").value = "";
+    drawMap();
+  }
+  function pickNemetonSpot(e) {
+    // The map's viewBox is its size in pixels: the inverse of drawMap's projection.
+    const box = $("world-map").getBoundingClientRect(), {lat, lng, scale, cosine} = mapCamera;
+    nemetonDraft = {lat:Number((lat - (e.clientY - box.top - box.height / 2) / scale).toFixed(6)),
+      lng:Number((lng + (e.clientX - box.left - box.width / 2) / (scale * cosine)).toFixed(6))};
+    $("nemeton-lat").value = nemetonDraft.lat; $("nemeton-lng").value = nemetonDraft.lng;
+    drawMap();
+  }
+  function drawNemetonPins(svg, project, layers) {
+    if (layers.has("nest")) for (const pin of nemetonData?.document.pins || []) {
+      const [x,y] = project(pin);
+      svg.append(svgNode("rect",{x:x-7,y:y-7,width:14,height:14,rx:2,class:"map-nemeton-pin"}));
+    }
+    if (layers.has("quest") && blacksmithData?.place) {
+      const [x,y] = project(blacksmithData.place);
+      svg.append(svgNode("path",{d:`M ${x} ${y-9} L ${x+8} ${y+7} L ${x-8} ${y+7} Z`,class:"map-blacksmith-pin"}));
+    }
+    if (nemetonDraft && Number.isFinite(nemetonDraft.lat) && Number.isFinite(nemetonDraft.lng)) {
+      const [x,y] = project(nemetonDraft);
+      svg.append(svgNode("circle",{cx:x,cy:y,r:10,class:"map-nemeton-draft"}),
+        svgNode("path",{d:`M ${x-15} ${y} h 30 M ${x} ${y-15} v 30`,class:"map-nemeton-draft"}));
     }
   }
   async function loadMapContext(id, request) {
@@ -2708,7 +2848,7 @@
   function filteredMapPoints() {
     const layers = mapLayers(), rarity = $("map-rarity").value,
       query = $("map-search").value.trim().toLocaleLowerCase();
-    return (mapData?.points || []).filter(p => layers.has(p.kind)
+    return (mapData?.points || []).filter(p => layers.has(p.kind) && !nemetonReplaced(p)
       && (!rarity || p.kind !== "monster" || String(p.rarity) === rarity)
       && String(L.join(mapPointName(p), " ", p.id)).toLocaleLowerCase().includes(query));
   }
@@ -2847,6 +2987,7 @@
     mapCamera.scale = scale;
     mapCamera.cosine = cosine;
     drawMapContext(svg, project, scale, layers);
+    drawNemetonPins(svg, project, layers);
     if (layers.has("cells")) for (const c of mapData.cells || []) {
       if (!Number.isFinite(c.lat) || !Number.isFinite(c.lng)) continue;
       const [x, y] = project(c);
@@ -2890,7 +3031,7 @@
         marker.append(svgNode("circle", {r:13, class:"map-rarity-ring rarity-"+p.rarity}));
       marker.append(shape);
       const title = svgNode("title"); L.text(title, L.join(mapPointName(p), " · ", rarityNames[p.rarity] || p.kind)); marker.append(title);
-      marker.addEventListener("click", () => { if (!mapSuppressClick) selectMapPoint(p); });
+      marker.addEventListener("click", () => { if (!mapSuppressClick && !nemetonPlacing) selectMapPoint(p); });
       svg.append(marker);
     }
     mapMetresPerUnit = 111320 / scale;
@@ -2923,6 +3064,17 @@
       [L.m("Czas wygaśnięcia"), p.expiresAt ? date(p.expiresAt) : L.m("Nie podano")],
       [L.m("Pozycja"), Number.isFinite(p.lat) && Number.isFinite(p.lng) ? p.lat.toFixed(5) + ", " + p.lng.toFixed(5) : "—"],
     ]));
+    if (p.kind === "nest" && nemetonData && nestCell(p)) {
+      const cell = nestCell(p);
+      $("map-selection").append(
+        button(L.m("Przenieś ten nemeton"), () => startNemetonPlacing(cell)),
+        button(L.m("Usuń ten nemeton"), () => changeNemetonPins(d => {
+          d.pins = d.pins.filter(x => x.cell !== cell);
+          d.removed.push(cell);
+        }), "secondary"));
+    }
+    if (isBlacksmith(p))
+      $("map-selection").append(button(L.m("Przenieś kowala"), () => startNemetonPlacing(null, "blacksmith")));
     if (p.kind === "monster" && balanceData?.species?.some(s => String(s.monsterId) === String(p.monsterId)))
       $("map-selection").append(button(L.m("Edytuj częstotliwość gatunku"), () => {
         setWorldTab("settings");
@@ -3793,6 +3945,24 @@
   $("label-close").addEventListener("click", closeProfileLabel);
   $("label-dialog").addEventListener("cancel", e => { e.preventDefault(); closeProfileLabel(); });
   $("placement-editor").addEventListener("toggle", drawMap);
+  $("nemeton-pick").addEventListener("click", () => startNemetonPlacing());
+  $("nemeton-cancel").addEventListener("click", stopNemetonPlacing);
+  $("nemeton-what").addEventListener("change", () => { if (nemetonPlacing) nemetonPlacing.moveFrom = null; });
+  for (const id of ["nemeton-lat", "nemeton-lng"])
+    $(id).addEventListener("input", () => {
+      nemetonDraft = {lat:$("nemeton-lat").valueAsNumber, lng:$("nemeton-lng").valueAsNumber};
+      drawMap();
+    });
+  $("nemeton-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const lat = $("nemeton-lat").valueAsNumber, lng = $("nemeton-lng").valueAsNumber, moveFrom = nemetonPlacing?.moveFrom;
+    if ($("nemeton-what").value === "blacksmith") { void moveBlacksmith(lat, lng); return; }
+    void changeNemetonPins(d => {
+      // The moved nemeton leaves its old cell; the service drops the removal if the new spot is in the same cell.
+      if (moveFrom) { d.pins = d.pins.filter(x => x.cell !== moveFrom); d.removed.push(moveFrom); }
+      d.pins.push({id:"pin-" + Date.now(), lat, lng});
+    });
+  });
   $("placement-form").addEventListener("input", placementChanged);
   $("placement-add-area").addEventListener("click", () => addPlacement("exclusions"));
   $("placement-add-point").addEventListener("click", () => addPlacement("preferred"));
@@ -4078,7 +4248,8 @@
     $("world-map").addEventListener(name, e => {
       if (mapDrag?.id === e.pointerId) {
         // Capture retargets pointerup: resolve a tap from the current coordinates.
-        if (name === "pointerup" && !mapSuppressClick) {
+        if (name === "pointerup" && !mapSuppressClick && nemetonPlacing) pickNemetonSpot(e);
+        else if (name === "pointerup" && !mapSuppressClick) {
           const hit = document.elementFromPoint(e.clientX,e.clientY),
             cluster = hit?.closest("[data-cluster]"), group = mapClusters.get(cluster?.dataset.cluster);
           if (group) { mapCamera.lat=group.lat; mapCamera.lng=group.lng; zoomMap(2); }

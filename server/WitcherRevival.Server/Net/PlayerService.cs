@@ -3099,6 +3099,7 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
         // one left outside the loaded area or out of the player's sight (the player moved away) gets a new place.
         var area = playable.Area;
         var known = saved.GetValueOrDefault(key);
+        if (known is not null && key == BlacksmithKey && BlacksmithDiscovered(known, saved)) return known;
         // A started quest's places stay where they were chosen (field round 2026-10-31: they jumped when the player was far,
         // or the server restarted before a GPS fix); the game's own Relocate quest button moves them.
         if (known is not null &&
@@ -3125,6 +3126,26 @@ public sealed partial class PlayerService(ILogger<PlayerService> log, IConfigura
 
     // Client: PoiSettings.questOnMapHideDistance (season1_story.py GIVER_DISTANCE); a giver farther from the player is not drawn.
     private const double GiverHideDistance = 350;
+
+    // The blacksmith (his forge, farewell and the new smith stand on his place) stays once the player has come within sight of
+    // him: before that he follows the player like any giver, so that he can be found at all. The mark is an entry of its own in
+    // StoryPlaces, so a profile needs no new field and a reset clears it.
+    private const string BlacksmithKey = "s01hq03_lothar", BlacksmithDiscoveredKey = "discovered-s01hq03_lothar";
+
+    private bool BlacksmithDiscovered(LocalProfileStore.StoryPlace place, Dictionary<string, LocalProfileStore.StoryPlace> saved)
+    {
+        if (saved.ContainsKey(BlacksmithDiscoveredKey)) return true;
+        if (playable.Area is not { Count: > 0 } area || playable.Cells(area, 0) is not { Count: > 0 } cells ||
+            PlayerPositionIn(cells) is not { } at ||
+            PlayableLocations.Distance(at.Lat, at.Lng, place.Lat, place.Lng) > GiverHideDistance) return false;
+        profiles.UpdatePlayer(new Dictionary<int, int>(), null, p => p with
+        {
+            StoryPlaces = new Dictionary<string, LocalProfileStore.StoryPlace>(
+                p.StoryPlaces ?? new Dictionary<string, LocalProfileStore.StoryPlace>()) { [BlacksmithDiscoveredKey] = place },
+        });
+        log.LogInformation("  Blacksmith discovered");
+        return true;
+    }
 
     private bool OutOfSight(LocalProfileStore.StoryPlace place) =>
         playable.Area is { Count: > 0 } area && playable.Cells(area, 0) is { Count: > 0 } cells && PlayerPositionIn(cells) is { } at &&

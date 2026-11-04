@@ -12,7 +12,12 @@ Two tracks:
      - The server is self-contained .NET (CoreCLR, not NativeAOT) for linux-musl-arm64. Python is Alpine's, with pyosmium.
      - `companion/runtime/seccomp_shim.c` answers the NUMA syscalls that Android's app seccomp filter would otherwise kill .NET for.
    - **Built, not yet tested on the device:** the setup checklist (Aurora, the game at 300085, Play copy or playable client), the region picker (Geofabrik), the in-app dashboard (the panel accepts its key as a cookie), self-update from GitHub Releases, release signing, and **the on-phone client build (no PC — see below)**.
-     - The release key is in `local/keys/`. Without a backup of it, installed copies can never update.
+     - The release key is in `local/keys/`. Without a backup of it, installed copies can never update. A build without that key is
+       signed with the computer's Android debug key, so a contributor's builds install over each other (never over a published one).
+     - `gradlew assembleDev` (build type `dev`, `io.github.natusanima.slayerrevival.dev`, debug key) installs beside the published app, with
+       its own files. `Updates.isDev`: no self-update; `ClientBuildService.sharedClient`: Setup treats a client another copy built as
+       done, so it never replaces it (no hook changes that way); the server refuses to start while the ports are taken. **Not built or
+       device-tested yet.**
    - **No PC needed any more:** guided-setup step 5 builds the playable client on the phone and installs it, with no adb and no Wireless debugging: the packs come from the Google Play download, Android's own dialogs replace the Play copy, and the hook travels inside the client's APK. It compiles; **the device test is pending.**
    - **Built and installed (2026-10-05 23:08):** `local/release/Witcher-Monster-Slayer-Revival-0.1.0.apk` is the release APK with the on-phone client build (arm64 only, signed with the release key).
      - Smoke-tested on the Xiaomi: it launches, shows the new Step 3, and the server starts and stops from the new runtime.
@@ -415,7 +420,7 @@ names from `script.json`); none of these is confirmed on a device yet.
 - **Nemeta moved every day:** `playable_locations.py` picks a cell's anchor from its raw candidates by a hash of the position
   (`nest-v3`, no epoch), sends it every day as an extra place `lab-<cell>-<epoch>-5999`, and drops the day's places within the
   spacing of it. Kind and monsters still change daily (`WorldNests.ForCell` unchanged): the maintainer's choice. A map rebuild can
-  move it. Story nemeta are givers and still follow the player (350 m).
+  move it (no longer: see "Nemeta keep their spots"). Story nemeta are givers and still follow the player (350 m).
 - **Bestiary entries vanished after a restart:** the game lists a monster from the fight's start (`FightNode.EnterNode` adds it
   with 0 kills); the server saved only wins and RPC 7 dropped zeros. A lost or fled world or summoned fight, and the fights a lost
   nemeton run reached (the client sends an empty details array for the rest), now keep `Kills[m] = 0`, and RPC 7 sends zeros.
@@ -1134,3 +1139,29 @@ report zips and screenshots under `reports/` and `img/`). Issues found and what 
   - Il2CppDumper v6.7.46 is in `local/tools/Il2CppDumper/`. A 1.1.116 dump is in `local/il2cpp116/out/` (`dump.cs`, `script.json`; inputs in `local/il2cpp116/in/`: `libil2cpp.so` from the config split and `assets/bin/Data/Managed/Metadata/global-metadata.dat` from `base.apk`; the dumper's final "press any key" throws when stdin is redirected, the output is complete by then). `capstone` (pip) disassembles arm64 on Windows: file offset = RVA for the code, `script.json` `ScriptMethod` names the targets.
   - The `tools/dump/` and Ghidra helpers still describe 1.0.43.
 - **Addresses:** IL2CPP export offsets for this library (`libil2cpp.so`, sha256 `c8a5556b…`) are in `hook.js` (`RVA`). Native fixes go in `NATIVE_FIXES` and are applied only over their exact original bytes.
+
+## Nemeta keep their spots, and the dashboard can place them
+`nest-v3` draws a spot from the cell's candidates, so the same map, settings and code give the same spot, but "Distance beside
+paths", "Distance from streets", a scheduled placement policy, a map rebuild or new placement rules moved them (0.3.0 to 0.4.0
+moved about four in five on a synthetic town). Now:
+- **Saved:** `PlayableLocations.nest_place` keeps each cell's first answer in `world/nemeton-spots.json` (`--nemeton-spots`, written
+  only by the placement service, atomically), "no nemeton" too. A cell with no map or no candidates stays undecided. The first run
+  after an update saves the spots that code draws, so nothing moves on the way in. Only an exclusion area of the active placement
+  policy moves a saved spot. Deleting the file draws them all again.
+- **Placed by hand:** `world/nemeton-pins.json` (`--nemeton-pins`; `GET`/`PUT /api/nemeton-pins`, checked by the service's
+  `/admin/nemeton-pins/validate`, with receipt and backup; dashboard: Map and spawns, "Nemetons on the map"). A pin stands at its
+  exact coordinates, also on ground a place could not use and outside the map areas; one pin per cell; it beats the cell's saved
+  spot, which comes back when unpinned; a removed cell has none. It applies at once (the game server shares a cell's answer for
+  10 s), keeps the day's instance id, so a clear made today still counts. An undecided neighbour within `NEST_SPACING_M` gives way
+  while the pin stands; decided ones stay.
+- **The blacksmith, and only him:** `PlayerService.BlacksmithDiscovered` marks him (`StoryPlaces["discovered-s01hq03_lothar"]`) when the
+  player's known position comes within `GiverHideDistance` (350 m) of his place, and he stays from then on; before that he follows
+  the player as any giver does, or he could not be found. His forge, farewell and the new smith stand on his place (`PlaceOf`).
+  The same panel moves him (`POST /api/profiles/{id}/blacksmith`, per profile, receipt and restorable backup, a new place id;
+  the service's `/admin/point` gives the cell and biomes). The game's own Relocate still works once his quest has started.
+- **Not changed:** all other quest places and givers; givers that look like nests (`s01hq02_nemeton`, `s01hq04_nemeton`) still follow the
+  player until started; `MapClearance` still hides a nemeton within 30 m of a quest marker, a pinned one too.
+- **Device check:** a pin shows in the game, and how soon: `PoiModule.LoadCells` asks only for cache misses, so a running game may
+  keep a loaded cell until it restarts.
+- `test_placement_policy`'s golden hash has failed since 0.4.0 (the off-path draw changed it, the hash was not updated); this work
+  leaves the draw byte-identical (same failing hash `80d97030`).
