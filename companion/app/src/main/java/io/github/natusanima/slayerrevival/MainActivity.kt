@@ -276,6 +276,8 @@ class MainActivity : Activity() {
                     @Suppress("DEPRECATION") intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT)?.let(::startActivity)
                 PackageInstaller.STATUS_SUCCESS -> Unit
                 PackageInstaller.STATUS_FAILURE_ABORTED -> Updates.finished("The update was cancelled.")
+                PackageInstaller.STATUS_FAILURE_CONFLICT -> Updates.finished("The update failed: this copy of the app is signed " +
+                    "with a different key, probably because you built it yourself. Build the new version yourself instead.")
                 else -> Updates.finished("The update failed: ${intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)}")
             }
         }

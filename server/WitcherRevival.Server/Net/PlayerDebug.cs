@@ -142,6 +142,30 @@ public sealed partial class PlayerService
             $"The character is now {(gender == 0 ? "male" : "female")} with head {head}. The game shows it at its next start.");
     }
 
+    /// <summary>The blacksmith's place from the dashboard: a new place id, as the game skips ids it knows.</summary>
+    public DebugOutcome MoveBlacksmith(double lat, double lng, ulong cell, int[] biomes, Action<LocalProfileStore.Profile> backup)
+    {
+        if (profiles.Snapshot().Player is null) throw new DebugRefusal("This profile uses the legacy format, which has no quests.");
+        var place = new LocalProfileStore.StoryPlace($"lab-story-{BlacksmithKey}-{Guid.NewGuid():N}", lat, lng, biomes, cell);
+        var saved = profiles.DebugUpdate(p => p with
+        {
+            StoryPlaces = new Dictionary<string, LocalProfileStore.StoryPlace>(
+                p.StoryPlaces ?? new Dictionary<string, LocalProfileStore.StoryPlace>())
+                { [BlacksmithKey] = place, [BlacksmithDiscoveredKey] = place },
+        }, backup, markDebug: false);
+        log.LogInformation("Blacksmith moved revision={Revision}", saved.Revision);
+        return new DebugOutcome(saved.Revision, [], Live, "The blacksmith stands here now. The game shows it at its next start.");
+    }
+
+    /// <summary>The blacksmith's saved place for the dashboard, and the node his marker carries.</summary>
+    public object BlacksmithPlace()
+    {
+        var places = profiles.Snapshot().Player?.StoryPlaces;
+        var place = places?.GetValueOrDefault(BlacksmithKey);
+        return new { place = place is null ? null : new { lat = place.Lat, lng = place.Lng }, discovered = places?.ContainsKey(BlacksmithDiscoveredKey) == true,
+            node = StoryEngine.NodeByKey(BlacksmithKey)?.Id };
+    }
+
     /// <summary>Whether a session of this player has finished booting, so queued pushes reach the game after its next reply.</summary>
     public bool Live { get { lock (pushGate) return bootedSessions.Count > 0; } }
 

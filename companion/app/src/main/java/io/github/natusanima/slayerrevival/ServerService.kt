@@ -120,6 +120,11 @@ class ServerService : Service() {
 
     private fun launch() {
         try {
+            // Both copies use the same ports, and this one would take the other's server for its own.
+            if (Updates.isDev(this) && portTaken(HTTP_PORT)) {
+                update("Stop the server in the other copy of the app first")
+                return
+            }
             update("Preparing")
             val rt = Runtime.prepare(this)
             val state = File(filesDir, "state")
@@ -182,7 +187,8 @@ class ServerService : Service() {
             "--port", "$TILE_PORT") + indexes + listOf("--cache-dir", "$cacheDir/tiles", "--offline"), python)
         start("placement", "libpython.so", listOf("$maps/playable_locations.py") + indexes + listOf(
             "--port", "$PLACEMENT_PORT", "--policy", "$world/placement-policy.json",
-            "--tuning", "$world/tuning.json"), python)
+            "--tuning", "$world/tuning.json", "--nemeton-spots", "$world/nemeton-spots.json",
+            "--nemeton-pins", "$world/nemeton-pins.json"), python)
         return true
     }
 
@@ -379,6 +385,13 @@ class ServerService : Service() {
             Thread.sleep(500)
         }
         return false
+    }
+
+    private fun portTaken(port: Int) = try {
+        Socket().use { it.connect(InetSocketAddress("127.0.0.1", port), 300) }
+        true
+    } catch (_: Exception) {
+        false
     }
 
     private fun listening(port: Int): Boolean {

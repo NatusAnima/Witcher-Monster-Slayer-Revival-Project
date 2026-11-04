@@ -58,6 +58,11 @@ class ClientBuildService : Service() {
 
         private fun prefs(context: Context) = context.getSharedPreferences("client", Context.MODE_PRIVATE)
 
+        /** A dev build beside the published app uses the client that app built, so it never removes or rebuilds it: a client
+         *  signed with this build's key would cost the game's data. */
+        fun sharedClient(context: Context) = Updates.isDev(context) &&
+            DebugInfo.installed(context, MainActivity.GAME)?.let { !DebugInfo.playSigned(it) } == true
+
         /** The game version (Updates.gameVersion) of the app that built the installed client; clients built before it was recorded came from 0.1. */
         fun builtFor(context: Context) = prefs(context).getString("builtFor", "0.1")
 

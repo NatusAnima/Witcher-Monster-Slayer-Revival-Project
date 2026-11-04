@@ -122,7 +122,7 @@ class SetupActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        ours = ClientBuildService.signedByUs(this) == true
+        ours = ClientBuildService.signedByUs(this) == true || ClientBuildService.sharedClient(this)
         handler.post(refresh)
     }
 

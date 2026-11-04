@@ -69,7 +69,13 @@ If a release also changes the game, the update says so, and the app then offers 
    ```powershell
    cd companion; .\gradlew assembleRelease
    ```
-   Release builds are signed with the key that `local\keys\companion.properties` names. Without it the APK is unsigned. Self-updates only install over a copy signed with the same key, so keep a backup of `local\keys\`.
+   Release builds are signed with the key that `local\keys\companion.properties` names. Without it they are signed with your computer's Android debug key (`%USERPROFILE%\.android\debug.keystore`), so your own builds install over each other, also from a fresh clone. Keep a backup of whichever key you use: Android only installs an update signed with the same key. Your build cannot install over a copy signed with another key, such as a published release, without uninstalling that copy first, which deletes your progress. For the same reason, the app's own update offer fails on a self-built copy.
+
+   **To keep a published copy and test your own beside it**, build the dev version instead, which lands in `companion\app\build\outputs\apk\dev\`:
+   ```powershell
+   cd companion; .\gradlew assembleDev
+   ```
+   It installs next to the published app as "Monster Slayer Revival DEV", and nothing needs uninstalling. It has its own map and its own progress, and it uses the game the published app built, so it leaves that game alone. Stop the server in one copy before you start the other: they share ports, and the game talks to whichever is running. Changes to the hook inside the game do not reach it this way.
 
 **Releasing.** Versions are `x.y.z`, set as `appVersion` in `companion/app/build.gradle.kts`:
 - `x` is the stage (alpha, beta, ...).

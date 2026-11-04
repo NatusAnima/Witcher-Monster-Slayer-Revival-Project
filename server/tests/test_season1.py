@@ -4,6 +4,7 @@ effect without a timer."""
 import gzip
 import json
 import math
+import struct
 import time
 import unittest
 import urllib.request
@@ -33,6 +34,7 @@ class Season1Tests(base.PrototypeTests):
         url, _ = self.playable_service(lambda ids, epoch: {
             i: {'center': list(origin), 'places': places if n == 0 else []} for n, i in enumerate(ids)})
         env = dict(self.RECONSTRUCTED, Playable__Url=url)
+        self.last_playable = url
         server = self.start(name, env)
         c = self.client(server); c.rpc(3); c.rpc(3)
         server.stop()
@@ -54,6 +56,32 @@ class Season1Tests(base.PrototypeTests):
 
     def givers(self, c):
         return {g['node']: g['mode'] for g in self.locations_by_cell(c.rpc(40, REQUEST))['quests']}
+
+    def test_the_blacksmith_stays_once_discovered_and_other_givers_still_follow(self):
+        # Good Money done: Lothar and Margit's successors are offered. Near him, he is discovered; far away he stays, while a
+        # giver not yet met goes on following the player as it always has.
+        server, c = self.season('test-smith-stays', {100: 4, 53: 4, 1000: 1, 1001: 1, 1003: 1})
+        spots = lambda: (lambda world: {g['node']: {name: point for rows in world['cells'].values() for name, point, _ in rows}[g['place']]
+                                        for g in world['quests']})(self.locations_by_cell(c.rpc(40, REQUEST)))
+        origin = (10.0, 20.0)
+        c.rpc(67, struct.pack('>ff', *origin))
+        smith = GIVER[147]
+        first = spots()
+        self.assertIn(smith, first)
+        self.assertEqual(spots()[smith], first[smith])          # within sight now: discovered
+        saved = json.loads(self.profile_file('test-smith-stays').read_text())['Player']['StoryPlaces']
+        self.assertIn('discovered-s01hq03_lothar', saved)
+        away = (origin[0], origin[1] + 650 / (111320.0 * math.cos(math.radians(origin[0]))))
+        other = GIVER[150]
+        c.rpc(67, struct.pack('>ff', *away))
+        moved = spots()
+        self.assertEqual(moved[smith], first[smith])
+        self.assertNotEqual(moved[other], first[other])
+        server.stop()
+        c = self.client(self.start('test-smith-stays', dict(self.RECONSTRUCTED, Playable__Url=self.last_playable)))
+        c.rpc(88, REQUEST)
+        c.rpc(67, struct.pack('>ff', *away))
+        self.assertEqual(spots()[smith], first[smith])          # and after a restart
 
     def test_the_blacksmith_keeps_his_forge_after_his_quest(self):
         # The Dark Side Of The Full Moon ends with Lothar's farewell (spared: 141 = 4) or with the new smith (64 = 1). Either
