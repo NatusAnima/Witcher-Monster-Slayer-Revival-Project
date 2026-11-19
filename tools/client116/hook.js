@@ -227,6 +227,7 @@ const RVA = {
   win_build_exp: 0x1ad86b4,         // BaseWinWindow.BuildExpTable: a row for each experience above 0
   win_row_shown: 0x1ad91f8,         // BaseWinWindow.OnXpRowShow(IRewardElement): adds the row's Experience to _totalExp
   xp_row_text: 0x17ce5f8,           // XPRewardText.UpdateText: value (+0x18) = Experience (+0x28) + " " + COMMON/XP
+  current_resolution: 0x26d0dd0,    // UnityEngine.Screen.get_currentResolution: width, height in x0, refreshRate in w1
 };
 const callbacks = [];  // NativeCallbacks given to Interceptor.replace, kept from the garbage collector
 
@@ -305,6 +306,38 @@ function install(m) {
   installed = true;
   log('frida', Frida.version, Script.runtime, 'libil2cpp', m.path, 'base', m.base, 'size', m.size, 'built for sha256', LIBIL2CPP_SHA256);
   stage('native fixes', () => applyNativeFixes(m));
+  // Frame rate. SettingsModule caps Application.targetFrameRate (vSyncCount is 0) at Screen.currentResolution.refreshRate /
+  // the quality tier's FPSDivider. Its Tick re-applies the cap every frame while that rate differs from the one stored with
+  // the quality level. On a display that adapts its refresh rate to the content, the rate the game reads appears to follow
+  // the render rate down, e.g. the map ran at 12 fps while the display rendered at 24 Hz (24 / 2). The game reads the
+  // display's highest refresh rate instead, set here before any game code runs.
+  stage('frame rate', () => {
+    const panelRate = Memory.alloc(4);  // read by the C hook below; 0 until Java has read it
+    panelRate.writeS32(0);
+    // SettingsModule.Tick asks every frame
+    fastHook('frame rate', m.base.add(RVA.current_resolution), `
+      #include <gum/guminterceptor.h>
+      extern volatile int panel_rate;
+      void onLeave (GumInvocationContext * ic) {
+        int rate = panel_rate;
+        if (rate > 0) ic->cpu_context->x[1] = (guint64) rate;
+      }`, { panel_rate: panelRate }, {
+      onLeave() { if (panelRate.readS32() > 0) this.context.x1 = ptr(panelRate.readS32()); },
+    });
+    Java.perform(() => {
+      try {
+        const displays = Java.cast(Java.use('android.app.ActivityThread').currentApplication().getSystemService('display'),
+                                   Java.use('android.hardware.display.DisplayManager'));
+        const modes = displays.getDisplay(0).getSupportedModes();
+        let rate = 0;
+        for (let i = 0; i < modes.length; i++) rate = Math.max(rate, Math.round(modes[i].getRefreshRate()));
+        panelRate.writeS32(rate);
+        log('frame rate: the game reads', rate, 'Hz');
+      } catch (e) {
+        log('frame rate: display not read -', e.message);
+      }
+    });
+  });
   // Time for quests (the dashboard's debug tools): the server adds 16 × (1 + mask) to the weather code, one mask bit per
   // AstroConditionNode.condition (+0x44: full moon 0, sunrise 1, sunset 2, day 3). The game gets the plain code back, and
   // its quests see that sky until a plain code comes; without one they see the phone's own.
