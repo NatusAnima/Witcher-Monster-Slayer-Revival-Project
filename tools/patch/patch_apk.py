@@ -1,6 +1,6 @@
 """Build the Frida-Gadget client from your own original APK (v1.0.43 build 200098, arm64-v8a).
 
-Reproduces exactly how the dev phone's APK was patched: Frida Gadget 17.15.3 (must match the `frida` pip
+Reproduces exactly how the dev phone's APK was patched: Frida Gadget 17.27.0 (must match the `frida` pip
 package that frida_run.py uses) is added as lib/arm64-v8a/libgadget.so with a config that listens on
 127.0.0.1:27042 and pauses the app at launch ("on_load": "wait") until frida_run.py resumes it;
 libmain.so gets libgadget.so as a DT_NEEDED entry so it loads first; the original signature is dropped and
@@ -15,7 +15,7 @@ import lief
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".cache")
-GADGET_URL = "https://github.com/frida/frida/releases/download/17.15.3/frida-gadget-17.15.3-android-arm64.so.xz"
+GADGET_URL = "https://github.com/frida/frida/releases/download/17.27.0/frida-gadget-17.27.0-android-arm64.so.xz"
 SIGNER_URL = "https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar"
 CONFIG = b'{"interaction":{"type":"listen","address":"127.0.0.1","port":27042,"on_load":"wait"}}'
 LIB = "lib/arm64-v8a/"

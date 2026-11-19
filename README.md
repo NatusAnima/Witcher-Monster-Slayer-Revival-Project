@@ -192,7 +192,7 @@ Thank you to everyone who supports the project on [Patreon](https://www.patreon.
 - The memory work on the map services and the Android 12+ location fix in the game hook are by MasterpiecePL (pull request #3).
 - The PC tools download Frida Gadget and uber-apk-signer at build time; neither is in this repository.
 - The companion app's APK also bundles what its on-phone client build uses:
-  - Frida Gadget 17.15.3 (wxWindows Library Licence 3.1, an LGPL variant; source: https://github.com/frida/frida);
+  - Frida Gadget 17.27.0 (wxWindows Library Licence 3.1, an LGPL variant; source: https://github.com/frida/frida);
   - LIEF 0.17.6 (Apache-2.0);
   - apksig (Apache-2.0);
   - gplayapi 3.6.4 by Aurora OSS (GPL-3.0-or-later; https://gitlab.com/AuroraOSS/gplayapi), with OkHttp, Gson, kotlinx.serialization and kotlinx.coroutines (Apache-2.0) and Protocol Buffers Lite (BSD-3-Clause).
