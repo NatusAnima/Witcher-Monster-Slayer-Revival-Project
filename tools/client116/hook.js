@@ -256,6 +256,12 @@ const NATIVE_FIXES = [
     'e85a019008e544f9f30300aa080140f9e00308aa39f5f497e10313aae2031faaf40300aabd0afd97',
     'f70300aae85a019008e544f9000140f947f5f497f40300aac07640f9200900b4e10314aae20317aae3031faaad6b0194930800b4' +
     '285c01f0085144f9e10300aae00313aa020140f9a0431d94e10300aae00314aae2031faabd0afd97'],
+  // Fake store: TransactionModuleInstaller.BindStore binds Google Play billing when the application id is
+  // com.spokko.witchermonsterslayer and the game's FakeInAppPurchasingSystem for any other id. Since this client keeps
+  // the original id, it always binds Google Play billing, which never initializes without a Google account in the Play
+  // Store: loading stops at "transaction module" (79%). As there is no point in binding the real store anymore, the id
+  // check's conditional branch (tbz) becomes unconditional (b) to always bind the fake store.
+  ['fake store', 0x18A5ABC, 'a0000036', '05000014'],
 ];
 const hex = buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
 
