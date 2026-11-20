@@ -2,6 +2,6 @@
   "private": true,
   "description": "hook.js bundle dependencies (restart.py installs and bundles them)",
   "dependencies": {
-    "frida-java-bridge": "7.0.13"
+    "frida-java-bridge": "github:frida/frida-java-bridge#5c578e79399fd83b3a62fd0e835d8e5c575e1e14"
   }
 }
